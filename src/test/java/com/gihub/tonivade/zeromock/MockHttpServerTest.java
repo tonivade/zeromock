@@ -31,6 +31,6 @@ public class MockHttpServerTest {
     HttpURLConnection con = (HttpURLConnection) url.openConnection();
     con.setRequestMethod("GET");
 
-    Assert.assertEquals(200, con.getResponseCode());
+    assertEquals(200, con.getResponseCode());
   }
 }
