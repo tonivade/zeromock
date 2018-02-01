@@ -1,16 +1,15 @@
 package com.github.tonivade.zeromock;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ByteArrayOutputStream;
-import java.nio.charset.Charset;
 import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 @SuppressWarnings("restriction")
@@ -44,15 +43,15 @@ public class MockHttpServer {
     server.stop(0);
   }
 
+  public Request getRequest(String url) {
+    return requests.get(url);
+  }
+
   private void handle(HttpExchange exchange) throws IOException {
     Request request = new Request(exchange.getRequestURI().toString(), 
                                   readBody(exchange.getRequestBody()));
     Response response = mappings.getOrDefault(request.url, NOT_FOUND).execute(request);
     processResponse(exchange, response);
-  }
-
-  private Request getRequest(String url) {
-    return requests.get(url);
   }
 
   private void processResponse(HttpExchange exchange, Response response) throws IOException {
