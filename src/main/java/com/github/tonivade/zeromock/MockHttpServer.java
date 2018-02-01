@@ -6,8 +6,12 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
@@ -17,11 +21,9 @@ public class MockHttpServer {
   private final HttpServer server;
 
   private Map<String, Request> requests = new HashMap<>();
-  private Map<String, RequestHandler> mappings = new HashMap<>();
+  private Map<Predicate<Request>, Function<Request, Response>> mappings = new HashMap<>();
   
-  private static final RequestHandler NOT_FOUND = request -> new Response(404, "not found");
-
-  public MockHttpServer(int port) {
+  private MockHttpServer(int port) {
     try {
       server = HttpServer.create(new InetSocketAddress(port), 0);
       server.createContext("/", this::handle);
@@ -30,8 +32,8 @@ public class MockHttpServer {
     }
   }
   
-  public MockHttpServer when(String request, RequestHandler handler) {
-    mappings.put(request, handler);
+  public MockHttpServer when(Predicate<Request> matcher, Function<Request, Response> handler) {
+    mappings.put(matcher, handler);
     return this;
   }
 
@@ -48,10 +50,24 @@ public class MockHttpServer {
   }
 
   private void handle(HttpExchange exchange) throws IOException {
-    Request request = new Request(exchange.getRequestURI().toString(), 
-                                  readBody(exchange.getRequestBody()));
-    Response response = mappings.getOrDefault(request.url, NOT_FOUND).execute(request);
-    processResponse(exchange, response);
+    Request request = createRequest(exchange);
+    Function<Request, Response> handler = findHandler(request);
+    processResponse(exchange, handler.apply(request));
+  }
+
+  private Request createRequest(HttpExchange exchange) throws IOException {
+    return new Request(exchange.getRequestMethod(),
+                       exchange.getRequestURI().toString(), 
+                       readBody(exchange.getRequestBody()),
+                       exchange.getRequestHeaders());
+  }
+
+  private Function<Request, Response> findHandler(Request request) {
+    return mappings.entrySet().stream()
+        .filter(entry -> entry.getKey().test(request))
+        .map(Map.Entry::getValue)
+        .findFirst()
+        .orElse(Responses.notFound("not found"));
   }
 
   private void processResponse(HttpExchange exchange, Response response) throws IOException {
@@ -72,19 +88,18 @@ public class MockHttpServer {
     }
     return new String(out.toByteArray(), Charset.forName("UTF-8"));
   }
-
-  @FunctionalInterface
-  public static interface RequestHandler {
-    Response execute(Request request);
-  }
   
   public static final class Request {
+    final String method;
     final String url;
     final String body;
+    final Map<String, List<String>> headers;
 
-    public Request(String url, String body) {
+    public Request(String method, String url, String body, Map<String, List<String>> headers) {
+      this.method = method;
       this.url = url;
       this.body = body;
+      this.headers = Collections.unmodifiableMap(headers);
     }
   }
   
@@ -100,5 +115,9 @@ public class MockHttpServer {
     public byte[] getBytes() {
       return body.getBytes();
     }
+  }
+  
+  public static MockHttpServer listenAt(int port) {
+    return new MockHttpServer(port);
   }
 }
