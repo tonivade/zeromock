@@ -1,12 +1,15 @@
 package com.github.tonivade.zeromock;
 
+import static java.util.Collections.singletonList;
+import static java.util.Collections.unmodifiableMap;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +75,7 @@ public class MockHttpServer {
 
   private void processResponse(HttpExchange exchange, Response response) throws IOException {
     byte[] bytes = response.getBytes();
+    response.headers.forEach((key, values) -> values.forEach(value -> exchange.getResponseHeaders().add(key, value)));
     exchange.sendResponseHeaders(response.statusCode, bytes.length);
     exchange.getResponseBody().write(bytes);
     exchange.getResponseBody().close();
@@ -99,21 +103,33 @@ public class MockHttpServer {
       this.method = method;
       this.url = url;
       this.body = body;
-      this.headers = Collections.unmodifiableMap(headers);
+      this.headers = unmodifiableMap(headers);
     }
   }
   
   public static final class Response {
     final int statusCode;
     final String body;
+    final Map<String, List<String>> headers;
     
-    public Response(int statusCode, String body) {
+    public Response(int statusCode, String body, Map<String, List<String>> headers) {
       this.statusCode = statusCode;
       this.body = body;
+      this.headers = unmodifiableMap(headers);
     }
     
     public byte[] getBytes() {
       return body.getBytes();
+    }
+
+    public Response withHeader(String string, String value) {
+      Map<String, List<String>> newHeaders = new HashMap<>(headers);
+      newHeaders.merge(string, singletonList(value), (oldValue, newValue) -> {
+        List<String> newList = new ArrayList<>(oldValue);
+        newList.addAll(newValue);
+        return newList;
+      });
+      return new Response(statusCode, body, newHeaders);
     }
   }
   

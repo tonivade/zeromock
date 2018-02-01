@@ -5,6 +5,7 @@ import static com.github.tonivade.zeromock.MockHttpServer.listenAt;
 import static com.github.tonivade.zeromock.Predicates.acceptsJson;
 import static com.github.tonivade.zeromock.Predicates.path;
 import static com.github.tonivade.zeromock.Predicates.acceptsXml;
+import static com.github.tonivade.zeromock.Responses.contentType;
 import static com.github.tonivade.zeromock.Responses.ok;
 import static org.junit.Assert.assertEquals;
 
@@ -23,8 +24,8 @@ public class MockHttpServerTest {
 
   public MockHttpServer server = listenAt(8080)
       .when(get().and(path("/hello")), ok("Hello World!"))
-      .when(get().and(path("/test")).and(acceptsXml()), ok("It's a XML"))
-      .when(get().and(path("/test")).and(acceptsJson()), ok("It's a JSON"));
+      .when(get().and(path("/test")).and(acceptsXml()), ok("<body/>").andThen(contentType("text/xml")))
+      .when(get().and(path("/test")).and(acceptsJson()), ok("{ \"json\": true }").andThen(contentType("application/json")));
 
   @Before
   public void setUp() {
@@ -53,7 +54,8 @@ public class MockHttpServerTest {
     con.setRequestProperty("Accept", "application/json");
 
     assertEquals(200, con.getResponseCode());
-    assertEquals("It's a JSON", read(con.getInputStream()));
+    assertEquals("{ \"json\": true }", read(con.getInputStream()));
+    assertEquals("application/json", con.getHeaderField("Content-Type"));
   }
 
   @Test
@@ -64,7 +66,8 @@ public class MockHttpServerTest {
     con.setRequestProperty("Accept", "text/xml");
 
     assertEquals(200, con.getResponseCode());
-    assertEquals("It's a XML", read(con.getInputStream()));
+    assertEquals("<body/>", read(con.getInputStream()));
+    assertEquals("text/xml", con.getHeaderField("Content-Type"));
   }
 
   private String read(InputStream input) throws IOException {
