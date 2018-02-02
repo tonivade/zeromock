@@ -26,7 +26,7 @@ public class Responses {
   }
 
   public static Function<Request, Response> badRequest(String body) {
-    return request -> new Response(HTTP_NO_CONTENT, body, emptyMap());
+    return request -> new Response(HTTP_BAD_REQUEST, body, emptyMap());
   }
 
   public static Function<Request, Response> notFound(String body) {
