@@ -1,14 +1,12 @@
 package com.github.tonivade.zeromock;
 
+import static com.github.tonivade.zeromock.IOUtils.readAll;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableMap;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,9 +58,25 @@ public class MockHttpServer {
 
   private Request createRequest(HttpExchange exchange) throws IOException {
     return new Request(exchange.getRequestMethod(),
-                       exchange.getRequestURI().toString(), 
-                       readBody(exchange.getRequestBody()),
-                       exchange.getRequestHeaders());
+                       exchange.getRequestURI().getPath(), 
+                       readAll(exchange.getRequestBody()),
+                       exchange.getRequestHeaders(),
+                       queryToMap(exchange.getRequestURI().getQuery()));
+  }
+  
+  private Map<String, String> queryToMap(String query) {
+    Map<String, String> result = new HashMap<>();
+    if (query != null) {
+      for (String param : query.split("&")) {
+        String[] pair = param.split("=");
+        if (pair.length > 1) {
+          result.put(pair[0], pair[1]);
+        } else {
+          result.put(pair[0], "");
+        }
+      }
+    }
+    return result;
   }
 
   private Function<Request, Response> findHandler(Request request) {
@@ -80,30 +94,20 @@ public class MockHttpServer {
     exchange.getResponseBody().write(bytes);
     exchange.getResponseBody().close();
   }
-
-  private String readBody(InputStream body) throws IOException {
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    byte[] buffer = new byte[1024];
-    while (true) {
-      int read = body.read(buffer);
-      if (read > 0) {
-        out.write(buffer, 0, read);
-      } else break;
-    }
-    return new String(out.toByteArray(), Charset.forName("UTF-8"));
-  }
   
   public static final class Request {
     final String method;
     final String url;
     final String body;
     final Map<String, List<String>> headers;
+    final Map<String, String> params;
 
-    public Request(String method, String url, String body, Map<String, List<String>> headers) {
+    public Request(String method, String url, String body, Map<String, List<String>> headers, Map<String, String> params) {
       this.method = method;
       this.url = url;
       this.body = body;
       this.headers = unmodifiableMap(headers);
+      this.params = unmodifiableMap(params);
     }
   }
   

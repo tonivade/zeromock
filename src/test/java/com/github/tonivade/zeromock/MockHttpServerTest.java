@@ -1,20 +1,20 @@
 package com.github.tonivade.zeromock;
 
-import static com.github.tonivade.zeromock.Predicates.get;
+import static com.github.tonivade.zeromock.IOUtils.readAll;
 import static com.github.tonivade.zeromock.MockHttpServer.listenAt;
 import static com.github.tonivade.zeromock.Predicates.acceptsJson;
-import static com.github.tonivade.zeromock.Predicates.path;
 import static com.github.tonivade.zeromock.Predicates.acceptsXml;
-import static com.github.tonivade.zeromock.Responses.contentType;
+import static com.github.tonivade.zeromock.Predicates.get;
+import static com.github.tonivade.zeromock.Predicates.param;
+import static com.github.tonivade.zeromock.Predicates.path;
+import static com.github.tonivade.zeromock.Responses.contentJson;
+import static com.github.tonivade.zeromock.Responses.contentXml;
 import static com.github.tonivade.zeromock.Responses.ok;
 import static org.junit.Assert.assertEquals;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.Charset;
 
 import org.junit.After;
 import org.junit.Before;
@@ -23,9 +23,9 @@ import org.junit.Test;
 public class MockHttpServerTest {
 
   public MockHttpServer server = listenAt(8080)
-      .when(get().and(path("/hello")), ok("Hello World!"))
-      .when(get().and(path("/test")).and(acceptsXml()), ok("<body/>").andThen(contentType("text/xml")))
-      .when(get().and(path("/test")).and(acceptsJson()), ok("{ \"json\": true }").andThen(contentType("application/json")));
+      .when(get().and(path("/hello")).and(param("name")), ok("Hello %s!"))
+      .when(get().and(path("/test")).and(acceptsXml()), ok("<body/>").andThen(contentXml()))
+      .when(get().and(path("/test")).and(acceptsJson()), ok("{ }").andThen(contentJson()));
 
   @Before
   public void setUp() {
@@ -39,11 +39,12 @@ public class MockHttpServerTest {
 
   @Test
   public void hello() throws IOException {
-    URL url = new URL("http://localhost:8080/hello");
+    URL url = new URL("http://localhost:8080/hello?name=World");
     HttpURLConnection con = (HttpURLConnection) url.openConnection();
     con.setRequestMethod("GET");
 
     assertEquals(200, con.getResponseCode());
+    assertEquals("Hello World!", readAll(con.getInputStream()));
   }
 
   @Test
@@ -54,7 +55,7 @@ public class MockHttpServerTest {
     con.setRequestProperty("Accept", "application/json");
 
     assertEquals(200, con.getResponseCode());
-    assertEquals("{ \"json\": true }", read(con.getInputStream()));
+    assertEquals("{ }", readAll(con.getInputStream()));
     assertEquals("application/json", con.getHeaderField("Content-Type"));
   }
 
@@ -66,19 +67,7 @@ public class MockHttpServerTest {
     con.setRequestProperty("Accept", "text/xml");
 
     assertEquals(200, con.getResponseCode());
-    assertEquals("<body/>", read(con.getInputStream()));
+    assertEquals("<body/>", readAll(con.getInputStream()));
     assertEquals("text/xml", con.getHeaderField("Content-Type"));
-  }
-
-  private String read(InputStream input) throws IOException {
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    byte[] buffer = new byte[1024];
-    while (true) {
-      int read = input.read(buffer);
-      if (read > 0) {
-        out.write(buffer, 0, read);
-      } else break;
-    }
-    return new String(out.toByteArray(), Charset.forName("UTF-8"));
   }
 }

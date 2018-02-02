@@ -16,6 +16,10 @@ public class Predicates {
     return request -> request.url.equals(url);
   }
   
+  public static Predicate<Request> param(String name) {
+    return request -> request.params.containsKey(name);
+  }
+  
   public static Predicate<Request> header(String key, String value) {
     return request -> request.headers.getOrDefault(key, emptyList()).contains(value);
   }
