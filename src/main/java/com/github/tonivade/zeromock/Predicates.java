@@ -4,10 +4,8 @@ import static java.util.Collections.emptyList;
 
 import java.util.function.Predicate;
 
-import com.github.tonivade.zeromock.MockHttpServer.Request;
-
 public class Predicates {
-  
+
   public static Predicate<Request> method(String method) {
     return request -> request.method.equals(method);
   }
