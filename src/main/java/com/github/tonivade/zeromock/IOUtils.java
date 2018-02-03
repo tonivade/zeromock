@@ -11,6 +11,8 @@ import java.nio.charset.Charset;
 
 public class IOUtils {
 
+  private IOUtils() {}
+
   public static String readAll(InputStream input) throws IOException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     byte[] buffer = new byte[1024];

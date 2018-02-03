@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 public final class Request {
+
   final String method;
   final Path path;
   final String body;

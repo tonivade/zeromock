@@ -7,6 +7,9 @@ package com.github.tonivade.zeromock;
 import static java.util.Collections.emptyMap;
 
 public class Requests {
+
+  private Requests() {}
+
   public static Request get(String path) {
     return new Request("GET", new Path(path), null, emptyMap(), emptyMap());
   }

@@ -10,6 +10,8 @@ import java.util.function.Predicate;
 
 public class Predicates {
 
+  private Predicates() {}
+
   public static Predicate<Request> method(String method) {
     return request -> request.method.equals(method);
   }

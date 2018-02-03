@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class Responses {
+  
+  private Responses() {}
 
   public static Function<Request, Response> ok(String body) {
     return request -> new Response(HTTP_OK, format(body, collectParams(request)), emptyMap());
