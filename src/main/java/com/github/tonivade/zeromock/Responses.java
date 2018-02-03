@@ -4,8 +4,14 @@
  */
 package com.github.tonivade.zeromock;
 
-import static java.net.HttpURLConnection.*;
 import static java.lang.String.format;
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_CREATED;
+import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
+import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
+import static java.net.HttpURLConnection.HTTP_OK;
 import static java.util.Collections.emptyMap;
 
 import java.util.Map;
@@ -16,9 +22,17 @@ public class Responses {
   public static Function<Request, Response> ok(String body) {
     return request -> new Response(HTTP_OK, format(body, collectParams(request)), emptyMap());
   }
+
+  public static Function<Request, Response> ok(Function<Map<String, String>, String> action) {
+    return request -> new Response(HTTP_OK, action.apply(request.params), emptyMap());
+  }
   
-  public static Function<Request, Response> crated(String body) {
+  public static Function<Request, Response> created(String body) {
     return request -> new Response(HTTP_CREATED, body, emptyMap());
+  }
+  
+  public static Function<Request, Response> created(Function<Map<String, String>, String> action) {
+    return request -> new Response(HTTP_CREATED, action.apply(request.params), emptyMap());
   }
   
   public static Function<Request, Response> noContent() {

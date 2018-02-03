@@ -11,8 +11,6 @@ import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
@@ -22,7 +20,7 @@ public class MockHttpServer {
   private final HttpServer server;
 
   private Map<String, Request> requests = new HashMap<>();
-  private Map<Predicate<Request>, Function<Request, Response>> mappings = new HashMap<>();
+  private Map<String, Resource> mappings = new HashMap<>();
   
   private MockHttpServer(int port) {
     try {
@@ -36,9 +34,9 @@ public class MockHttpServer {
   public static MockHttpServer listenAt(int port) {
     return new MockHttpServer(port);
   }
-  
-  public MockHttpServer when(Predicate<Request> matcher, Function<Request, Response> handler) {
-    mappings.put(matcher, handler);
+
+  public MockHttpServer mount(String path, Resource resource) {
+    mappings.put(path, resource);
     return this;
   }
 
@@ -56,13 +54,17 @@ public class MockHttpServer {
 
   private void handle(HttpExchange exchange) throws IOException {
     Request request = createRequest(exchange);
-    Function<Request, Response> handler = findHandler(request);
-    processResponse(exchange, handler.apply(request));
+    Resource resource = findResource(request);
+    processResponse(exchange, resource.handle(request.dropOneLevel()));
+  }
+
+  private Resource findResource(Request request) {
+    return mappings.get("/" + request.path.get(0));
   }
 
   private Request createRequest(HttpExchange exchange) throws IOException {
     return new Request(exchange.getRequestMethod(),
-                       exchange.getRequestURI().getPath(), 
+                       new Path(exchange.getRequestURI().getPath()), 
                        readAll(exchange.getRequestBody()),
                        exchange.getRequestHeaders(),
                        queryToMap(exchange.getRequestURI().getQuery()));
@@ -81,14 +83,6 @@ public class MockHttpServer {
       }
     }
     return result;
-  }
-
-  private Function<Request, Response> findHandler(Request request) {
-    return mappings.entrySet().stream()
-        .filter(entry -> entry.getKey().test(request))
-        .map(Map.Entry::getValue)
-        .findFirst()
-        .orElse(Responses.notFound("not found"));
   }
 
   private void processResponse(HttpExchange exchange, Response response) throws IOException {

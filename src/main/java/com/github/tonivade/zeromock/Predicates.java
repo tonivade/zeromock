@@ -15,7 +15,7 @@ public class Predicates {
   }
   
   public static Predicate<Request> path(String url) {
-    return request -> request.url.equals(url);
+    return request -> request.path.match(url);
   }
   
   public static Predicate<Request> param(String name) {
