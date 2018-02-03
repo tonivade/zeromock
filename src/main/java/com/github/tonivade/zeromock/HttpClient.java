@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class HttpClient {
   
-  private String baseUrl;
+  private final String baseUrl;
   
   public HttpClient(String baseUrl) {
     this.baseUrl = baseUrl;

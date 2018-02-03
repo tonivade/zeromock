@@ -12,8 +12,12 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class Resource {
+  final String name;
+  private final Map<Predicate<Request>, Function<Request, Response>> mappings = new HashMap<>();
   
-  private Map<Predicate<Request>, Function<Request, Response>> mappings = new HashMap<>();
+  public Resource(String name) {
+    this.name = name;
+  }
   
   public Resource when(Predicate<Request> matcher, Function<Request, Response> handler) {
     mappings.put(matcher, handler);

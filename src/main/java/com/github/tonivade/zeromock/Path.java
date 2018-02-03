@@ -4,6 +4,7 @@
  */
 package com.github.tonivade.zeromock;
 
+import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
@@ -11,14 +12,14 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class Path {
-  private List<String> value;
+  private final List<String> value;
   
   public Path(String path) {
     this(Stream.of(path.split("/")).skip(1).collect(toList()));
   }
   
   private Path(List<String> path) {
-    this.value = path;
+    this.value = unmodifiableList(path);
   }
   
   public Path dropOneLevel() {

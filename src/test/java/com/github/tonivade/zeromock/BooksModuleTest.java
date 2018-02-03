@@ -28,7 +28,7 @@ public class BooksModuleTest {
   
   private BooksModule module = new BooksModule();
   
-  private Resource resource = new Resource()
+  private Resource resource = new Resource("books")
       .when(post().and(path("/books")), created(module::createBook))
       .when(get().and(path("/books")).and(param("id").negate()), ok(module::findAllBooks))
       .when(get().and(path("/books")).and(param("id")), ok(module::findBook))

@@ -25,7 +25,7 @@ import org.junit.Test;
 
 public class MockHttpServerTest {
 
-  private Resource resource = new Resource()
+  private Resource resource = new Resource("test")
       .when(get().and(path("/hello")).and(param("name")), ok("Hello %s!"))
       .when(get().and(path("/hello")).and(param("name").negate()), badRequest("missing parameter name"))
       .when(get().and(path("/test")).and(acceptsXml()), ok("<body/>").andThen(contentXml()))

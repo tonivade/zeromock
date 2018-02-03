@@ -19,8 +19,8 @@ import com.sun.net.httpserver.HttpServer;
 public class MockHttpServer {
   private final HttpServer server;
 
-  private Map<String, Request> requests = new HashMap<>();
-  private Map<String, Resource> mappings = new HashMap<>();
+  private final Map<String, Request> requests = new HashMap<>();
+  private final Map<String, Resource> mappings = new HashMap<>();
   
   private MockHttpServer(int port) {
     try {
