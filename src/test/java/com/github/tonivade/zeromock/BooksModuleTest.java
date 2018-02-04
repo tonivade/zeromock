@@ -15,7 +15,8 @@ import static com.github.tonivade.zeromock.Requests.delete;
 import static com.github.tonivade.zeromock.Requests.get;
 import static com.github.tonivade.zeromock.Requests.post;
 import static com.github.tonivade.zeromock.Requests.put;
-import static com.github.tonivade.zeromock.Responses.*;
+import static com.github.tonivade.zeromock.Responses.created;
+import static com.github.tonivade.zeromock.Responses.ok;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
