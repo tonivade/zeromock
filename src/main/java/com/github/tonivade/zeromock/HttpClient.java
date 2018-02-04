@@ -7,6 +7,7 @@ package com.github.tonivade.zeromock;
 import static com.github.tonivade.zeromock.IOUtils.readAll;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
@@ -23,8 +24,17 @@ public class HttpClient {
   public Response request(Request request) throws IOException {
     URL url = new URL(baseUrl + request.toUrl());
     HttpURLConnection con = (HttpURLConnection) url.openConnection();
-    request.headers.forEach((key, values) -> values.forEach(value -> con.setRequestProperty(key, value)));
     con.setRequestMethod(request.method);
+    request.headers.forEach((key, values) -> values.forEach(value -> con.setRequestProperty(key, value)));
+    if (request.body != null) {
+      con.setDoOutput(true);
+      try (OutputStream output = con.getOutputStream()) {
+        output.write(Serializers.plain().apply(request.body));
+      }
+    }
+
+    con.connect();
+    
     int responseCode = con.getResponseCode();
     Map<String, List<String>> headers = con.getHeaderFields();
     String body = null;

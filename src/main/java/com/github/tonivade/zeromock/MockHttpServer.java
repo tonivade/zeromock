@@ -7,6 +7,7 @@ package com.github.tonivade.zeromock;
 import static com.github.tonivade.zeromock.IOUtils.readAll;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import java.util.function.Function;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
+@SuppressWarnings("restriction")
 public class MockHttpServer {
   private final HttpServer server;
 
@@ -90,8 +92,9 @@ public class MockHttpServer {
     byte[] bytes = serializer.apply(response.body);
     response.headers.forEach((key, values) -> values.forEach(value -> exchange.getResponseHeaders().add(key, value)));
     exchange.sendResponseHeaders(response.statusCode, bytes.length);
-    exchange.getResponseBody().write(bytes);
-    exchange.getResponseBody().close();
+    try (OutputStream output = exchange.getResponseBody()) {
+      exchange.getResponseBody().write(bytes);
+    }
   }
 
   private Function<Object, byte[]> getSerializer(Response response) {

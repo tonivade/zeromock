@@ -5,6 +5,7 @@
 package com.github.tonivade.zeromock;
 
 import static java.util.Collections.unmodifiableMap;
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
 
 import java.util.ArrayList;
@@ -17,14 +18,14 @@ public final class Request {
 
   final String method;
   final Path path;
-  final String body;
+  final Object body;
   final Map<String, List<String>> headers;
   final Map<String, String> params;
 
-  public Request(String method, Path path, String body, 
+  public Request(String method, Path path, Object body, 
                  Map<String, List<String>> headers, Map<String, String> params) {
-    this.method = method;
-    this.path = path;
+    this.method = requireNonNull(method);
+    this.path = requireNonNull(path);
     this.body = body;
     this.headers = unmodifiableMap(headers);
     this.params = unmodifiableMap(params);
@@ -46,7 +47,7 @@ public final class Request {
       newList.addAll(newValue);
       return newList;
     });
-    return new Request(method, path, value, newHeaders, params);
+    return new Request(method, path, body, newHeaders, params);
   }
 
   public Request dropOneLevel() {
@@ -56,6 +57,11 @@ public final class Request {
   public Request withParam(String key, String value) {
     Map<String, String> newParams = new HashMap<>(params);
     newParams.put(key, value);
-    return new Request(method, path, value, headers, newParams);
+    return new Request(method, path, body, headers, newParams);
+  }
+  
+  @Override
+  public String toString() {
+    return method + " " + path + paramsToString();
   }
 }

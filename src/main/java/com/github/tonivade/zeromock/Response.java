@@ -33,4 +33,9 @@ public final class Response {
     });
     return new Response(statusCode, body, newHeaders);
   }
+  
+  @Override
+  public String toString() {
+    return statusCode + "\n" + body;
+  }
 }
