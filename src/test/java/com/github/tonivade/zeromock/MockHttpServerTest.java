@@ -14,14 +14,14 @@ import static com.github.tonivade.zeromock.Responses.badRequest;
 import static com.github.tonivade.zeromock.Responses.contentJson;
 import static com.github.tonivade.zeromock.Responses.contentXml;
 import static com.github.tonivade.zeromock.Responses.ok;
-import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
+import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class MockHttpServerTest {
 
@@ -60,7 +60,7 @@ public class MockHttpServerTest {
 
     assertEquals(200, response.statusCode);
     assertEquals("{ }", response.body);
-    assertEquals(asList("application/json"), response.headers.get("Content-type"));
+    assertEquals(List.of("application/json"), response.headers.get("Content-type"));
   }
 
   @Test
@@ -71,15 +71,15 @@ public class MockHttpServerTest {
 
     assertEquals(200, response.statusCode);
     assertEquals("<body/>", response.body);
-    assertEquals(asList("text/xml"), response.headers.get("Content-type"));
+    assertEquals(List.of("text/xml"), response.headers.get("Content-type"));
   }
 
-  @Before
+  @BeforeEach
   public void setUp() {
     server.start();
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     server.stop();
   }

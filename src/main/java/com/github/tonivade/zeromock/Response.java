@@ -15,17 +15,13 @@ import java.util.Map;
 public final class Response {
 
   final int statusCode;
-  final String body;
+  final Object body;
   final Map<String, List<String>> headers;
   
-  public Response(int statusCode, String body, Map<String, List<String>> headers) {
+  public Response(int statusCode, Object body, Map<String, List<String>> headers) {
     this.statusCode = statusCode;
     this.body = body;
     this.headers = unmodifiableMap(headers);
-  }
-  
-  public byte[] getBytes() {
-    return body.getBytes();
   }
 
   public Response withHeader(String string, String value) {

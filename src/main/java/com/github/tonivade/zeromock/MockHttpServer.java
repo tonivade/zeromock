@@ -11,11 +11,11 @@ import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
-@SuppressWarnings("restriction")
 public class MockHttpServer {
   private final HttpServer server;
 
@@ -86,10 +86,15 @@ public class MockHttpServer {
   }
 
   private void processResponse(HttpExchange exchange, Response response) throws IOException {
-    byte[] bytes = response.getBytes();
+    Function<Object, byte[]> serializer = getSerializer(response);
+    byte[] bytes = serializer.apply(response.body);
     response.headers.forEach((key, values) -> values.forEach(value -> exchange.getResponseHeaders().add(key, value)));
     exchange.sendResponseHeaders(response.statusCode, bytes.length);
     exchange.getResponseBody().write(bytes);
     exchange.getResponseBody().close();
+  }
+
+  private Function<Object, byte[]> getSerializer(Response response) {
+    return Serializers.plain();
   }
 }
