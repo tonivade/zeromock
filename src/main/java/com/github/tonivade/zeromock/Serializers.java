@@ -16,7 +16,7 @@ public class Serializers {
     return object -> object.toString().getBytes(UTF8);
   }
 
-  public static Function<Object, byte[]> xxx() {
+  public static Function<Object, byte[]> json() {
     return object -> object.toString().getBytes(UTF8);
   }
 }
