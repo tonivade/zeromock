@@ -8,6 +8,7 @@ import static com.github.tonivade.zeromock.IOUtils.readAll;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
@@ -21,26 +22,30 @@ public class HttpClient {
     this.baseUrl = baseUrl;
   }
   
-  public Response request(Request request) throws IOException {
-    URL url = new URL(baseUrl + request.toUrl());
-    HttpURLConnection con = (HttpURLConnection) url.openConnection();
-    con.setRequestMethod(request.method);
-    request.headers.forEach((key, values) -> values.forEach(value -> con.setRequestProperty(key, value)));
-    if (request.body != null) {
-      con.setDoOutput(true);
-      try (OutputStream output = con.getOutputStream()) {
-        output.write(Serializers.plain().apply(request.body));
+  public Response request(Request request) {
+    try {
+      URL url = new URL(baseUrl + request.toUrl());
+      HttpURLConnection con = (HttpURLConnection) url.openConnection();
+      con.setRequestMethod(request.method);
+      request.headers.forEach((key, values) -> values.forEach(value -> con.setRequestProperty(key, value)));
+      if (request.body != null) {
+        con.setDoOutput(true);
+        try (OutputStream output = con.getOutputStream()) {
+          output.write(Serializers.plain().apply(request.body));
+        }
       }
-    }
 
-    con.connect();
-    
-    int responseCode = con.getResponseCode();
-    Map<String, List<String>> headers = con.getHeaderFields();
-    String body = null;
-    if (responseCode < 400) {
-      body = readAll(con.getInputStream());
+      con.connect();
+      
+      int responseCode = con.getResponseCode();
+      Map<String, List<String>> headers = con.getHeaderFields();
+      String body = null;
+      if (responseCode < 400) {
+        body = readAll(con.getInputStream());
+      }
+      return new Response(responseCode, body, headers);
+    } catch (IOException e) {
+      throw new UncheckedIOException("request error: " + request, e);
     }
-    return new Response(responseCode, body, headers);
   }
 }

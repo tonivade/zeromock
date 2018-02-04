@@ -17,8 +17,6 @@ import static com.github.tonivade.zeromock.Responses.ok;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.IOException;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +32,7 @@ public class MockHttpServerTest {
   private MockHttpServer server = listenAt(8080).mount("/path", resource);
 
   @Test
-  public void hello() throws IOException {
+  public void hello() {
     HttpClient client = new HttpClient("http://localhost:8080/path");
     
     Response response = client.request(Requests.get("/hello").withParam("name", "World"));
@@ -44,7 +42,7 @@ public class MockHttpServerTest {
   }
   
   @Test
-  public void helloMissingParam() throws IOException {
+  public void helloMissingParam() {
     HttpClient client = new HttpClient("http://localhost:8080/path");
     
     Response response = client.request(Requests.get("/hello"));
@@ -53,7 +51,7 @@ public class MockHttpServerTest {
   }
 
   @Test
-  public void json() throws IOException {
+  public void json() {
     HttpClient client = new HttpClient("http://localhost:8080/path");
     
     Response response = client.request(Requests.get("/test").withHeader("Accept", "application/json"));
@@ -64,7 +62,7 @@ public class MockHttpServerTest {
   }
 
   @Test
-  public void xml() throws IOException {
+  public void xml() {
     HttpClient client = new HttpClient("http://localhost:8080/path");
     
     Response response = client.request(Requests.get("/test").withHeader("Accept", "text/xml"));

@@ -19,8 +19,6 @@ import static com.github.tonivade.zeromock.Responses.created;
 import static com.github.tonivade.zeromock.Responses.ok;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.IOException;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +37,7 @@ public class BooksModuleTest {
   private MockHttpServer server = listenAt(8080).mount("/store", resource);
   
   @Test
-  public void findBooks() throws IOException {
+  public void findBooks() {
     HttpClient client = new HttpClient("http://localhost:8080/store");
     
     Response response = client.request(get("/books"));
@@ -49,7 +47,7 @@ public class BooksModuleTest {
   }
   
   @Test
-  public void findBook() throws IOException {
+  public void findBook() {
     HttpClient client = new HttpClient("http://localhost:8080/store");
     
     Response response = client.request(get("/books").withParam("id", "1"));
@@ -59,7 +57,7 @@ public class BooksModuleTest {
   }
   
   @Test
-  public void bookCreated() throws IOException {
+  public void bookCreated() {
     HttpClient client = new HttpClient("http://localhost:8080/store");
     
     Response response = client.request(post("/books"));
@@ -69,7 +67,7 @@ public class BooksModuleTest {
   }
   
   @Test
-  public void bookDeleted() throws IOException {
+  public void bookDeleted() {
     HttpClient client = new HttpClient("http://localhost:8080/store");
     
     Response response = client.request(delete("/books").withParam("id", "1"));
@@ -79,7 +77,7 @@ public class BooksModuleTest {
   }
   
   @Test
-  public void bookUpdated() throws IOException {
+  public void bookUpdated() {
     HttpClient client = new HttpClient("http://localhost:8080/store");
     
     Response response = client.request(put("/books").withParam("id", "1"));

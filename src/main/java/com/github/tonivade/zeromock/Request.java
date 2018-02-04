@@ -62,6 +62,6 @@ public final class Request {
   
   @Override
   public String toString() {
-    return method + " " + path + paramsToString();
+    return method + " " + toUrl();
   }
 }
