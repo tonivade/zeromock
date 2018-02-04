@@ -58,7 +58,7 @@ public class Responses {
   }
   
   public static Function<Response, Response> contentType(String value) {
-    return response -> response.withHeader("Content-Type", value);
+    return response -> response.withHeader("Content-type", value);
   }
   
   public static Function<Response, Response> contentJson() {
