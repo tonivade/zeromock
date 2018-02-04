@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 public class MockHttpServerTest {
 
   private Resource resource = new Resource("test")
-      .when(get().and(path("/hello")).and(param("name")), ok("Hello %s!"))
+      .when(get().and(path("/hello")).and(param("name")), ok(this::helloWorld))
       .when(get().and(path("/hello")).and(param("name").negate()), badRequest("missing parameter name"))
       .when(get().and(path("/test")).and(acceptsXml()), ok("<body/>").andThen(contentXml()))
       .when(get().and(path("/test")).and(acceptsJson()), contentJson().compose(ok("{ }")));
@@ -80,5 +80,9 @@ public class MockHttpServerTest {
   @AfterEach
   public void tearDown() {
     server.stop();
+  }
+  
+  private Object helloWorld(Request request) {
+    return String.format("Hello %s!", request.params.get("name"));
   }
 }

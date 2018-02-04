@@ -61,7 +61,7 @@ public class MockHttpServer {
   }
 
   private Resource findResource(Request request) {
-    return mappings.get("/" + request.path.get(0));
+    return mappings.get("/" + request.path.getAt(0));
   }
 
   private Request createRequest(HttpExchange exchange) throws IOException {

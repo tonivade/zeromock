@@ -4,27 +4,25 @@
  */
 package com.github.tonivade.zeromock;
 
-import java.util.Map;
-
 public class BooksModule {
 
-  public String findAllBooks(Map<String, String> params) {
+  public Object findAllBooks(Request request) {
     return "find all books";
   }
 
-  public String findBook(Map<String, String> params) {
-    return "find one book " + params.get("id");
+  public Object findBook(Request request) {
+    return "find one book " + request.path.getAt(1);
   }
 
-  public String createBook(Map<String, String> params) {
+  public Object createBook(Request request) {
     return "book created";
   }
 
-  public String updateBook(Map<String, String> params) {
-    return "book updated " + params.get("id");
+  public Object updateBook(Request request) {
+    return "book updated " + request.path.getAt(1);
   }
 
-  public String deleteBook(Map<String, String> params) {
-    return "book deleted " + params.get("id");
+  public Object deleteBook(Request request) {
+    return "book deleted " + request.path.getAt(1);
   }
 }

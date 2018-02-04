@@ -7,7 +7,6 @@ package com.github.tonivade.zeromock;
 import static com.github.tonivade.zeromock.MockHttpServer.listenAt;
 import static com.github.tonivade.zeromock.Predicates.delete;
 import static com.github.tonivade.zeromock.Predicates.get;
-import static com.github.tonivade.zeromock.Predicates.param;
 import static com.github.tonivade.zeromock.Predicates.path;
 import static com.github.tonivade.zeromock.Predicates.post;
 import static com.github.tonivade.zeromock.Predicates.put;
@@ -29,10 +28,10 @@ public class BooksModuleTest {
   
   private Resource resource = new Resource("books")
       .when(post().and(path("/books")), created(module::createBook))
-      .when(get().and(path("/books")).and(param("id").negate()), ok(module::findAllBooks))
-      .when(get().and(path("/books")).and(param("id")), ok(module::findBook))
-      .when(delete().and(path("/books")).and(param("id")), ok(module::deleteBook))
-      .when(put().and(path("/books")).and(param("id")), ok(module::updateBook));
+      .when(get().and(path("/books")), ok(module::findAllBooks))
+      .when(get().and(path("/books/{id}")), ok(module::findBook))
+      .when(delete().and(path("/books/{id}")), ok(module::deleteBook))
+      .when(put().and(path("/books/{id}")), ok(module::updateBook));
   
   private MockHttpServer server = listenAt(8080).mount("/store", resource);
   
@@ -50,7 +49,7 @@ public class BooksModuleTest {
   public void findBook() {
     HttpClient client = new HttpClient("http://localhost:8080/store");
     
-    Response response = client.request(get("/books").withParam("id", "1"));
+    Response response = client.request(get("/books/1"));
     
     assertEquals(200, response.statusCode);
     assertEquals("find one book 1", response.body);
@@ -70,7 +69,7 @@ public class BooksModuleTest {
   public void bookDeleted() {
     HttpClient client = new HttpClient("http://localhost:8080/store");
     
-    Response response = client.request(delete("/books").withParam("id", "1"));
+    Response response = client.request(delete("/books/1"));
     
     assertEquals(200, response.statusCode);
     assertEquals("book deleted 1", response.body);
@@ -80,7 +79,7 @@ public class BooksModuleTest {
   public void bookUpdated() {
     HttpClient client = new HttpClient("http://localhost:8080/store");
     
-    Response response = client.request(put("/books").withParam("id", "1"));
+    Response response = client.request(put("/books/1"));
     
     assertEquals(200, response.statusCode);
     assertEquals("book updated 1", response.body);
