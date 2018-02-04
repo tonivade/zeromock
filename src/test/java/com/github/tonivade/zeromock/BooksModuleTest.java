@@ -16,13 +16,13 @@ import static com.github.tonivade.zeromock.Requests.get;
 import static com.github.tonivade.zeromock.Requests.post;
 import static com.github.tonivade.zeromock.Requests.put;
 import static com.github.tonivade.zeromock.Responses.*;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class BooksModuleTest {
   
@@ -87,12 +87,12 @@ public class BooksModuleTest {
     assertEquals("book updated 1", response.body);
   }
 
-  @Before
+  @BeforeEach
   public void setUp() {
     server.start();
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     server.stop();
   }
