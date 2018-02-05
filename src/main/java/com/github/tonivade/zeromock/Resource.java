@@ -35,4 +35,9 @@ public class Resource {
         .findFirst()
         .orElse(notFound("not found"));
   }
+  
+  @Override
+  public String toString() {
+    return "Resource(" + name + ")";
+  }
 }

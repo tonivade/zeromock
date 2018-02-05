@@ -27,7 +27,7 @@ public class HttpClient {
       URL url = new URL(baseUrl + request.toUrl());
       HttpURLConnection con = (HttpURLConnection) url.openConnection();
       con.setRequestMethod(request.method.name());
-      request.headers.forEach((key, values) -> values.forEach(value -> con.setRequestProperty(key, value)));
+      request.headers.forEach((key, value) -> con.setRequestProperty(key, value));
       if (request.body != null) {
         con.setDoOutput(true);
         try (OutputStream output = con.getOutputStream()) {
@@ -43,7 +43,7 @@ public class HttpClient {
       if (responseCode < 400) {
         body = readAll(con.getInputStream());
       }
-      return new HttpResponse(HttpStatus.fromCode(responseCode), body, headers);
+      return new HttpResponse(HttpStatus.fromCode(responseCode), body, new HttpHeaders(headers));
     } catch (IOException e) {
       throw new UncheckedIOException("request error: " + request, e);
     }

@@ -68,7 +68,7 @@ public class MockHttpServer {
     return new HttpRequest(HttpMethod.valueOf(exchange.getRequestMethod()),
                            new Path(exchange.getRequestURI().getPath()), 
                            readAll(exchange.getRequestBody()),
-                           exchange.getRequestHeaders(),
+                           new HttpHeaders(exchange.getRequestHeaders()),
                            queryToMap(exchange.getRequestURI().getQuery()));
   }
   
@@ -89,7 +89,7 @@ public class MockHttpServer {
 
   private void processResponse(HttpExchange exchange, HttpResponse response) throws IOException {
     byte[] bytes = getSerializer(response).apply(response.body);
-    response.headers.forEach((key, values) -> values.forEach(value -> exchange.getResponseHeaders().add(key, value)));
+    response.headers.forEach((key, value) -> exchange.getResponseHeaders().add(key, value));
     exchange.sendResponseHeaders(response.statusCode.code, bytes.length);
     try (OutputStream output = exchange.getResponseBody()) {
       exchange.getResponseBody().write(bytes);

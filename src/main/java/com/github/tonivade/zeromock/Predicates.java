@@ -9,7 +9,6 @@ import static com.github.tonivade.zeromock.HttpMethod.GET;
 import static com.github.tonivade.zeromock.HttpMethod.PATCH;
 import static com.github.tonivade.zeromock.HttpMethod.POST;
 import static com.github.tonivade.zeromock.HttpMethod.PUT;
-import static java.util.Collections.emptyList;
 
 import java.util.function.Predicate;
 
@@ -30,7 +29,7 @@ public class Predicates {
   }
   
   public static Predicate<HttpRequest> header(String key, String value) {
-    return request -> request.headers.getOrDefault(key, emptyList()).contains(value);
+    return request -> request.headers.get(key).contains(value);
   }
   
   public static Predicate<HttpRequest> get() {

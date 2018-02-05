@@ -4,38 +4,24 @@
  */
 package com.github.tonivade.zeromock;
 
-import static java.util.Collections.singletonList;
-import static java.util.Collections.unmodifiableMap;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public final class HttpResponse {
 
   final HttpStatus statusCode;
   final Object body;
-  final Map<String, List<String>> headers;
+  final HttpHeaders headers;
   
-  public HttpResponse(HttpStatus statusCode, Object body, Map<String, List<String>> headers) {
+  public HttpResponse(HttpStatus statusCode, Object body, HttpHeaders headers) {
     this.statusCode = statusCode;
     this.body = body;
-    this.headers = unmodifiableMap(headers);
+    this.headers = headers;
   }
 
-  public HttpResponse withHeader(String string, String value) {
-    Map<String, List<String>> newHeaders = new HashMap<>(headers);
-    newHeaders.merge(string, singletonList(value), (oldValue, newValue) -> {
-      List<String> newList = new ArrayList<>(oldValue);
-      newList.addAll(newValue);
-      return newList;
-    });
-    return new HttpResponse(statusCode, body, newHeaders);
+  public HttpResponse withHeader(String key, String value) {
+    return new HttpResponse(statusCode, body, headers.withHeader(key, value));
   }
   
   @Override
   public String toString() {
-    return statusCode + "\n" + body;
+    return "HttpResponse(" + statusCode + "\n" + body + ")";
   }
 }

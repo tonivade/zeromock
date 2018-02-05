@@ -8,10 +8,7 @@ import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public final class HttpRequest {
@@ -19,15 +16,15 @@ public final class HttpRequest {
   final HttpMethod method;
   final Path path;
   final Object body;
-  final Map<String, List<String>> headers;
+  final HttpHeaders headers;
   final Map<String, String> params;
 
   public HttpRequest(HttpMethod method, Path path, Object body, 
-                 Map<String, List<String>> headers, Map<String, String> params) {
+                     HttpHeaders headers, Map<String, String> params) {
     this.method = requireNonNull(method);
     this.path = requireNonNull(path);
     this.body = body;
-    this.headers = unmodifiableMap(headers);
+    this.headers = headers;
     this.params = unmodifiableMap(params);
   }
   
@@ -40,14 +37,8 @@ public final class HttpRequest {
         .map(entry -> entry.getKey() + "=" + entry.getValue()).collect(joining("&"));
   }
 
-  public HttpRequest withHeader(String string, String value) {
-    Map<String, List<String>> newHeaders = new HashMap<>(headers);
-    newHeaders.merge(string, Collections.singletonList(value), (oldValue, newValue) -> {
-      List<String> newList = new ArrayList<>(oldValue);
-      newList.addAll(newValue);
-      return newList;
-    });
-    return new HttpRequest(method, path, body, newHeaders, params);
+  public HttpRequest withHeader(String key, String value) {
+    return new HttpRequest(method, path, body, headers.withHeader(key, value), params);
   }
 
   public HttpRequest dropOneLevel() {
@@ -62,6 +53,6 @@ public final class HttpRequest {
   
   @Override
   public String toString() {
-    return method + " " + toUrl();
+    return "HttpRequest(" + method + " " + toUrl() + ")";
   }
 }
