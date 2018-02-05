@@ -22,6 +22,6 @@ public final class HttpResponse {
   
   @Override
   public String toString() {
-    return "HttpResponse(" + statusCode + "\n" + body + ")";
+    return "HttpResponse(" + statusCode + " " + body + ")";
   }
 }

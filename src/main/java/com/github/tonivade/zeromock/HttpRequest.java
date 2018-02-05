@@ -29,7 +29,7 @@ public final class HttpRequest {
   }
   
   public String toUrl() {
-    return path + (params.isEmpty() ? "" : paramsToString());
+    return path.toPath() + (params.isEmpty() ? "" : paramsToString());
   }
   
   public String paramsToString() {

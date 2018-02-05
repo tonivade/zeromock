@@ -32,12 +32,20 @@ public class Path {
   }
   
   public boolean match(Path path) {
-    return Pattern.matches(path.toString(), toString());
+    return Pattern.matches(path.toPattern(), toPattern());
   }
 
+  public String toPattern() {
+    return "/" + value.stream().map(PathElement::toPattern).collect(joining("/"));
+  }
+  
+  public String toPath() {
+    return "/" + value.stream().map(PathElement::toString).collect(joining("/"));
+  }
+  
   @Override
   public String toString() {
-    return "/" + value.stream().map(PathElement::toString).collect(joining("/"));
+    return "Path(" + value.toString() + ")";
   }
   
   private static PathElement toPathElement(String value) {
@@ -53,6 +61,13 @@ public class Path {
     public PathElement(String value) {
       this.value = value;
     }
+    
+    @Override
+    public String toString() {
+      return value;
+    }
+
+    abstract String toPattern();
   }
   
   private static final class PathValue extends PathElement {
@@ -61,7 +76,7 @@ public class Path {
     }
     
     @Override
-    public String toString() {
+    public String toPattern() {
       return value;
     }
   }
@@ -72,7 +87,7 @@ public class Path {
     }
     
     @Override
-    public String toString() {
+    public String toPattern() {
       return "\\w+";
     }
   }
