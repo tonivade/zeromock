@@ -37,7 +37,7 @@ public class HttpClient {
     URL url = new URL(baseUrl + request.toUrl());
     HttpURLConnection con = (HttpURLConnection) url.openConnection();
     con.setRequestMethod(request.method.name());
-    request.headers.forEach((key, value) -> con.setRequestProperty(key, value));
+    request.headers.forEach(con::setRequestProperty);
     if (request.body != null) {
       con.setDoOutput(true);
       try (OutputStream output = con.getOutputStream()) {
