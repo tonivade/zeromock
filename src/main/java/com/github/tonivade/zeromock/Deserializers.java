@@ -8,12 +8,12 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.function.Function;
 
-public class Serializers {
+public class Deserializers {
   private static final Charset UTF8 = Charset.forName("UTF-8");
+
+  private Deserializers() {}
   
-  private Serializers() {}
-  
-  public static Function<Object, ByteBuffer> plain() {
-    return object -> ByteBuffer.wrap(object.toString().getBytes(UTF8));
+  public static Function<ByteBuffer, Object> plain() {
+    return input -> new String(input.array(), UTF8);
   }
 }

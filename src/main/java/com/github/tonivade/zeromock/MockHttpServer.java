@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -67,21 +68,21 @@ public class MockHttpServer {
   private HttpRequest createRequest(HttpExchange exchange) throws IOException {
     return new HttpRequest(HttpMethod.valueOf(exchange.getRequestMethod()),
                            new Path(exchange.getRequestURI().getPath()), 
-                           readAll(exchange.getRequestBody()),
+                           Deserializers.plain().apply(readAll(exchange.getRequestBody())),
                            new HttpHeaders(exchange.getRequestHeaders()),
                            new HttpParams(exchange.getRequestURI().getQuery()));
   }
 
   private void processResponse(HttpExchange exchange, HttpResponse response) throws IOException {
-    byte[] bytes = getSerializer(response).apply(response.body);
+    ByteBuffer bytes = getSerializer(response).apply(response.body);
     response.headers.forEach((key, value) -> exchange.getResponseHeaders().add(key, value));
-    exchange.sendResponseHeaders(response.statusCode.code, bytes.length);
+    exchange.sendResponseHeaders(response.statusCode.code, bytes.remaining());
     try (OutputStream output = exchange.getResponseBody()) {
-      exchange.getResponseBody().write(bytes);
+      exchange.getResponseBody().write(bytes.array());
     }
   }
 
-  private Function<Object, byte[]> getSerializer(HttpResponse response) {
+  private Function<Object, ByteBuffer> getSerializer(HttpResponse response) {
     return Serializers.plain();
   }
 }

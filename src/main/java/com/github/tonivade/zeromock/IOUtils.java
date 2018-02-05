@@ -7,21 +7,23 @@ package com.github.tonivade.zeromock;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.nio.ByteBuffer;
 
 public class IOUtils {
 
+  private static final int BUFFER_SIZE = 1024;
+
   private IOUtils() {}
 
-  public static String readAll(InputStream input) throws IOException {
+  public static ByteBuffer readAll(InputStream input) throws IOException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
-    byte[] buffer = new byte[1024];
+    byte[] buffer = new byte[BUFFER_SIZE];
     while (true) {
       int read = input.read(buffer);
       if (read > 0) {
         out.write(buffer, 0, read);
       } else break;
     }
-    return new String(out.toByteArray(), Charset.forName("UTF-8"));
+    return ByteBuffer.wrap(out.toByteArray());
   }
 }

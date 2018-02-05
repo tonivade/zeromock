@@ -4,6 +4,7 @@
  */
 package com.github.tonivade.zeromock;
 
+import static com.github.tonivade.zeromock.HttpStatus.BAD_REQUEST;
 import static com.github.tonivade.zeromock.IOUtils.readAll;
 
 import java.io.IOException;
@@ -24,28 +25,35 @@ public class HttpClient {
   
   public HttpResponse request(HttpRequest request) {
     try {
-      URL url = new URL(baseUrl + request.toUrl());
-      HttpURLConnection con = (HttpURLConnection) url.openConnection();
-      con.setRequestMethod(request.method.name());
-      request.headers.forEach((key, value) -> con.setRequestProperty(key, value));
-      if (request.body != null) {
-        con.setDoOutput(true);
-        try (OutputStream output = con.getOutputStream()) {
-          output.write(Serializers.plain().apply(request.body));
-        }
-      }
-
-      con.connect();
-      
-      int responseCode = con.getResponseCode();
-      Map<String, List<String>> headers = con.getHeaderFields();
-      String body = null;
-      if (responseCode < 400) {
-        body = readAll(con.getInputStream());
-      }
-      return new HttpResponse(HttpStatus.fromCode(responseCode), body, new HttpHeaders(headers));
+      HttpURLConnection connection = createConnection(request);
+      connection.connect();
+      return processResponse(connection);
     } catch (IOException e) {
       throw new UncheckedIOException("request error: " + request, e);
     }
+  }
+
+  private HttpURLConnection createConnection(HttpRequest request) throws IOException {
+    URL url = new URL(baseUrl + request.toUrl());
+    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+    con.setRequestMethod(request.method.name());
+    request.headers.forEach((key, value) -> con.setRequestProperty(key, value));
+    if (request.body != null) {
+      con.setDoOutput(true);
+      try (OutputStream output = con.getOutputStream()) {
+        output.write(Serializers.plain().apply(request.body).array());
+      }
+    }
+    return con;
+  }
+
+  private HttpResponse processResponse(HttpURLConnection connection) throws IOException {
+    int responseCode = connection.getResponseCode();
+    Map<String, List<String>> headers = connection.getHeaderFields();
+    Object body = null;
+    if (responseCode < BAD_REQUEST.code) {
+      body = Deserializers.plain().apply(readAll(connection.getInputStream()));
+    }
+    return new HttpResponse(HttpStatus.fromCode(responseCode), body, new HttpHeaders(headers));
   }
 }
