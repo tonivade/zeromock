@@ -19,12 +19,12 @@ public final class HttpRequest {
     this.method = requireNonNull(method);
     this.path = requireNonNull(path);
     this.body = body;
-    this.headers = headers;
-    this.params = params;
+    this.headers = requireNonNull(headers);
+    this.params = requireNonNull(params);
   }
   
   public String toUrl() {
-    return path.toPath() + (params.isEmpty() ? "" : params.paramsToString());
+    return path.toPath() + params.toQueryString();
   }
 
   public HttpRequest withHeader(String key, String value) {

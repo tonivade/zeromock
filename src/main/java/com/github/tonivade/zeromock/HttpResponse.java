@@ -4,6 +4,8 @@
  */
 package com.github.tonivade.zeromock;
 
+import static java.util.Objects.requireNonNull;
+
 public final class HttpResponse {
 
   final HttpStatus statusCode;
@@ -11,9 +13,9 @@ public final class HttpResponse {
   final HttpHeaders headers;
   
   public HttpResponse(HttpStatus statusCode, Object body, HttpHeaders headers) {
-    this.statusCode = statusCode;
+    this.statusCode = requireNonNull(statusCode);
     this.body = body;
-    this.headers = headers;
+    this.headers = requireNonNull(headers);
   }
 
   public HttpResponse withHeader(String key, String value) {

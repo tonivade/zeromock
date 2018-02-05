@@ -36,9 +36,8 @@ public class HttpParams {
     return new HttpParams(newParams);
   }
   
-  public String paramsToString() {
-    return "?" + params.entrySet().stream()
-        .map(entry -> entry.getKey() + "=" + entry.getValue()).collect(joining("&"));
+  public String toQueryString() {
+    return params.isEmpty() ? "" : paramsToString();
   }
 
   public boolean containsParam(String name) {
@@ -67,5 +66,10 @@ public class HttpParams {
       }
     }
     return result;
+  }
+
+  private String paramsToString() {
+    return "?" + params.entrySet().stream()
+        .map(entry -> entry.getKey() + "=" + entry.getValue()).collect(joining("&"));
   }
 }
