@@ -4,12 +4,7 @@
  */
 package com.github.tonivade.zeromock;
 
-import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.joining;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public final class HttpRequest {
 
@@ -17,24 +12,19 @@ public final class HttpRequest {
   final Path path;
   final Object body;
   final HttpHeaders headers;
-  final Map<String, String> params;
+  final HttpParams params;
 
   public HttpRequest(HttpMethod method, Path path, Object body, 
-                     HttpHeaders headers, Map<String, String> params) {
+                     HttpHeaders headers, HttpParams params) {
     this.method = requireNonNull(method);
     this.path = requireNonNull(path);
     this.body = body;
     this.headers = headers;
-    this.params = unmodifiableMap(params);
+    this.params = params;
   }
   
   public String toUrl() {
-    return path.toPath() + (params.isEmpty() ? "" : paramsToString());
-  }
-  
-  public String paramsToString() {
-    return "?" + params.entrySet().stream()
-        .map(entry -> entry.getKey() + "=" + entry.getValue()).collect(joining("&"));
+    return path.toPath() + (params.isEmpty() ? "" : params.paramsToString());
   }
 
   public HttpRequest withHeader(String key, String value) {
@@ -46,9 +36,7 @@ public final class HttpRequest {
   }
 
   public HttpRequest withParam(String key, String value) {
-    Map<String, String> newParams = new HashMap<>(params);
-    newParams.put(key, value);
-    return new HttpRequest(method, path, body, headers, newParams);
+    return new HttpRequest(method, path, body, headers, params.withParam(key, value));
   }
   
   @Override

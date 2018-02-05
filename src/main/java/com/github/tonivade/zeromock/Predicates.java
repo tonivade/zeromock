@@ -25,7 +25,7 @@ public class Predicates {
   }
   
   public static Predicate<HttpRequest> param(String name) {
-    return request -> request.params.containsKey(name);
+    return request -> request.params.containsParam(name);
   }
   
   public static Predicate<HttpRequest> header(String key, String value) {

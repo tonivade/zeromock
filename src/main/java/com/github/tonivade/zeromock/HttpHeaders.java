@@ -1,11 +1,11 @@
 package com.github.tonivade.zeromock;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableMap;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +29,7 @@ public class HttpHeaders {
   }
   
   public List<String> get(String key) {
-    return headers.getOrDefault(key, Collections.emptyList());
+    return headers.getOrDefault(key, emptyList());
   }
   
   public void forEach(BiConsumer<String, String> consumer) {

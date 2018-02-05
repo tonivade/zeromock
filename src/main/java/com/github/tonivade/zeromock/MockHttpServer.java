@@ -69,22 +69,7 @@ public class MockHttpServer {
                            new Path(exchange.getRequestURI().getPath()), 
                            readAll(exchange.getRequestBody()),
                            new HttpHeaders(exchange.getRequestHeaders()),
-                           queryToMap(exchange.getRequestURI().getQuery()));
-  }
-  
-  private Map<String, String> queryToMap(String query) {
-    Map<String, String> result = new HashMap<>();
-    if (query != null) {
-      for (String param : query.split("&")) {
-        String[] pair = param.split("=");
-        if (pair.length > 1) {
-          result.put(pair[0], pair[1]);
-        } else {
-          result.put(pair[0], "");
-        }
-      }
-    }
-    return result;
+                           new HttpParams(exchange.getRequestURI().getQuery()));
   }
 
   private void processResponse(HttpExchange exchange, HttpResponse response) throws IOException {
