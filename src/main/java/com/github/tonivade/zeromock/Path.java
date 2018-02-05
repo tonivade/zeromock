@@ -41,8 +41,8 @@ public class Path {
   }
   
   private static PathElement toPathElement(String value) {
-    if (value.startsWith("{") && value.endsWith("}")) {
-      return new PathParam(value.substring(1, value.length() - 2));
+    if (value.startsWith(":")) {
+      return new PathParam(value.substring(1));
     }
     return new PathValue(value);
   }
