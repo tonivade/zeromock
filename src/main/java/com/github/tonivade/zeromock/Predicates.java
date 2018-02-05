@@ -4,6 +4,11 @@
  */
 package com.github.tonivade.zeromock;
 
+import static com.github.tonivade.zeromock.HttpMethod.DELETE;
+import static com.github.tonivade.zeromock.HttpMethod.GET;
+import static com.github.tonivade.zeromock.HttpMethod.PATCH;
+import static com.github.tonivade.zeromock.HttpMethod.POST;
+import static com.github.tonivade.zeromock.HttpMethod.PUT;
 import static java.util.Collections.emptyList;
 
 import java.util.function.Predicate;
@@ -12,51 +17,51 @@ public class Predicates {
 
   private Predicates() {}
 
-  public static Predicate<Request> method(String method) {
+  public static Predicate<HttpRequest> method(HttpMethod method) {
     return request -> request.method.equals(method);
   }
   
-  public static Predicate<Request> path(String url) {
+  public static Predicate<HttpRequest> path(String url) {
     return request -> request.path.match(new Path(url));
   }
   
-  public static Predicate<Request> param(String name) {
+  public static Predicate<HttpRequest> param(String name) {
     return request -> request.params.containsKey(name);
   }
   
-  public static Predicate<Request> header(String key, String value) {
+  public static Predicate<HttpRequest> header(String key, String value) {
     return request -> request.headers.getOrDefault(key, emptyList()).contains(value);
   }
   
-  public static Predicate<Request> get() {
-    return method("GET");
+  public static Predicate<HttpRequest> get() {
+    return method(GET);
   }
   
-  public static Predicate<Request> put() {
-    return method("PUT");
+  public static Predicate<HttpRequest> put() {
+    return method(PUT);
   }
   
-  public static Predicate<Request> post() {
-    return method("POST");
+  public static Predicate<HttpRequest> post() {
+    return method(POST);
   }
   
-  public static Predicate<Request> delete() {
-    return method("DELETE");
+  public static Predicate<HttpRequest> delete() {
+    return method(DELETE);
   }
   
-  public static Predicate<Request> patch() {
-    return method("PATCH");
+  public static Predicate<HttpRequest> patch() {
+    return method(PATCH);
   }
   
-  public static Predicate<Request> accept(String contentType) {
+  public static Predicate<HttpRequest> accept(String contentType) {
     return header("Accept", contentType);
   }
   
-  public static Predicate<Request> acceptsXml() {
+  public static Predicate<HttpRequest> acceptsXml() {
     return accept("text/xml");
   }
   
-  public static Predicate<Request> acceptsJson() {
+  public static Predicate<HttpRequest> acceptsJson() {
     return accept("application/json");
   }
 }

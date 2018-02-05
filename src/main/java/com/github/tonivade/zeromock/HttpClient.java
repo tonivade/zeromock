@@ -22,11 +22,11 @@ public class HttpClient {
     this.baseUrl = baseUrl;
   }
   
-  public Response request(Request request) {
+  public HttpResponse request(HttpRequest request) {
     try {
       URL url = new URL(baseUrl + request.toUrl());
       HttpURLConnection con = (HttpURLConnection) url.openConnection();
-      con.setRequestMethod(request.method);
+      con.setRequestMethod(request.method.name());
       request.headers.forEach((key, values) -> values.forEach(value -> con.setRequestProperty(key, value)));
       if (request.body != null) {
         con.setDoOutput(true);
@@ -43,7 +43,7 @@ public class HttpClient {
       if (responseCode < 400) {
         body = readAll(con.getInputStream());
       }
-      return new Response(responseCode, body, headers);
+      return new HttpResponse(HttpStatus.fromCode(responseCode), body, headers);
     } catch (IOException e) {
       throw new UncheckedIOException("request error: " + request, e);
     }

@@ -21,7 +21,7 @@ import com.sun.net.httpserver.HttpServer;
 public class MockHttpServer {
   private final HttpServer server;
 
-  private final Map<String, Request> requests = new HashMap<>();
+  private final Map<String, HttpRequest> requests = new HashMap<>();
   private final Map<String, Resource> mappings = new HashMap<>();
   
   private MockHttpServer(int port) {
@@ -50,26 +50,26 @@ public class MockHttpServer {
     server.stop(0);
   }
 
-  public Request getRequest(String url) {
+  public HttpRequest getRequest(String url) {
     return requests.get(url);
   }
 
   private void handle(HttpExchange exchange) throws IOException {
-    Request request = createRequest(exchange);
+    HttpRequest request = createRequest(exchange);
     Resource resource = findResource(request);
     processResponse(exchange, resource.handle(request.dropOneLevel()));
   }
 
-  private Resource findResource(Request request) {
+  private Resource findResource(HttpRequest request) {
     return mappings.get("/" + request.path.getAt(0));
   }
 
-  private Request createRequest(HttpExchange exchange) throws IOException {
-    return new Request(exchange.getRequestMethod(),
-                       new Path(exchange.getRequestURI().getPath()), 
-                       readAll(exchange.getRequestBody()),
-                       exchange.getRequestHeaders(),
-                       queryToMap(exchange.getRequestURI().getQuery()));
+  private HttpRequest createRequest(HttpExchange exchange) throws IOException {
+    return new HttpRequest(HttpMethod.valueOf(exchange.getRequestMethod()),
+                           new Path(exchange.getRequestURI().getPath()), 
+                           readAll(exchange.getRequestBody()),
+                           exchange.getRequestHeaders(),
+                           queryToMap(exchange.getRequestURI().getQuery()));
   }
   
   private Map<String, String> queryToMap(String query) {
@@ -87,17 +87,16 @@ public class MockHttpServer {
     return result;
   }
 
-  private void processResponse(HttpExchange exchange, Response response) throws IOException {
-    Function<Object, byte[]> serializer = getSerializer(response);
-    byte[] bytes = serializer.apply(response.body);
+  private void processResponse(HttpExchange exchange, HttpResponse response) throws IOException {
+    byte[] bytes = getSerializer(response).apply(response.body);
     response.headers.forEach((key, values) -> values.forEach(value -> exchange.getResponseHeaders().add(key, value)));
-    exchange.sendResponseHeaders(response.statusCode, bytes.length);
+    exchange.sendResponseHeaders(response.statusCode.code, bytes.length);
     try (OutputStream output = exchange.getResponseBody()) {
       exchange.getResponseBody().write(bytes);
     }
   }
 
-  private Function<Object, byte[]> getSerializer(Response response) {
+  private Function<Object, byte[]> getSerializer(HttpResponse response) {
     return Serializers.plain();
   }
 }

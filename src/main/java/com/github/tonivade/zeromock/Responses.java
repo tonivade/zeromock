@@ -4,13 +4,13 @@
  */
 package com.github.tonivade.zeromock;
 
-import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
-import static java.net.HttpURLConnection.HTTP_CREATED;
-import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
-import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
-import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
-import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
-import static java.net.HttpURLConnection.HTTP_OK;
+import static com.github.tonivade.zeromock.HttpStatus.BAD_REQUEST;
+import static com.github.tonivade.zeromock.HttpStatus.CREATED;
+import static com.github.tonivade.zeromock.HttpStatus.FORBIDDEN;
+import static com.github.tonivade.zeromock.HttpStatus.INTERNAL_SERVER_ERROR;
+import static com.github.tonivade.zeromock.HttpStatus.NOT_FOUND;
+import static com.github.tonivade.zeromock.HttpStatus.NO_CONTENT;
+import static com.github.tonivade.zeromock.HttpStatus.OK;
 import static java.util.Collections.emptyMap;
 
 import java.util.function.Function;
@@ -19,51 +19,51 @@ public class Responses {
   
   private Responses() {}
 
-  public static Function<Request, Response> ok(String body) {
-    return request -> new Response(HTTP_OK, body, emptyMap());
+  public static Function<HttpRequest, HttpResponse> ok(String body) {
+    return request -> new HttpResponse(OK, body, emptyMap());
   }
 
-  public static Function<Request, Response> ok(Function<Request, Object> action) {
-    return request -> new Response(HTTP_OK, action.apply(request), emptyMap());
+  public static Function<HttpRequest, HttpResponse> ok(Function<HttpRequest, Object> action) {
+    return request -> new HttpResponse(OK, action.apply(request), emptyMap());
   }
   
-  public static Function<Request, Response> created(String body) {
-    return request -> new Response(HTTP_CREATED, body, emptyMap());
+  public static Function<HttpRequest, HttpResponse> created(String body) {
+    return request -> new HttpResponse(CREATED, body, emptyMap());
   }
   
-  public static Function<Request, Response> created(Function<Request, Object> action) {
-    return request -> new Response(HTTP_CREATED, action.apply(request), emptyMap());
+  public static Function<HttpRequest, HttpResponse> created(Function<HttpRequest, Object> action) {
+    return request -> new HttpResponse(CREATED, action.apply(request), emptyMap());
   }
   
-  public static Function<Request, Response> noContent() {
-    return request -> new Response(HTTP_NO_CONTENT, null, emptyMap());
+  public static Function<HttpRequest, HttpResponse> noContent() {
+    return request -> new HttpResponse(NO_CONTENT, null, emptyMap());
   }
   
-  public static Function<Request, Response> forbidden() {
-    return request -> new Response(HTTP_FORBIDDEN, null, emptyMap());
+  public static Function<HttpRequest, HttpResponse> forbidden() {
+    return request -> new HttpResponse(FORBIDDEN, null, emptyMap());
   }
 
-  public static Function<Request, Response> badRequest(String body) {
-    return request -> new Response(HTTP_BAD_REQUEST, body, emptyMap());
+  public static Function<HttpRequest, HttpResponse> badRequest(String body) {
+    return request -> new HttpResponse(BAD_REQUEST, body, emptyMap());
   }
 
-  public static Function<Request, Response> notFound(String body) {
-    return request -> new Response(HTTP_NOT_FOUND, body, emptyMap());
+  public static Function<HttpRequest, HttpResponse> notFound(String body) {
+    return request -> new HttpResponse(NOT_FOUND, body, emptyMap());
   }
 
-  public static Function<Request, Response> error(String body) {
-    return request -> new Response(HTTP_INTERNAL_ERROR, body, emptyMap());
+  public static Function<HttpRequest, HttpResponse> error(String body) {
+    return request -> new HttpResponse(INTERNAL_SERVER_ERROR, body, emptyMap());
   }
   
-  public static Function<Response, Response> contentType(String value) {
+  public static Function<HttpResponse, HttpResponse> contentType(String value) {
     return response -> response.withHeader("Content-type", value);
   }
   
-  public static Function<Response, Response> contentJson() {
+  public static Function<HttpResponse, HttpResponse> contentJson() {
     return contentType("application/json");
   }
   
-  public static Function<Response, Response> contentXml() {
+  public static Function<HttpResponse, HttpResponse> contentXml() {
     return contentType("text/xml");
   }
 }

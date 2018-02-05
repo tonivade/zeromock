@@ -39,9 +39,9 @@ public class BooksModuleTest {
   public void findBooks() {
     HttpClient client = new HttpClient("http://localhost:8080/store");
     
-    Response response = client.request(get("/books"));
+    HttpResponse response = client.request(get("/books"));
     
-    assertEquals(200, response.statusCode);
+    assertEquals(HttpStatus.OK, response.statusCode);
     assertEquals("find all books", response.body);
   }
   
@@ -49,9 +49,9 @@ public class BooksModuleTest {
   public void findBook() {
     HttpClient client = new HttpClient("http://localhost:8080/store");
     
-    Response response = client.request(get("/books/1"));
+    HttpResponse response = client.request(get("/books/1"));
     
-    assertEquals(200, response.statusCode);
+    assertEquals(HttpStatus.OK, response.statusCode);
     assertEquals("find one book 1", response.body);
   }
   
@@ -59,9 +59,9 @@ public class BooksModuleTest {
   public void bookCreated() {
     HttpClient client = new HttpClient("http://localhost:8080/store");
     
-    Response response = client.request(post("/books"));
+    HttpResponse response = client.request(post("/books"));
     
-    assertEquals(201, response.statusCode);
+    assertEquals(HttpStatus.CREATED, response.statusCode);
     assertEquals("book created", response.body);
   }
   
@@ -69,9 +69,9 @@ public class BooksModuleTest {
   public void bookDeleted() {
     HttpClient client = new HttpClient("http://localhost:8080/store");
     
-    Response response = client.request(delete("/books/1"));
+    HttpResponse response = client.request(delete("/books/1"));
     
-    assertEquals(200, response.statusCode);
+    assertEquals(HttpStatus.OK, response.statusCode);
     assertEquals("book deleted 1", response.body);
   }
   
@@ -79,9 +79,9 @@ public class BooksModuleTest {
   public void bookUpdated() {
     HttpClient client = new HttpClient("http://localhost:8080/store");
     
-    Response response = client.request(put("/books/1"));
+    HttpResponse response = client.request(put("/books/1"));
     
-    assertEquals(200, response.statusCode);
+    assertEquals(HttpStatus.OK, response.statusCode);
     assertEquals("book updated 1", response.body);
   }
 

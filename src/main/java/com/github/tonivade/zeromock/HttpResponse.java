@@ -12,26 +12,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class Response {
+public final class HttpResponse {
 
-  final int statusCode;
+  final HttpStatus statusCode;
   final Object body;
   final Map<String, List<String>> headers;
   
-  public Response(int statusCode, Object body, Map<String, List<String>> headers) {
+  public HttpResponse(HttpStatus statusCode, Object body, Map<String, List<String>> headers) {
     this.statusCode = statusCode;
     this.body = body;
     this.headers = unmodifiableMap(headers);
   }
 
-  public Response withHeader(String string, String value) {
+  public HttpResponse withHeader(String string, String value) {
     Map<String, List<String>> newHeaders = new HashMap<>(headers);
     newHeaders.merge(string, singletonList(value), (oldValue, newValue) -> {
       List<String> newList = new ArrayList<>(oldValue);
       newList.addAll(newValue);
       return newList;
     });
-    return new Response(statusCode, body, newHeaders);
+    return new HttpResponse(statusCode, body, newHeaders);
   }
   
   @Override

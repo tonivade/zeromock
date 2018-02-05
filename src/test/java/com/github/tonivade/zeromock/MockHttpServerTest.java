@@ -35,9 +35,9 @@ public class MockHttpServerTest {
   public void hello() {
     HttpClient client = new HttpClient("http://localhost:8080/path");
     
-    Response response = client.request(Requests.get("/hello").withParam("name", "World"));
+    HttpResponse response = client.request(Requests.get("/hello").withParam("name", "World"));
 
-    assertEquals(200, response.statusCode);
+    assertEquals(HttpStatus.OK, response.statusCode);
     assertEquals("Hello World!", response.body);
   }
   
@@ -45,18 +45,18 @@ public class MockHttpServerTest {
   public void helloMissingParam() {
     HttpClient client = new HttpClient("http://localhost:8080/path");
     
-    Response response = client.request(Requests.get("/hello"));
+    HttpResponse response = client.request(Requests.get("/hello"));
 
-    assertEquals(400, response.statusCode);
+    assertEquals(HttpStatus.BAD_REQUEST, response.statusCode);
   }
 
   @Test
   public void json() {
     HttpClient client = new HttpClient("http://localhost:8080/path");
     
-    Response response = client.request(Requests.get("/test").withHeader("Accept", "application/json"));
+    HttpResponse response = client.request(Requests.get("/test").withHeader("Accept", "application/json"));
 
-    assertEquals(200, response.statusCode);
+    assertEquals(HttpStatus.OK, response.statusCode);
     assertEquals("{ }", response.body);
     assertEquals(asList("application/json"), response.headers.get("Content-type"));
   }
@@ -65,9 +65,9 @@ public class MockHttpServerTest {
   public void xml() {
     HttpClient client = new HttpClient("http://localhost:8080/path");
     
-    Response response = client.request(Requests.get("/test").withHeader("Accept", "text/xml"));
+    HttpResponse response = client.request(Requests.get("/test").withHeader("Accept", "text/xml"));
 
-    assertEquals(200, response.statusCode);
+    assertEquals(HttpStatus.OK, response.statusCode);
     assertEquals("<body/>", response.body);
     assertEquals(asList("text/xml"), response.headers.get("Content-type"));
   }
@@ -82,7 +82,7 @@ public class MockHttpServerTest {
     server.stop();
   }
   
-  private Object helloWorld(Request request) {
+  private Object helloWorld(HttpRequest request) {
     return String.format("Hello %s!", request.params.get("name"));
   }
 }

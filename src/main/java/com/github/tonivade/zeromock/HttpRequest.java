@@ -14,15 +14,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class Request {
+public final class HttpRequest {
 
-  final String method;
+  final HttpMethod method;
   final Path path;
   final Object body;
   final Map<String, List<String>> headers;
   final Map<String, String> params;
 
-  public Request(String method, Path path, Object body, 
+  public HttpRequest(HttpMethod method, Path path, Object body, 
                  Map<String, List<String>> headers, Map<String, String> params) {
     this.method = requireNonNull(method);
     this.path = requireNonNull(path);
@@ -40,24 +40,24 @@ public final class Request {
         .map(entry -> entry.getKey() + "=" + entry.getValue()).collect(joining("&"));
   }
 
-  public Request withHeader(String string, String value) {
+  public HttpRequest withHeader(String string, String value) {
     Map<String, List<String>> newHeaders = new HashMap<>(headers);
     newHeaders.merge(string, Collections.singletonList(value), (oldValue, newValue) -> {
       List<String> newList = new ArrayList<>(oldValue);
       newList.addAll(newValue);
       return newList;
     });
-    return new Request(method, path, body, newHeaders, params);
+    return new HttpRequest(method, path, body, newHeaders, params);
   }
 
-  public Request dropOneLevel() {
-    return new Request(method, path.dropOneLevel(), body, headers, params);
+  public HttpRequest dropOneLevel() {
+    return new HttpRequest(method, path.dropOneLevel(), body, headers, params);
   }
 
-  public Request withParam(String key, String value) {
+  public HttpRequest withParam(String key, String value) {
     Map<String, String> newParams = new HashMap<>(params);
     newParams.put(key, value);
-    return new Request(method, path, body, headers, newParams);
+    return new HttpRequest(method, path, body, headers, newParams);
   }
   
   @Override

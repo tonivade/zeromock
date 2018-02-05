@@ -13,22 +13,22 @@ import java.util.function.Predicate;
 
 public class Resource {
   final String name;
-  private final Map<Predicate<Request>, Function<Request, Response>> mappings = new HashMap<>();
+  private final Map<Predicate<HttpRequest>, Function<HttpRequest, HttpResponse>> mappings = new HashMap<>();
   
   public Resource(String name) {
     this.name = name;
   }
   
-  public Resource when(Predicate<Request> matcher, Function<Request, Response> handler) {
+  public Resource when(Predicate<HttpRequest> matcher, Function<HttpRequest, HttpResponse> handler) {
     mappings.put(matcher, handler);
     return this;
   }
   
-  public Response handle(Request request) {
+  public HttpResponse handle(HttpRequest request) {
     return findHandler(request).apply(request);
   }
 
-  private Function<Request, Response> findHandler(Request request) {
+  private Function<HttpRequest, HttpResponse> findHandler(HttpRequest request) {
     return mappings.entrySet().stream()
         .filter(entry -> entry.getKey().test(request))
         .map(Map.Entry::getValue)
