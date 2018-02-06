@@ -83,6 +83,6 @@ public class MockHttpServerTest {
   }
   
   private Object helloWorld(HttpRequest request) {
-    return String.format("Hello %s!", request.params.get("name"));
+    return request.params.get("name").map(name -> String.format("Hello %s!", name)).orElse(null);
   }
 }

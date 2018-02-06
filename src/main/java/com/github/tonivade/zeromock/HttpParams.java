@@ -10,6 +10,7 @@ import static java.util.stream.Collectors.joining;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class HttpParams {
   private Map<String, String> params;
@@ -22,12 +23,16 @@ public class HttpParams {
     this.params = unmodifiableMap(params);
   }
   
-  public String get(String name) {
-    return params.get(name);
+  public Optional<String> get(String name) {
+    return Optional.ofNullable(params.get(name));
   }
 
   public boolean isEmpty() {
     return params.isEmpty();
+  }
+
+  public boolean contains(String name) {
+    return params.containsKey(name);
   }
 
   public HttpParams withParam(String key, String value) {
@@ -38,10 +43,6 @@ public class HttpParams {
   
   public String toQueryString() {
     return params.isEmpty() ? "" : paramsToString();
-  }
-
-  public boolean containsParam(String name) {
-    return params.containsKey(name);
   }
   
   @Override

@@ -7,6 +7,7 @@ package com.github.tonivade.zeromock;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
+import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
 
 import java.util.ArrayList;
@@ -27,9 +28,17 @@ public class HttpHeaders {
     newHeaders.merge(key, singletonList(value), (oldValue, newValue) -> {
       List<String> newList = new ArrayList<>(oldValue);
       newList.addAll(newValue);
-      return newList;
+      return unmodifiableList(newList);
     });
     return new HttpHeaders(newHeaders);
+  }
+
+  public boolean isEmpty() {
+    return headers.isEmpty();
+  }
+
+  public boolean contains(String key) {
+    return headers.containsKey(key);
   }
   
   public List<String> get(String key) {
