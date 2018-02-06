@@ -23,7 +23,7 @@ public class MockHttpServer {
   private final HttpServer server;
 
   private final Map<String, HttpRequest> requests = new HashMap<>();
-  private final Map<String, Resource> mappings = new HashMap<>();
+  private final Map<String, HttpService> mappings = new HashMap<>();
   
   private MockHttpServer(int port) {
     try {
@@ -38,8 +38,8 @@ public class MockHttpServer {
     return new MockHttpServer(port);
   }
 
-  public MockHttpServer mount(String path, Resource resource) {
-    mappings.put(path, resource);
+  public MockHttpServer mount(String path, HttpService service) {
+    mappings.put(path, service);
     return this;
   }
 
@@ -57,11 +57,11 @@ public class MockHttpServer {
 
   private void handle(HttpExchange exchange) throws IOException {
     HttpRequest request = createRequest(exchange);
-    Resource resource = findResource(request);
+    HttpService resource = findResource(request);
     processResponse(exchange, resource.handle(request.dropOneLevel()));
   }
 
-  private Resource findResource(HttpRequest request) {
+  private HttpService findResource(HttpRequest request) {
     return mappings.get("/" + request.path.getAt(0));
   }
 

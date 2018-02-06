@@ -11,21 +11,33 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class Resource {
+public class HttpService {
   final String name;
-  private final Map<Predicate<HttpRequest>, Function<HttpRequest, HttpResponse>> mappings = new HashMap<>();
+  final Map<Predicate<HttpRequest>, Function<HttpRequest, HttpResponse>> mappings;
   
-  public Resource(String name) {
-    this.name = name;
+  public HttpService(String name) {
+    this(name, new HashMap<>());
   }
   
-  public Resource when(Predicate<HttpRequest> matcher, Function<HttpRequest, HttpResponse> handler) {
+  private HttpService(String name, Map<Predicate<HttpRequest>, Function<HttpRequest, HttpResponse>> mappings) {
+    this.name = name;
+    this.mappings = mappings;
+  }
+  
+  public HttpService when(Predicate<HttpRequest> matcher, Function<HttpRequest, HttpResponse> handler) {
     mappings.put(matcher, handler);
     return this;
   }
   
   public HttpResponse handle(HttpRequest request) {
     return findHandler(request).apply(request);
+  }
+  
+  public HttpService combine(HttpService other) {
+    Map<Predicate<HttpRequest>, Function<HttpRequest, HttpResponse>> merge = new HashMap<>();
+    merge.putAll(this.mappings);
+    merge.putAll(other.mappings);
+    return new HttpService(this.name + "+" + other.name, merge);
   }
 
   private Function<HttpRequest, HttpResponse> findHandler(HttpRequest request) {

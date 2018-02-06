@@ -23,13 +23,15 @@ import org.junit.jupiter.api.Test;
 
 public class MockHttpServerTest {
 
-  private Resource resource = new Resource("test")
+  private HttpService service1 = new HttpService("hello")
       .when(get().and(path("/hello")).and(param("name")), ok(this::helloWorld))
-      .when(get().and(path("/hello")).and(param("name").negate()), badRequest("missing parameter name"))
+      .when(get().and(path("/hello")).and(param("name").negate()), badRequest("missing parameter name"));
+
+  private HttpService service2 = new HttpService("test")
       .when(get().and(path("/test")).and(acceptsXml()), ok("<body/>").andThen(contentXml()))
       .when(get().and(path("/test")).and(acceptsJson()), contentJson().compose(ok("{ }")));
   
-  private MockHttpServer server = listenAt(8080).mount("/path", resource);
+  private MockHttpServer server = listenAt(8080).mount("/path", service1.combine(service2));
 
   @Test
   public void hello() {
