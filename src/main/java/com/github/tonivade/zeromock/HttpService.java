@@ -50,6 +50,6 @@ public class HttpService {
   
   @Override
   public String toString() {
-    return "Resource(" + name + ")";
+    return "HttpService(" + name + ")";
   }
 }
