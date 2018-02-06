@@ -15,6 +15,7 @@ import static com.github.tonivade.zeromock.Responses.contentJson;
 import static com.github.tonivade.zeromock.Responses.contentXml;
 import static com.github.tonivade.zeromock.Responses.ok;
 import static java.util.Arrays.asList;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterEach;
@@ -39,8 +40,8 @@ public class MockHttpServerTest {
     
     HttpResponse response = client.request(Requests.get("/hello").withParam("name", "World"));
 
-    assertEquals(HttpStatus.OK, response.statusCode);
-    assertEquals("Hello World!", response.body);
+    assertAll(() -> assertEquals(HttpStatus.OK, response.statusCode),
+              () -> assertEquals("Hello World!", response.body));
   }
   
   @Test
@@ -58,9 +59,9 @@ public class MockHttpServerTest {
     
     HttpResponse response = client.request(Requests.get("/test").withHeader("Accept", "application/json"));
 
-    assertEquals(HttpStatus.OK, response.statusCode);
-    assertEquals("{ }", response.body);
-    assertEquals(asList("application/json"), response.headers.get("Content-type"));
+    assertAll(() -> assertEquals(HttpStatus.OK, response.statusCode),
+              () -> assertEquals("{ }", response.body),
+              () -> assertEquals(asList("application/json"), response.headers.get("Content-type")));
   }
 
   @Test
@@ -69,9 +70,9 @@ public class MockHttpServerTest {
     
     HttpResponse response = client.request(Requests.get("/test").withHeader("Accept", "text/xml"));
 
-    assertEquals(HttpStatus.OK, response.statusCode);
-    assertEquals("<body/>", response.body);
-    assertEquals(asList("text/xml"), response.headers.get("Content-type"));
+    assertAll(() -> assertEquals(HttpStatus.OK, response.statusCode),
+              () -> assertEquals("<body/>", response.body),
+              () -> assertEquals(asList("text/xml"), response.headers.get("Content-type")));
   }
 
   @BeforeEach

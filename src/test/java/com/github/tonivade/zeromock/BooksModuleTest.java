@@ -16,6 +16,7 @@ import static com.github.tonivade.zeromock.Requests.post;
 import static com.github.tonivade.zeromock.Requests.put;
 import static com.github.tonivade.zeromock.Responses.created;
 import static com.github.tonivade.zeromock.Responses.ok;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterEach;
@@ -41,8 +42,8 @@ public class BooksModuleTest {
     
     HttpResponse response = client.request(get("/books"));
     
-    assertEquals(HttpStatus.OK, response.statusCode);
-    assertEquals("find all books", response.body);
+    assertAll(() -> assertEquals(HttpStatus.OK, response.statusCode),
+              () -> assertEquals("find all books", response.body));
   }
   
   @Test
@@ -51,8 +52,8 @@ public class BooksModuleTest {
     
     HttpResponse response = client.request(get("/books/1"));
     
-    assertEquals(HttpStatus.OK, response.statusCode);
-    assertEquals("find one book 1", response.body);
+    assertAll(() -> assertEquals(HttpStatus.OK, response.statusCode),
+              () -> assertEquals("find one book 1", response.body));
   }
   
   @Test
@@ -61,8 +62,8 @@ public class BooksModuleTest {
     
     HttpResponse response = client.request(post("/books"));
     
-    assertEquals(HttpStatus.CREATED, response.statusCode);
-    assertEquals("book created", response.body);
+    assertAll(() -> assertEquals(HttpStatus.CREATED, response.statusCode),
+              () -> assertEquals("book created", response.body));
   }
   
   @Test
@@ -71,8 +72,8 @@ public class BooksModuleTest {
     
     HttpResponse response = client.request(delete("/books/1"));
     
-    assertEquals(HttpStatus.OK, response.statusCode);
-    assertEquals("book deleted 1", response.body);
+    assertAll(() -> assertEquals(HttpStatus.OK, response.statusCode),
+              () -> assertEquals("book deleted 1", response.body));
   }
   
   @Test
@@ -81,8 +82,8 @@ public class BooksModuleTest {
     
     HttpResponse response = client.request(put("/books/1"));
     
-    assertEquals(HttpStatus.OK, response.statusCode);
-    assertEquals("book updated 1", response.body);
+    assertAll(() -> assertEquals(HttpStatus.OK, response.statusCode),
+              () -> assertEquals("book updated 1", response.body));
   }
 
   @BeforeEach
