@@ -13,10 +13,12 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class Path {
+  private static final String ROOT = "/";
+
   private final List<PathElement> value;
   
   public Path(String path) {
-    this(Stream.of(path.split("/")).skip(1).map(Path::toPathElement).collect(toList()));
+    this(Stream.of(path.split(ROOT)).skip(1).map(Path::toPathElement).collect(toList()));
   }
   
   private Path(List<PathElement> path) {
@@ -36,11 +38,11 @@ public class Path {
   }
 
   public String toPattern() {
-    return "/" + value.stream().map(PathElement::toPattern).collect(joining("/"));
+    return ROOT + value.stream().map(PathElement::toPattern).collect(joining(ROOT));
   }
   
   public String toPath() {
-    return "/" + value.stream().map(PathElement::toString).collect(joining("/"));
+    return ROOT + value.stream().map(PathElement::toString).collect(joining(ROOT));
   }
   
   @Override

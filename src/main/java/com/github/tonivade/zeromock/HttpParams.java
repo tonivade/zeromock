@@ -13,6 +13,11 @@ import java.util.Map;
 import java.util.Optional;
 
 public class HttpParams {
+  private static final String BEGIN = "?";
+  private static final String EMPTY = "";
+  private static final String EQUALS = "=";
+  private static final String SEPARATOR = "&";
+  
   private Map<String, String> params;
   
   public HttpParams(String queryParams) {
@@ -42,7 +47,7 @@ public class HttpParams {
   }
   
   public String toQueryString() {
-    return params.isEmpty() ? "" : paramsToString();
+    return params.isEmpty() ? EMPTY : paramsToString();
   }
   
   @Override
@@ -57,12 +62,12 @@ public class HttpParams {
   private static Map<String, String> queryToMap(String query) {
     Map<String, String> result = new HashMap<>();
     if (query != null) {
-      for (String param : query.split("&")) {
-        String[] pair = param.split("=");
+      for (String param : query.split(SEPARATOR)) {
+        String[] pair = param.split(EQUALS);
         if (pair.length > 1) {
           result.put(pair[0], pair[1]);
         } else {
-          result.put(pair[0], "");
+          result.put(pair[0], EMPTY);
         }
       }
     }
@@ -70,7 +75,7 @@ public class HttpParams {
   }
 
   private String paramsToString() {
-    return "?" + params.entrySet().stream()
-        .map(entry -> entry.getKey() + "=" + entry.getValue()).collect(joining("&"));
+    return BEGIN + params.entrySet().stream()
+        .map(entry -> entry.getKey() + EQUALS + entry.getValue()).collect(joining(SEPARATOR));
   }
 }

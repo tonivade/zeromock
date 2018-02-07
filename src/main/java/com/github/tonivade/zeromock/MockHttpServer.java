@@ -20,6 +20,8 @@ import com.sun.net.httpserver.HttpServer;
 
 @SuppressWarnings("restriction")
 public class MockHttpServer {
+  private static final String ROOT = "/";
+
   private final HttpServer server;
 
   private final Map<String, HttpRequest> requests = new HashMap<>();
@@ -28,7 +30,7 @@ public class MockHttpServer {
   private MockHttpServer(int port) {
     try {
       server = HttpServer.create(new InetSocketAddress(port), 0);
-      server.createContext("/", this::handle);
+      server.createContext(ROOT, this::handle);
     } catch (IOException e) {
       throw new UncheckedIOException("unable to start server at port " + port, e);
     }
@@ -62,7 +64,7 @@ public class MockHttpServer {
   }
 
   private HttpService findResource(HttpRequest request) {
-    return mappings.get("/" + request.path.getAt(0));
+    return mappings.get(ROOT + request.path.getAt(0));
   }
 
   private HttpRequest createRequest(HttpExchange exchange) throws IOException {
