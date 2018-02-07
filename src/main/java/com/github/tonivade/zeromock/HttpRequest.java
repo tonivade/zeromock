@@ -27,12 +27,16 @@ public final class HttpRequest {
     return path.toPath() + params.toQueryString();
   }
 
+  public HttpRequest dropOneLevel() {
+    return new HttpRequest(method, path.dropOneLevel(), body, headers, params);
+  }
+
   public HttpRequest withHeader(String key, String value) {
     return new HttpRequest(method, path, body, headers.withHeader(key, value), params);
   }
 
-  public HttpRequest dropOneLevel() {
-    return new HttpRequest(method, path.dropOneLevel(), body, headers, params);
+  public HttpRequest withBody(String body) {
+    return new HttpRequest(method, path, body, headers, params);
   }
 
   public HttpRequest withParam(String key, String value) {

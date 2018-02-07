@@ -60,7 +60,7 @@ public class BooksModuleTest {
   public void bookCreated() {
     HttpClient client = new HttpClient("http://localhost:8080/store");
     
-    HttpResponse response = client.request(post("/books"));
+    HttpResponse response = client.request(post("/books").withBody("create"));
     
     assertAll(() -> assertEquals(HttpStatus.CREATED, response.statusCode),
               () -> assertEquals("book created", response.body));
@@ -80,7 +80,7 @@ public class BooksModuleTest {
   public void bookUpdated() {
     HttpClient client = new HttpClient("http://localhost:8080/store");
     
-    HttpResponse response = client.request(put("/books/1"));
+    HttpResponse response = client.request(put("/books/1").withBody("update"));
     
     assertAll(() -> assertEquals(HttpStatus.OK, response.statusCode),
               () -> assertEquals("book updated 1", response.body));
