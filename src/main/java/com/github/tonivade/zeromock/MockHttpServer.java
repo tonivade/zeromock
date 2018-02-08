@@ -5,6 +5,7 @@
 package com.github.tonivade.zeromock;
 
 import static com.github.tonivade.zeromock.IOUtils.readAll;
+import static com.github.tonivade.zeromock.Responses.notFound;
 import static java.util.Collections.unmodifiableList;
 
 import java.io.IOException;
@@ -78,7 +79,7 @@ public class MockHttpServer {
       matched.add(request);
       processResponse(exchange, response.get());
     } else {
-      processResponse(exchange, notFound(request));
+      processResponse(exchange, notFound("not found"));
       unmatched.add(request);
     }
   }
@@ -110,9 +111,5 @@ public class MockHttpServer {
 
   private Function<Object, ByteBuffer> getSerializer(HttpResponse response) {
     return Serializers.plain();
-  }
-
-  private HttpResponse notFound(HttpRequest request) {
-    return Responses.notFound("not found").apply(request);
   }
 }

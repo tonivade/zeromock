@@ -52,8 +52,7 @@ public class Predicates {
     return method(PATCH);
   }
   
-  public static Predicate<HttpRequest> body(Object body)
-  {
+  public static Predicate<HttpRequest> body(Object body) {
     return request -> request.body.equals(body);
   }
   
