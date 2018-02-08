@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 
 public class Path {
   private static final String ROOT = "/";
+  private static final String PARAM_PREFIX = ":";
 
   private final List<PathElement> value;
   
@@ -51,7 +52,7 @@ public class Path {
   }
   
   private static PathElement toPathElement(String value) {
-    if (value.startsWith(":")) {
+    if (value.startsWith(PARAM_PREFIX)) {
       return new PathParam(value.substring(1));
     }
     return new PathValue(value);
