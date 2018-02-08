@@ -5,6 +5,7 @@
 package com.github.tonivade.zeromock;
 
 import static com.github.tonivade.zeromock.IOUtils.readAll;
+import static java.util.Collections.unmodifiableList;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -12,8 +13,12 @@ import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
@@ -24,7 +29,8 @@ public class MockHttpServer {
 
   private final HttpServer server;
 
-  private final Map<String, HttpRequest> requests = new HashMap<>();
+  private final List<HttpRequest> matched = new LinkedList<>();
+  private final List<HttpRequest> unmatched = new LinkedList<>();
   private final Map<String, HttpService> mappings = new HashMap<>();
   
   private MockHttpServer(int port) {
@@ -53,18 +59,36 @@ public class MockHttpServer {
     server.stop(0);
   }
 
-  public HttpRequest getRequest(String url) {
-    return requests.get(url);
+  public MockHttpServer verify(Predicate<HttpRequest> predicate) {
+    matched.stream()
+      .filter(request -> predicate.test(request))
+      .findFirst()
+      .orElseThrow(() -> new AssertionError("request not found"));
+    return this;
+  }
+  
+  public List<HttpRequest> getUnmatched() {
+    return unmodifiableList(unmatched);
   }
 
   private void handle(HttpExchange exchange) throws IOException {
     HttpRequest request = createRequest(exchange);
-    HttpService resource = findResource(request);
-    processResponse(exchange, resource.handle(request.dropOneLevel()));
+    Optional<HttpResponse> response = execute(request);
+    if (response.isPresent()) {
+      matched.add(request);
+      processResponse(exchange, response.get());
+    } else {
+      processResponse(exchange, notFound(request));
+      unmatched.add(request);
+    }
   }
 
-  private HttpService findResource(HttpRequest request) {
-    return mappings.get(ROOT + request.path.getAt(0));
+  private Optional<HttpResponse> execute(HttpRequest request) {
+    return findService(request).flatMap(service -> service.handle(request.dropOneLevel()));
+  }
+  
+  private Optional<HttpService> findService(HttpRequest request) {
+    return Optional.ofNullable(mappings.get(ROOT + request.path.getAt(0)));
   }
 
   private HttpRequest createRequest(HttpExchange exchange) throws IOException {
@@ -86,5 +110,9 @@ public class MockHttpServer {
 
   private Function<Object, ByteBuffer> getSerializer(HttpResponse response) {
     return Serializers.plain();
+  }
+
+  private HttpResponse notFound(HttpRequest request) {
+    return Responses.notFound("not found").apply(request);
   }
 }

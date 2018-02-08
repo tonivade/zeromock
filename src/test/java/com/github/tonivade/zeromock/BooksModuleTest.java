@@ -5,6 +5,7 @@
 package com.github.tonivade.zeromock;
 
 import static com.github.tonivade.zeromock.MockHttpServer.listenAt;
+import static com.github.tonivade.zeromock.Predicates.body;
 import static com.github.tonivade.zeromock.Predicates.delete;
 import static com.github.tonivade.zeromock.Predicates.get;
 import static com.github.tonivade.zeromock.Predicates.path;
@@ -63,7 +64,8 @@ public class BooksModuleTest {
     HttpResponse response = client.request(post("/books").withBody("create"));
     
     assertAll(() -> assertEquals(HttpStatus.CREATED, response.statusCode),
-              () -> assertEquals("book created", response.body));
+              () -> assertEquals("book created", response.body),
+              () -> server.verify(post().and(path("/store/books")).and(body("create"))));
   }
   
   @Test

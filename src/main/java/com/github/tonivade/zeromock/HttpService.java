@@ -4,10 +4,9 @@
  */
 package com.github.tonivade.zeromock;
 
-import static com.github.tonivade.zeromock.Responses.notFound;
-
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -29,8 +28,8 @@ public class HttpService {
     return this;
   }
   
-  public HttpResponse handle(HttpRequest request) {
-    return findHandler(request).apply(request);
+  public Optional<HttpResponse> handle(HttpRequest request) {
+    return findHandler(request).map(handler -> handler.apply(request));
   }
   
   public HttpService combine(HttpService other) {
@@ -40,12 +39,11 @@ public class HttpService {
     return new HttpService(this.name + "+" + other.name, merge);
   }
 
-  private Function<HttpRequest, HttpResponse> findHandler(HttpRequest request) {
+  private Optional<Function<HttpRequest, HttpResponse>> findHandler(HttpRequest request) {
     return mappings.entrySet().stream()
         .filter(entry -> entry.getKey().test(request))
         .map(Map.Entry::getValue)
-        .findFirst()
-        .orElse(notFound("not found"));
+        .findFirst();
   }
   
   @Override
