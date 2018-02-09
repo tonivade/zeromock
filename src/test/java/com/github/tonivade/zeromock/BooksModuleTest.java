@@ -29,11 +29,11 @@ public class BooksModuleTest {
   private BooksModule module = new BooksModule();
   
   private HttpService booksService = new HttpService("books")
-      .when(post().and(path("/books")), created(module::createBook))
-      .when(get().and(path("/books")), ok(module::findAllBooks))
-      .when(get().and(path("/books/:id")), ok(module::findBook))
+      .when(post()  .and(path("/books")),     created(module::createBook))
+      .when(get()   .and(path("/books")),     ok(module::findAllBooks))
+      .when(get()   .and(path("/books/:id")), ok(module::findBook))
       .when(delete().and(path("/books/:id")), ok(module::deleteBook))
-      .when(put().and(path("/books/:id")), ok(module::updateBook));
+      .when(put()   .and(path("/books/:id")), ok(module::updateBook));
   
   private MockHttpServer server = listenAt(8080).mount("/store", booksService);
   

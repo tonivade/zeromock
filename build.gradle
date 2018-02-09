@@ -1,5 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'com.bmuschko.nexus'
 apply plugin: 'org.junit.platform.gradle.plugin'
 
 group = 'com.github.tonivade'
@@ -12,9 +13,11 @@ targetCompatibility = '1.8'
 buildscript {
   repositories {
     mavenCentral()
+    jcenter()
   }
 
   dependencies {
+    classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
     classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.2'
   }
 }
@@ -30,3 +33,45 @@ dependencies {
   testCompile 'org.hamcrest:hamcrest-library:1.3'
 }
 
+modifyPom {
+  project {
+    name 'ZeroMock'
+    description 'Mock Http Server without dependencies'
+    url 'https://github.com/tonivade/zeromock'
+    inceptionYear '2018'
+
+    scm {
+      url 'https://github.com/tonivade/zeromock'
+      connection 'scm:https://github.com/tonivade/zeromock.git'
+      developerConnection 'scm:git://github.com/tonivade/zeromock.git'
+    }
+
+    licenses {
+      license {
+        name 'The MIT License (MIT)'
+        url 'https://github.com/tonivade/zeromock/blob/master/LICENSE'
+        distribution 'repo'
+      }
+    }
+
+    developers {
+      developer {
+        id 'tonivade'
+        name 'Antonio Muñoz'
+        email 'antoniogmc@gmail.com'
+      }
+    }
+  }
+}
+
+extraArchive {
+  sources = true
+  tests = false
+  javadoc = true
+}
+
+nexus {
+  sign = true
+  repositoryUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
+  snapshotRepositoryUrl = 'https://oss.sonatype.org/content/repositories/snapshots'
+}
