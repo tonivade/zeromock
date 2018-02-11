@@ -40,8 +40,8 @@ public class MockHttpServerTest {
     
     HttpResponse response = client.request(Requests.get("/hello").withParam("name", "World"));
 
-    assertAll(() -> assertEquals(HttpStatus.OK, response.status),
-              () -> assertEquals("Hello World!", response.body));
+    assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
+              () -> assertEquals("Hello World!", response.body()));
   }
   
   @Test
@@ -50,7 +50,7 @@ public class MockHttpServerTest {
     
     HttpResponse response = client.request(Requests.get("/hello"));
 
-    assertEquals(HttpStatus.BAD_REQUEST, response.status);
+    assertEquals(HttpStatus.BAD_REQUEST, response.status());
   }
 
   @Test
@@ -59,9 +59,9 @@ public class MockHttpServerTest {
     
     HttpResponse response = client.request(Requests.get("/test").withHeader("Accept", "application/json"));
 
-    assertAll(() -> assertEquals(HttpStatus.OK, response.status),
-              () -> assertEquals("{ }", response.body),
-              () -> assertEquals(asList("application/json"), response.headers.get("Content-type")));
+    assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
+              () -> assertEquals("{ }", response.body()),
+              () -> assertEquals(asList("application/json"), response.headers().get("Content-type")));
   }
 
   @Test
@@ -70,9 +70,9 @@ public class MockHttpServerTest {
     
     HttpResponse response = client.request(Requests.get("/test").withHeader("Accept", "text/xml"));
 
-    assertAll(() -> assertEquals(HttpStatus.OK, response.status),
-              () -> assertEquals("<body/>", response.body),
-              () -> assertEquals(asList("text/xml"), response.headers.get("Content-type")));
+    assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
+              () -> assertEquals("<body/>", response.body()),
+              () -> assertEquals(asList("text/xml"), response.headers().get("Content-type")));
   }
 
   @BeforeEach
@@ -86,6 +86,6 @@ public class MockHttpServerTest {
   }
   
   private Object helloWorld(HttpRequest request) {
-    return request.params.get("name").map(name -> String.format("Hello %s!", name)).orElse(null);
+    return String.format("Hello %s!", request.param("name"));
   }
 }

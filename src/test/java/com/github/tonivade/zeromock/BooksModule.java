@@ -31,8 +31,8 @@ public class BooksModule {
   }
   
   public static class Book {
-    final Integer id;
-    final String title;
+    private final Integer id;
+    private final String title;
 
     public Book(Integer id, String title) {
       this.id = id;

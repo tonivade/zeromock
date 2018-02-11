@@ -17,23 +17,23 @@ public class Predicates {
   private Predicates() {}
 
   public static Predicate<HttpRequest> method(HttpMethod method) {
-    return request -> request.method.equals(method);
+    return request -> request.method().equals(method);
   }
   
   public static Predicate<HttpRequest> path(String url) {
-    return request -> request.path.match(new Path(url));
+    return request -> request.path().match(new Path(url));
   }
   
   public static Predicate<HttpRequest> startsWith(String url) {
-    return request -> request.path.startsWith(new Path(url));
+    return request -> request.path().startsWith(new Path(url));
   }
   
   public static Predicate<HttpRequest> param(String name) {
-    return request -> request.params.contains(name);
+    return request -> request.params().contains(name);
   }
   
   public static Predicate<HttpRequest> header(String key, String value) {
-    return request -> request.headers.get(key).contains(value);
+    return request -> request.headers().get(key).contains(value);
   }
   
   public static Predicate<HttpRequest> get() {
@@ -57,7 +57,7 @@ public class Predicates {
   }
   
   public static Predicate<HttpRequest> body(Object body) {
-    return request -> request.body.equals(body);
+    return request -> request.body().equals(body);
   }
   
   public static Predicate<HttpRequest> accept(String contentType) {

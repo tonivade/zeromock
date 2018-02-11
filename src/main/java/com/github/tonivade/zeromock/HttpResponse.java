@@ -8,9 +8,9 @@ import static java.util.Objects.requireNonNull;
 
 public final class HttpResponse {
 
-  final HttpStatus status;
-  final Object body;
-  final HttpHeaders headers;
+  private final HttpStatus status;
+  private final Object body;
+  private final HttpHeaders headers;
   
   public HttpResponse(HttpStatus status, Object body, HttpHeaders headers) {
     this.status = requireNonNull(status);

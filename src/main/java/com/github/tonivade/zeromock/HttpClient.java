@@ -34,12 +34,12 @@ public class HttpClient {
   private HttpURLConnection createConnection(HttpRequest request) throws IOException {
     URL url = new URL(baseUrl + request.toUrl());
     HttpURLConnection con = (HttpURLConnection) url.openConnection();
-    con.setRequestMethod(request.method.name());
-    request.headers.forEach(con::setRequestProperty);
-    if (request.body != null) {
+    con.setRequestMethod(request.method().name());
+    request.headers().forEach(con::setRequestProperty);
+    if (request.body() != null) {
       con.setDoOutput(true);
       try (OutputStream output = con.getOutputStream()) {
-        output.write(Serializers.plain().apply(request.body).array());
+        output.write(Serializers.plain().apply(request.body()).array());
       }
     }
     return con;
@@ -55,7 +55,7 @@ public class HttpClient {
   private Object deserialize(HttpURLConnection connection) throws IOException {
     Object body = null;
     if (connection.getContentLength() > 0) {
-      if (connection.getResponseCode() < BAD_REQUEST.code) {
+      if (connection.getResponseCode() < BAD_REQUEST.code()) {
         body = Deserializers.plain().apply(readAll(connection.getInputStream()));
       } else {
         body = Deserializers.plain().apply(readAll(connection.getErrorStream()));

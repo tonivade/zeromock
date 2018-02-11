@@ -30,7 +30,7 @@ public enum HttpStatus {
   SERVICE_UNAVAILABLE(503),
   GATEWAY_TIMEOUT(504);
   
-  final int code;
+  private final int code;
   
   HttpStatus(int code) {
     this.code = code;

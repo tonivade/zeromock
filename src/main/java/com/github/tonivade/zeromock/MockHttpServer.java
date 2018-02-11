@@ -102,8 +102,8 @@ public class MockHttpServer {
 
   private void processResponse(HttpExchange exchange, HttpResponse response) throws IOException {
     ByteBuffer bytes = serialize(response);
-    response.headers.forEach((key, value) -> exchange.getResponseHeaders().add(key, value));
-    exchange.sendResponseHeaders(response.status.code, bytes.remaining());
+    response.headers().forEach((key, value) -> exchange.getResponseHeaders().add(key, value));
+    exchange.sendResponseHeaders(response.status().code(), bytes.remaining());
     try (OutputStream output = exchange.getResponseBody()) {
       exchange.getResponseBody().write(bytes.array());
     }
@@ -111,8 +111,8 @@ public class MockHttpServer {
 
   private ByteBuffer serialize(HttpResponse response) {
     ByteBuffer bytes;
-    if (nonNull(response.body)) {
-      bytes = getSerializer(response).apply(response.body);
+    if (nonNull(response.body())) {
+      bytes = getSerializer(response).apply(response.body());
     } else {
       bytes = ByteBuffer.wrap(new byte[]{});
     }

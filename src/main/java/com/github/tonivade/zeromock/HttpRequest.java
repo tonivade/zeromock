@@ -10,11 +10,11 @@ import com.github.tonivade.zeromock.Path.PathElement;
 
 public final class HttpRequest {
 
-  final HttpMethod method;
-  final Path path;
-  final Object body;
-  final HttpHeaders headers;
-  final HttpParams params;
+  private final HttpMethod method;
+  private final Path path;
+  private final Object body;
+  private final HttpHeaders headers;
+  private final HttpParams params;
 
   public HttpRequest(HttpMethod method, Path path, Object body, 
                      HttpHeaders headers, HttpParams params) {
@@ -45,12 +45,20 @@ public final class HttpRequest {
     return params;
   }
   
-  public Integer paramAsInteger(String param) {
-    return params.get(param).map(Integer::parseInt).orElseThrow(IllegalArgumentException::new);
+  public String param(String name) {
+    return params.get(name).orElseThrow(IllegalArgumentException::new);
+  }
+  
+  public Integer paramAsInteger(String name) {
+    return Integer.parseInt(param(name));
+  }
+  
+  public String pathParam(int position) {
+    return path.getAt(position).map(PathElement::value).orElseThrow(IllegalArgumentException::new);
   }
   
   public Integer pathParamAsInteger(int position) {
-    return path.getAt(position).map(PathElement::value).map(Integer::parseInt).orElseThrow(IllegalArgumentException::new);
+    return Integer.parseInt(pathParam(position));
   }
   
   public String toUrl() {
