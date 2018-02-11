@@ -6,6 +6,8 @@ package com.github.tonivade.zeromock;
 
 import static java.util.Objects.requireNonNull;
 
+import com.github.tonivade.zeromock.Path.PathElement;
+
 public final class HttpRequest {
 
   final HttpMethod method;
@@ -41,6 +43,14 @@ public final class HttpRequest {
   
   public HttpParams params() {
     return params;
+  }
+  
+  public Integer paramAsInteger(String param) {
+    return params.get(param).map(Integer::parseInt).orElseThrow(IllegalArgumentException::new);
+  }
+  
+  public Integer pathParamAsInteger(int position) {
+    return path.getAt(position).map(PathElement::value).map(Integer::parseInt).orElseThrow(IllegalArgumentException::new);
   }
   
   public String toUrl() {

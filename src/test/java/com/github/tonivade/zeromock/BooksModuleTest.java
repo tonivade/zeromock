@@ -25,11 +25,11 @@ public class BooksModuleTest {
   private BooksModule module = new BooksModule();
   
   private HttpService booksService = new HttpService("books")
-      .when(post("/books"), created(module::createBook))
-      .when(get("/books"), ok(module::findAllBooks))
-      .when(get("/books/:id"), ok(module::findBook))
-      .when(delete("/books/:id"), ok(module::deleteBook))
-      .when(put("/books/:id"), ok(module::updateBook));
+      .when(post("/books"), created(request -> module.createBook(request.body.toString())))
+      .when(get("/books"), ok(request -> module.findAllBooks()))
+      .when(get("/books/:id"), ok(request -> module.findBook(request.pathParamAsInteger(1))))
+      .when(delete("/books/:id"), ok(request -> module.deleteBook(request.pathParamAsInteger(1))))
+      .when(put("/books/:id"), ok(request -> module.updateBook(request.pathParamAsInteger(1), request.body.toString())));
   
   private MockHttpServer server = listenAt(8080).mount("/store", booksService);
   
@@ -40,7 +40,7 @@ public class BooksModuleTest {
     HttpResponse response = client.request(Requests.get("/books"));
     
     assertAll(() -> assertEquals(HttpStatus.OK, response.status),
-              () -> assertEquals("find all books", response.body));
+              () -> assertEquals("[Book(id:1,title:title)]", response.body));
   }
   
   @Test
@@ -50,7 +50,7 @@ public class BooksModuleTest {
     HttpResponse response = client.request(Requests.get("/books/1"));
     
     assertAll(() -> assertEquals(HttpStatus.OK, response.status),
-              () -> assertEquals("find one book 1", response.body));
+              () -> assertEquals("Book(id:1,title:title)", response.body));
   }
   
   @Test
@@ -60,7 +60,7 @@ public class BooksModuleTest {
     HttpResponse response = client.request(Requests.post("/books").withBody("create"));
     
     assertAll(() -> assertEquals(HttpStatus.CREATED, response.status),
-              () -> assertEquals("book created", response.body),
+              () -> assertEquals("Book(id:1,title:create)", response.body),
               () -> server.verify(post().and(path("/store/books")).and(body("create"))));
   }
   
@@ -71,7 +71,7 @@ public class BooksModuleTest {
     HttpResponse response = client.request(Requests.delete("/books/1"));
     
     assertAll(() -> assertEquals(HttpStatus.OK, response.status),
-              () -> assertEquals("book deleted 1", response.body));
+              () -> assertEquals(null, response.body));
   }
   
   @Test
@@ -81,7 +81,7 @@ public class BooksModuleTest {
     HttpResponse response = client.request(Requests.put("/books/1").withBody("update"));
     
     assertAll(() -> assertEquals(HttpStatus.OK, response.status),
-              () -> assertEquals("book updated 1", response.body));
+              () -> assertEquals("Book(id:1,title:update)", response.body));
   }
 
   @BeforeEach

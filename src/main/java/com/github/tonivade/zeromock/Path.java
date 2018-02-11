@@ -9,6 +9,7 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -30,8 +31,8 @@ public class Path {
     return new Path(value.stream().skip(1).collect(toList()));
   }
   
-  public PathElement getAt(int pos) {
-    return value.get(pos);
+  public Optional<PathElement> getAt(int position) {
+    return value.size() > position ? Optional.of(value.get(position)): Optional.empty();
   }
   
   public boolean match(Path other) {
@@ -40,7 +41,7 @@ public class Path {
 
   public boolean startsWith(Path other) {
     for (int i = 0; i < other.value.size(); i++) {
-      if (!other.getAt(i).value.equals(this.getAt(i).value)) {
+      if (!other.value.get(i).value.equals(this.value.get(i).value)) {
         return false;
       }
     }
@@ -67,11 +68,15 @@ public class Path {
     return new PathValue(value);
   }
   
-  private static abstract class PathElement {
+  public static abstract class PathElement {
     final String value;
     
-    public PathElement(String value) {
+    private PathElement(String value) {
       this.value = value;
+    }
+    
+    public String value() {
+      return value;
     }
     
     @Override
@@ -83,7 +88,7 @@ public class Path {
   }
   
   private static final class PathValue extends PathElement {
-    public PathValue(String value) {
+    private PathValue(String value) {
       super(value);
     }
     
@@ -94,7 +99,7 @@ public class Path {
   }
   
   private static final class PathParam extends PathElement {
-    public PathParam(String value) {
+    private PathParam(String value) {
       super(value);
     }
     

@@ -4,25 +4,44 @@
  */
 package com.github.tonivade.zeromock;
 
+import static java.util.Arrays.asList;
+
+import java.util.List;
+
 public class BooksModule {
 
-  public Object findAllBooks(HttpRequest request) {
-    return "find all books";
+  public List<Book> findAllBooks() {
+    return asList(new Book(1, "title"));
   }
 
-  public Object findBook(HttpRequest request) {
-    return "find one book " + request.path.getAt(1);
+  public Book findBook(Integer id) {
+    return new Book(id, "title");
   }
 
-  public Object createBook(HttpRequest request) {
-    return "book created";
+  public Book createBook(String title) {
+    return new Book(1, title);
   }
 
-  public Object updateBook(HttpRequest request) {
-    return "book updated " + request.path.getAt(1);
+  public Object updateBook(Integer id, String title) {
+    return new Book(id, title);
   }
 
-  public Object deleteBook(HttpRequest request) {
-    return "book deleted " + request.path.getAt(1);
+  public Void deleteBook(Integer id) {
+    return null;
+  }
+  
+  public static class Book {
+    final Integer id;
+    final String title;
+
+    public Book(Integer id, String title) {
+      this.id = id;
+      this.title = title;
+    }
+    
+    @Override
+    public String toString() {
+      return "Book(id:" + id + ",title:" + title + ")";
+    }
   }
 }

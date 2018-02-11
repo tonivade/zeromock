@@ -12,8 +12,6 @@ import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
-import java.util.Map;
 
 public class HttpClient {
   
@@ -48,12 +46,21 @@ public class HttpClient {
   }
 
   private HttpResponse processResponse(HttpURLConnection connection) throws IOException {
-    int responseCode = connection.getResponseCode();
-    Map<String, List<String>> headers = connection.getHeaderFields();
+    HttpHeaders headers = new HttpHeaders(connection.getHeaderFields());
+    Object body = deserialize(connection);
+    HttpStatus status = HttpStatus.fromCode(connection.getResponseCode());
+    return new HttpResponse(status, body, headers);
+  }
+
+  private Object deserialize(HttpURLConnection connection) throws IOException {
     Object body = null;
-    if (responseCode < BAD_REQUEST.code) {
-      body = Deserializers.plain().apply(readAll(connection.getInputStream()));
+    if (connection.getContentLength() > 0) {
+      if (connection.getResponseCode() < BAD_REQUEST.code) {
+        body = Deserializers.plain().apply(readAll(connection.getInputStream()));
+      } else {
+        body = Deserializers.plain().apply(readAll(connection.getErrorStream()));
+      }
     }
-    return new HttpResponse(HttpStatus.fromCode(responseCode), body, new HttpHeaders(headers));
+    return body;
   }
 }

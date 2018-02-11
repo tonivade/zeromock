@@ -7,6 +7,7 @@ package com.github.tonivade.zeromock;
 import static com.github.tonivade.zeromock.IOUtils.readAll;
 import static com.github.tonivade.zeromock.Responses.notFound;
 import static java.util.Collections.unmodifiableList;
+import static java.util.Objects.nonNull;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -100,12 +101,22 @@ public class MockHttpServer {
   }
 
   private void processResponse(HttpExchange exchange, HttpResponse response) throws IOException {
-    ByteBuffer bytes = getSerializer(response).apply(response.body);
+    ByteBuffer bytes = serialize(response);
     response.headers.forEach((key, value) -> exchange.getResponseHeaders().add(key, value));
     exchange.sendResponseHeaders(response.status.code, bytes.remaining());
     try (OutputStream output = exchange.getResponseBody()) {
       exchange.getResponseBody().write(bytes.array());
     }
+  }
+
+  private ByteBuffer serialize(HttpResponse response) {
+    ByteBuffer bytes;
+    if (nonNull(response.body)) {
+      bytes = getSerializer(response).apply(response.body);
+    } else {
+      bytes = ByteBuffer.wrap(new byte[]{});
+    }
+    return bytes;
   }
 
   private Function<Object, ByteBuffer> getSerializer(HttpResponse response) {
