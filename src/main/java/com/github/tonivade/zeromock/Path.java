@@ -34,13 +34,13 @@ public class Path {
     return value.get(pos);
   }
   
-  public boolean match(Path path) {
-    return Pattern.matches(path.toPattern(), toPattern());
+  public boolean match(Path other) {
+    return Pattern.matches(other.toPattern(), this.toPattern());
   }
 
   public boolean startsWith(Path other) {
     for (int i = 0; i < other.value.size(); i++) {
-      if (!this.getAt(i).value.equals(other.getAt(i).value)) {
+      if (!other.getAt(i).value.equals(this.getAt(i).value)) {
         return false;
       }
     }
