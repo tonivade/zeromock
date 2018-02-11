@@ -23,6 +23,26 @@ public final class HttpRequest {
     this.params = requireNonNull(params);
   }
   
+  public HttpMethod method() {
+    return method;
+  }
+  
+  public Path path() {
+    return path;
+  }
+  
+  public Object body() {
+    return body;
+  }
+  
+  public HttpHeaders headers() {
+    return headers;
+  }
+  
+  public HttpParams params() {
+    return params;
+  }
+  
   public String toUrl() {
     return path.toPath() + params.toQueryString();
   }

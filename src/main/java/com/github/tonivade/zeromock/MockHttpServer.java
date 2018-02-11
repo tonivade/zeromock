@@ -103,7 +103,7 @@ public class MockHttpServer {
   private void processResponse(HttpExchange exchange, HttpResponse response) throws IOException {
     ByteBuffer bytes = getSerializer(response).apply(response.body);
     response.headers.forEach((key, value) -> exchange.getResponseHeaders().add(key, value));
-    exchange.sendResponseHeaders(response.statusCode.code, bytes.remaining());
+    exchange.sendResponseHeaders(response.status.code, bytes.remaining());
     try (OutputStream output = exchange.getResponseBody()) {
       exchange.getResponseBody().write(bytes.array());
     }

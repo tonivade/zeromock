@@ -67,4 +67,24 @@ public class Predicates {
   public static Predicate<HttpRequest> acceptsJson() {
     return accept("application/json");
   }
+  
+  public static Predicate<HttpRequest> get(String path) {
+    return get().and(path(path));
+  }
+  
+  public static Predicate<HttpRequest> put(String path) {
+    return put().and(path(path));
+  }
+  
+  public static Predicate<HttpRequest> post(String path) {
+    return post().and(path(path));
+  }
+  
+  public static Predicate<HttpRequest> patch(String path) {
+    return patch().and(path(path));
+  }
+  
+  public static Predicate<HttpRequest> delete(String path) {
+    return delete().and(path(path));
+  }
 }

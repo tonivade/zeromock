@@ -40,7 +40,7 @@ public class MockHttpServerTest {
     
     HttpResponse response = client.request(Requests.get("/hello").withParam("name", "World"));
 
-    assertAll(() -> assertEquals(HttpStatus.OK, response.statusCode),
+    assertAll(() -> assertEquals(HttpStatus.OK, response.status),
               () -> assertEquals("Hello World!", response.body));
   }
   
@@ -50,7 +50,7 @@ public class MockHttpServerTest {
     
     HttpResponse response = client.request(Requests.get("/hello"));
 
-    assertEquals(HttpStatus.BAD_REQUEST, response.statusCode);
+    assertEquals(HttpStatus.BAD_REQUEST, response.status);
   }
 
   @Test
@@ -59,7 +59,7 @@ public class MockHttpServerTest {
     
     HttpResponse response = client.request(Requests.get("/test").withHeader("Accept", "application/json"));
 
-    assertAll(() -> assertEquals(HttpStatus.OK, response.statusCode),
+    assertAll(() -> assertEquals(HttpStatus.OK, response.status),
               () -> assertEquals("{ }", response.body),
               () -> assertEquals(asList("application/json"), response.headers.get("Content-type")));
   }
@@ -70,7 +70,7 @@ public class MockHttpServerTest {
     
     HttpResponse response = client.request(Requests.get("/test").withHeader("Accept", "text/xml"));
 
-    assertAll(() -> assertEquals(HttpStatus.OK, response.statusCode),
+    assertAll(() -> assertEquals(HttpStatus.OK, response.status),
               () -> assertEquals("<body/>", response.body),
               () -> assertEquals(asList("text/xml"), response.headers.get("Content-type")));
   }
