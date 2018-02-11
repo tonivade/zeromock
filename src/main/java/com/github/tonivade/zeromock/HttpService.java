@@ -23,6 +23,10 @@ public class HttpService {
     this.mappings = mappings;
   }
   
+  public String name() {
+    return name;
+  }
+  
   public HttpService when(Predicate<HttpRequest> matcher, Function<HttpRequest, HttpResponse> handler) {
     mappings.put(matcher, handler);
     return this;

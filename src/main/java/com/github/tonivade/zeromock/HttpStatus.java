@@ -35,13 +35,17 @@ public enum HttpStatus {
   HttpStatus(int code) {
     this.code = code;
   }
+  
+  public int code() {
+    return code;
+  }
 
-  public static HttpStatus fromCode(int responseCode) {
+  public static HttpStatus fromCode(int code) {
     for (HttpStatus httpStatus : values()) {
-      if (httpStatus.code == responseCode) {
+      if (httpStatus.code == code) {
         return httpStatus;
       }
     }
-    throw new IllegalArgumentException("invalid code: " + responseCode);
+    throw new IllegalArgumentException("invalid code: " + code);
   }
 }
