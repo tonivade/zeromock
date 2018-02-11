@@ -13,10 +13,8 @@ import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -32,7 +30,7 @@ public class MockHttpServer {
 
   private final List<HttpRequest> matched = new LinkedList<>();
   private final List<HttpRequest> unmatched = new LinkedList<>();
-  private final Map<String, HttpService> mappings = new HashMap<>();
+  private final HttpService root = new HttpService("root");
   
   private MockHttpServer(int port) {
     try {
@@ -48,7 +46,12 @@ public class MockHttpServer {
   }
 
   public MockHttpServer mount(String path, HttpService service) {
-    mappings.put(path, service);
+    root.mount(path, service);
+    return this;
+  }
+  
+  public MockHttpServer when(Predicate<HttpRequest> predicate, Function<HttpRequest, HttpResponse> handler) {
+    root.when(predicate, handler);
     return this;
   }
 
@@ -85,11 +88,7 @@ public class MockHttpServer {
   }
 
   private Optional<HttpResponse> execute(HttpRequest request) {
-    return findService(request).flatMap(service -> service.handle(request.dropOneLevel()));
-  }
-  
-  private Optional<HttpService> findService(HttpRequest request) {
-    return Optional.ofNullable(mappings.get(ROOT + request.path.getAt(0)));
+    return root.handle(request);
   }
 
   private HttpRequest createRequest(HttpExchange exchange) throws IOException {

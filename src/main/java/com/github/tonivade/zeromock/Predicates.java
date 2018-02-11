@@ -24,6 +24,10 @@ public class Predicates {
     return request -> request.path.match(new Path(url));
   }
   
+  public static Predicate<HttpRequest> startsWith(String url) {
+    return request -> request.path.startsWith(new Path(url));
+  }
+  
   public static Predicate<HttpRequest> param(String name) {
     return request -> request.params.contains(name);
   }

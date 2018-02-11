@@ -38,6 +38,15 @@ public class Path {
     return Pattern.matches(path.toPattern(), toPattern());
   }
 
+  public boolean startsWith(Path other) {
+    for (int i = 0; i < other.value.size(); i++) {
+      if (!this.getAt(i).value.equals(other.getAt(i).value)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   public String toPattern() {
     return ROOT + value.stream().map(PathElement::toPattern).collect(joining(ROOT));
   }

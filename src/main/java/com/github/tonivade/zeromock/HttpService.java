@@ -4,6 +4,9 @@
  */
 package com.github.tonivade.zeromock;
 
+import static com.github.tonivade.zeromock.Handlers.delegate;
+import static com.github.tonivade.zeromock.Predicates.startsWith;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -25,6 +28,11 @@ public class HttpService {
   
   public String name() {
     return name;
+  }
+
+  public HttpService mount(String path, HttpService service) {
+    mappings.put(startsWith(path), delegate(service));
+    return this;
   }
   
   public HttpService when(Predicate<HttpRequest> matcher, Function<HttpRequest, HttpResponse> handler) {

@@ -57,4 +57,8 @@ public class Handlers {
   public static Function<HttpResponse, HttpResponse> contentXml() {
     return contentType("text/xml");
   }
+
+  public static Function<HttpRequest, HttpResponse> delegate(HttpService service) {
+    return request -> service.handle(request.dropOneLevel()).orElse(Responses.notFound("not found"));
+  }
 }
