@@ -49,13 +49,19 @@ public class Handlers {
                                                                    Function<T, R> exec) {
     return compose(begin, exec, Responses::created);
   }
+
+  public static <U, T, R> Function<HttpRequest, HttpResponse> created(Function<HttpRequest, U> beginT, 
+                                                                      Function<HttpRequest, T> beginU, 
+                                                                      BiFunction<U, T, R> exec) {
+    return compose(beginT, beginU, exec, Responses::created);
+  }
   
   public static Function<HttpRequest, HttpResponse> noContent() {
-    return compose(identity(), identity(), x -> Responses.noContent());
+    return compose(identity(), identity(), request -> Responses.noContent());
   }
   
   public static Function<HttpRequest, HttpResponse> forbidden() {
-    return compose(identity(), identity(), x -> Responses.forbidden());
+    return compose(identity(), identity(), request -> Responses.forbidden());
   }
 
   public static Function<HttpRequest, HttpResponse> badRequest(String body) {
@@ -92,16 +98,16 @@ public class Handlers {
     return begin.andThen(exec).andThen(end);
   }
   
-  public static <T, U, R> Function<HttpRequest, HttpResponse> compose(Function<HttpRequest, T> begin0, 
-                                                                      Function<HttpRequest, U> begin1, 
+  public static <T, U, R> Function<HttpRequest, HttpResponse> compose(Function<HttpRequest, T> beginT, 
+                                                                      Function<HttpRequest, U> beginU, 
                                                                       BiFunction<T, U, R> exec, 
                                                                       Function<R, HttpResponse> end) {
-    return tupple(begin0, begin1).andThen(untupple(exec)).andThen(end);
+    return tupple(beginT, beginU).andThen(untupple(exec)).andThen(end);
   }
   
-  private static <T, U, R> Function<HttpRequest, Tupple<T, U>> tupple(Function<HttpRequest, T> begin0, 
-                                                                      Function<HttpRequest, U> begin1) {
-    return request -> new Tupple<>(begin0.apply(request), begin1.apply(request));
+  private static <T, U, R> Function<HttpRequest, Tupple<T, U>> tupple(Function<HttpRequest, T> beginT, 
+                                                                      Function<HttpRequest, U> beginU) {
+    return request -> new Tupple<>(beginT.apply(request), beginU.apply(request));
   }
   
   private static <T, U, R> Function<Tupple<T, U>, R> untupple(BiFunction<T, U, R> function) {
