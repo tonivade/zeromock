@@ -6,24 +6,25 @@ package com.github.tonivade.zeromock;
 
 import static com.github.tonivade.zeromock.Handlers.delegate;
 import static com.github.tonivade.zeromock.Predicates.startsWith;
+import static java.util.Objects.requireNonNull;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class HttpService {
   private final String name;
-  private final Map<Predicate<HttpRequest>, Function<HttpRequest, HttpResponse>> mappings;
+  private final List<Mapping> mappings;
   
   public HttpService(String name) {
-    this(name, new HashMap<>());
+    this(name, new LinkedList<>());
   }
   
-  private HttpService(String name, Map<Predicate<HttpRequest>, Function<HttpRequest, HttpResponse>> mappings) {
-    this.name = name;
-    this.mappings = mappings;
+  private HttpService(String name, List<Mapping> mappings) {
+    this.name = requireNonNull(name);
+    this.mappings = requireNonNull(mappings);
   }
   
   public String name() {
@@ -31,35 +32,56 @@ public class HttpService {
   }
 
   public HttpService mount(String path, HttpService service) {
-    mappings.put(startsWith(path), delegate(service));
+    mappings.add(mapping(startsWith(path), delegate(service)));
     return this;
   }
   
   public HttpService when(Predicate<HttpRequest> matcher, Function<HttpRequest, HttpResponse> handler) {
-    mappings.put(matcher, handler);
+    mappings.add(mapping(matcher, handler));
     return this;
   }
   
-  public Optional<HttpResponse> handle(HttpRequest request) {
-    return findHandler(request).map(handler -> handler.apply(request));
+  public Optional<HttpResponse> execute(HttpRequest request) {
+    return findMapping(request).map(mapping -> mapping.execute(request));
   }
   
   public HttpService combine(HttpService other) {
-    Map<Predicate<HttpRequest>, Function<HttpRequest, HttpResponse>> merge = new HashMap<>();
-    merge.putAll(this.mappings);
-    merge.putAll(other.mappings);
+    List<Mapping> merge = new LinkedList<>();
+    merge.addAll(this.mappings);
+    merge.addAll(other.mappings);
     return new HttpService(this.name + "+" + other.name, merge);
-  }
-
-  private Optional<Function<HttpRequest, HttpResponse>> findHandler(HttpRequest request) {
-    return mappings.entrySet().stream()
-        .filter(entry -> entry.getKey().test(request))
-        .map(Map.Entry::getValue)
-        .findFirst();
   }
   
   @Override
   public String toString() {
     return "HttpService(" + name + ")";
+  }
+
+  private Optional<Mapping> findMapping(HttpRequest request) {
+    return mappings.stream()
+        .filter(mapping -> mapping.test(request))
+        .findFirst();
+  }
+  
+  private Mapping mapping(Predicate<HttpRequest> predicate, Function<HttpRequest, HttpResponse> handler) {
+    return new Mapping(predicate, handler);
+  }
+  
+  private static final class Mapping {
+    private final Predicate<HttpRequest> predicate;
+    private final Function<HttpRequest, HttpResponse> handler;
+
+    public Mapping(Predicate<HttpRequest> predicate, Function<HttpRequest, HttpResponse> handler) {
+      this.predicate = requireNonNull(predicate);
+      this.handler = requireNonNull(handler);
+    }
+    
+    public boolean test(HttpRequest request) {
+      return predicate.test(request);
+    }
+    
+    public HttpResponse execute(HttpRequest request) {
+      return handler.apply(request);
+    }
   }
 }

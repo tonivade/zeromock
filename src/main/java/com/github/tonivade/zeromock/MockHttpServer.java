@@ -89,7 +89,7 @@ public class MockHttpServer {
   }
 
   private Optional<HttpResponse> execute(HttpRequest request) {
-    return root.handle(request);
+    return root.execute(request);
   }
 
   private HttpRequest createRequest(HttpExchange exchange) throws IOException {
