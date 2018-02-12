@@ -22,7 +22,7 @@ public class BooksModule {
     return new Book(1, title);
   }
 
-  public Object updateBook(Integer id, String title) {
+  public Book updateBook(Integer id, String title) {
     return new Book(id, title);
   }
 
