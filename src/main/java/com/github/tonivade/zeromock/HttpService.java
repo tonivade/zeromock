@@ -14,8 +14,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class HttpService {
-  final String name;
-  final Map<Predicate<HttpRequest>, Function<HttpRequest, HttpResponse>> mappings;
+  private final String name;
+  private final Map<Predicate<HttpRequest>, Function<HttpRequest, HttpResponse>> mappings;
   
   public HttpService(String name) {
     this(name, new HashMap<>());

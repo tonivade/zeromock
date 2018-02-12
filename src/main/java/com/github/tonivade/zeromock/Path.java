@@ -69,7 +69,7 @@ public class Path {
   }
   
   public static abstract class PathElement {
-    final String value;
+    private final String value;
     
     private PathElement(String value) {
       this.value = value;
@@ -94,7 +94,7 @@ public class Path {
     
     @Override
     public String toPattern() {
-      return value;
+      return value();
     }
   }
   
