@@ -37,6 +37,10 @@ public final class HttpRequest {
     return body;
   }
   
+  public String bodyAsString() {
+    return body.toString();
+  }
+  
   public HttpHeaders headers() {
     return headers;
   }
@@ -59,6 +63,10 @@ public final class HttpRequest {
   
   public Integer pathParamAsInteger(int position) {
     return Integer.parseInt(pathParam(position));
+  }
+  
+  public Integer firstPathParamAsInteger() {
+    return pathParamAsInteger(1);
   }
   
   public String toUrl() {
