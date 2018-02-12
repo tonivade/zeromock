@@ -6,7 +6,6 @@ package com.github.tonivade.zeromock;
 
 import static java.util.function.Function.identity;
 
-import java.util.AbstractMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -111,13 +110,24 @@ public class Handlers {
   }
   
   private static <T, U, R> Function<Tupple<T, U>, R> untupple(BiFunction<T, U, R> function) {
-    return entry -> function.apply(entry.getKey(), entry.getValue());
+    return tupple -> function.apply(tupple._1(), tupple._2());
   }
   
-  @SuppressWarnings("serial")
-  private static final class Tupple<T, U> extends AbstractMap.SimpleImmutableEntry<T, U> {
-    public Tupple(T key, U value) {
-      super(key, value);
+  private static final class Tupple<T, U> {
+    private final T t;
+    private final U u;
+
+    public Tupple(T t, U u) {
+      this.t = t;
+      this.u = u;
+    }
+    
+    public T _1() {
+      return t;
+    }
+    
+    public U _2() {
+      return u;
     }
   }
 }
