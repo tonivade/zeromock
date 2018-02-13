@@ -14,7 +14,7 @@ public class Handlers {
   
   private Handlers() {}
 
-  public static Function<HttpRequest, HttpResponse> ok(String body) {
+  public static <T> Function<HttpRequest, HttpResponse> ok(T body) {
     return ok(request -> body);
   }
 
@@ -26,7 +26,7 @@ public class Handlers {
     return handler.andThen(Responses::ok);
   }
   
-  public static Function<HttpRequest, HttpResponse> created(String body) {
+  public static <T> Function<HttpRequest, HttpResponse> created(T body) {
     return created(request -> body);
   }
   
@@ -46,7 +46,7 @@ public class Handlers {
     return request -> Responses.forbidden();
   }
 
-  public static Function<HttpRequest, HttpResponse> badRequest(String body) {
+  public static <T> Function<HttpRequest, HttpResponse> badRequest(T body) {
     return badRequest(request -> body);
   }
 
@@ -54,7 +54,7 @@ public class Handlers {
     return handler.andThen(Responses::badRequest);
   }
 
-  public static Function<HttpRequest, HttpResponse> notFound(String body) {
+  public static <T> Function<HttpRequest, HttpResponse> notFound(T body) {
     return notFound(request -> body);
   }
 
@@ -62,7 +62,7 @@ public class Handlers {
     return handler.andThen(Responses::notFound);
   }
 
-  public static Function<HttpRequest, HttpResponse> error(String body) {
+  public static <T> Function<HttpRequest, HttpResponse> error(T body) {
     return error(request -> body);
   }
   
