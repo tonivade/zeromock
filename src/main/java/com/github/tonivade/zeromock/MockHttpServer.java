@@ -5,6 +5,7 @@
 package com.github.tonivade.zeromock;
 
 import static com.github.tonivade.zeromock.IOUtils.readAll;
+import static com.github.tonivade.zeromock.Responses.error;
 import static com.github.tonivade.zeromock.Responses.notFound;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.nonNull;
@@ -77,14 +78,19 @@ public class MockHttpServer {
   }
 
   private void handle(HttpExchange exchange) throws IOException {
-    HttpRequest request = createRequest(exchange);
-    Optional<HttpResponse> response = execute(request);
-    if (response.isPresent()) {
-      matched.add(request);
-      processResponse(exchange, response.get());
-    } else {
-      processResponse(exchange, notFound("not found"));
-      unmatched.add(request);
+    try {
+      HttpRequest request = createRequest(exchange);
+      Optional<HttpResponse> response = execute(request);
+      if (response.isPresent()) {
+        matched.add(request);
+        processResponse(exchange, response.get());
+      } else {
+        processResponse(exchange, notFound("not found"));
+        unmatched.add(request);
+      }
+    } catch (RuntimeException e) {
+      e.printStackTrace();
+      processResponse(exchange, error(e.getMessage()));
     }
   }
 

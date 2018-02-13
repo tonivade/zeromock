@@ -1,5 +1,4 @@
 /*
- * O
  * Copyright (c) 2018, Antonio Gabriel Muñoz Conejo <antoniogmc at gmail dot com>
  * Distributed under the terms of the MIT License
  */
@@ -26,6 +25,10 @@ public class Handlers {
 
   public static <T> Function<HttpRequest, HttpResponse> ok(Function<HttpRequest, T> handler) {
     return handler.andThen(Responses::ok);
+  }
+  
+  public static <T> Function<HttpRequest, HttpResponse> okOrNoContent(Function<HttpRequest, Optional<T>> handler) {
+    return handler.andThen(okOrNoContent());
   }
   
   public static <T> Function<HttpRequest, HttpResponse> created(T body) {
@@ -103,6 +106,10 @@ public class Handlers {
   
   public static <T, U, R> Function<Tupple<T, U>, R> split(BiFunction<T, U, R> function) {
     return tupple -> function.apply(tupple.get1(), tupple.get2());
+  }
+
+  private static <T> Function<Optional<T>, HttpResponse> okOrNoContent() {
+    return optional -> optional.map(Responses::ok).orElseGet(Responses::noContent);
   }
   
   private static final class Tupple<T, U> {
