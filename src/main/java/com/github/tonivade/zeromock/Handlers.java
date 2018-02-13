@@ -18,11 +18,11 @@ public class Handlers {
     return ok(request -> body);
   }
 
-  public static Function<HttpRequest, HttpResponse> ok(Supplier<Object> supplier) {
+  public static <T> Function<HttpRequest, HttpResponse> ok(Supplier<T> supplier) {
     return ok(request -> supplier.get());
   }
 
-  public static Function<HttpRequest, HttpResponse> ok(Function<HttpRequest, Object> handler) {
+  public static <T> Function<HttpRequest, HttpResponse> ok(Function<HttpRequest, T> handler) {
     return handler.andThen(Responses::ok);
   }
   
@@ -30,7 +30,7 @@ public class Handlers {
     return created(request -> body);
   }
   
-  public static Function<HttpRequest, HttpResponse> created(Function<HttpRequest, Object> handler) {
+  public static <T> Function<HttpRequest, HttpResponse> created(Function<HttpRequest, T> handler) {
     return handler.andThen(Responses::created);
   }
   
@@ -50,7 +50,7 @@ public class Handlers {
     return badRequest(request -> body);
   }
 
-  public static Function<HttpRequest, HttpResponse> badRequest(Function<HttpRequest, Object> handler) {
+  public static <T> Function<HttpRequest, HttpResponse> badRequest(Function<HttpRequest, T> handler) {
     return handler.andThen(Responses::badRequest);
   }
 
@@ -58,7 +58,7 @@ public class Handlers {
     return notFound(request -> body);
   }
 
-  public static Function<HttpRequest, HttpResponse> notFound(Function<HttpRequest, Object> handler) {
+  public static <T> Function<HttpRequest, HttpResponse> notFound(Function<HttpRequest, T> handler) {
     return handler.andThen(Responses::notFound);
   }
 
@@ -66,7 +66,7 @@ public class Handlers {
     return error(request -> body);
   }
   
-  public static Function<HttpRequest, HttpResponse> error(Function<HttpRequest, Object> handler) {
+  public static <T> Function<HttpRequest, HttpResponse> error(Function<HttpRequest, T> handler) {
     return handler.andThen(Responses::error);
   }
   

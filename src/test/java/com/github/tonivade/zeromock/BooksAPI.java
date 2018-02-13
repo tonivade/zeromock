@@ -15,6 +15,8 @@ import static com.github.tonivade.zeromock.Handlers.split;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import com.github.tonivade.zeromock.BooksService.Book;
+
 public class BooksAPI {
   
   private final BooksService service;
@@ -27,19 +29,19 @@ public class BooksAPI {
     return service::findAll;
   }
 
-  public Function<HttpRequest, Object> update() {
+  public Function<HttpRequest, Book> update() {
     return join(getBookId(), getBookTitle()).andThen(split(service::update));
   }
 
-  public Function<HttpRequest, Object> find() {
+  public Function<HttpRequest, Book> find() {
     return getBookId().andThen(service::find);
   }
 
-  public Function<HttpRequest, Object> create() {
+  public Function<HttpRequest, Book> create() {
     return body().andThen(asString()).andThen(service::create);
   }
 
-  public Function<HttpRequest, Object> delete() {
+  public Function<HttpRequest, Void> delete() {
     return getBookId().andThen(force(service::delete));
   }
 
