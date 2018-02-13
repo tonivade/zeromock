@@ -31,15 +31,15 @@ public class Responses {
     return new HttpResponse(FORBIDDEN, null, HttpHeaders.empty());
   }
 
-  public static HttpResponse badRequest(String body) {
+  public static HttpResponse badRequest(Object body) {
     return new HttpResponse(BAD_REQUEST, body, HttpHeaders.empty());
   }
 
-  public static HttpResponse notFound(String body) {
+  public static HttpResponse notFound(Object body) {
     return new HttpResponse(NOT_FOUND, body, HttpHeaders.empty());
   }
 
-  public static HttpResponse error(String body) {
+  public static HttpResponse error(Object body) {
     return new HttpResponse(INTERNAL_SERVER_ERROR, body, HttpHeaders.empty());
   }
 }

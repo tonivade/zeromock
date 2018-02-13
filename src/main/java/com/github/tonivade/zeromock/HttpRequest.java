@@ -37,10 +37,6 @@ public final class HttpRequest {
     return body;
   }
   
-  public String bodyAsString() {
-    return body.toString();
-  }
-  
   public HttpHeaders headers() {
     return headers;
   }
@@ -53,20 +49,8 @@ public final class HttpRequest {
     return params.get(name).orElseThrow(IllegalArgumentException::new);
   }
   
-  public Integer paramAsInteger(String name) {
-    return Integer.parseInt(param(name));
-  }
-  
   public String pathParam(int position) {
     return path.getAt(position).map(PathElement::value).orElseThrow(IllegalArgumentException::new);
-  }
-  
-  public Integer pathParamAsInteger(int position) {
-    return Integer.parseInt(pathParam(position));
-  }
-  
-  public Integer firstPathParamAsInteger() {
-    return pathParamAsInteger(1);
   }
   
   public String toUrl() {
