@@ -20,7 +20,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class BooksModuleTest {
+public class BooksServiceTest {
   
   private BooksAPI books = new BooksAPI(new BooksService());
   
