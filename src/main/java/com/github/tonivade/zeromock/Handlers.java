@@ -4,7 +4,9 @@
  */
 package com.github.tonivade.zeromock;
 
+import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -30,6 +32,10 @@ public class Handlers {
   
   public static Function<HttpRequest, HttpResponse> created(Function<HttpRequest, Object> handler) {
     return handler.andThen(Responses::created);
+  }
+  
+  public static <T> Function<T, Void> force(Consumer<T> consumer) {
+    return value -> { consumer.accept(value); return null; };
   }
   
   public static Function<HttpRequest, HttpResponse> noContent() {
@@ -75,9 +81,17 @@ public class Handlers {
   public static Function<HttpResponse, HttpResponse> contentXml() {
     return contentType("text/xml");
   }
+  
+  public static Function<HttpRequest, HttpRequest> dropOneLevel() {
+    return request -> request.dropOneLevel();
+  }
 
   public static Function<HttpRequest, HttpResponse> delegate(HttpService service) {
-    return request -> service.execute(request.dropOneLevel()).orElse(Responses.notFound("not found"));
+    return dropOneLevel().andThen(service::execute).andThen(getOrNotFound());
+  }
+
+  public static Function<Optional<HttpResponse>, HttpResponse> getOrNotFound() {
+    return response -> response.orElseGet(() -> Responses.notFound("no mapping found"));
   }
   
   public static <T, U, R> Function<HttpRequest, Tupple<T, U>> join(Function<HttpRequest, T> beginT, 

@@ -8,26 +8,25 @@ import static java.util.Arrays.asList;
 
 import java.util.List;
 
-public class BooksModule {
+public class BooksService {
 
-  public List<Book> findAllBooks() {
+  public List<Book> findAll() {
     return asList(new Book(1, "title"));
   }
 
-  public Book findBook(Integer id) {
+  public Book find(Integer id) {
     return new Book(id, "title");
   }
 
-  public Book createBook(String title) {
+  public Book create(String title) {
     return new Book(1, title);
   }
 
-  public Book updateBook(Integer id, String title) {
+  public Book update(Integer id, String title) {
     return new Book(id, title);
   }
 
-  public Void deleteBook(Integer id) {
-    return null;
+  public void delete(Integer id) {
   }
   
   public static class Book {
