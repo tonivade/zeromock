@@ -1,4 +1,5 @@
 /*
+ * O
  * Copyright (c) 2018, Antonio Gabriel Muñoz Conejo <antoniogmc at gmail dot com>
  * Distributed under the terms of the MIT License
  */
@@ -9,6 +10,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 public class Handlers {
   
@@ -70,19 +72,19 @@ public class Handlers {
     return handler.andThen(Responses::error);
   }
   
-  public static Function<HttpResponse, HttpResponse> contentType(String value) {
+  public static UnaryOperator<HttpResponse> contentType(String value) {
     return response -> response.withHeader("Content-type", value);
   }
   
-  public static Function<HttpResponse, HttpResponse> contentJson() {
+  public static UnaryOperator<HttpResponse> contentJson() {
     return contentType("application/json");
   }
   
-  public static Function<HttpResponse, HttpResponse> contentXml() {
+  public static UnaryOperator<HttpResponse> contentXml() {
     return contentType("text/xml");
   }
   
-  public static Function<HttpRequest, HttpRequest> dropOneLevel() {
+  public static UnaryOperator<HttpRequest> dropOneLevel() {
     return request -> request.dropOneLevel();
   }
 
