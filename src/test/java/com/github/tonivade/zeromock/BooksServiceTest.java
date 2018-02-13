@@ -75,7 +75,7 @@ public class BooksServiceTest {
   }
   
   @Test
-  public void bookUpdated() {
+  public void updatesBook() {
     HttpClient client = new HttpClient("http://localhost:8080/store");
     
     HttpResponse response = client.request(Requests.put("/books/1").withBody("update"));
