@@ -10,7 +10,9 @@ import static java.util.stream.Collectors.joining;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class HttpParams {
   private static final String BEGIN = "?";
@@ -76,6 +78,10 @@ public class HttpParams {
 
   private String paramsToString() {
     return BEGIN + params.entrySet().stream()
-        .map(entry -> entry.getKey() + EQUALS + entry.getValue()).collect(joining(SEPARATOR));
+        .map(entryToString()).collect(joining(SEPARATOR));
+  }
+
+  private Function<Entry<String, String>, String> entryToString() {
+    return entry -> entry.getKey() + EQUALS + entry.getValue();
   }
 }
