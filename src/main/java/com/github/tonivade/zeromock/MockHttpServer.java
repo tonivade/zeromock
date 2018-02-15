@@ -4,9 +4,12 @@
  */
 package com.github.tonivade.zeromock;
 
-import static com.github.tonivade.zeromock.IOUtils.readAll;
+import static com.github.tonivade.zeromock.Deserializers.deserializer;
+import static com.github.tonivade.zeromock.Bytes.emptyByteBuffer;
+import static com.github.tonivade.zeromock.Bytes.asByteBuffer;
 import static com.github.tonivade.zeromock.Responses.error;
 import static com.github.tonivade.zeromock.Responses.notFound;
+import static com.github.tonivade.zeromock.Serializers.serializer;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.nonNull;
 
@@ -100,11 +103,12 @@ public class MockHttpServer {
   }
 
   private HttpRequest createRequest(HttpExchange exchange) throws IOException {
-    return new HttpRequest(HttpMethod.valueOf(exchange.getRequestMethod()),
-                           new Path(exchange.getRequestURI().getPath()), 
-                           Deserializers.plain().apply(readAll(exchange.getRequestBody())),
-                           new HttpHeaders(exchange.getRequestHeaders()),
-                           new HttpParams(exchange.getRequestURI().getQuery()));
+    HttpMethod method = HttpMethod.valueOf(exchange.getRequestMethod());
+    HttpHeaders headers = new HttpHeaders(exchange.getRequestHeaders());
+    HttpParams params = new HttpParams(exchange.getRequestURI().getQuery());
+    Path path = new Path(exchange.getRequestURI().getPath());
+    Object body = deserializer(headers).apply(asByteBuffer(exchange.getRequestBody()));
+    return new HttpRequest(method, path, body, headers, params);
   }
 
   private void processResponse(HttpExchange exchange, HttpResponse response) throws IOException {
@@ -119,14 +123,10 @@ public class MockHttpServer {
   private ByteBuffer serialize(HttpResponse response) {
     ByteBuffer bytes;
     if (nonNull(response.body())) {
-      bytes = getSerializer(response).apply(response.body());
+      bytes = serializer(response.headers()).apply(response.body());
     } else {
-      bytes = ByteBuffer.wrap(new byte[]{});
+      bytes = emptyByteBuffer();
     }
     return bytes;
-  }
-
-  private Function<Object, ByteBuffer> getSerializer(HttpResponse response) {
-    return Serializers.plain();
   }
 }

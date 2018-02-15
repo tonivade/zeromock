@@ -22,6 +22,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.eclipsesource.json.Json;
+
 public class MockHttpServerTest {
 
   private HttpService service1 = new HttpService("hello")
@@ -30,7 +32,7 @@ public class MockHttpServerTest {
 
   private HttpService service2 = new HttpService("test")
       .when(get().and(path("/test")).and(acceptsXml()), ok("<body/>").andThen(contentXml()))
-      .when(get().and(path("/test")).and(acceptsJson()), contentJson().compose(ok("{ }")));
+      .when(get().and(path("/test")).and(acceptsJson()), contentJson().compose(ok("{}")));
   
   private MockHttpServer server = listenAt(8080).mount("/path", service1.combine(service2));
 
@@ -60,7 +62,7 @@ public class MockHttpServerTest {
     HttpResponse response = client.request(Requests.get("/test").withHeader("Accept", "application/json"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals("{ }", response.body()),
+              () -> assertEquals(Json.object(), response.body()),
               () -> assertEquals(asList("application/json"), response.headers().get("Content-type")));
   }
 

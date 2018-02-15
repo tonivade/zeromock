@@ -69,7 +69,7 @@ public final class HttpRequest {
     return new HttpRequest(method, path, body, headers.withHeader(key, value), params);
   }
 
-  public HttpRequest withBody(String body) {
+  public HttpRequest withBody(Object body) {
     return new HttpRequest(method, path, body, headers, params);
   }
 
