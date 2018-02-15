@@ -6,7 +6,7 @@ package com.github.tonivade.zeromock;
 
 import java.util.function.Function;
 
-public class Extractors {
+public final class Extractors {
   
   private Extractors() {}
 

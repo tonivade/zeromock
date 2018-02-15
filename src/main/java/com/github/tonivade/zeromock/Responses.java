@@ -12,7 +12,7 @@ import static com.github.tonivade.zeromock.HttpStatus.NOT_FOUND;
 import static com.github.tonivade.zeromock.HttpStatus.NO_CONTENT;
 import static com.github.tonivade.zeromock.HttpStatus.OK;
 
-public class Responses {
+public final class Responses {
   
   private Responses() {}
 

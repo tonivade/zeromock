@@ -11,7 +11,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
-public class Handlers {
+public final class Handlers {
   
   private Handlers() {}
 

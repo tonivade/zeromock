@@ -8,9 +8,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 
-public class IOUtils {
+public final class IOUtils {
 
+  protected static final Charset UTF8 = Charset.forName("UTF-8");
   private static final int BUFFER_SIZE = 1024;
 
   private IOUtils() {}

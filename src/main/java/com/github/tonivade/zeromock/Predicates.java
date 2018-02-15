@@ -12,7 +12,7 @@ import static com.github.tonivade.zeromock.HttpMethod.PUT;
 
 import java.util.function.Predicate;
 
-public class Predicates {
+public final class Predicates {
 
   private Predicates() {}
 

@@ -5,15 +5,13 @@
 package com.github.tonivade.zeromock;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.util.function.Function;
 
 public class Serializers {
-  private static final Charset UTF8 = Charset.forName("UTF-8");
   
   private Serializers() {}
   
   public static Function<Object, ByteBuffer> plain() {
-    return object -> ByteBuffer.wrap(object.toString().getBytes(UTF8));
+    return object -> ByteBuffer.wrap(object.toString().getBytes(IOUtils.UTF8));
   }
 }

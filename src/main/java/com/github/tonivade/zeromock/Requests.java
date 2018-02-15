@@ -10,7 +10,7 @@ import static com.github.tonivade.zeromock.HttpMethod.PATCH;
 import static com.github.tonivade.zeromock.HttpMethod.POST;
 import static com.github.tonivade.zeromock.HttpMethod.PUT;
 
-public class Requests {
+public final class Requests {
 
   private Requests() {}
 
