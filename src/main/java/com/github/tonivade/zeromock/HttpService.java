@@ -15,6 +15,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class HttpService {
+  
   private final String name;
   private final List<Mapping> mappings;
   

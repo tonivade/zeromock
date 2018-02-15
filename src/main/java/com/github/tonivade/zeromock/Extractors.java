@@ -7,6 +7,7 @@ package com.github.tonivade.zeromock;
 import java.util.function.Function;
 
 public class Extractors {
+  
   private Extractors() {}
 
   public static Function<HttpRequest, Object> body() {

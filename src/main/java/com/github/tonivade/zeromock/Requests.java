@@ -15,22 +15,22 @@ public class Requests {
   private Requests() {}
 
   public static HttpRequest get(String path) {
-    return new HttpRequest(GET, new Path(path), null, HttpHeaders.empty(), HttpParams.empty());
+    return new HttpRequest(GET, new Path(path));
   }
 
   public static HttpRequest post(String path) {
-    return new HttpRequest(POST, new Path(path), null, HttpHeaders.empty(), HttpParams.empty());
+    return new HttpRequest(POST, new Path(path));
   }
 
   public static HttpRequest put(String path) {
-    return new HttpRequest(PUT, new Path(path), null, HttpHeaders.empty(), HttpParams.empty());
+    return new HttpRequest(PUT, new Path(path));
   }
 
   public static HttpRequest delete(String path) {
-    return new HttpRequest(DELETE, new Path(path), null, HttpHeaders.empty(), HttpParams.empty());
+    return new HttpRequest(DELETE, new Path(path));
   }
 
   public static HttpRequest patch(String path) {
-    return new HttpRequest(PATCH, new Path(path), null, HttpHeaders.empty(), HttpParams.empty());
+    return new HttpRequest(PATCH, new Path(path));
   }
 }

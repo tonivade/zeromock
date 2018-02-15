@@ -26,6 +26,7 @@ import com.sun.net.httpserver.HttpServer;
 
 @SuppressWarnings("restriction")
 public class MockHttpServer {
+  
   private static final String ROOT = "/";
 
   private final HttpServer server;

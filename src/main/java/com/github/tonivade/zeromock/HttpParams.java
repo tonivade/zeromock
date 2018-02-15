@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public class HttpParams {
+  
   private static final String BEGIN = "?";
   private static final String EMPTY = "";
   private static final String EQUALS = "=";

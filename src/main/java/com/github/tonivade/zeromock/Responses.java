@@ -13,33 +13,34 @@ import static com.github.tonivade.zeromock.HttpStatus.NO_CONTENT;
 import static com.github.tonivade.zeromock.HttpStatus.OK;
 
 public class Responses {
+  
   private Responses() {}
 
   public static HttpResponse ok(Object body) {
-    return new HttpResponse(OK, body, HttpHeaders.empty());
+    return new HttpResponse(OK, body);
   }
 
   public static HttpResponse created(Object body) {
-    return new HttpResponse(CREATED, body, HttpHeaders.empty());
+    return new HttpResponse(CREATED, body);
   }
   
   public static HttpResponse noContent() {
-    return new HttpResponse(NO_CONTENT, null, HttpHeaders.empty());
+    return new HttpResponse(NO_CONTENT, null);
   }
   
   public static HttpResponse forbidden() {
-    return new HttpResponse(FORBIDDEN, null, HttpHeaders.empty());
+    return new HttpResponse(FORBIDDEN, null);
   }
 
   public static HttpResponse badRequest(Object body) {
-    return new HttpResponse(BAD_REQUEST, body, HttpHeaders.empty());
+    return new HttpResponse(BAD_REQUEST, body);
   }
 
   public static HttpResponse notFound(Object body) {
-    return new HttpResponse(NOT_FOUND, body, HttpHeaders.empty());
+    return new HttpResponse(NOT_FOUND, body);
   }
 
   public static HttpResponse error(Object body) {
-    return new HttpResponse(INTERNAL_SERVER_ERROR, body, HttpHeaders.empty());
+    return new HttpResponse(INTERNAL_SERVER_ERROR, body);
   }
 }

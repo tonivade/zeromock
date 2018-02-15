@@ -16,6 +16,10 @@ public final class HttpRequest {
   private final HttpHeaders headers;
   private final HttpParams params;
 
+  public HttpRequest(HttpMethod method, Path path) {
+    this(method, path, null, HttpHeaders.empty(), HttpParams.empty());
+  }
+
   public HttpRequest(HttpMethod method, Path path, Object body, 
                      HttpHeaders headers, HttpParams params) {
     this.method = requireNonNull(method);

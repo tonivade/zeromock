@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class Path {
+  
   private static final String ROOT = "/";
   private static final String PARAM_PREFIX = ":";
 

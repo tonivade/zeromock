@@ -11,6 +11,10 @@ public final class HttpResponse {
   private final HttpStatus status;
   private final Object body;
   private final HttpHeaders headers;
+
+  public HttpResponse(HttpStatus status, Object body) {
+    this(status, body, HttpHeaders.empty());
+  }
   
   public HttpResponse(HttpStatus status, Object body, HttpHeaders headers) {
     this.status = requireNonNull(status);
