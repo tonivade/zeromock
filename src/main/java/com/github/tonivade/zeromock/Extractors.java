@@ -4,6 +4,8 @@
  */
 package com.github.tonivade.zeromock;
 
+import static java.util.Objects.nonNull;
+
 import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
 import java.util.function.Function;
@@ -14,6 +16,8 @@ import com.google.gson.JsonParser;
 
 public final class Extractors {
   
+  private static final String EMPTY = "";
+
   private Extractors() {}
 
   public static Function<HttpRequest, ByteBuffer> body() {
@@ -29,7 +33,7 @@ public final class Extractors {
   }
   
   public static <T> Function<T, String> asString() {
-    return value -> String.valueOf(value);
+    return value -> nonNull(value) ? value.toString() : EMPTY;
   }
   
   public static Function<String, Integer> asInteger() {

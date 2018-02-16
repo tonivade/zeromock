@@ -72,8 +72,7 @@ public class BooksServiceTest {
     HttpResponse response = client.request(Requests.delete("/books/1"));
     
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              // FIXME: should be null
-              () -> assertEquals("null", asString(response.body())));
+              () -> assertEquals(null, response.body()));
   }
   
   @Test
