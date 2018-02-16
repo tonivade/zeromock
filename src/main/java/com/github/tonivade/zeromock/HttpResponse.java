@@ -4,6 +4,7 @@
  */
 package com.github.tonivade.zeromock;
 
+import static com.github.tonivade.zeromock.Bytes.asString;
 import static java.util.Objects.requireNonNull;
 
 import java.nio.ByteBuffer;
@@ -42,6 +43,6 @@ public final class HttpResponse {
   
   @Override
   public String toString() {
-    return "HttpResponse(" + status + " " + body + ")";
+    return "HttpResponse(" + status + " " + asString(body) + ")";
   }
 }

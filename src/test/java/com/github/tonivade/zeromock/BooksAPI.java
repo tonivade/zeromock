@@ -11,8 +11,8 @@ import static com.github.tonivade.zeromock.Handlers.force;
 import static com.github.tonivade.zeromock.Handlers.join;
 import static com.github.tonivade.zeromock.Handlers.split;
 
+import java.util.List;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import com.github.tonivade.zeromock.BooksService.Book;
 
@@ -24,8 +24,8 @@ public class BooksAPI {
     this.service = service;
   }
 
-  public Supplier<Object> findAll() {
-    return service::findAll;
+  public Function<HttpRequest, List<Book>> findAll() {
+    return force(service::findAll);
   }
 
   public Function<HttpRequest, Book> update() {

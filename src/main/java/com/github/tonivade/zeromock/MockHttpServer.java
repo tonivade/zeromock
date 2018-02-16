@@ -52,7 +52,8 @@ public class MockHttpServer {
     return this;
   }
   
-  public MockHttpServer when(Predicate<HttpRequest> predicate, Function<HttpRequest, HttpResponse> handler) {
+  public MockHttpServer when(Predicate<HttpRequest> predicate, 
+                             Function<HttpRequest, HttpResponse> handler) {
     root.when(predicate, handler);
     return this;
   }
@@ -85,12 +86,12 @@ public class MockHttpServer {
         matched.add(request);
         processResponse(exchange, response.get());
       } else {
-        processResponse(exchange, notFound("not found"));
+        processResponse(exchange, notFound());
         unmatched.add(request);
       }
     } catch (RuntimeException e) {
       e.printStackTrace();
-      processResponse(exchange, error(e.getMessage()));
+      processResponse(exchange, error(asByteBuffer(e.getMessage())));
     }
   }
 
