@@ -5,7 +5,6 @@
 package com.github.tonivade.zeromock;
 
 import static com.github.tonivade.zeromock.Bytes.asString;
-import static com.github.tonivade.zeromock.Extractors.asJson;
 import static com.github.tonivade.zeromock.Handlers.badRequest;
 import static com.github.tonivade.zeromock.Handlers.contentJson;
 import static com.github.tonivade.zeromock.Handlers.contentXml;
@@ -67,7 +66,7 @@ public class MockHttpServerTest {
     HttpResponse response = client.request(Requests.get("/test").withHeader("Accept", "application/json"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals(new JsonObject(), asJson().apply(asString(response.body()))),
+              () -> assertEquals(new JsonObject(), Deserializers.json().apply(response.body())),
               () -> assertEquals(asList("application/json"), response.headers().get("Content-type")));
   }
 

@@ -4,12 +4,13 @@
  */
 package com.github.tonivade.zeromock;
 
-import static com.github.tonivade.zeromock.Extractors.asJson;
-
+import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
 import java.util.function.Function;
 
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 public final class Deserializers {
   
@@ -19,7 +20,19 @@ public final class Deserializers {
     return plain().andThen(asJson());
   }
   
+  public static <T> Function<ByteBuffer, T> json(Type type) {
+    return plain().andThen(asJson()).andThen(fromJson(type));
+  }
+  
   public static Function<ByteBuffer, String> plain() {
     return Bytes::asString;
+  }
+  
+  public static Function<String, JsonElement> asJson() {
+    return json -> new JsonParser().parse(json);
+  }
+  
+  public static <T> Function<JsonElement, T> fromJson(Type type) {
+    return json -> new GsonBuilder().create().fromJson(json, type);
   }
 }

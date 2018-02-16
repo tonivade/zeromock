@@ -102,11 +102,11 @@ public class BooksServiceTest {
   }
 
   private Book asBook(ByteBuffer body) {
-    return Extractors.<Book>deserializer(Book.class).apply(body);
+    return Deserializers.<Book>json(Book.class).apply(body);
   }
 
   private List<Book> asBooks(ByteBuffer body) {
-    return Extractors.<List<Book>>deserializer(listOfBooks()).apply(body);
+    return Deserializers.<List<Book>>json(listOfBooks()).apply(body);
   }
   
   private Type listOfBooks() {

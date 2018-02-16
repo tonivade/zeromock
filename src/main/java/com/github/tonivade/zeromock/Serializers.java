@@ -7,15 +7,26 @@ package com.github.tonivade.zeromock;
 import java.nio.ByteBuffer;
 import java.util.function.Function;
 
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+
 public class Serializers {
   
   private Serializers() {}
   
   public static <T> Function<T, ByteBuffer> json() {
-    return Extractors.<T>toJson().andThen(plain());
+    return Serializers.<T>asJson().andThen(plain());
   }
 
   public static <T> Function<T, ByteBuffer> plain() {
-    return Extractors.<T>asString().andThen(Bytes::asByteBuffer);
+    return Serializers.<T>asString().andThen(Bytes::asByteBuffer);
+  }
+  
+  public static <T> Function<T, JsonElement> asJson() {
+    return value -> new GsonBuilder().create().toJsonTree(value);
+  }
+  
+  public static <T> Function<T, String> asString() {
+    return Object::toString;
   }
 }
