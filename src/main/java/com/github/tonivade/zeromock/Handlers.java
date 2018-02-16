@@ -32,8 +32,8 @@ public final class Handlers {
     return ok(function.andThen(json())).andThen(contentJson());
   }
 
-  public static <T> Function<HttpRequest, HttpResponse> okText(Function<HttpRequest, T> function) {
-    return ok(function.andThen(plain())).andThen(contentJson());
+  public static <T> Function<HttpRequest, HttpResponse> okPlain(Function<HttpRequest, T> function) {
+    return ok(function.andThen(plain())).andThen(contentPlain());
   }
 
   public static Function<HttpRequest, HttpResponse> ok(Function<HttpRequest, ByteBuffer> handler) {
@@ -56,8 +56,8 @@ public final class Handlers {
     return created(function.andThen(json())).andThen(contentJson());
   }
 
-  public static <T> Function<HttpRequest, HttpResponse> createdText(Function<HttpRequest, T> function) {
-    return created(function.andThen(plain())).andThen(contentJson());
+  public static <T> Function<HttpRequest, HttpResponse> createdPlain(Function<HttpRequest, T> function) {
+    return created(function.andThen(plain())).andThen(contentPlain());
   }
   
   public static Function<HttpRequest, HttpResponse> created(Function<HttpRequest, ByteBuffer> handler) {
@@ -110,6 +110,10 @@ public final class Handlers {
   
   public static UnaryOperator<HttpResponse> contentType(String value) {
     return response -> response.withHeader("Content-type", value);
+  }
+  
+  public static UnaryOperator<HttpResponse> contentPlain() {
+    return contentType("text/plain");
   }
   
   public static UnaryOperator<HttpResponse> contentJson() {
