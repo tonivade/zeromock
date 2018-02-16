@@ -5,8 +5,10 @@
 package com.github.tonivade.zeromock;
 
 import static com.github.tonivade.zeromock.Extractors.asInteger;
+import static com.github.tonivade.zeromock.Extractors.asJson;
 import static com.github.tonivade.zeromock.Extractors.asString;
 import static com.github.tonivade.zeromock.Extractors.body;
+import static com.github.tonivade.zeromock.Extractors.fromJson;
 import static com.github.tonivade.zeromock.Extractors.pathParam;
 import static com.github.tonivade.zeromock.Handlers.force;
 import static com.github.tonivade.zeromock.Handlers.join;
@@ -51,5 +53,10 @@ public class BooksAPI {
 
   private static Function<HttpRequest, String> getBookTitle() {
     return body().andThen(asString());
+  }
+
+  // TODO:
+  private static Function<HttpRequest, Book> getBook() {
+    return body().andThen(asString()).andThen(asJson()).andThen(fromJson(Book.class));
   }
 }
