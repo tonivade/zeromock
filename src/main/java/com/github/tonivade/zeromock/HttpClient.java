@@ -4,16 +4,15 @@
  */
 package com.github.tonivade.zeromock;
 
-import static com.github.tonivade.zeromock.Deserializers.deserializer;
-import static com.github.tonivade.zeromock.HttpStatus.BAD_REQUEST;
 import static com.github.tonivade.zeromock.Bytes.asByteBuffer;
-import static com.github.tonivade.zeromock.Serializers.serializer;
+import static com.github.tonivade.zeromock.HttpStatus.BAD_REQUEST;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.ByteBuffer;
 
 public class HttpClient {
   
@@ -41,7 +40,7 @@ public class HttpClient {
     if (request.body() != null) {
       connection.setDoOutput(true);
       try (OutputStream output = connection.getOutputStream()) {
-        output.write(serializer(request.headers()).apply(request.body()).array());
+        output.write(request.body().array());
       }
     }
     return connection;
@@ -49,18 +48,18 @@ public class HttpClient {
 
   private HttpResponse processResponse(HttpURLConnection connection) throws IOException {
     HttpHeaders headers = new HttpHeaders(connection.getHeaderFields());
-    Object body = deserialize(connection, headers);
+    ByteBuffer body = deserialize(connection);
     HttpStatus status = HttpStatus.fromCode(connection.getResponseCode());
     return new HttpResponse(status, body, headers);
   }
 
-  private Object deserialize(HttpURLConnection connection, HttpHeaders headers) throws IOException {
-    Object body = null;
+  private ByteBuffer deserialize(HttpURLConnection connection) throws IOException {
+    ByteBuffer body = null;
     if (connection.getContentLength() > 0) {
       if (connection.getResponseCode() < BAD_REQUEST.code()) {
-        body = deserializer(headers).apply(asByteBuffer(connection.getInputStream()));
+        body = asByteBuffer(connection.getInputStream());
       } else {
-        body = deserializer(headers).apply(asByteBuffer(connection.getErrorStream()));
+        body = asByteBuffer(connection.getErrorStream());
       }
     }
     return body;

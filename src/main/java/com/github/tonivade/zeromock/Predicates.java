@@ -4,6 +4,7 @@
  */
 package com.github.tonivade.zeromock;
 
+import static com.github.tonivade.zeromock.Bytes.asString;
 import static com.github.tonivade.zeromock.HttpMethod.DELETE;
 import static com.github.tonivade.zeromock.HttpMethod.GET;
 import static com.github.tonivade.zeromock.HttpMethod.PATCH;
@@ -56,8 +57,8 @@ public final class Predicates {
     return method(PATCH);
   }
   
-  public static Predicate<HttpRequest> body(Object body) {
-    return request -> request.body().equals(body);
+  public static Predicate<HttpRequest> body(String body) {
+    return request -> asString(request.body()).equals(body);
   }
   
   public static Predicate<HttpRequest> accept(String contentType) {

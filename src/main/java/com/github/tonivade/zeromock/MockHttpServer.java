@@ -4,14 +4,10 @@
  */
 package com.github.tonivade.zeromock;
 
-import static com.github.tonivade.zeromock.Deserializers.deserializer;
-import static com.github.tonivade.zeromock.Bytes.emptyByteBuffer;
 import static com.github.tonivade.zeromock.Bytes.asByteBuffer;
 import static com.github.tonivade.zeromock.Responses.error;
 import static com.github.tonivade.zeromock.Responses.notFound;
-import static com.github.tonivade.zeromock.Serializers.serializer;
 import static java.util.Collections.unmodifiableList;
-import static java.util.Objects.nonNull;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -107,26 +103,16 @@ public class MockHttpServer {
     HttpHeaders headers = new HttpHeaders(exchange.getRequestHeaders());
     HttpParams params = new HttpParams(exchange.getRequestURI().getQuery());
     Path path = new Path(exchange.getRequestURI().getPath());
-    Object body = deserializer(headers).apply(asByteBuffer(exchange.getRequestBody()));
+    ByteBuffer body = asByteBuffer(exchange.getRequestBody());
     return new HttpRequest(method, path, body, headers, params);
   }
 
   private void processResponse(HttpExchange exchange, HttpResponse response) throws IOException {
-    ByteBuffer bytes = serialize(response);
+    ByteBuffer bytes = response.body();
     response.headers().forEach((key, value) -> exchange.getResponseHeaders().add(key, value));
     exchange.sendResponseHeaders(response.status().code(), bytes.remaining());
     try (OutputStream output = exchange.getResponseBody()) {
       exchange.getResponseBody().write(bytes.array());
     }
-  }
-
-  private ByteBuffer serialize(HttpResponse response) {
-    ByteBuffer bytes;
-    if (nonNull(response.body())) {
-      bytes = serializer(response.headers()).apply(response.body());
-    } else {
-      bytes = emptyByteBuffer();
-    }
-    return bytes;
   }
 }

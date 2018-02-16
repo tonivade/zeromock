@@ -4,9 +4,6 @@
  */
 package com.github.tonivade.zeromock;
 
-import static com.github.tonivade.zeromock.Extractors.asString;
-import static com.github.tonivade.zeromock.Extractors.toJson;
-
 import java.nio.ByteBuffer;
 import java.util.function.Function;
 
@@ -14,20 +11,11 @@ public class Serializers {
   
   private Serializers() {}
   
-  public static Function<Object, ByteBuffer> serializer(HttpHeaders headers) {
-    if (headers.get("Content-type").contains("application/json")) {
-      return json();
-    } else if (headers.get("Content-type").contains("text/xml")) {
-      // TODO: xml serializer
-    }
-    return plain();
+  public static <T> Function<T, ByteBuffer> json() {
+    return Extractors.<T>toJson().andThen(plain());
   }
 
-  private static Function<Object, ByteBuffer> json() {
-    return toJson().andThen(plain());
-  }
-
-  private static Function<Object, ByteBuffer> plain() {
-    return asString().andThen(Bytes::asByteBuffer);
+  public static <T> Function<T, ByteBuffer> plain() {
+    return Extractors.<T>asString().andThen(Bytes::asByteBuffer);
   }
 }

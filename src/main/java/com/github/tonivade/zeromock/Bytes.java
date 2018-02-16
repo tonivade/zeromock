@@ -19,7 +19,7 @@ public final class Bytes {
 
   private Bytes() {}
 
-  public static ByteBuffer emptyByteBuffer() {
+  public static ByteBuffer empty() {
     return wrap(new byte[]{});
   }
 

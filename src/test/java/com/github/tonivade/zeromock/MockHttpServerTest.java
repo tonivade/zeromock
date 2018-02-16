@@ -4,6 +4,7 @@
  */
 package com.github.tonivade.zeromock;
 
+import static com.github.tonivade.zeromock.Bytes.asString;
 import static com.github.tonivade.zeromock.Handlers.badRequest;
 import static com.github.tonivade.zeromock.Handlers.contentJson;
 import static com.github.tonivade.zeromock.Handlers.contentXml;
@@ -22,8 +23,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.google.gson.JsonObject;
-
 public class MockHttpServerTest {
 
   private HttpService service1 = new HttpService("hello")
@@ -32,7 +31,7 @@ public class MockHttpServerTest {
 
   private HttpService service2 = new HttpService("test")
       .when(get().and(path("/test")).and(acceptsXml()), ok("<body/>").andThen(contentXml()))
-      .when(get().and(path("/test")).and(acceptsJson()), contentJson().compose(ok(new JsonObject())));
+      .when(get().and(path("/test")).and(acceptsJson()), contentJson().compose(ok("{}")));
   
   private MockHttpServer server = listenAt(8080).mount("/path", service1.combine(service2));
 
@@ -43,7 +42,7 @@ public class MockHttpServerTest {
     HttpResponse response = client.request(Requests.get("/hello").withParam("name", "World"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals("Hello World!", response.body()));
+              () -> assertEquals("Hello World!", asString(response.body())));
   }
   
   @Test
@@ -62,7 +61,7 @@ public class MockHttpServerTest {
     HttpResponse response = client.request(Requests.get("/test").withHeader("Accept", "application/json"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals(new JsonObject(), response.body()),
+              () -> assertEquals("{}", asString(response.body())),
               () -> assertEquals(asList("application/json"), response.headers().get("Content-type")));
   }
 
@@ -73,7 +72,7 @@ public class MockHttpServerTest {
     HttpResponse response = client.request(Requests.get("/test").withHeader("Accept", "text/xml"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals("<body/>", response.body()),
+              () -> assertEquals("<body/>", asString(response.body())),
               () -> assertEquals(asList("text/xml"), response.headers().get("Content-type")));
   }
 
@@ -87,7 +86,7 @@ public class MockHttpServerTest {
     server.stop();
   }
   
-  private Object helloWorld(HttpRequest request) {
+  private String helloWorld(HttpRequest request) {
     return String.format("Hello %s!", request.param("name"));
   }
 }

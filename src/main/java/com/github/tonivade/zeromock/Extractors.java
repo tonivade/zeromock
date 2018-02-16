@@ -5,6 +5,7 @@
 package com.github.tonivade.zeromock;
 
 import java.lang.reflect.Type;
+import java.nio.ByteBuffer;
 import java.util.function.Function;
 
 import com.google.gson.GsonBuilder;
@@ -15,7 +16,7 @@ public final class Extractors {
   
   private Extractors() {}
 
-  public static Function<HttpRequest, Object> body() {
+  public static Function<HttpRequest, ByteBuffer> body() {
     return request -> request.body();
   }
 
@@ -27,7 +28,7 @@ public final class Extractors {
     return request -> request.pathParam(position);
   }
   
-  public static Function<Object, String> asString() {
+  public static <T> Function<T, String> asString() {
     return value -> String.valueOf(value);
   }
   
@@ -39,7 +40,7 @@ public final class Extractors {
     return json -> new JsonParser().parse(json);
   }
   
-  public static Function<Object, JsonElement> toJson() {
+  public static <T> Function<T, JsonElement> toJson() {
     return value -> new GsonBuilder().create().toJsonTree(value);
   }
   
