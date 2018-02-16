@@ -22,11 +22,11 @@ public class Serializers {
     return Serializers.<T>asString().andThen(Bytes::asByteBuffer);
   }
   
-  public static <T> Function<T, JsonElement> asJson() {
+  private static <T> Function<T, JsonElement> asJson() {
     return value -> new GsonBuilder().create().toJsonTree(value);
   }
   
-  public static <T> Function<T, String> asString() {
+  private static <T> Function<T, String> asString() {
     return Object::toString;
   }
 }

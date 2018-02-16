@@ -78,7 +78,7 @@ public class BooksServiceTest {
     HttpResponse response = client.request(Requests.delete("/books/1"));
     
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals(null, response.body()));
+              () -> assertEquals(null, asBook(response.body())));
   }
   
   @Test

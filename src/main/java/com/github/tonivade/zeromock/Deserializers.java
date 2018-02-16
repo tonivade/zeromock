@@ -21,18 +21,18 @@ public final class Deserializers {
   }
   
   public static <T> Function<ByteBuffer, T> json(Type type) {
-    return plain().andThen(asJson()).andThen(fromJson(type));
+    return plain().andThen(fromJson(type));
   }
   
   public static Function<ByteBuffer, String> plain() {
     return Bytes::asString;
   }
   
-  public static Function<String, JsonElement> asJson() {
+  private static Function<String, JsonElement> asJson() {
     return json -> new JsonParser().parse(json);
   }
   
-  public static <T> Function<JsonElement, T> fromJson(Type type) {
+  private static <T> Function<String, T> fromJson(Type type) {
     return json -> new GsonBuilder().create().fromJson(json, type);
   }
 }
