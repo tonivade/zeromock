@@ -4,13 +4,13 @@
  */
 package com.github.tonivade.zeromock;
 
+import static com.github.tonivade.zeromock.Extractors.asJson;
 import static java.util.function.Function.identity;
 
 import java.nio.ByteBuffer;
 import java.util.function.Function;
 
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonValue;
+import com.google.gson.JsonElement;
 
 public final class Deserializers {
   
@@ -18,23 +18,18 @@ public final class Deserializers {
   
   public static Function<ByteBuffer, Object> deserializer(HttpHeaders headers) {
     if (headers.get("Content-type").contains("application/json")) {
-      return asString().andThen(parseJson()).andThen(jsonToObject());
+      return json().andThen(identity());
     } else if (headers.get("Content-type").contains("text/xml")) {
       // TODO: xml deserializer
     }
-    return asString().andThen(identity());
-  }
-  
-  private static Function<ByteBuffer, String> asString() {
-    return Bytes::asString;
-  }
-  
-  private static Function<String, JsonValue> parseJson() {
-    return Json::parse;
+    return plain().andThen(identity());
   }
 
-  private static Function<JsonValue, Object> jsonToObject() {
-    // TODO: json to object 
-    return json -> json;
+  private static Function<ByteBuffer, JsonElement> json() {
+    return plain().andThen(asJson());
+  }
+  
+  private static Function<ByteBuffer, String> plain() {
+    return Bytes::asString;
   }
 }

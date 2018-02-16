@@ -4,16 +4,16 @@
  */
 package com.github.tonivade.zeromock;
 
+import static com.github.tonivade.zeromock.Handlers.badRequest;
+import static com.github.tonivade.zeromock.Handlers.contentJson;
+import static com.github.tonivade.zeromock.Handlers.contentXml;
+import static com.github.tonivade.zeromock.Handlers.ok;
 import static com.github.tonivade.zeromock.MockHttpServer.listenAt;
 import static com.github.tonivade.zeromock.Predicates.acceptsJson;
 import static com.github.tonivade.zeromock.Predicates.acceptsXml;
 import static com.github.tonivade.zeromock.Predicates.get;
 import static com.github.tonivade.zeromock.Predicates.param;
 import static com.github.tonivade.zeromock.Predicates.path;
-import static com.github.tonivade.zeromock.Handlers.badRequest;
-import static com.github.tonivade.zeromock.Handlers.contentJson;
-import static com.github.tonivade.zeromock.Handlers.contentXml;
-import static com.github.tonivade.zeromock.Handlers.ok;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,7 +22,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.eclipsesource.json.Json;
+import com.google.gson.JsonObject;
 
 public class MockHttpServerTest {
 
@@ -32,7 +32,7 @@ public class MockHttpServerTest {
 
   private HttpService service2 = new HttpService("test")
       .when(get().and(path("/test")).and(acceptsXml()), ok("<body/>").andThen(contentXml()))
-      .when(get().and(path("/test")).and(acceptsJson()), contentJson().compose(ok("{}")));
+      .when(get().and(path("/test")).and(acceptsJson()), contentJson().compose(ok(new JsonObject())));
   
   private MockHttpServer server = listenAt(8080).mount("/path", service1.combine(service2));
 
@@ -62,7 +62,7 @@ public class MockHttpServerTest {
     HttpResponse response = client.request(Requests.get("/test").withHeader("Accept", "application/json"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals(Json.object(), response.body()),
+              () -> assertEquals(new JsonObject(), response.body()),
               () -> assertEquals(asList("application/json"), response.headers().get("Content-type")));
   }
 

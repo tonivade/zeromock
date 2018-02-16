@@ -4,11 +4,11 @@
  */
 package com.github.tonivade.zeromock;
 
+import static com.github.tonivade.zeromock.Extractors.asString;
+import static com.github.tonivade.zeromock.Extractors.toJson;
+
 import java.nio.ByteBuffer;
 import java.util.function.Function;
-
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonValue;
 
 public class Serializers {
   
@@ -16,23 +16,18 @@ public class Serializers {
   
   public static Function<Object, ByteBuffer> serializer(HttpHeaders headers) {
     if (headers.get("Content-type").contains("application/json")) {
-      return asJson().andThen(asString()).andThen(asByteBuffer());
+      return json();
     } else if (headers.get("Content-type").contains("text/xml")) {
       // TODO: xml serializer
     }
-    return asString().andThen(asByteBuffer());
-  }
-  
-  private static Function<String, ByteBuffer> asByteBuffer() {
-    return Bytes::asByteBuffer;
-  }
-  
-  private static Function<Object, JsonValue> asJson() {
-    // TODO: object to json
-    return value -> Json.object();
+    return plain();
   }
 
-  private static Function<Object, String> asString() {
-    return Object::toString;
+  private static Function<Object, ByteBuffer> json() {
+    return toJson().andThen(plain());
+  }
+
+  private static Function<Object, ByteBuffer> plain() {
+    return asString().andThen(Bytes::asByteBuffer);
   }
 }

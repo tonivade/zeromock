@@ -4,6 +4,8 @@
  */
 package com.github.tonivade.zeromock;
 
+import static java.nio.ByteBuffer.wrap;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,7 +20,7 @@ public final class Bytes {
   private Bytes() {}
 
   public static ByteBuffer emptyByteBuffer() {
-    return ByteBuffer.wrap(new byte[]{});
+    return wrap(new byte[]{});
   }
 
   public static ByteBuffer asByteBuffer(InputStream input) throws IOException {
@@ -30,11 +32,11 @@ public final class Bytes {
         out.write(buffer, 0, read);
       } else break;
     }
-    return ByteBuffer.wrap(out.toByteArray());
+    return wrap(out.toByteArray());
   }
   
   public static ByteBuffer asByteBuffer(String string) {
-    return ByteBuffer.wrap(string.getBytes(Bytes.UTF8));
+    return wrap(string.getBytes(Bytes.UTF8));
   }
   
   public static String asString(ByteBuffer buffer) {
