@@ -4,6 +4,9 @@
  */
 package com.github.tonivade.zeromock;
 
+import static com.github.tonivade.zeromock.Bytes.asByteBuffer;
+
+import java.nio.ByteBuffer;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -15,32 +18,28 @@ public final class Handlers {
   
   private Handlers() {}
 
-  public static <T> Function<HttpRequest, HttpResponse> ok(T body) {
+  public static Function<HttpRequest, HttpResponse> ok(String body) {
+    return ok(asByteBuffer(body));
+  }
+
+  public static Function<HttpRequest, HttpResponse> ok(ByteBuffer body) {
     return ok(request -> body);
   }
 
-  public static <T> Function<HttpRequest, HttpResponse> ok(Supplier<T> supplier) {
-    return ok(request -> supplier.get());
-  }
-
-  public static <T> Function<HttpRequest, HttpResponse> ok(Function<HttpRequest, T> handler) {
+  public static Function<HttpRequest, HttpResponse> ok(Function<HttpRequest, ByteBuffer> handler) {
     return handler.andThen(Responses::ok);
   }
   
-  public static <T> Function<HttpRequest, HttpResponse> okOrNoContent(Function<HttpRequest, Optional<T>> handler) {
-    return handler.andThen(okOrNoContent());
+  public static Function<HttpRequest, HttpResponse> created(String body) {
+    return created(asByteBuffer(body));
   }
   
-  public static <T> Function<HttpRequest, HttpResponse> created(T body) {
+  public static Function<HttpRequest, HttpResponse> created(ByteBuffer body) {
     return created(request -> body);
   }
   
-  public static <T> Function<HttpRequest, HttpResponse> created(Function<HttpRequest, T> handler) {
+  public static Function<HttpRequest, HttpResponse> created(Function<HttpRequest, ByteBuffer> handler) {
     return handler.andThen(Responses::created);
-  }
-  
-  public static <T> Function<T, Void> force(Consumer<T> consumer) {
-    return value -> { consumer.accept(value); return null; };
   }
   
   public static Function<HttpRequest, HttpResponse> noContent() {
@@ -51,32 +50,48 @@ public final class Handlers {
     return request -> Responses.forbidden();
   }
 
-  public static <T> Function<HttpRequest, HttpResponse> badRequest(T body) {
+  public static Function<HttpRequest, HttpResponse> badRequest(String body) {
+    return badRequest(asByteBuffer(body));
+  }
+
+  public static Function<HttpRequest, HttpResponse> badRequest(ByteBuffer body) {
     return badRequest(request -> body);
   }
 
-  public static <T> Function<HttpRequest, HttpResponse> badRequest(Function<HttpRequest, T> handler) {
+  public static Function<HttpRequest, HttpResponse> badRequest(Function<HttpRequest, ByteBuffer> handler) {
     return handler.andThen(Responses::badRequest);
   }
 
-  public static <T> Function<HttpRequest, HttpResponse> notFound(T body) {
+  public static Function<HttpRequest, HttpResponse> notFound(String body) {
+    return notFound(asByteBuffer(body));
+  }
+
+  public static Function<HttpRequest, HttpResponse> notFound(ByteBuffer body) {
     return notFound(request -> body);
   }
 
-  public static <T> Function<HttpRequest, HttpResponse> notFound(Function<HttpRequest, T> handler) {
+  public static Function<HttpRequest, HttpResponse> notFound(Function<HttpRequest, ByteBuffer> handler) {
     return handler.andThen(Responses::notFound);
   }
 
-  public static <T> Function<HttpRequest, HttpResponse> error(T body) {
+  public static Function<HttpRequest, HttpResponse> error(String body) {
+    return error(asByteBuffer(body));
+  }
+
+  public static Function<HttpRequest, HttpResponse> error(ByteBuffer body) {
     return error(request -> body);
   }
   
-  public static <T> Function<HttpRequest, HttpResponse> error(Function<HttpRequest, T> handler) {
+  public static Function<HttpRequest, HttpResponse> error(Function<HttpRequest, ByteBuffer> handler) {
     return handler.andThen(Responses::error);
   }
   
   public static UnaryOperator<HttpResponse> contentType(String value) {
     return response -> response.withHeader("Content-type", value);
+  }
+  
+  public static UnaryOperator<HttpResponse> contentPlain() {
+    return contentType("text/plain");
   }
   
   public static UnaryOperator<HttpResponse> contentJson() {
@@ -86,37 +101,45 @@ public final class Handlers {
   public static UnaryOperator<HttpResponse> contentXml() {
     return contentType("text/xml");
   }
-  
-  public static UnaryOperator<HttpRequest> dropOneLevel() {
-    return request -> request.dropOneLevel();
-  }
 
   public static Function<HttpRequest, HttpResponse> delegate(HttpService service) {
-    return dropOneLevel().andThen(service::execute).andThen(getOrNotFound());
-  }
-
-  public static Function<Optional<HttpResponse>, HttpResponse> getOrNotFound() {
-    return response -> response.orElseGet(() -> Responses.notFound("no mapping found"));
+    return dropOneLevel().andThen(service::execute).andThen(orElse(Responses::notFound));
   }
   
-  public static <T, U, R> Function<HttpRequest, Tupple<T, U>> join(Function<HttpRequest, T> beginT, 
-                                                                   Function<HttpRequest, U> beginU) {
-    return request -> new Tupple<>(beginT.apply(request), beginU.apply(request));
+  public static <T, U, R> Function<HttpRequest, BiTupple<T, U>> join(Function<HttpRequest, T> beginT, 
+                                                                     Function<HttpRequest, U> beginU) {
+    return request -> new BiTupple<>(beginT.apply(request), beginU.apply(request));
   }
   
-  public static <T, U, R> Function<Tupple<T, U>, R> split(BiFunction<T, U, R> function) {
+  public static <T, U, R> Function<BiTupple<T, U>, R> split(BiFunction<T, U, R> function) {
     return tupple -> function.apply(tupple.get1(), tupple.get2());
   }
-
-  private static <T> Function<Optional<T>, HttpResponse> okOrNoContent() {
-    return optional -> optional.map(Responses::ok).orElseGet(Responses::noContent);
+  
+  public static <T> Function<HttpRequest, T> force(Supplier<T> supplier) {
+    return value -> supplier.get();
   }
   
-  private static final class Tupple<T, U> {
+  public static <T> Function<T, Void> force(Consumer<T> consumer) {
+    return value -> { consumer.accept(value); return null; };
+  }
+
+  public static <T> Function<Optional<T>, T> orElse(Supplier<T> supplier) {
+    return optional -> optional.orElseGet(supplier);
+  }
+
+  public static <T, R> Function<Optional<T>, Optional<R>> map(Function<T, R> mapper) {
+    return optional -> optional.map(mapper);
+  }
+  
+  private static UnaryOperator<HttpRequest> dropOneLevel() {
+    return request -> request.dropOneLevel();
+  }
+  
+  private static final class BiTupple<T, U> {
     private final T t;
     private final U u;
 
-    public Tupple(T t, U u) {
+    public BiTupple(T t, U u) {
       this.t = t;
       this.u = u;
     }

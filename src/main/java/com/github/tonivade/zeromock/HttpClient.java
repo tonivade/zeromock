@@ -4,14 +4,15 @@
  */
 package com.github.tonivade.zeromock;
 
+import static com.github.tonivade.zeromock.Bytes.asByteBuffer;
 import static com.github.tonivade.zeromock.HttpStatus.BAD_REQUEST;
-import static com.github.tonivade.zeromock.IOUtils.readAll;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.ByteBuffer;
 
 public class HttpClient {
   
@@ -33,32 +34,32 @@ public class HttpClient {
 
   private HttpURLConnection createConnection(HttpRequest request) throws IOException {
     URL url = new URL(baseUrl + request.toUrl());
-    HttpURLConnection con = (HttpURLConnection) url.openConnection();
-    con.setRequestMethod(request.method().name());
-    request.headers().forEach(con::setRequestProperty);
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod(request.method().name());
+    request.headers().forEach(connection::setRequestProperty);
     if (request.body() != null) {
-      con.setDoOutput(true);
-      try (OutputStream output = con.getOutputStream()) {
-        output.write(Serializers.plain().apply(request.body()).array());
+      connection.setDoOutput(true);
+      try (OutputStream output = connection.getOutputStream()) {
+        output.write(request.body().array());
       }
     }
-    return con;
+    return connection;
   }
 
   private HttpResponse processResponse(HttpURLConnection connection) throws IOException {
     HttpHeaders headers = new HttpHeaders(connection.getHeaderFields());
-    Object body = deserialize(connection);
+    ByteBuffer body = deserialize(connection);
     HttpStatus status = HttpStatus.fromCode(connection.getResponseCode());
     return new HttpResponse(status, body, headers);
   }
 
-  private Object deserialize(HttpURLConnection connection) throws IOException {
-    Object body = null;
+  private ByteBuffer deserialize(HttpURLConnection connection) throws IOException {
+    ByteBuffer body = null;
     if (connection.getContentLength() > 0) {
       if (connection.getResponseCode() < BAD_REQUEST.code()) {
-        body = Deserializers.plain().apply(readAll(connection.getInputStream()));
+        body = asByteBuffer(connection.getInputStream());
       } else {
-        body = Deserializers.plain().apply(readAll(connection.getErrorStream()));
+        body = asByteBuffer(connection.getErrorStream());
       }
     }
     return body;

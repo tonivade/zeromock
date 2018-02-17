@@ -4,13 +4,14 @@
  */
 package com.github.tonivade.zeromock;
 
+import java.nio.ByteBuffer;
 import java.util.function.Function;
 
 public final class Extractors {
   
   private Extractors() {}
 
-  public static Function<HttpRequest, Object> body() {
+  public static Function<HttpRequest, ByteBuffer> body() {
     return request -> request.body();
   }
 
@@ -22,8 +23,8 @@ public final class Extractors {
     return request -> request.pathParam(position);
   }
   
-  public static Function<Object, String> asString() {
-    return value -> String.valueOf(value);
+  public static Function<ByteBuffer, String> asString() {
+    return Bytes::asString;
   }
   
   public static Function<String, Integer> asInteger() {

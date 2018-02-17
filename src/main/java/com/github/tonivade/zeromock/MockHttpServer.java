@@ -4,11 +4,10 @@
  */
 package com.github.tonivade.zeromock;
 
-import static com.github.tonivade.zeromock.IOUtils.readAll;
+import static com.github.tonivade.zeromock.Bytes.asByteBuffer;
 import static com.github.tonivade.zeromock.Responses.error;
 import static com.github.tonivade.zeromock.Responses.notFound;
 import static java.util.Collections.unmodifiableList;
-import static java.util.Objects.nonNull;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -53,7 +52,8 @@ public class MockHttpServer {
     return this;
   }
   
-  public MockHttpServer when(Predicate<HttpRequest> predicate, Function<HttpRequest, HttpResponse> handler) {
+  public MockHttpServer when(Predicate<HttpRequest> predicate, 
+                             Function<HttpRequest, HttpResponse> handler) {
     root.when(predicate, handler);
     return this;
   }
@@ -86,12 +86,12 @@ public class MockHttpServer {
         matched.add(request);
         processResponse(exchange, response.get());
       } else {
-        processResponse(exchange, notFound("not found"));
+        processResponse(exchange, notFound());
         unmatched.add(request);
       }
     } catch (RuntimeException e) {
       e.printStackTrace();
-      processResponse(exchange, error(e.getMessage()));
+      processResponse(exchange, error(asByteBuffer(e.getMessage())));
     }
   }
 
@@ -100,33 +100,20 @@ public class MockHttpServer {
   }
 
   private HttpRequest createRequest(HttpExchange exchange) throws IOException {
-    return new HttpRequest(HttpMethod.valueOf(exchange.getRequestMethod()),
-                           new Path(exchange.getRequestURI().getPath()), 
-                           Deserializers.plain().apply(readAll(exchange.getRequestBody())),
-                           new HttpHeaders(exchange.getRequestHeaders()),
-                           new HttpParams(exchange.getRequestURI().getQuery()));
+    HttpMethod method = HttpMethod.valueOf(exchange.getRequestMethod());
+    HttpHeaders headers = new HttpHeaders(exchange.getRequestHeaders());
+    HttpParams params = new HttpParams(exchange.getRequestURI().getQuery());
+    Path path = new Path(exchange.getRequestURI().getPath());
+    ByteBuffer body = asByteBuffer(exchange.getRequestBody());
+    return new HttpRequest(method, path, body, headers, params);
   }
 
   private void processResponse(HttpExchange exchange, HttpResponse response) throws IOException {
-    ByteBuffer bytes = serialize(response);
+    ByteBuffer bytes = response.body();
     response.headers().forEach((key, value) -> exchange.getResponseHeaders().add(key, value));
     exchange.sendResponseHeaders(response.status().code(), bytes.remaining());
     try (OutputStream output = exchange.getResponseBody()) {
       exchange.getResponseBody().write(bytes.array());
     }
-  }
-
-  private ByteBuffer serialize(HttpResponse response) {
-    ByteBuffer bytes;
-    if (nonNull(response.body())) {
-      bytes = getSerializer(response).apply(response.body());
-    } else {
-      bytes = ByteBuffer.wrap(new byte[]{});
-    }
-    return bytes;
-  }
-
-  private Function<Object, ByteBuffer> getSerializer(HttpResponse response) {
-    return Serializers.plain();
   }
 }

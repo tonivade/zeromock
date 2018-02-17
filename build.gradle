@@ -27,6 +27,7 @@ repositories {
 }
 
 dependencies {
+  compile 'com.google.code.gson:gson:2.8.2'
   testCompile 'org.junit.jupiter:junit-jupiter-engine:5.0.3'
   testCompile 'org.junit.platform:junit-platform-runner:1.0.3'
   testCompile 'org.mockito:mockito-core:2.13.0'

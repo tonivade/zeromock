@@ -12,15 +12,17 @@ import static com.github.tonivade.zeromock.HttpStatus.NOT_FOUND;
 import static com.github.tonivade.zeromock.HttpStatus.NO_CONTENT;
 import static com.github.tonivade.zeromock.HttpStatus.OK;
 
+import java.nio.ByteBuffer;
+
 public final class Responses {
   
   private Responses() {}
-
-  public static HttpResponse ok(Object body) {
+  
+  public static HttpResponse ok(ByteBuffer body) {
     return new HttpResponse(OK, body);
   }
 
-  public static HttpResponse created(Object body) {
+  public static HttpResponse created(ByteBuffer body) {
     return new HttpResponse(CREATED, body);
   }
   
@@ -32,15 +34,23 @@ public final class Responses {
     return new HttpResponse(FORBIDDEN, null);
   }
 
-  public static HttpResponse badRequest(Object body) {
+  public static HttpResponse badRequest(ByteBuffer body) {
     return new HttpResponse(BAD_REQUEST, body);
   }
 
-  public static HttpResponse notFound(Object body) {
+  public static HttpResponse notFound() {
+    return notFound(null);
+  }
+
+  public static HttpResponse notFound(ByteBuffer body) {
     return new HttpResponse(NOT_FOUND, body);
   }
 
-  public static HttpResponse error(Object body) {
+  public static HttpResponse error() {
+    return error(null);
+  }
+
+  public static HttpResponse error(ByteBuffer body) {
     return new HttpResponse(INTERNAL_SERVER_ERROR, body);
   }
 }

@@ -4,20 +4,26 @@
  */
 package com.github.tonivade.zeromock;
 
+import static java.nio.ByteBuffer.wrap;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
-public final class IOUtils {
+public final class Bytes {
 
-  protected static final Charset UTF8 = Charset.forName("UTF-8");
   private static final int BUFFER_SIZE = 1024;
+  private static final Charset UTF8 = Charset.forName("UTF-8");
 
-  private IOUtils() {}
+  private Bytes() {}
 
-  public static ByteBuffer readAll(InputStream input) throws IOException {
+  public static ByteBuffer empty() {
+    return wrap(new byte[]{});
+  }
+
+  public static ByteBuffer asByteBuffer(InputStream input) throws IOException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     byte[] buffer = new byte[BUFFER_SIZE];
     while (true) {
@@ -26,6 +32,14 @@ public final class IOUtils {
         out.write(buffer, 0, read);
       } else break;
     }
-    return ByteBuffer.wrap(out.toByteArray());
+    return wrap(out.toByteArray());
+  }
+  
+  public static ByteBuffer asByteBuffer(String string) {
+    return wrap(string.getBytes(Bytes.UTF8));
+  }
+  
+  public static String asString(ByteBuffer buffer) {
+    return new String(buffer.array(), Bytes.UTF8);
   }
 }

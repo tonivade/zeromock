@@ -4,19 +4,22 @@
  */
 package com.github.tonivade.zeromock;
 
+import static com.github.tonivade.zeromock.Bytes.asString;
 import static java.util.Objects.requireNonNull;
+
+import java.nio.ByteBuffer;
 
 public final class HttpResponse {
 
   private final HttpStatus status;
-  private final Object body;
+  private final ByteBuffer body;
   private final HttpHeaders headers;
 
-  public HttpResponse(HttpStatus status, Object body) {
+  public HttpResponse(HttpStatus status, ByteBuffer body) {
     this(status, body, HttpHeaders.empty());
   }
   
-  public HttpResponse(HttpStatus status, Object body, HttpHeaders headers) {
+  public HttpResponse(HttpStatus status, ByteBuffer body, HttpHeaders headers) {
     this.status = requireNonNull(status);
     this.body = body;
     this.headers = requireNonNull(headers);
@@ -26,7 +29,7 @@ public final class HttpResponse {
     return status;
   }
   
-  public Object body() {
+  public ByteBuffer body() {
     return body;
   }
   
@@ -40,6 +43,6 @@ public final class HttpResponse {
   
   @Override
   public String toString() {
-    return "HttpResponse(" + status + " " + body + ")";
+    return "HttpResponse(" + status + " " + asString(body) + ")";
   }
 }
