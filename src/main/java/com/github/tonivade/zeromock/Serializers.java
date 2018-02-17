@@ -8,22 +8,21 @@ import java.nio.ByteBuffer;
 import java.util.function.Function;
 
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 
 public class Serializers {
   
   private Serializers() {}
   
   public static <T> Function<T, ByteBuffer> json() {
-    return Serializers.<T>asJson().andThen(plain());
+    return Serializers.<T>asJson().andThen(Bytes::asByteBuffer);
   }
 
   public static <T> Function<T, ByteBuffer> plain() {
     return Serializers.<T>asString().andThen(Bytes::asByteBuffer);
   }
   
-  private static <T> Function<T, JsonElement> asJson() {
-    return value -> new GsonBuilder().create().toJsonTree(value);
+  private static <T> Function<T, String> asJson() {
+    return value -> new GsonBuilder().create().toJson(value);
   }
   
   private static <T> Function<T, String> asString() {
