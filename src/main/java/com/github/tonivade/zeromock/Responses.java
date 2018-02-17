@@ -19,6 +19,10 @@ public final class Responses {
   
   private Responses() {}
   
+  public static HttpResponse ok() {
+    return new HttpResponse(OK, empty());
+  }
+  
   public static HttpResponse ok(ByteBuffer body) {
     return new HttpResponse(OK, body);
   }

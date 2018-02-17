@@ -18,6 +18,10 @@ public final class Handlers {
   
   private Handlers() {}
 
+  public static <T> Function<T, HttpResponse> ok() {
+    return x -> Responses.ok();
+  }
+
   public static Function<HttpRequest, HttpResponse> ok(String body) {
     return ok(asByteBuffer(body));
   }
@@ -42,12 +46,12 @@ public final class Handlers {
     return handler.andThen(Responses::created);
   }
   
-  public static Function<HttpRequest, HttpResponse> noContent() {
-    return request -> Responses.noContent();
+  public static <T> Function<T, HttpResponse> noContent() {
+    return x -> Responses.noContent();
   }
   
-  public static Function<HttpRequest, HttpResponse> forbidden() {
-    return request -> Responses.forbidden();
+  public static <T> Function<T, HttpResponse> forbidden() {
+    return x -> Responses.forbidden();
   }
 
   public static Function<HttpRequest, HttpResponse> badRequest(String body) {
@@ -62,6 +66,10 @@ public final class Handlers {
     return handler.andThen(Responses::badRequest);
   }
 
+  public static <T> Function<T, HttpResponse> notFound() {
+    return x -> Responses.notFound();
+  }
+
   public static Function<HttpRequest, HttpResponse> notFound(String body) {
     return notFound(asByteBuffer(body));
   }
@@ -72,6 +80,10 @@ public final class Handlers {
 
   public static Function<HttpRequest, HttpResponse> notFound(Function<HttpRequest, ByteBuffer> handler) {
     return handler.andThen(Responses::notFound);
+  }
+
+  public static <T> Function<T, HttpResponse> error() {
+    return x -> Responses.error();
   }
 
   public static Function<HttpRequest, HttpResponse> error(String body) {
