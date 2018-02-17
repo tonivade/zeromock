@@ -9,6 +9,7 @@ import static com.github.tonivade.zeromock.Handlers.badRequest;
 import static com.github.tonivade.zeromock.Handlers.contentJson;
 import static com.github.tonivade.zeromock.Handlers.contentXml;
 import static com.github.tonivade.zeromock.Handlers.force;
+import static com.github.tonivade.zeromock.Handlers.noContent;
 import static com.github.tonivade.zeromock.Handlers.ok;
 import static com.github.tonivade.zeromock.MockHttpServer.listenAt;
 import static com.github.tonivade.zeromock.Predicates.acceptsJson;
@@ -36,7 +37,8 @@ public class MockHttpServerTest {
 
   private HttpService service2 = new HttpService("test")
       .when(get().and(path("/test")).and(acceptsXml()), ok("<body/>").andThen(contentXml()))
-      .when(get().and(path("/test")).and(acceptsJson()), ok(force(JsonObject::new).andThen(json())).andThen(contentJson()));
+      .when(get().and(path("/test")).and(acceptsJson()), ok(force(JsonObject::new).andThen(json())).andThen(contentJson()))
+      .when(get().and(path("/empty")), noContent());
   
   private MockHttpServer server = listenAt(8080).mount("/path", service1.combine(service2));
 
@@ -79,6 +81,16 @@ public class MockHttpServerTest {
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals("<body/>", asString(response.body())),
               () -> assertEquals(asList("text/xml"), response.headers().get("Content-type")));
+  }
+
+  @Test
+  public void noContentTest() {
+    HttpClient client = new HttpClient("http://localhost:8080/path");
+    
+    HttpResponse response = client.request(Requests.get("/empty"));
+
+    assertAll(() -> assertEquals(HttpStatus.NO_CONTENT, response.status()),
+              () -> assertEquals(null, response.body()));
   }
 
   @BeforeEach

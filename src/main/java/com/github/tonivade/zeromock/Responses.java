@@ -4,6 +4,7 @@
  */
 package com.github.tonivade.zeromock;
 
+import static com.github.tonivade.zeromock.Bytes.empty;
 import static com.github.tonivade.zeromock.HttpStatus.BAD_REQUEST;
 import static com.github.tonivade.zeromock.HttpStatus.CREATED;
 import static com.github.tonivade.zeromock.HttpStatus.FORBIDDEN;
@@ -27,11 +28,11 @@ public final class Responses {
   }
   
   public static HttpResponse noContent() {
-    return new HttpResponse(NO_CONTENT, null);
+    return new HttpResponse(NO_CONTENT, empty());
   }
   
   public static HttpResponse forbidden() {
-    return new HttpResponse(FORBIDDEN, null);
+    return new HttpResponse(FORBIDDEN, empty());
   }
 
   public static HttpResponse badRequest(ByteBuffer body) {
@@ -39,7 +40,7 @@ public final class Responses {
   }
 
   public static HttpResponse notFound() {
-    return notFound(null);
+    return notFound(empty());
   }
 
   public static HttpResponse notFound(ByteBuffer body) {
@@ -47,7 +48,7 @@ public final class Responses {
   }
 
   public static HttpResponse error() {
-    return error(null);
+    return error(empty());
   }
 
   public static HttpResponse error(ByteBuffer body) {
