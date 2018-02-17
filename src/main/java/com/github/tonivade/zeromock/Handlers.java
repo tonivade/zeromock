@@ -30,10 +30,6 @@ public final class Handlers {
     return handler.andThen(Responses::ok);
   }
   
-  public static Function<HttpRequest, HttpResponse> okOrNoContent(Function<HttpRequest, Optional<ByteBuffer>> handler) {
-    return handler.andThen(okOrNoContent());
-  }
-  
   public static Function<HttpRequest, HttpResponse> created(String body) {
     return created(asByteBuffer(body));
   }
@@ -105,13 +101,9 @@ public final class Handlers {
   public static UnaryOperator<HttpResponse> contentXml() {
     return contentType("text/xml");
   }
-  
-  public static UnaryOperator<HttpRequest> dropOneLevel() {
-    return request -> request.dropOneLevel();
-  }
 
   public static Function<HttpRequest, HttpResponse> delegate(HttpService service) {
-    return dropOneLevel().andThen(service::execute).andThen(getOrNotFound());
+    return dropOneLevel().andThen(service::execute).andThen(orElse(Responses::notFound));
   }
   
   public static <T, U, R> Function<HttpRequest, BiTupple<T, U>> join(Function<HttpRequest, T> beginT, 
@@ -131,12 +123,16 @@ public final class Handlers {
     return value -> { consumer.accept(value); return null; };
   }
 
-  private static Function<Optional<HttpResponse>, HttpResponse> getOrNotFound() {
-    return response -> response.orElseGet(Responses::notFound);
+  public static <T> Function<Optional<T>, T> orElse(Supplier<T> supplier) {
+    return optional -> optional.orElseGet(supplier);
   }
 
-  private static <T> Function<Optional<ByteBuffer>, HttpResponse> okOrNoContent() {
-    return optional -> optional.map(Responses::ok).orElseGet(Responses::noContent);
+  public static <T, R> Function<Optional<T>, Optional<R>> map(Function<T, R> mapper) {
+    return optional -> optional.map(mapper);
+  }
+  
+  private static UnaryOperator<HttpRequest> dropOneLevel() {
+    return request -> request.dropOneLevel();
   }
   
   private static final class BiTupple<T, U> {
