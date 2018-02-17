@@ -4,8 +4,6 @@
  */
 package com.github.tonivade.zeromock;
 
-import static com.github.tonivade.zeromock.Handlers.createdJson;
-import static com.github.tonivade.zeromock.Handlers.okJson;
 import static com.github.tonivade.zeromock.MockHttpServer.listenAt;
 import static com.github.tonivade.zeromock.Predicates.body;
 import static com.github.tonivade.zeromock.Predicates.delete;
@@ -33,11 +31,11 @@ public class BooksServiceTest {
   private BooksAPI books = new BooksAPI(new BooksService());
   
   private HttpService booksService = new HttpService("books")
-      .when(get("/books"), okJson(books.findAll()))
-      .when(get("/books/:id"), okJson(books.find()))
-      .when(post("/books"), createdJson(books.create()))
-      .when(delete("/books/:id"), okJson(books.delete()))
-      .when(put("/books/:id"), okJson(books.update()));
+      .when(get("/books"), books.findAll())
+      .when(get("/books/:id"), books.find())
+      .when(post("/books"), books.create())
+      .when(delete("/books/:id"), books.delete())
+      .when(put("/books/:id"), books.update());
   
   private MockHttpServer server = listenAt(8080).mount("/store", booksService);
   

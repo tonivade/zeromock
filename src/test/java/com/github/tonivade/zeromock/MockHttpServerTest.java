@@ -6,17 +6,18 @@ package com.github.tonivade.zeromock;
 
 import static com.github.tonivade.zeromock.Bytes.asString;
 import static com.github.tonivade.zeromock.Handlers.badRequest;
+import static com.github.tonivade.zeromock.Handlers.contentJson;
 import static com.github.tonivade.zeromock.Handlers.contentXml;
 import static com.github.tonivade.zeromock.Handlers.force;
 import static com.github.tonivade.zeromock.Handlers.ok;
-import static com.github.tonivade.zeromock.Handlers.okJson;
-import static com.github.tonivade.zeromock.Handlers.okPlain;
 import static com.github.tonivade.zeromock.MockHttpServer.listenAt;
 import static com.github.tonivade.zeromock.Predicates.acceptsJson;
 import static com.github.tonivade.zeromock.Predicates.acceptsXml;
 import static com.github.tonivade.zeromock.Predicates.get;
 import static com.github.tonivade.zeromock.Predicates.param;
 import static com.github.tonivade.zeromock.Predicates.path;
+import static com.github.tonivade.zeromock.Serializers.json;
+import static com.github.tonivade.zeromock.Serializers.plain;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,12 +31,12 @@ import com.google.gson.JsonObject;
 public class MockHttpServerTest {
 
   private HttpService service1 = new HttpService("hello")
-      .when(get().and(path("/hello")).and(param("name")), okPlain(this::helloWorld))
+      .when(get().and(path("/hello")).and(param("name")), ok(plain().compose(this::helloWorld)))
       .when(get().and(path("/hello")).and(param("name").negate()), badRequest("missing parameter name"));
 
   private HttpService service2 = new HttpService("test")
       .when(get().and(path("/test")).and(acceptsXml()), ok("<body/>").andThen(contentXml()))
-      .when(get().and(path("/test")).and(acceptsJson()), okJson(force(JsonObject::new)));
+      .when(get().and(path("/test")).and(acceptsJson()), ok(force(JsonObject::new).andThen(json())).andThen(contentJson()));
   
   private MockHttpServer server = listenAt(8080).mount("/path", service1.combine(service2));
 

@@ -5,8 +5,6 @@
 package com.github.tonivade.zeromock;
 
 import static com.github.tonivade.zeromock.Bytes.asByteBuffer;
-import static com.github.tonivade.zeromock.Serializers.json;
-import static com.github.tonivade.zeromock.Serializers.plain;
 
 import java.nio.ByteBuffer;
 import java.util.Optional;
@@ -28,14 +26,6 @@ public final class Handlers {
     return ok(request -> body);
   }
 
-  public static <T> Function<HttpRequest, HttpResponse> okJson(Function<HttpRequest, T> function) {
-    return ok(function.andThen(json())).andThen(contentJson());
-  }
-
-  public static <T> Function<HttpRequest, HttpResponse> okPlain(Function<HttpRequest, T> function) {
-    return ok(function.andThen(plain())).andThen(contentPlain());
-  }
-
   public static Function<HttpRequest, HttpResponse> ok(Function<HttpRequest, ByteBuffer> handler) {
     return handler.andThen(Responses::ok);
   }
@@ -50,14 +40,6 @@ public final class Handlers {
   
   public static Function<HttpRequest, HttpResponse> created(ByteBuffer body) {
     return created(request -> body);
-  }
-
-  public static <T> Function<HttpRequest, HttpResponse> createdJson(Function<HttpRequest, T> function) {
-    return created(function.andThen(json())).andThen(contentJson());
-  }
-
-  public static <T> Function<HttpRequest, HttpResponse> createdPlain(Function<HttpRequest, T> function) {
-    return created(function.andThen(plain())).andThen(contentPlain());
   }
   
   public static Function<HttpRequest, HttpResponse> created(Function<HttpRequest, ByteBuffer> handler) {
@@ -132,16 +114,16 @@ public final class Handlers {
     return dropOneLevel().andThen(service::execute).andThen(getOrNotFound());
   }
   
-  public static <T, U, R> Function<HttpRequest, Tupple<T, U>> join(Function<HttpRequest, T> beginT, 
-                                                                   Function<HttpRequest, U> beginU) {
-    return request -> new Tupple<>(beginT.apply(request), beginU.apply(request));
+  public static <T, U, R> Function<HttpRequest, BiTupple<T, U>> join(Function<HttpRequest, T> beginT, 
+                                                                     Function<HttpRequest, U> beginU) {
+    return request -> new BiTupple<>(beginT.apply(request), beginU.apply(request));
   }
   
-  public static <T, U, R> Function<Tupple<T, U>, R> split(BiFunction<T, U, R> function) {
+  public static <T, U, R> Function<BiTupple<T, U>, R> split(BiFunction<T, U, R> function) {
     return tupple -> function.apply(tupple.get1(), tupple.get2());
   }
   
-  public static <T, R> Function<T, R> force(Supplier<R> supplier) {
+  public static <T> Function<HttpRequest, T> force(Supplier<T> supplier) {
     return value -> supplier.get();
   }
   
@@ -157,11 +139,11 @@ public final class Handlers {
     return optional -> optional.map(Responses::ok).orElseGet(Responses::noContent);
   }
   
-  private static final class Tupple<T, U> {
+  private static final class BiTupple<T, U> {
     private final T t;
     private final U u;
 
-    public Tupple(T t, U u) {
+    public BiTupple(T t, U u) {
       this.t = t;
       this.u = u;
     }
