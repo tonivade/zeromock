@@ -5,6 +5,7 @@
 package com.github.tonivade.zeromock;
 
 import static com.github.tonivade.zeromock.Extractors.asInteger;
+import static com.github.tonivade.zeromock.Extractors.asString;
 import static com.github.tonivade.zeromock.Extractors.body;
 import static com.github.tonivade.zeromock.Extractors.pathParam;
 import static com.github.tonivade.zeromock.Handlers.contentJson;
@@ -50,7 +51,7 @@ public class BooksAPI {
   }
 
   private static Function<HttpRequest, String> getBookTitle() {
-    return body().andThen(Bytes::asString);
+    return body().andThen(asString());
   }
   
   private static <T> Function<HttpRequest, HttpResponse> okJson(Function<HttpRequest, T> handler) {

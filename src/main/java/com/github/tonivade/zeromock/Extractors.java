@@ -23,8 +23,8 @@ public final class Extractors {
     return request -> request.pathParam(position);
   }
   
-  public static <T> Function<T, String> asString() {
-    return Object::toString;
+  public static Function<ByteBuffer, String> asString() {
+    return Bytes::asString;
   }
   
   public static Function<String, Integer> asInteger() {
