@@ -22,7 +22,7 @@ public class ExamplesTest {
   private static final String BASE_URL = "http://localhost:8080";
 
   @Test
-  void ping(MockHttpServer server) {
+  public void ping(MockHttpServer server) {
     server.when(get("/ping"), ok("pong"));
     
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/ping"));
@@ -31,7 +31,7 @@ public class ExamplesTest {
   }
 
   @Test
-  void echo(MockHttpServer server) {
+  public void echo(MockHttpServer server) {
     server.when(get("/echo").and(param("say")), ok(queryParam("say").andThen(plain())));
     
     HttpResponse response = connectTo(BASE_URL)
@@ -41,7 +41,7 @@ public class ExamplesTest {
   }
   
   @Test
-  void unmatched(MockHttpServer server) {
+  public void unmatched(MockHttpServer server) {
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/ping"));
     
     assertEquals(HttpStatus.NOT_FOUND, response.status());
