@@ -8,6 +8,10 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.stream.Collectors.joining;
 
+import java.io.UncheckedIOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -68,7 +72,7 @@ public class HttpParams {
       for (String param : query.split(SEPARATOR)) {
         String[] pair = param.split(EQUALS);
         if (pair.length > 1) {
-          result.put(pair[0], pair[1]);
+          result.put(pair[0], urlDecode(pair[1]));
         } else {
           result.put(pair[0], EMPTY);
         }
@@ -83,6 +87,22 @@ public class HttpParams {
   }
 
   private Function<Entry<String, String>, String> entryToString() {
-    return entry -> entry.getKey() + EQUALS + entry.getValue();
+    return entry -> entry.getKey() + EQUALS + urlEncode(entry.getValue());
+  }
+
+  private static String urlEncode(String value) {
+    try {
+      return URLEncoder.encode(value, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      throw new UncheckedIOException(e);
+    }
+  }
+
+  private static String urlDecode(String value) {
+    try {
+      return URLDecoder.decode(value, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      throw new UncheckedIOException(e);
+    }
   }
 }

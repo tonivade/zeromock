@@ -97,7 +97,7 @@ public class MockHttpServerTest {
     HttpResponse response = client.request(Requests.get("/empty"));
 
     assertAll(() -> assertEquals(HttpStatus.NO_CONTENT, response.status()),
-              () -> assertEquals(null, response.body()));
+              () -> assertEquals("", asString(response.body())));
   }
   
   private String helloWorld(HttpRequest request) {

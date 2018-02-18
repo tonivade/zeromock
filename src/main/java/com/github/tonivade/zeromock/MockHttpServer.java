@@ -78,6 +78,12 @@ public class MockHttpServer {
     return unmodifiableList(unmatched);
   }
 
+  protected void reset() {
+    root.clear();
+    matched.clear();
+    unmatched.clear();
+  }
+
   private void handle(HttpExchange exchange) throws IOException {
     try {
       HttpRequest request = createRequest(exchange);

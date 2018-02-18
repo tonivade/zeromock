@@ -22,6 +22,10 @@ public class HttpClient {
     this.baseUrl = baseUrl;
   }
   
+  public static HttpClient connectTo(String baseUrl) {
+    return new HttpClient(baseUrl);
+  }
+  
   public HttpResponse request(HttpRequest request) {
     try {
       HttpURLConnection connection = createConnection(request);
@@ -54,7 +58,7 @@ public class HttpClient {
   }
 
   private ByteBuffer deserialize(HttpURLConnection connection) throws IOException {
-    ByteBuffer body = null;
+    ByteBuffer body = Bytes.empty();
     if (connection.getContentLength() > 0) {
       if (connection.getResponseCode() < BAD_REQUEST.code()) {
         body = asByteBuffer(connection.getInputStream());

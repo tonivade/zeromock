@@ -58,6 +58,10 @@ public class HttpService {
     return "HttpService(" + name + ")";
   }
 
+  protected void clear() {
+    mappings.clear();
+  }
+
   private Optional<Mapping> findMapping(HttpRequest request) {
     return mappings.stream()
         .filter(mapping -> mapping.test(request))

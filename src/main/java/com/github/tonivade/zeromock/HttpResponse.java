@@ -21,7 +21,7 @@ public final class HttpResponse {
   
   public HttpResponse(HttpStatus status, ByteBuffer body, HttpHeaders headers) {
     this.status = requireNonNull(status);
-    this.body = body;
+    this.body = requireNonNull(body);
     this.headers = requireNonNull(headers);
   }
   
