@@ -15,7 +15,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.Type;
-import java.nio.ByteBuffer;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -96,11 +95,11 @@ public class BooksServiceTest {
               () -> assertEquals(new Book(1, "update"), asBook(response.body())));
   }
 
-  private Book asBook(ByteBuffer body) {
+  private Book asBook(Bytes body) {
     return Deserializers.<Book>json(Book.class).apply(body);
   }
 
-  private List<Book> asBooks(ByteBuffer body) {
+  private List<Book> asBooks(Bytes body) {
     return Deserializers.<List<Book>>json(listOfBooks()).apply(body);
   }
   

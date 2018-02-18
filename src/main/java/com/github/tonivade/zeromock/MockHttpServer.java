@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -110,16 +109,16 @@ public class MockHttpServer {
     HttpHeaders headers = new HttpHeaders(exchange.getRequestHeaders());
     HttpParams params = new HttpParams(exchange.getRequestURI().getQuery());
     Path path = new Path(exchange.getRequestURI().getPath());
-    ByteBuffer body = asByteBuffer(exchange.getRequestBody());
+    Bytes body = asByteBuffer(exchange.getRequestBody());
     return new HttpRequest(method, path, body, headers, params);
   }
 
   private void processResponse(HttpExchange exchange, HttpResponse response) throws IOException {
-    ByteBuffer bytes = response.body();
+    Bytes bytes = response.body();
     response.headers().forEach((key, value) -> exchange.getResponseHeaders().add(key, value));
-    exchange.sendResponseHeaders(response.status().code(), bytes.remaining());
+    exchange.sendResponseHeaders(response.status().code(), bytes.size());
     try (OutputStream output = exchange.getResponseBody()) {
-      exchange.getResponseBody().write(bytes.array());
+      exchange.getResponseBody().write(bytes.toArray());
     }
   }
 }

@@ -13,8 +13,6 @@ import static com.github.tonivade.zeromock.HttpStatus.NOT_FOUND;
 import static com.github.tonivade.zeromock.HttpStatus.NO_CONTENT;
 import static com.github.tonivade.zeromock.HttpStatus.OK;
 
-import java.nio.ByteBuffer;
-
 public final class Responses {
   
   private Responses() {}
@@ -23,11 +21,11 @@ public final class Responses {
     return new HttpResponse(OK, empty());
   }
   
-  public static HttpResponse ok(ByteBuffer body) {
+  public static HttpResponse ok(Bytes body) {
     return new HttpResponse(OK, body);
   }
 
-  public static HttpResponse created(ByteBuffer body) {
+  public static HttpResponse created(Bytes body) {
     return new HttpResponse(CREATED, body);
   }
   
@@ -39,7 +37,7 @@ public final class Responses {
     return new HttpResponse(FORBIDDEN, empty());
   }
 
-  public static HttpResponse badRequest(ByteBuffer body) {
+  public static HttpResponse badRequest(Bytes body) {
     return new HttpResponse(BAD_REQUEST, body);
   }
 
@@ -47,7 +45,7 @@ public final class Responses {
     return notFound(empty());
   }
 
-  public static HttpResponse notFound(ByteBuffer body) {
+  public static HttpResponse notFound(Bytes body) {
     return new HttpResponse(NOT_FOUND, body);
   }
 
@@ -55,7 +53,7 @@ public final class Responses {
     return error(empty());
   }
 
-  public static HttpResponse error(ByteBuffer body) {
+  public static HttpResponse error(Bytes body) {
     return new HttpResponse(INTERNAL_SERVER_ERROR, body);
   }
 }

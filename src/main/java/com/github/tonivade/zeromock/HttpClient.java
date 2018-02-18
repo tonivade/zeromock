@@ -12,7 +12,6 @@ import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.ByteBuffer;
 
 public class HttpClient {
   
@@ -41,10 +40,10 @@ public class HttpClient {
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod(request.method().name());
     request.headers().forEach(connection::setRequestProperty);
-    if (!request.isEmpty()) {
+    if (!request.body().isEmpty()) {
       connection.setDoOutput(true);
       try (OutputStream output = connection.getOutputStream()) {
-        output.write(request.body().array());
+        output.write(request.body().toArray());
       }
     }
     return connection;
@@ -52,13 +51,13 @@ public class HttpClient {
 
   private HttpResponse processResponse(HttpURLConnection connection) throws IOException {
     HttpHeaders headers = new HttpHeaders(connection.getHeaderFields());
-    ByteBuffer body = deserialize(connection);
+    Bytes body = deserialize(connection);
     HttpStatus status = HttpStatus.fromCode(connection.getResponseCode());
     return new HttpResponse(status, body, headers);
   }
 
-  private ByteBuffer deserialize(HttpURLConnection connection) throws IOException {
-    ByteBuffer body = Bytes.empty();
+  private Bytes deserialize(HttpURLConnection connection) throws IOException {
+    Bytes body = Bytes.empty();
     if (connection.getContentLength() > 0) {
       if (connection.getResponseCode() < BAD_REQUEST.code()) {
         body = asByteBuffer(connection.getInputStream());

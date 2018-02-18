@@ -7,15 +7,13 @@ package com.github.tonivade.zeromock;
 import static com.github.tonivade.zeromock.Bytes.asByteBuffer;
 import static java.util.Objects.requireNonNull;
 
-import java.nio.ByteBuffer;
-
 import com.github.tonivade.zeromock.Path.PathElement;
 
 public final class HttpRequest {
 
   private final HttpMethod method;
   private final Path path;
-  private final ByteBuffer body;
+  private final Bytes body;
   private final HttpHeaders headers;
   private final HttpParams params;
 
@@ -23,7 +21,7 @@ public final class HttpRequest {
     this(method, path, Bytes.empty(), HttpHeaders.empty(), HttpParams.empty());
   }
 
-  public HttpRequest(HttpMethod method, Path path, ByteBuffer body, 
+  public HttpRequest(HttpMethod method, Path path, Bytes body, 
                      HttpHeaders headers, HttpParams params) {
     this.method = requireNonNull(method);
     this.path = requireNonNull(path);
@@ -40,12 +38,8 @@ public final class HttpRequest {
     return path;
   }
   
-  public ByteBuffer body() {
+  public Bytes body() {
     return body;
-  }
-  
-  public boolean isEmpty() {
-    return !body.hasRemaining();
   }
   
   public HttpHeaders headers() {
@@ -80,7 +74,7 @@ public final class HttpRequest {
     return withBody(asByteBuffer(body));
   }
 
-  public HttpRequest withBody(ByteBuffer body) {
+  public HttpRequest withBody(Bytes body) {
     return new HttpRequest(method, path, body, headers, params);
   }
 

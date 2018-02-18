@@ -6,7 +6,6 @@ package com.github.tonivade.zeromock;
 
 import static com.github.tonivade.zeromock.Bytes.asByteBuffer;
 
-import java.nio.ByteBuffer;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -26,11 +25,11 @@ public final class Handlers {
     return ok(asByteBuffer(body));
   }
 
-  public static Function<HttpRequest, HttpResponse> ok(ByteBuffer body) {
+  public static Function<HttpRequest, HttpResponse> ok(Bytes body) {
     return ok(request -> body);
   }
 
-  public static Function<HttpRequest, HttpResponse> ok(Function<HttpRequest, ByteBuffer> handler) {
+  public static Function<HttpRequest, HttpResponse> ok(Function<HttpRequest, Bytes> handler) {
     return handler.andThen(Responses::ok);
   }
   
@@ -38,11 +37,11 @@ public final class Handlers {
     return created(asByteBuffer(body));
   }
   
-  public static Function<HttpRequest, HttpResponse> created(ByteBuffer body) {
+  public static Function<HttpRequest, HttpResponse> created(Bytes body) {
     return created(request -> body);
   }
   
-  public static Function<HttpRequest, HttpResponse> created(Function<HttpRequest, ByteBuffer> handler) {
+  public static Function<HttpRequest, HttpResponse> created(Function<HttpRequest, Bytes> handler) {
     return handler.andThen(Responses::created);
   }
   
@@ -58,11 +57,11 @@ public final class Handlers {
     return badRequest(asByteBuffer(body));
   }
 
-  public static Function<HttpRequest, HttpResponse> badRequest(ByteBuffer body) {
+  public static Function<HttpRequest, HttpResponse> badRequest(Bytes body) {
     return badRequest(request -> body);
   }
 
-  public static Function<HttpRequest, HttpResponse> badRequest(Function<HttpRequest, ByteBuffer> handler) {
+  public static Function<HttpRequest, HttpResponse> badRequest(Function<HttpRequest, Bytes> handler) {
     return handler.andThen(Responses::badRequest);
   }
 
@@ -74,11 +73,11 @@ public final class Handlers {
     return notFound(asByteBuffer(body));
   }
 
-  public static Function<HttpRequest, HttpResponse> notFound(ByteBuffer body) {
+  public static Function<HttpRequest, HttpResponse> notFound(Bytes body) {
     return notFound(request -> body);
   }
 
-  public static Function<HttpRequest, HttpResponse> notFound(Function<HttpRequest, ByteBuffer> handler) {
+  public static Function<HttpRequest, HttpResponse> notFound(Function<HttpRequest, Bytes> handler) {
     return handler.andThen(Responses::notFound);
   }
 
@@ -90,11 +89,11 @@ public final class Handlers {
     return error(asByteBuffer(body));
   }
 
-  public static Function<HttpRequest, HttpResponse> error(ByteBuffer body) {
+  public static Function<HttpRequest, HttpResponse> error(Bytes body) {
     return error(request -> body);
   }
   
-  public static Function<HttpRequest, HttpResponse> error(Function<HttpRequest, ByteBuffer> handler) {
+  public static Function<HttpRequest, HttpResponse> error(Function<HttpRequest, Bytes> handler) {
     return handler.andThen(Responses::error);
   }
   

@@ -4,7 +4,6 @@
  */
 package com.github.tonivade.zeromock;
 
-import java.nio.ByteBuffer;
 import java.util.function.Function;
 
 import com.google.gson.GsonBuilder;
@@ -13,11 +12,11 @@ public class Serializers {
   
   private Serializers() {}
   
-  public static <T> Function<T, ByteBuffer> json() {
+  public static <T> Function<T, Bytes> json() {
     return Serializers.<T>asJson().andThen(Bytes::asByteBuffer);
   }
 
-  public static <T> Function<T, ByteBuffer> plain() {
+  public static <T> Function<T, Bytes> plain() {
     return Serializers.<T>asString().andThen(Bytes::asByteBuffer);
   }
   

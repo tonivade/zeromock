@@ -5,7 +5,6 @@
 package com.github.tonivade.zeromock;
 
 import java.lang.reflect.Type;
-import java.nio.ByteBuffer;
 import java.util.function.Function;
 
 import com.google.gson.GsonBuilder;
@@ -16,15 +15,15 @@ public final class Deserializers {
   
   private Deserializers() {}
   
-  public static Function<ByteBuffer, JsonElement> json() {
+  public static Function<Bytes, JsonElement> json() {
     return plain().andThen(asJson());
   }
   
-  public static <T> Function<ByteBuffer, T> json(Type type) {
+  public static <T> Function<Bytes, T> json(Type type) {
     return plain().andThen(fromJson(type));
   }
   
-  public static Function<ByteBuffer, String> plain() {
+  public static Function<Bytes, String> plain() {
     return Bytes::asString;
   }
   
