@@ -85,7 +85,7 @@ public class Path {
       return value;
     }
 
-    abstract String toPattern();
+    protected abstract String toPattern();
   }
   
   private static final class PathValue extends PathElement {
@@ -94,7 +94,7 @@ public class Path {
     }
     
     @Override
-    public String toPattern() {
+    protected String toPattern() {
       return value();
     }
   }
@@ -105,7 +105,7 @@ public class Path {
     }
     
     @Override
-    public String toPattern() {
+    protected String toPattern() {
       return "\\w+";
     }
   }

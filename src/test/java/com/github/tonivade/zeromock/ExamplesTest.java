@@ -94,11 +94,7 @@ public class ExamplesTest {
         return true;
       if (getClass() != obj.getClass())
         return false;
-      Say other = (Say) obj;
-      if (!Objects.equals(other.message, this.message)) {
-        return false;
-      }
-      return true;
+      return Objects.equals(((Say) obj).message, this.message);
     }
     
     @Override

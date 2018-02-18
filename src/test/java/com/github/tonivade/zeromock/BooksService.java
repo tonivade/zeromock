@@ -7,6 +7,7 @@ package com.github.tonivade.zeromock;
 import static java.util.Arrays.asList;
 
 import java.util.List;
+import java.util.Objects;
 
 public class BooksService {
 
@@ -27,6 +28,7 @@ public class BooksService {
   }
 
   public void delete(Integer id) {
+    // nothing to do
   }
   
   public static class Book {
@@ -45,11 +47,7 @@ public class BooksService {
 
     @Override
     public int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + ((id == null) ? 0 : id.hashCode());
-      result = prime * result + ((title == null) ? 0 : title.hashCode());
-      return result;
+      return Objects.hash(id, title);
     }
 
     @Override
@@ -61,16 +59,12 @@ public class BooksService {
       if (getClass() != obj.getClass())
         return false;
       Book other = (Book) obj;
-      if (id == null) {
-        if (other.id != null)
-          return false;
-      } else if (!id.equals(other.id))
+      if (!Objects.equals(this.id, other.id)) {
         return false;
-      if (title == null) {
-        if (other.title != null)
-          return false;
-      } else if (!title.equals(other.title))
+      }
+      if (!Objects.equals(this.title, other.title)) {
         return false;
+      }
       return true;
     }
   }
