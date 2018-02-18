@@ -20,14 +20,14 @@ public final class HttpRequest {
   private final HttpParams params;
 
   public HttpRequest(HttpMethod method, Path path) {
-    this(method, path, null, HttpHeaders.empty(), HttpParams.empty());
+    this(method, path, Bytes.empty(), HttpHeaders.empty(), HttpParams.empty());
   }
 
   public HttpRequest(HttpMethod method, Path path, ByteBuffer body, 
                      HttpHeaders headers, HttpParams params) {
     this.method = requireNonNull(method);
     this.path = requireNonNull(path);
-    this.body = body;
+    this.body = requireNonNull(body);
     this.headers = requireNonNull(headers);
     this.params = requireNonNull(params);
   }
