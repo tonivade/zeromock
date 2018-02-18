@@ -42,6 +42,10 @@ public final class Bytes {
   public static Bytes empty() {
     return new Bytes(new byte[]{});
   }
+  
+  public static Bytes fromArray(byte[] array) {
+    return new Bytes(array);
+  }
 
   public static Bytes asByteBuffer(InputStream input) throws IOException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
