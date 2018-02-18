@@ -41,7 +41,7 @@ public class HttpClient {
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod(request.method().name());
     request.headers().forEach(connection::setRequestProperty);
-    if (request.body().hasRemaining()) {
+    if (!request.isEmpty()) {
       connection.setDoOutput(true);
       try (OutputStream output = connection.getOutputStream()) {
         output.write(request.body().array());

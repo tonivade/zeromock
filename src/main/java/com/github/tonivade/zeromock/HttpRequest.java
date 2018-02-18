@@ -44,6 +44,10 @@ public final class HttpRequest {
     return body;
   }
   
+  public boolean isEmpty() {
+    return !body.hasRemaining();
+  }
+  
   public HttpHeaders headers() {
     return headers;
   }

@@ -33,6 +33,10 @@ public final class HttpResponse {
     return body;
   }
   
+  public boolean isEmpty() {
+    return !body.hasRemaining();
+  }
+  
   public HttpHeaders headers() {
     return headers;
   }
