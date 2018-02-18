@@ -59,13 +59,8 @@ public class BooksService {
       if (getClass() != obj.getClass())
         return false;
       Book other = (Book) obj;
-      if (!Objects.equals(this.id, other.id)) {
-        return false;
-      }
-      if (!Objects.equals(this.title, other.title)) {
-        return false;
-      }
-      return true;
+      return Objects.equals(this.id, other.id) 
+          && Objects.equals(this.title, other.title);
     }
   }
 }
