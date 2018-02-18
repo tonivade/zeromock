@@ -5,17 +5,16 @@
 package com.github.tonivade.zeromock;
 
 import static java.nio.ByteBuffer.wrap;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 
 public final class Bytes {
 
   private static final int BUFFER_SIZE = 1024;
-  private static final Charset UTF8 = Charset.forName("UTF-8");
 
   private Bytes() {}
 
@@ -36,10 +35,10 @@ public final class Bytes {
   }
   
   public static ByteBuffer asByteBuffer(String string) {
-    return wrap(string.getBytes(Bytes.UTF8));
+    return wrap(string.getBytes(UTF_8));
   }
   
   public static String asString(ByteBuffer buffer) {
-    return new String(buffer.array(), Bytes.UTF8);
+    return new String(buffer.array(), UTF_8);
   }
 }

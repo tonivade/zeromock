@@ -4,6 +4,7 @@
  */
 package com.github.tonivade.zeromock;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.stream.Collectors.joining;
@@ -92,7 +93,7 @@ public class HttpParams {
 
   private static String urlEncode(String value) {
     try {
-      return URLEncoder.encode(value, "UTF-8");
+      return URLEncoder.encode(value, UTF_8.toString());
     } catch (UnsupportedEncodingException e) {
       throw new UncheckedIOException(e);
     }
@@ -100,7 +101,7 @@ public class HttpParams {
 
   private static String urlDecode(String value) {
     try {
-      return URLDecoder.decode(value, "UTF-8");
+      return URLDecoder.decode(value, UTF_8.toString());
     } catch (UnsupportedEncodingException e) {
       throw new UncheckedIOException(e);
     }
