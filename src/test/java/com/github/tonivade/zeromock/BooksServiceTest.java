@@ -4,7 +4,6 @@
  */
 package com.github.tonivade.zeromock;
 
-import static com.github.tonivade.zeromock.MockHttpServer.listenAt;
 import static com.github.tonivade.zeromock.Predicates.body;
 import static com.github.tonivade.zeromock.Predicates.delete;
 import static com.github.tonivade.zeromock.Predicates.get;
@@ -19,13 +18,13 @@ import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.github.tonivade.zeromock.BooksService.Book;
 import com.google.gson.reflect.TypeToken;
 
+@ExtendWith(MockHttpServerExtension.class)
 public class BooksServiceTest {
   
   private BooksAPI books = new BooksAPI(new BooksService());
@@ -37,10 +36,10 @@ public class BooksServiceTest {
       .when(delete("/books/:id"), books.delete())
       .when(put("/books/:id"), books.update());
   
-  private MockHttpServer server = listenAt(8080).mount("/store", booksService);
-  
   @Test
-  public void findsBooks() {
+  public void findsBooks(MockHttpServer server) {
+    server.mount("/store", booksService);
+    
     HttpClient client = new HttpClient("http://localhost:8080/store");
     
     HttpResponse response = client.request(Requests.get("/books"));
@@ -49,7 +48,9 @@ public class BooksServiceTest {
   }
 
   @Test
-  public void findsBook() {
+  public void findsBook(MockHttpServer server) {
+    server.mount("/store", booksService);
+    
     HttpClient client = new HttpClient("http://localhost:8080/store");
     
     HttpResponse response = client.request(Requests.get("/books/1"));
@@ -59,7 +60,9 @@ public class BooksServiceTest {
   }
   
   @Test
-  public void createsBook() {
+  public void createsBook(MockHttpServer server) {
+    server.mount("/store", booksService);
+    
     HttpClient client = new HttpClient("http://localhost:8080/store");
     
     HttpResponse response = client.request(Requests.post("/books").withBody("create"));
@@ -70,7 +73,9 @@ public class BooksServiceTest {
   }
   
   @Test
-  public void deletesBook() {
+  public void deletesBook(MockHttpServer server) {
+    server.mount("/store", booksService);
+    
     HttpClient client = new HttpClient("http://localhost:8080/store");
     
     HttpResponse response = client.request(Requests.delete("/books/1"));
@@ -80,23 +85,15 @@ public class BooksServiceTest {
   }
   
   @Test
-  public void updatesBook() {
+  public void updatesBook(MockHttpServer server) {
+    server.mount("/store", booksService);
+    
     HttpClient client = new HttpClient("http://localhost:8080/store");
     
     HttpResponse response = client.request(Requests.put("/books/1").withBody("update"));
     
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals(new Book(1, "update"), asBook(response.body())));
-  }
-
-  @BeforeEach
-  public void setUp() {
-    server.start();
-  }
-
-  @AfterEach
-  public void tearDown() {
-    server.stop();
   }
 
   private Book asBook(ByteBuffer body) {
