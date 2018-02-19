@@ -1,5 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'jacoco'
 apply plugin: 'com.bmuschko.nexus'
 apply plugin: 'org.junit.platform.gradle.plugin'
 
@@ -19,6 +20,25 @@ buildscript {
   dependencies {
     classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
     classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.2'
+  }
+}
+
+jacoco {
+  toolVersion = '0.7.9'
+  applyTo junitPlatformTest
+}
+
+jacocoTestReport {
+  reports {
+    xml.enabled = true
+    html.enabled = true
+    xml.destination file("${buildDir}/reports/jacoco/report.xml")
+  }
+}
+
+junitPlatformTest {
+  jacoco {
+    destinationFile = file("$buildDir/jacoco/test.exec")
   }
 }
 
@@ -67,7 +87,7 @@ modifyPom {
 
 extraArchive {
   sources = true
-  tests = false
+  tests = true
   javadoc = true
 }
 
