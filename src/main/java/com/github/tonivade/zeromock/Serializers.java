@@ -8,7 +8,7 @@ import java.util.function.Function;
 
 import com.google.gson.GsonBuilder;
 
-public class Serializers {
+public final class Serializers {
   
   private Serializers() {}
   
