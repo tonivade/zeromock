@@ -8,13 +8,13 @@ Right now the unique dependency is gson (json object serialization), and gson do
 
 ## Why?
 
-Usually, the sorter answer should be because I can, but I want to explain a bit why I developed this library, and the principal reason is frustration.
+Usually, the sorter answer should be 'because I can', but I want to explain a bit why I developed this library, and the principal reason is frustration.
 
   - Frustration 1: Existing alternatives (like Wiremock, and others) are, in my opinion, too complex and dificult to read. In my daily work if I have to read an existing test that needs many stubs to work, is too difficult to understand the purpose of the test.
   
   - Frustration 2: Why I need different libraries to implement a REST API and stubs for this API, in the end, you are doing the same, but instead to compute a result, you are returning a mock result. But finally, both are the same thing.
   
-  - Frustration 3: I have another project, called resp-server, is an implementation of REdis Serialization Protocol, and I thought that it would be nice to use this protocol to develop REST API applications. I tried to call spring-mvc controller using RESP protocol but the result was an ugly hack. I tried the same using spring-webflux, but the result was the same. So, why I cannot decouple HTTP protocol from the controller implementation?
+  - Frustration 3: I have another project, called [resp-server](https://github.com/tonivade/resp-server), is an implementation of REdis Serialization Protocol, and I thought that it would be nice to use this protocol to develop REST API applications. I tried to call spring-mvc controller using RESP protocol but the result was an ugly hack. I tried the same using spring-webflux, but the result was the same. So, why I cannot decouple HTTP protocol from the controller implementation?
 
 So, these are the objetives of this library:
   - provide an independent/decoupled/reusable implementation of REST API controllers.
@@ -33,7 +33,7 @@ And finally, I implemented a Junit5 extension for Junit integration.
 
 ## Examples
 
-This is the simplest example, a ping application. It uses the Junit 5 extension. The test receives an instance of the server. Then you can create the stubs you need.
+This is the simplest example, a ping application. It uses the Junit5 extension. The test receives an instance of the server. Then you can create the stubs you need.
 
 ```java
   @Test
@@ -112,7 +112,7 @@ In this example, a class `Say` is created with the `say` param content, and fina
 
 In the other side, the client can use `Deserializers` class in order to create a Say class again. This class contains functions of type `Function<Bytes, T>` that converts `Bytes` to arbitrary objects.
 
-Of course, you can use static imports for a clearer code if you want, I have added the full names only for explanatory purpases. All examples taken from this [test class](https://github.com/tonivade/zeromock/blob/master/src/test/java/com/github/tonivade/zeromock/ExamplesTest.java)
+Of course, you can use static imports for a clearer code if you want, I have added the full names only for explanatory purposes. All examples taken from this [test class](https://github.com/tonivade/zeromock/blob/master/src/test/java/com/github/tonivade/zeromock/ExamplesTest.java)
 
 ## License
 

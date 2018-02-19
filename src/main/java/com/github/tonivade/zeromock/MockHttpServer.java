@@ -18,12 +18,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
 @SuppressWarnings("restriction")
 public class MockHttpServer {
+  
+  private static final Logger LOG = Logger.getLogger(MockHttpServer.class.getName());
   
   private static final String ROOT = "/";
 
@@ -59,10 +63,12 @@ public class MockHttpServer {
 
   public void start() {
     server.start();
+    LOG.info(() -> "server listening at " + server.getAddress());
   }
 
   public void stop() {
     server.stop(0);
+    LOG.info(() -> "server stopped");
   }
 
   public MockHttpServer verify(Predicate<HttpRequest> predicate) {
@@ -91,11 +97,12 @@ public class MockHttpServer {
         matched.add(request);
         processResponse(exchange, response.get());
       } else {
+        LOG.fine(() -> "unmatched request " + request);
         processResponse(exchange, notFound());
         unmatched.add(request);
       }
     } catch (RuntimeException e) {
-      e.printStackTrace();
+      LOG.log(Level.SEVERE, "error processing request: " + exchange.getRequestURI(), e);
       processResponse(exchange, error(asByteBuffer(e.getMessage())));
     }
   }
