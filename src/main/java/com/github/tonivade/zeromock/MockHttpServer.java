@@ -25,7 +25,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
 @SuppressWarnings("restriction")
-public class MockHttpServer {
+public final class MockHttpServer {
   
   private static final Logger LOG = Logger.getLogger(MockHttpServer.class.getName());
   
