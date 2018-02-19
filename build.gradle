@@ -5,7 +5,7 @@ apply plugin: 'org.junit.platform.gradle.plugin'
 
 group = 'com.github.tonivade'
 archivesBaseName = 'zeromock'
-version = '0.1.0-SNAPSHOT'
+version = '0.1.0'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
