@@ -4,6 +4,8 @@ Http Mock Server with (mostly) zero dependencies.
 
 Right now the unique dependency is gson (json object serialization), and gson doesn't have any additional dependency.
 
+[![Build Status](https://api.travis-ci.org/tonivade/zeromock.svg?branch=master)](https://travis-ci.org/tonivade/zeromock)
+
 ## Why?
 
 Usually, the sorter answer should be because I can, but I want to explain a bit why I developed this library, and the principal reason is frustration.
@@ -110,4 +112,8 @@ In this example, a class `Say` is created with the `say` param content, and fina
 
 In the other side, the client can use `Deserializers` class in order to create a Say class again. This class contains functions of type `Function<Bytes, T>` that converts `Bytes` to arbitrary objects.
 
-Of course, you can use static imports for a clearer code if you want, I have added the full names only for explanatory purpases.
+Of course, you can use static imports for a clearer code if you want, I have added the full names only for explanatory purpases. All examples taken from this [test class](https://github.com/tonivade/zeromock/blob/master/src/test/java/com/github/tonivade/zeromock/ExamplesTest.java)
+
+## License
+
+This project is released under MIT License
