@@ -20,10 +20,11 @@ import java.util.Objects;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+@ListenAt(8081)
 @ExtendWith(MockHttpServerExtension.class)
 public class ExamplesTest {
 
-  private static final String BASE_URL = "http://localhost:8080";
+  private static final String BASE_URL = "http://localhost:8081";
 
   @Test
   public void ping(MockHttpServer server) {

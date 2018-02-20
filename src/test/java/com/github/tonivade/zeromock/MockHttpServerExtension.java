@@ -4,6 +4,8 @@
  */
 package com.github.tonivade.zeromock;
 
+import static java.util.stream.Collectors.joining;
+
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -15,15 +17,11 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 
 public class MockHttpServerExtension implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback, ParameterResolver {
   
-  private final MockHttpServer server;
-
-  public MockHttpServerExtension() {
-    // TODO: listen port as parameter
-    this.server = MockHttpServer.listenAt(8080);
-  }
+  private MockHttpServer server;
 
   @Override
   public void beforeAll(ExtensionContext context) throws Exception {
+    server = MockHttpServer.listenAt(port(context));
     server.start();
   }
   
@@ -35,8 +33,7 @@ public class MockHttpServerExtension implements BeforeAllCallback, AfterAllCallb
   @Override
   public void afterEach(ExtensionContext context) throws Exception {
     if (!server.getUnmatched().isEmpty()) {
-      System.out.println("Unmatched requests");
-      server.getUnmatched().forEach(System.out::println);
+      context.publishReportEntry("UnmatchedRequests", unmatched());
     }
   }
 
@@ -55,5 +52,16 @@ public class MockHttpServerExtension implements BeforeAllCallback, AfterAllCallb
   public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
       throws ParameterResolutionException {
     return server;
+  }
+
+  private String unmatched() {
+    return server.getUnmatched().stream().map(Object::toString).collect(joining(",", "[", "]"));
+  }
+
+  private int port(ExtensionContext context) {
+    return context.getTestClass()
+        .map(clazz -> clazz.getDeclaredAnnotation(ListenAt.class))
+        .map(ListenAt::value)
+        .orElse(8080);
   }
 }
