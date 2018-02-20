@@ -53,6 +53,10 @@ public final class Handlers {
     return x -> Responses.forbidden();
   }
 
+  public static Function<HttpRequest, HttpResponse> badRequest() {
+    return x -> Responses.badRequest();
+  }
+
   public static Function<HttpRequest, HttpResponse> badRequest(String body) {
     return badRequest(asByteBuffer(body));
   }

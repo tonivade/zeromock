@@ -37,6 +37,10 @@ public final class Responses {
     return new HttpResponse(FORBIDDEN, empty());
   }
 
+  public static HttpResponse badRequest() {
+    return badRequest(empty());
+  }
+
   public static HttpResponse badRequest(Bytes body) {
     return new HttpResponse(BAD_REQUEST, body);
   }
