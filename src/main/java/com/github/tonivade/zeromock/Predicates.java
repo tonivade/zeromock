@@ -11,6 +11,7 @@ import static com.github.tonivade.zeromock.HttpMethod.PATCH;
 import static com.github.tonivade.zeromock.HttpMethod.POST;
 import static com.github.tonivade.zeromock.HttpMethod.PUT;
 
+import java.lang.reflect.Type;
 import java.util.function.Predicate;
 
 public final class Predicates {
@@ -57,6 +58,11 @@ public final class Predicates {
     return method(PATCH);
   }
   
+  public static <T> Predicate<HttpRequest> equalTo(T value)
+  {
+    return request -> json(request, value.getClass()).equals(value);
+  }
+  
   public static Predicate<HttpRequest> body(String body) {
     return request -> asString(request.body()).equals(body);
   }
@@ -91,5 +97,10 @@ public final class Predicates {
   
   public static Predicate<HttpRequest> delete(String path) {
     return delete().and(path(path));
+  }
+
+  private static <T> T json(HttpRequest request, Type type)
+  {
+    return Extractors.body().andThen(Deserializers.<T>json(type)).apply(request);
   }
 }
