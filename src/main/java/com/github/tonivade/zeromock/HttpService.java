@@ -5,6 +5,7 @@
 package com.github.tonivade.zeromock;
 
 import static com.github.tonivade.zeromock.Handlers.delegate;
+import static com.github.tonivade.zeromock.Mappings.mapping;
 import static com.github.tonivade.zeromock.Predicates.startsWith;
 import static java.util.Objects.requireNonNull;
 
@@ -13,6 +14,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+
+import com.github.tonivade.zeromock.Mappings.Mapping;
 
 public class HttpService {
   
@@ -37,10 +40,10 @@ public class HttpService {
   }
   
   public HttpService when(Predicate<HttpRequest> matcher, Function<HttpRequest, HttpResponse> handler) {
-    return map(Mapping.when(matcher).then(handler));
+    return when(mapping(matcher).then(handler));
   }
   
-  public HttpService map(Mapping mapping) {
+  public HttpService when(Mapping mapping) {
     addMapping(mapping);
     return this;
   }

@@ -21,6 +21,7 @@ import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.github.tonivade.zeromock.Mappings.Mapping;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
@@ -61,8 +62,8 @@ public final class MockHttpServer {
     return this;
   }
   
-  public MockHttpServer map(Mapping mapping) {
-    root.map(mapping);
+  public MockHttpServer when(Mapping mapping) {
+    root.when(mapping);
     return this;
   }
   
