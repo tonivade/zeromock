@@ -60,7 +60,12 @@ public final class MockHttpServer {
     root.when(predicate, handler);
     return this;
   }
-
+  
+  public MockHttpServer map(Mapping mapping) {
+    root.map(mapping);
+    return this;
+  }
+  
   public void start() {
     server.start();
     LOG.info(() -> "server listening at " + server.getAddress());

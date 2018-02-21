@@ -33,12 +33,15 @@ public class HttpService {
   }
 
   public HttpService mount(String path, HttpService service) {
-    mappings.add(mapping(startsWith(path), delegate(service)));
-    return this;
+    return when(startsWith(path), delegate(service));
   }
   
   public HttpService when(Predicate<HttpRequest> matcher, Function<HttpRequest, HttpResponse> handler) {
-    mappings.add(mapping(matcher, handler));
+    return map(Mapping.when(matcher).then(handler));
+  }
+  
+  public HttpService map(Mapping mapping) {
+    addMapping(mapping);
     return this;
   }
   
@@ -61,32 +64,14 @@ public class HttpService {
   protected void clear() {
     mappings.clear();
   }
+  
+  private void addMapping(Mapping mapping) {
+    mappings.add(mapping);
+  }
 
   private Optional<Mapping> findMapping(HttpRequest request) {
     return mappings.stream()
         .filter(mapping -> mapping.test(request))
         .findFirst();
-  }
-  
-  private Mapping mapping(Predicate<HttpRequest> predicate, Function<HttpRequest, HttpResponse> handler) {
-    return new Mapping(predicate, handler);
-  }
-  
-  private static final class Mapping {
-    private final Predicate<HttpRequest> predicate;
-    private final Function<HttpRequest, HttpResponse> handler;
-
-    public Mapping(Predicate<HttpRequest> predicate, Function<HttpRequest, HttpResponse> handler) {
-      this.predicate = requireNonNull(predicate);
-      this.handler = requireNonNull(handler);
-    }
-    
-    public boolean test(HttpRequest request) {
-      return predicate.test(request);
-    }
-    
-    public HttpResponse execute(HttpRequest request) {
-      return handler.apply(request);
-    }
   }
 }
