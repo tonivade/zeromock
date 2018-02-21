@@ -4,12 +4,11 @@
  */
 package com.github.tonivade.zeromock;
 
+import static com.github.tonivade.zeromock.Mappings.delete;
+import static com.github.tonivade.zeromock.Mappings.get;
+import static com.github.tonivade.zeromock.Mappings.post;
+import static com.github.tonivade.zeromock.Mappings.put;
 import static com.github.tonivade.zeromock.Predicates.body;
-import static com.github.tonivade.zeromock.Predicates.delete;
-import static com.github.tonivade.zeromock.Predicates.get;
-import static com.github.tonivade.zeromock.Predicates.path;
-import static com.github.tonivade.zeromock.Predicates.post;
-import static com.github.tonivade.zeromock.Predicates.put;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,11 +28,11 @@ public class BooksServiceTest {
   private BooksAPI books = new BooksAPI(new BooksService());
   
   private HttpService booksService = new HttpService("books")
-      .when(get("/books"), books.findAll())
-      .when(get("/books/:id"), books.find())
-      .when(post("/books"), books.create())
-      .when(delete("/books/:id"), books.delete())
-      .when(put("/books/:id"), books.update());
+      .when(get("/books").then(books.findAll()))
+      .when(get("/books/:id").then(books.find()))
+      .when(post("/books").then(books.create()))
+      .when(delete("/books/:id").then(books.delete()))
+      .when(put("/books/:id").then(books.update()));
   
   @Test
   public void findsBooks(MockHttpServer server) {
@@ -68,7 +67,7 @@ public class BooksServiceTest {
     
     assertAll(() -> assertEquals(HttpStatus.CREATED, response.status()),
               () -> assertEquals(new Book(1, "create"), asBook(response.body())),
-              () -> server.verify(post().and(path("/store/books")).and(body("create"))));
+              () -> server.verify(Predicates.post("/store/books").and(body("create"))));
   }
   
   @Test

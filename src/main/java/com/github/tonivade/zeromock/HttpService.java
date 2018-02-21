@@ -5,6 +5,7 @@
 package com.github.tonivade.zeromock;
 
 import static com.github.tonivade.zeromock.Handlers.delegate;
+import static com.github.tonivade.zeromock.Mappings.mapping;
 import static com.github.tonivade.zeromock.Predicates.startsWith;
 import static java.util.Objects.requireNonNull;
 
@@ -13,6 +14,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+
+import com.github.tonivade.zeromock.Mappings.Mapping;
 
 public class HttpService {
   
@@ -33,12 +36,15 @@ public class HttpService {
   }
 
   public HttpService mount(String path, HttpService service) {
-    mappings.add(mapping(startsWith(path), delegate(service)));
-    return this;
+    return when(startsWith(path), delegate(service));
   }
   
   public HttpService when(Predicate<HttpRequest> matcher, Function<HttpRequest, HttpResponse> handler) {
-    mappings.add(mapping(matcher, handler));
+    return when(mapping(matcher).then(handler));
+  }
+  
+  public HttpService when(Mapping mapping) {
+    addMapping(mapping);
     return this;
   }
   
@@ -61,32 +67,14 @@ public class HttpService {
   protected void clear() {
     mappings.clear();
   }
+  
+  private void addMapping(Mapping mapping) {
+    mappings.add(mapping);
+  }
 
   private Optional<Mapping> findMapping(HttpRequest request) {
     return mappings.stream()
         .filter(mapping -> mapping.test(request))
         .findFirst();
-  }
-  
-  private Mapping mapping(Predicate<HttpRequest> predicate, Function<HttpRequest, HttpResponse> handler) {
-    return new Mapping(predicate, handler);
-  }
-  
-  private static final class Mapping {
-    private final Predicate<HttpRequest> predicate;
-    private final Function<HttpRequest, HttpResponse> handler;
-
-    public Mapping(Predicate<HttpRequest> predicate, Function<HttpRequest, HttpResponse> handler) {
-      this.predicate = requireNonNull(predicate);
-      this.handler = requireNonNull(handler);
-    }
-    
-    public boolean test(HttpRequest request) {
-      return predicate.test(request);
-    }
-    
-    public HttpResponse execute(HttpRequest request) {
-      return handler.apply(request);
-    }
   }
 }
