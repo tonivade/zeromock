@@ -19,6 +19,10 @@ public final class Deserializers {
     return plain().andThen(asJson());
   }
   
+  public static <T> Function<Bytes, T> json(Class<T> clazz) {
+    return plain().andThen(fromJson(clazz));
+  }
+  
   public static <T> Function<Bytes, T> json(Type type) {
     return plain().andThen(fromJson(type));
   }

@@ -4,6 +4,7 @@
  */
 package com.github.tonivade.zeromock;
 
+import static com.github.tonivade.zeromock.Deserializers.json;
 import static com.github.tonivade.zeromock.Mappings.delete;
 import static com.github.tonivade.zeromock.Mappings.get;
 import static com.github.tonivade.zeromock.Mappings.post;
@@ -95,7 +96,7 @@ public class BooksServiceTest {
   }
 
   private Book asBook(Bytes body) {
-    return Deserializers.<Book>json(Book.class).apply(body);
+    return json(Book.class).apply(body);
   }
 
   private List<Book> asBooks(Bytes body) {
