@@ -15,8 +15,6 @@ import static com.github.tonivade.zeromock.Serializers.json;
 import static com.github.tonivade.zeromock.Serializers.plain;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Objects;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -73,34 +71,5 @@ public class ExamplesTest {
   
   private Say asObject(Bytes body) {
     return Deserializers.json(Say.class).apply(body);
-  }
-
-  private static final class Say {
-    private final String message;
-
-    public Say(String message) {
-      this.message = message;
-    }
-    
-    @Override
-    public int hashCode() {
-      return Objects.hash(message);
-    }
-    
-    @Override
-    public boolean equals(Object obj) {
-      if (obj == null)
-        return false;
-      if (this == obj)
-        return true;
-      if (getClass() != obj.getClass())
-        return false;
-      return Objects.equals(((Say) obj).message, this.message);
-    }
-    
-    @Override
-    public String toString() {
-      return "Say(message=" + message + ")";
-    }
   }
 }

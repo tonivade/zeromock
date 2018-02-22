@@ -4,7 +4,14 @@
  */
 package com.github.tonivade.zeromock;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.UncheckedIOException;
 import java.util.function.Function;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
 import com.google.gson.GsonBuilder;
 
@@ -15,6 +22,10 @@ public final class Serializers {
   public static <T> Function<T, Bytes> json() {
     return Serializers.<T>asJson().andThen(Bytes::asByteBuffer);
   }
+  
+  public static <T> Function<T, Bytes> xml() {
+    return Serializers.<T>asXml().andThen(Bytes::asByteBuffer);
+  }
 
   public static <T> Function<T, Bytes> plain() {
     return Serializers.<T>asString().andThen(Bytes::asByteBuffer);
@@ -22,6 +33,22 @@ public final class Serializers {
   
   private static <T> Function<T, String> asJson() {
     return value -> new GsonBuilder().create().toJson(value);
+  }
+  
+  private static <T> Function<T, String> asXml() {
+    return Serializers::toXml;
+  }
+  
+  private static <T> String toXml(T value) {
+    try {
+      JAXBContext context = JAXBContext.newInstance(value.getClass());
+      StringWriter writer = new StringWriter();
+      Marshaller marshaller = context.createMarshaller();
+      marshaller.marshal(value, writer);
+      return writer.toString();
+    } catch (JAXBException e) {
+      throw new UncheckedIOException(new IOException(e));
+    }
   }
   
   private static <T> Function<T, String> asString() {
