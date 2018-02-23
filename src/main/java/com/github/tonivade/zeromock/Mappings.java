@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 
 public final class Mappings {
   
-  private Mappings() { }
+  private Mappings() {}
   
   public static MappingBuilder get(String path) {
     return mapping(Predicates.get(path));

@@ -18,7 +18,7 @@ import java.util.function.BiConsumer;
 
 public class HttpHeaders {
   
-  private Map<String, List<String>> headers;
+  private final Map<String, List<String>> headers;
   
   public HttpHeaders(Map<String, List<String>> headers) {
     this.headers = unmodifiableMap(headers);

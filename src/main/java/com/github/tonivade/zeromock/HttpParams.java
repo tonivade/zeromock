@@ -26,7 +26,7 @@ public class HttpParams {
   private static final String EQUALS = "=";
   private static final String SEPARATOR = "&";
   
-  private Map<String, String> params;
+  private final Map<String, String> params;
   
   public HttpParams(String queryParams) {
     this(queryToMap(queryParams));
