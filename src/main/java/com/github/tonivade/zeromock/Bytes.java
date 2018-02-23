@@ -12,6 +12,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 public final class Bytes {
 
@@ -37,6 +38,22 @@ public final class Bytes {
   
   public boolean isEmpty() {
     return !buffer.hasRemaining();
+  }
+  
+  @Override
+  public int hashCode() {
+    return Objects.hash(buffer);
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null)
+      return false;
+    if (this == obj)
+      return true;
+    if (getClass() != obj.getClass())
+      return false;
+    return Objects.equals(((Bytes) obj).buffer, this.buffer);
   }
 
   public static Bytes empty() {

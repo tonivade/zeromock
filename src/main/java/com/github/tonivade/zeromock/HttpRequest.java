@@ -7,21 +7,23 @@ package com.github.tonivade.zeromock;
 import static com.github.tonivade.zeromock.Bytes.asByteBuffer;
 import static java.util.Objects.requireNonNull;
 
-import com.github.tonivade.zeromock.Path.PathElement;
+import java.util.Objects;
+
+import com.github.tonivade.zeromock.HttpPath.PathElement;
 
 public final class HttpRequest {
 
   private final HttpMethod method;
-  private final Path path;
+  private final HttpPath path;
   private final Bytes body;
   private final HttpHeaders headers;
   private final HttpParams params;
 
-  public HttpRequest(HttpMethod method, Path path) {
+  public HttpRequest(HttpMethod method, HttpPath path) {
     this(method, path, Bytes.empty(), HttpHeaders.empty(), HttpParams.empty());
   }
 
-  public HttpRequest(HttpMethod method, Path path, Bytes body, 
+  public HttpRequest(HttpMethod method, HttpPath path, Bytes body, 
                      HttpHeaders headers, HttpParams params) {
     this.method = requireNonNull(method);
     this.path = requireNonNull(path);
@@ -34,7 +36,7 @@ public final class HttpRequest {
     return method;
   }
   
-  public Path path() {
+  public HttpPath path() {
     return path;
   }
   
@@ -80,6 +82,27 @@ public final class HttpRequest {
 
   public HttpRequest withParam(String key, String value) {
     return new HttpRequest(method, path, body, headers, params.withParam(key, value));
+  }
+  
+  @Override
+  public int hashCode() {
+    return Objects.hash(method, path, body, headers, params);
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null)
+      return false;
+    if (this == obj)
+      return true;
+    if (getClass() != obj.getClass())
+      return false;
+    HttpRequest other = (HttpRequest) obj;
+    return Objects.equals(other.method, this.method) 
+        && Objects.equals(other.path, this.path)
+        && Objects.equals(other.body, this.body)
+        && Objects.equals(other.headers, this.headers)
+        && Objects.equals(other.params, this.params);
   }
   
   @Override

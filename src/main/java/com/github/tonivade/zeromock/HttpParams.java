@@ -16,6 +16,7 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -56,6 +57,23 @@ public class HttpParams {
   
   public String toQueryString() {
     return params.isEmpty() ? EMPTY : paramsToString();
+  }
+  
+  @Override
+  public int hashCode() {
+    return Objects.hash(params);
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null)
+      return false;
+    if (this == obj)
+      return true;
+    if (getClass() != obj.getClass())
+      return false;
+    HttpParams other = (HttpParams) obj;
+    return Objects.equals(other.params, this.params);
   }
   
   @Override

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 
 public class HttpHeaders {
@@ -52,6 +53,23 @@ public class HttpHeaders {
 
   public static HttpHeaders empty() {
     return new HttpHeaders(emptyMap());
+  }
+  
+  @Override
+  public int hashCode() {
+    return Objects.hash(headers);
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null)
+      return false;
+    if (this == obj)
+      return true;
+    if (getClass() != obj.getClass())
+      return false;
+    HttpHeaders other = (HttpHeaders) obj;
+    return Objects.equals(other.headers, this.headers);
   }
 
   @Override

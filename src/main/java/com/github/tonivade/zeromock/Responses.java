@@ -4,6 +4,7 @@
  */
 package com.github.tonivade.zeromock;
 
+import static com.github.tonivade.zeromock.Bytes.asByteBuffer;
 import static com.github.tonivade.zeromock.Bytes.empty;
 import static com.github.tonivade.zeromock.HttpStatus.BAD_REQUEST;
 import static com.github.tonivade.zeromock.HttpStatus.CREATED;
@@ -18,11 +19,19 @@ public final class Responses {
   private Responses() {}
   
   public static HttpResponse ok() {
-    return new HttpResponse(OK, empty());
+    return ok(empty());
+  }
+  
+  public static HttpResponse ok(String body) {
+    return ok(asByteBuffer(body));
   }
   
   public static HttpResponse ok(Bytes body) {
     return new HttpResponse(OK, body);
+  }
+  
+  public static HttpResponse created(String body) {
+    return created(asByteBuffer(body));
   }
 
   public static HttpResponse created(Bytes body) {

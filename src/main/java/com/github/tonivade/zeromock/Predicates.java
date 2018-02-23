@@ -23,11 +23,11 @@ public final class Predicates {
   }
   
   public static Predicate<HttpRequest> path(String url) {
-    return request -> request.path().match(new Path(url));
+    return request -> request.path().match(new HttpPath(url));
   }
   
   public static Predicate<HttpRequest> startsWith(String url) {
-    return request -> request.path().startsWith(new Path(url));
+    return request -> request.path().startsWith(new HttpPath(url));
   }
   
   public static Predicate<HttpRequest> param(String name) {
@@ -99,8 +99,7 @@ public final class Predicates {
     return delete().and(path(path));
   }
 
-  private static <T> T json(HttpRequest request, Type type)
-  {
+  private static <T> T json(HttpRequest request, Type type) {
     return Extractors.body().andThen(Deserializers.<T>json(type)).apply(request);
   }
 }

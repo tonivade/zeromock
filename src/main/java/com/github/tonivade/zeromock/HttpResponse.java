@@ -7,6 +7,8 @@ package com.github.tonivade.zeromock;
 import static com.github.tonivade.zeromock.Bytes.asString;
 import static java.util.Objects.requireNonNull;
 
+import java.util.Objects;
+
 public final class HttpResponse {
 
   private final HttpStatus status;
@@ -37,6 +39,25 @@ public final class HttpResponse {
 
   public HttpResponse withHeader(String key, String value) {
     return new HttpResponse(status, body, headers.withHeader(key, value));
+  }
+  
+  @Override
+  public int hashCode() {
+    return Objects.hash(status, body, headers);
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null)
+      return false;
+    if (this == obj)
+      return true;
+    if (getClass() != obj.getClass())
+      return false;
+    HttpResponse other = (HttpResponse) obj;
+    return Objects.equals(other.status, this.status) 
+        && Objects.equals(other.body, this.body) 
+        && Objects.equals(other.headers, this.headers);
   }
   
   @Override

@@ -9,38 +9,39 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-public class Path {
+public class HttpPath {
   
   private static final String ROOT = "/";
   private static final String PARAM_PREFIX = ":";
 
   private final List<PathElement> value;
   
-  public Path(String path) {
-    this(Stream.of(path.split(ROOT)).skip(1).map(Path::toPathElement).collect(toList()));
+  public HttpPath(String path) {
+    this(Stream.of(path.split(ROOT)).skip(1).map(HttpPath::toPathElement).collect(toList()));
   }
   
-  private Path(List<PathElement> path) {
+  private HttpPath(List<PathElement> path) {
     this.value = unmodifiableList(path);
   }
   
-  public Path dropOneLevel() {
-    return new Path(value.stream().skip(1).collect(toList()));
+  public HttpPath dropOneLevel() {
+    return new HttpPath(value.stream().skip(1).collect(toList()));
   }
   
   public Optional<PathElement> getAt(int position) {
     return value.size() > position ? Optional.of(value.get(position)): Optional.empty();
   }
   
-  public boolean match(Path other) {
+  public boolean match(HttpPath other) {
     return Pattern.matches(other.toPattern(), this.toPattern());
   }
 
-  public boolean startsWith(Path other) {
+  public boolean startsWith(HttpPath other) {
     for (int i = 0; i < other.value.size(); i++) {
       if (!other.value.get(i).value.equals(this.value.get(i).value)) {
         return false;
@@ -55,6 +56,23 @@ public class Path {
   
   public String toPath() {
     return ROOT + value.stream().map(PathElement::toString).collect(joining(ROOT));
+  }
+  
+  @Override
+  public int hashCode() {
+    return Objects.hash(value);
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null)
+      return false;
+    if (this == obj)
+      return true;
+    if (getClass() != obj.getClass())
+      return false;
+    HttpPath other = (HttpPath) obj;
+    return Objects.equals(other.toString(), this.toString());
   }
   
   @Override
