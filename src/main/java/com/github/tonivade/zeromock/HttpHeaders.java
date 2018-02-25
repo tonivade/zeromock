@@ -9,6 +9,7 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
+import static tonivade.equalizer.Equalizer.equalizer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +18,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
-public class HttpHeaders {
+public final class HttpHeaders {
   
   private final Map<String, List<String>> headers;
   
@@ -62,14 +63,9 @@ public class HttpHeaders {
   
   @Override
   public boolean equals(Object obj) {
-    if (obj == null)
-      return false;
-    if (this == obj)
-      return true;
-    if (getClass() != obj.getClass())
-      return false;
-    HttpHeaders other = (HttpHeaders) obj;
-    return Objects.equals(other.headers, this.headers);
+    return equalizer(this)
+        .append((a, b) -> Objects.equals(a.headers, b.headers))
+        .applyTo(obj);
   }
 
   @Override

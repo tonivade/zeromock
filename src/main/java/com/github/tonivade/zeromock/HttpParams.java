@@ -8,6 +8,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.stream.Collectors.joining;
+import static tonivade.equalizer.Equalizer.equalizer;
 
 import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
@@ -20,7 +21,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
-public class HttpParams {
+public final class HttpParams {
   
   private static final String BEGIN = "?";
   private static final String EMPTY = "";
@@ -66,14 +67,9 @@ public class HttpParams {
   
   @Override
   public boolean equals(Object obj) {
-    if (obj == null)
-      return false;
-    if (this == obj)
-      return true;
-    if (getClass() != obj.getClass())
-      return false;
-    HttpParams other = (HttpParams) obj;
-    return Objects.equals(other.params, this.params);
+    return equalizer(this)
+        .append((a, b) -> Objects.equals(a.params, b.params))
+        .applyTo(obj);
   }
   
   @Override

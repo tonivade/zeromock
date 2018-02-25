@@ -7,53 +7,50 @@ package com.github.tonivade.zeromock;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
+import static tonivade.equalizer.Equalizer.equalizer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.Objects;
+import java.util.Arrays;
 
 public final class Bytes {
 
   private static final int BUFFER_SIZE = 1024;
   
-  private final ByteBuffer buffer;
+  private final byte[] buffer;
 
   private Bytes(byte[] buffer) {
-    this.buffer = wrap(requireNonNull(buffer));
+    this.buffer = requireNonNull(buffer);
   }
 
   public byte[] toArray() {
-    return buffer.duplicate().array();
+    return buffer;
   }
 
   public ByteBuffer getBuffer() {
-    return buffer.duplicate();
+    return wrap(buffer);
   }
 
   public int size() {
-    return buffer.remaining();
+    return buffer.length;
   }
   
   public boolean isEmpty() {
-    return !buffer.hasRemaining();
+    return size() == 0;
   }
   
   @Override
   public int hashCode() {
-    return Objects.hash(buffer);
+    return Arrays.hashCode(buffer);
   }
   
   @Override
   public boolean equals(Object obj) {
-    if (obj == null)
-      return false;
-    if (this == obj)
-      return true;
-    if (getClass() != obj.getClass())
-      return false;
-    return Objects.equals(((Bytes) obj).buffer, this.buffer);
+    return equalizer(this)
+        .append((a, b) -> Arrays.equals(a.buffer, b.buffer))
+        .applyTo(obj);
   }
 
   public static Bytes empty() {

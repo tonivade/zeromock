@@ -15,6 +15,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+
 public class HttpHeadersTest {
   @Test
   public void isEmpty() {
@@ -49,5 +51,10 @@ public class HttpHeadersTest {
     HttpHeaders headers = HttpHeaders.empty().withHeader("key", "value");
    
     assertThrows(UnsupportedOperationException.class, () -> headers.get("key").add("other"));
+  }
+  
+  @Test
+  public void equalsVerifier() {
+    EqualsVerifier.forClass(HttpHeaders.class).verify();
   }
 }

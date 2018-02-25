@@ -27,6 +27,8 @@ import org.junit.jupiter.api.DynamicNode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+
 public class BytesTest {
   @Test
   public void notNull() {
@@ -69,6 +71,11 @@ public class BytesTest {
   public Stream<DynamicNode> fromStreamTest() {
     return randomStrings(10).map(string -> string.getBytes(UTF_8))
         .map(string -> dynamicTest("fromArrayToArray property", () -> fromStreamToArray(string)));
+  }
+  
+  @Test
+  public void equalsVerifier() {
+    EqualsVerifier.forClass(Bytes.class).withNonnullFields("buffer").verify();
   }
 
   private void fromStringToString(String string) {

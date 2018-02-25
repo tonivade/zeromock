@@ -13,6 +13,8 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+
 public class HttpParamsTest {
   @Test
   public void isEmpty() {
@@ -41,5 +43,10 @@ public class HttpParamsTest {
     HttpParams params = HttpParams.empty().withParam("key1", "value1").withParam("key2", "value2");
     
     assertEquals("?key1=value1&key2=value2", params.toQueryString());
+  }
+  
+  @Test
+  public void equalsVerifier() {
+    EqualsVerifier.forClass(HttpParams.class).verify();
   }
 }

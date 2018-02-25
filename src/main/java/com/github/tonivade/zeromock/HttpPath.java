@@ -7,6 +7,7 @@ package com.github.tonivade.zeromock;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static tonivade.equalizer.Equalizer.equalizer;
 
 import java.util.List;
 import java.util.Objects;
@@ -14,7 +15,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-public class HttpPath {
+public final class HttpPath {
   
   private static final String ROOT = "/";
   private static final String PARAM_PREFIX = ":";
@@ -65,14 +66,9 @@ public class HttpPath {
   
   @Override
   public boolean equals(Object obj) {
-    if (obj == null)
-      return false;
-    if (this == obj)
-      return true;
-    if (getClass() != obj.getClass())
-      return false;
-    HttpPath other = (HttpPath) obj;
-    return Objects.equals(other.toString(), this.toString());
+    return equalizer(this)
+        .append((a, b) -> Objects.equals(a.value, b.value))
+        .applyTo(obj);
   }
   
   @Override
@@ -96,6 +92,18 @@ public class HttpPath {
     
     public String value() {
       return value;
+    }
+  
+    @Override
+    public int hashCode() {
+      return Objects.hash(value);
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+      return equalizer(this)
+          .append((a, b) -> Objects.equals(a.value, b.value))
+          .applyTo(obj);
     }
     
     @Override

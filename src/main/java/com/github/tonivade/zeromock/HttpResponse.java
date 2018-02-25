@@ -6,6 +6,7 @@ package com.github.tonivade.zeromock;
 
 import static com.github.tonivade.zeromock.Bytes.asString;
 import static java.util.Objects.requireNonNull;
+import static tonivade.equalizer.Equalizer.equalizer;
 
 import java.util.Objects;
 
@@ -48,16 +49,11 @@ public final class HttpResponse {
   
   @Override
   public boolean equals(Object obj) {
-    if (obj == null)
-      return false;
-    if (this == obj)
-      return true;
-    if (getClass() != obj.getClass())
-      return false;
-    HttpResponse other = (HttpResponse) obj;
-    return Objects.equals(other.status, this.status) 
-        && Objects.equals(other.body, this.body) 
-        && Objects.equals(other.headers, this.headers);
+    return equalizer(this)
+        .append((a, b) -> Objects.equals(a.status, b.status))
+        .append((a, b) -> Objects.equals(a.body, b.body))
+        .append((a, b) -> Objects.equals(a.headers, b.headers))
+        .applyTo(obj);
   }
   
   @Override

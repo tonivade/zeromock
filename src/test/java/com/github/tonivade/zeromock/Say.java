@@ -1,5 +1,7 @@
 package com.github.tonivade.zeromock;
 
+import static tonivade.equalizer.Equalizer.equalizer;
+
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -8,7 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public final class Say {
   private String message;
   
-  public Say() { }
+  public Say() {}
 
   public Say(String message) {
     this.message = message;
@@ -29,13 +31,9 @@ public final class Say {
 
   @Override
   public boolean equals(Object obj) {
-    if (obj == null)
-      return false;
-    if (this == obj)
-      return true;
-    if (getClass() != obj.getClass())
-      return false;
-    return Objects.equals(((Say) obj).message, this.message);
+    return equalizer(this)
+        .append((a, b) -> Objects.equals(a.message, b.message))
+        .applyTo(obj);
   }
 
   @Override

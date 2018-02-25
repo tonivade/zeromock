@@ -6,6 +6,7 @@ package com.github.tonivade.zeromock;
 
 import static com.github.tonivade.zeromock.Bytes.asByteBuffer;
 import static java.util.Objects.requireNonNull;
+import static tonivade.equalizer.Equalizer.equalizer;
 
 import java.util.Objects;
 
@@ -91,18 +92,13 @@ public final class HttpRequest {
   
   @Override
   public boolean equals(Object obj) {
-    if (obj == null)
-      return false;
-    if (this == obj)
-      return true;
-    if (getClass() != obj.getClass())
-      return false;
-    HttpRequest other = (HttpRequest) obj;
-    return Objects.equals(other.method, this.method) 
-        && Objects.equals(other.path, this.path)
-        && Objects.equals(other.body, this.body)
-        && Objects.equals(other.headers, this.headers)
-        && Objects.equals(other.params, this.params);
+    return equalizer(this)
+        .append((a, b) -> Objects.equals(a.method, b.method))
+        .append((a, b) -> Objects.equals(a.path, b.path))
+        .append((a, b) -> Objects.equals(a.body, b.body))
+        .append((a, b) -> Objects.equals(a.headers, b.headers))
+        .append((a, b) -> Objects.equals(a.params, b.params))
+        .applyTo(obj);
   }
   
   @Override
