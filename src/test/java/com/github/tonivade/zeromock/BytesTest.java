@@ -58,7 +58,7 @@ public class BytesTest {
   @TestFactory
   public Stream<DynamicNode> fromStringTest() {
     return randomStrings(10)
-        .map(string -> dynamicTest("getBytesAsString property", () -> fromStringToString(string)));
+        .map(string -> dynamicTest("fromStringToString property", () -> fromStringToString(string)));
   }
   
   @TestFactory
@@ -70,7 +70,7 @@ public class BytesTest {
   @TestFactory
   public Stream<DynamicNode> fromStreamTest() {
     return randomStrings(10).map(string -> string.getBytes(UTF_8))
-        .map(string -> dynamicTest("fromArrayToArray property", () -> fromStreamToArray(string)));
+        .map(string -> dynamicTest("fromStringToString property", () -> fromStreamToArray(string)));
   }
   
   @Test
