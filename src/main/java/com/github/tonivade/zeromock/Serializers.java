@@ -20,15 +20,15 @@ public final class Serializers {
   private Serializers() {}
   
   public static <T> Function<T, Bytes> json() {
-    return Serializers.<T>asJson().andThen(Bytes::asByteBuffer);
+    return Serializers.<T>asJson().andThen(Bytes::asBytes);
   }
   
   public static <T> Function<T, Bytes> xml() {
-    return Serializers.<T>asXml().andThen(Bytes::asByteBuffer);
+    return Serializers.<T>asXml().andThen(Bytes::asBytes);
   }
 
   public static <T> Function<T, Bytes> plain() {
-    return Serializers.<T>asString().andThen(Bytes::asByteBuffer);
+    return Serializers.<T>asString().andThen(Bytes::asBytes);
   }
   
   private static <T> Function<T, String> asJson() {

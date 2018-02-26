@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock;
 
-import static com.github.tonivade.zeromock.Bytes.asByteBuffer;
+import static com.github.tonivade.zeromock.Bytes.asBytes;
 import static com.github.tonivade.zeromock.Responses.error;
 import static com.github.tonivade.zeromock.Responses.notFound;
 import static java.util.Collections.unmodifiableList;
@@ -109,7 +109,7 @@ public final class MockHttpServer {
       }
     } catch (RuntimeException e) {
       LOG.log(Level.SEVERE, "error processing request: " + exchange.getRequestURI(), e);
-      processResponse(exchange, error(asByteBuffer(e.getMessage())));
+      processResponse(exchange, error(asBytes(e.getMessage())));
     }
   }
 
@@ -122,7 +122,7 @@ public final class MockHttpServer {
     HttpHeaders headers = new HttpHeaders(exchange.getRequestHeaders());
     HttpParams params = new HttpParams(exchange.getRequestURI().getQuery());
     HttpPath path = new HttpPath(exchange.getRequestURI().getPath());
-    Bytes body = asByteBuffer(exchange.getRequestBody());
+    Bytes body = asBytes(exchange.getRequestBody());
     return new HttpRequest(method, path, body, headers, params);
   }
 

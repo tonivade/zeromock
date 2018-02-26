@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock;
 
-import static com.github.tonivade.zeromock.Bytes.asByteBuffer;
+import static com.github.tonivade.zeromock.Bytes.asBytes;
 import static com.github.tonivade.zeromock.Bytes.asString;
 import static com.github.tonivade.zeromock.Bytes.fromArray;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -37,7 +37,7 @@ public class BytesTest {
   
   @Test
   public void bytesProperties() {
-    Bytes bytes = asByteBuffer("Ñ");
+    Bytes bytes = asBytes("Ñ");
     
     assertAll(() -> assertArrayEquals(new byte[] {-61, -111}, bytes.toArray()),
               () -> assertArrayEquals(new byte[] {-61, -111}, bytes.getBuffer().array()),
@@ -79,7 +79,7 @@ public class BytesTest {
   }
 
   private void fromStringToString(String string) {
-    assertEquals(string, asString(asByteBuffer(string)));
+    assertEquals(string, asString(asBytes(string)));
   }
 
   private void fromArrayToArray(byte[] array) {
@@ -87,7 +87,7 @@ public class BytesTest {
   }
 
   private void fromStreamToArray(byte[] array) throws IOException {
-    assertArrayEquals(array, asByteBuffer(new ByteArrayInputStream(array)).toArray());
+    assertArrayEquals(array, asBytes(new ByteArrayInputStream(array)).toArray());
   }
 
   private static Stream<String> randomStrings(int limit) {

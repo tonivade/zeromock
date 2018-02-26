@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock;
 
-import static com.github.tonivade.zeromock.Bytes.asByteBuffer;
+import static com.github.tonivade.zeromock.Bytes.asBytes;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -22,7 +22,7 @@ public final class Handlers {
   }
 
   public static Function<HttpRequest, HttpResponse> ok(String body) {
-    return ok(asByteBuffer(body));
+    return ok(asBytes(body));
   }
 
   public static Function<HttpRequest, HttpResponse> ok(Bytes body) {
@@ -34,7 +34,7 @@ public final class Handlers {
   }
   
   public static Function<HttpRequest, HttpResponse> created(String body) {
-    return created(asByteBuffer(body));
+    return created(asBytes(body));
   }
   
   public static Function<HttpRequest, HttpResponse> created(Bytes body) {
@@ -58,7 +58,7 @@ public final class Handlers {
   }
 
   public static Function<HttpRequest, HttpResponse> badRequest(String body) {
-    return badRequest(asByteBuffer(body));
+    return badRequest(asBytes(body));
   }
 
   public static Function<HttpRequest, HttpResponse> badRequest(Bytes body) {
@@ -74,7 +74,7 @@ public final class Handlers {
   }
 
   public static Function<HttpRequest, HttpResponse> notFound(String body) {
-    return notFound(asByteBuffer(body));
+    return notFound(asBytes(body));
   }
 
   public static Function<HttpRequest, HttpResponse> notFound(Bytes body) {
@@ -90,7 +90,7 @@ public final class Handlers {
   }
 
   public static Function<HttpRequest, HttpResponse> error(String body) {
-    return error(asByteBuffer(body));
+    return error(asBytes(body));
   }
 
   public static Function<HttpRequest, HttpResponse> error(Bytes body) {

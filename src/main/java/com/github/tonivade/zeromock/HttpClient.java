@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock;
 
-import static com.github.tonivade.zeromock.Bytes.asByteBuffer;
+import static com.github.tonivade.zeromock.Bytes.asBytes;
 import static com.github.tonivade.zeromock.HttpStatus.BAD_REQUEST;
 
 import java.io.IOException;
@@ -60,9 +60,9 @@ public class HttpClient {
     Bytes body = Bytes.empty();
     if (connection.getContentLength() > 0) {
       if (connection.getResponseCode() < BAD_REQUEST.code()) {
-        body = asByteBuffer(connection.getInputStream());
+        body = asBytes(connection.getInputStream());
       } else {
-        body = asByteBuffer(connection.getErrorStream());
+        body = asBytes(connection.getErrorStream());
       }
     }
     return body;

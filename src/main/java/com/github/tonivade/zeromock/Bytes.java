@@ -61,7 +61,7 @@ public final class Bytes {
     return new Bytes(array);
   }
 
-  public static Bytes asByteBuffer(InputStream input) throws IOException {
+  public static Bytes asBytes(InputStream input) throws IOException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     byte[] buffer = new byte[BUFFER_SIZE];
     while (true) {
@@ -73,7 +73,7 @@ public final class Bytes {
     return new Bytes(out.toByteArray());
   }
   
-  public static Bytes asByteBuffer(String string) {
+  public static Bytes asBytes(String string) {
     return new Bytes(string.getBytes(UTF_8));
   }
   

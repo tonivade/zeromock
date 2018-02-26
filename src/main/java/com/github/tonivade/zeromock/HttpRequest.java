@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock;
 
-import static com.github.tonivade.zeromock.Bytes.asByteBuffer;
+import static com.github.tonivade.zeromock.Bytes.asBytes;
 import static java.util.Objects.requireNonNull;
 import static tonivade.equalizer.Equalizer.equalizer;
 
@@ -74,7 +74,7 @@ public final class HttpRequest {
   }
 
   public HttpRequest withBody(String body) {
-    return withBody(asByteBuffer(body));
+    return withBody(asBytes(body));
   }
 
   public HttpRequest withBody(Bytes body) {
