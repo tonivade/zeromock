@@ -1,0 +1,6 @@
+archivesBaseName = 'zeromock-server'
+
+dependencies {
+  compile project(':core')
+}
+

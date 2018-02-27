@@ -1,100 +1,16 @@
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'jacoco'
-apply plugin: 'com.bmuschko.nexus'
-apply plugin: 'org.junit.platform.gradle.plugin'
+allprojects {
+  group = 'com.github.tonivade'
+  version = '0.3.0-SNAPSHOT'
+}
 
-group = 'com.github.tonivade'
-archivesBaseName = 'zeromock'
-version = '0.3.0-SNAPSHOT'
+subprojects {
+  apply plugin: 'java'
+  apply plugin: 'eclipse'
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+  sourceCompatibility = '1.8'
+  targetCompatibility = '1.8'
 
-buildscript {
   repositories {
     mavenCentral()
-    jcenter()
   }
-
-  dependencies {
-    classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
-    classpath 'org.junit.platform:junit-platform-gradle-plugin:1.1.0'
-  }
-}
-
-jacoco {
-  toolVersion = '0.8.0'
-  applyTo junitPlatformTest
-}
-
-jacocoTestReport {
-  reports {
-    xml.enabled = true
-    html.enabled = true
-    xml.destination file("${buildDir}/reports/jacoco/report.xml")
-  }
-}
-
-junitPlatformTest {
-  jacoco {
-    destinationFile = file("${buildDir}/jacoco/test.exec")
-  }
-}
-
-repositories {
-  mavenCentral()
-}
-
-dependencies {
-  compile 'com.google.code.gson:gson:2.8.2'
-  compile 'com.github.tonivade:equalizer:0.2.0'
-  testCompile 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
-  testCompile 'org.junit.platform:junit-platform-runner:1.1.0'
-  testCompile 'org.mockito:mockito-core:2.13.0'
-  testCompile 'org.hamcrest:hamcrest-library:1.3'
-  testCompile 'nl.jqno.equalsverifier:equalsverifier:2.4.3'
-}
-
-modifyPom {
-  project {
-    name 'ZeroMock'
-    description 'Mock Http Server (mostly) without dependencies'
-    url 'https://github.com/tonivade/zeromock'
-    inceptionYear '2018'
-
-    scm {
-      url 'https://github.com/tonivade/zeromock'
-      connection 'scm:https://github.com/tonivade/zeromock.git'
-      developerConnection 'scm:git://github.com/tonivade/zeromock.git'
-    }
-
-    licenses {
-      license {
-        name 'The MIT License (MIT)'
-        url 'https://github.com/tonivade/zeromock/blob/master/LICENSE'
-        distribution 'repo'
-      }
-    }
-
-    developers {
-      developer {
-        id 'tonivade'
-        name 'Antonio Muñoz'
-        email 'antoniogmc@gmail.com'
-      }
-    }
-  }
-}
-
-extraArchive {
-  sources = true
-  tests = true
-  javadoc = true
-}
-
-nexus {
-  sign = true
-  repositoryUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
-  snapshotRepositoryUrl = 'https://oss.sonatype.org/content/repositories/snapshots'
 }
