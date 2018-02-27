@@ -4,19 +4,22 @@
  */
 package com.github.tonivade.zeromock;
 
-import static com.github.tonivade.zeromock.Extractors.asInteger;
-import static com.github.tonivade.zeromock.Extractors.asString;
-import static com.github.tonivade.zeromock.Extractors.body;
-import static com.github.tonivade.zeromock.Extractors.pathParam;
-import static com.github.tonivade.zeromock.Handlers.contentJson;
-import static com.github.tonivade.zeromock.Handlers.created;
-import static com.github.tonivade.zeromock.Handlers.force;
-import static com.github.tonivade.zeromock.Handlers.join;
-import static com.github.tonivade.zeromock.Handlers.ok;
-import static com.github.tonivade.zeromock.Handlers.split;
-import static com.github.tonivade.zeromock.Serializers.json;
+import static com.github.tonivade.zeromock.core.Extractors.asInteger;
+import static com.github.tonivade.zeromock.core.Extractors.asString;
+import static com.github.tonivade.zeromock.core.Extractors.body;
+import static com.github.tonivade.zeromock.core.Extractors.pathParam;
+import static com.github.tonivade.zeromock.core.Handlers.contentJson;
+import static com.github.tonivade.zeromock.core.Handlers.created;
+import static com.github.tonivade.zeromock.core.Handlers.force;
+import static com.github.tonivade.zeromock.core.Handlers.join;
+import static com.github.tonivade.zeromock.core.Handlers.ok;
+import static com.github.tonivade.zeromock.core.Handlers.split;
+import static com.github.tonivade.zeromock.core.Serializers.json;
 
 import java.util.function.Function;
+
+import com.github.tonivade.zeromock.core.HttpRequest;
+import com.github.tonivade.zeromock.core.HttpResponse;
 
 public class BooksAPI {
   

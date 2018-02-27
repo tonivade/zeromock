@@ -4,19 +4,28 @@
  */
 package com.github.tonivade.zeromock;
 
-import static com.github.tonivade.zeromock.Bytes.asString;
-import static com.github.tonivade.zeromock.Extractors.pathParam;
-import static com.github.tonivade.zeromock.Extractors.queryParam;
-import static com.github.tonivade.zeromock.Handlers.ok;
-import static com.github.tonivade.zeromock.HttpClient.connectTo;
-import static com.github.tonivade.zeromock.Mappings.get;
-import static com.github.tonivade.zeromock.Predicates.param;
-import static com.github.tonivade.zeromock.Serializers.json;
-import static com.github.tonivade.zeromock.Serializers.plain;
+import static com.github.tonivade.zeromock.core.Bytes.asString;
+import static com.github.tonivade.zeromock.core.Extractors.pathParam;
+import static com.github.tonivade.zeromock.core.Extractors.queryParam;
+import static com.github.tonivade.zeromock.core.Handlers.ok;
+import static com.github.tonivade.zeromock.core.Mappings.get;
+import static com.github.tonivade.zeromock.core.Predicates.param;
+import static com.github.tonivade.zeromock.core.Serializers.json;
+import static com.github.tonivade.zeromock.core.Serializers.plain;
+import static com.github.tonivade.zeromock.server.HttpClient.connectTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+
+import com.github.tonivade.zeromock.core.Bytes;
+import com.github.tonivade.zeromock.core.Deserializers;
+import com.github.tonivade.zeromock.core.HttpResponse;
+import com.github.tonivade.zeromock.core.HttpStatus;
+import com.github.tonivade.zeromock.core.Requests;
+import com.github.tonivade.zeromock.junit5.ListenAt;
+import com.github.tonivade.zeromock.junit5.MockHttpServerExtension;
+import com.github.tonivade.zeromock.server.MockHttpServer;
 
 @ListenAt(8081)
 @ExtendWith(MockHttpServerExtension.class)

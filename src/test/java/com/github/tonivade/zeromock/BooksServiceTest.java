@@ -4,12 +4,12 @@
  */
 package com.github.tonivade.zeromock;
 
-import static com.github.tonivade.zeromock.Deserializers.json;
-import static com.github.tonivade.zeromock.Mappings.delete;
-import static com.github.tonivade.zeromock.Mappings.get;
-import static com.github.tonivade.zeromock.Mappings.post;
-import static com.github.tonivade.zeromock.Mappings.put;
-import static com.github.tonivade.zeromock.Predicates.body;
+import static com.github.tonivade.zeromock.core.Deserializers.json;
+import static com.github.tonivade.zeromock.core.Mappings.delete;
+import static com.github.tonivade.zeromock.core.Mappings.get;
+import static com.github.tonivade.zeromock.core.Mappings.post;
+import static com.github.tonivade.zeromock.core.Mappings.put;
+import static com.github.tonivade.zeromock.core.Predicates.body;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,6 +21,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.github.tonivade.zeromock.BooksService.Book;
+import com.github.tonivade.zeromock.core.Bytes;
+import com.github.tonivade.zeromock.core.Deserializers;
+import com.github.tonivade.zeromock.core.HttpResponse;
+import com.github.tonivade.zeromock.core.HttpService;
+import com.github.tonivade.zeromock.core.HttpStatus;
+import com.github.tonivade.zeromock.core.Predicates;
+import com.github.tonivade.zeromock.core.Requests;
+import com.github.tonivade.zeromock.junit5.MockHttpServerExtension;
+import com.github.tonivade.zeromock.server.HttpClient;
+import com.github.tonivade.zeromock.server.MockHttpServer;
 import com.google.gson.reflect.TypeToken;
 
 @ExtendWith(MockHttpServerExtension.class)
