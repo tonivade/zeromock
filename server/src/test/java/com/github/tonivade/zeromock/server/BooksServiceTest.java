@@ -2,7 +2,7 @@
  * Copyright (c) 2018, Antonio Gabriel Muñoz Conejo <antoniogmc at gmail dot com>
  * Distributed under the terms of the MIT License
  */
-package com.github.tonivade.zeromock;
+package com.github.tonivade.zeromock.server;
 
 import static com.github.tonivade.zeromock.core.Deserializers.json;
 import static com.github.tonivade.zeromock.core.Mappings.delete;
@@ -20,7 +20,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import com.github.tonivade.zeromock.BooksService.Book;
 import com.github.tonivade.zeromock.core.Bytes;
 import com.github.tonivade.zeromock.core.Deserializers;
 import com.github.tonivade.zeromock.core.HttpResponse;
@@ -31,6 +30,7 @@ import com.github.tonivade.zeromock.core.Requests;
 import com.github.tonivade.zeromock.junit5.MockHttpServerExtension;
 import com.github.tonivade.zeromock.server.HttpClient;
 import com.github.tonivade.zeromock.server.MockHttpServer;
+import com.github.tonivade.zeromock.server.BooksService.Book;
 import com.google.gson.reflect.TypeToken;
 
 @ExtendWith(MockHttpServerExtension.class)

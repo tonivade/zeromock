@@ -1,0 +1,1 @@
+include "core", "server", "test:junit4", "test:junit5"

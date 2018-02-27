@@ -1,4 +1,4 @@
-package com.github.tonivade.zeromock;
+package com.github.tonivade.zeromock.server;
 
 import static tonivade.equalizer.Equalizer.equalizer;
 
