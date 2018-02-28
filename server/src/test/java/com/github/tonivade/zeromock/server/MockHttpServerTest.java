@@ -23,8 +23,9 @@ import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.github.tonivade.zeromock.core.Deserializers;
 import com.github.tonivade.zeromock.core.HttpRequest;
@@ -32,11 +33,9 @@ import com.github.tonivade.zeromock.core.HttpResponse;
 import com.github.tonivade.zeromock.core.HttpService;
 import com.github.tonivade.zeromock.core.HttpStatus;
 import com.github.tonivade.zeromock.core.Requests;
-import com.github.tonivade.zeromock.junit5.MockHttpServerExtension;
 import com.github.tonivade.zeromock.server.HttpClient;
 import com.github.tonivade.zeromock.server.MockHttpServer;
 
-@ExtendWith(MockHttpServerExtension.class)
 public class MockHttpServerTest {
 
   private HttpService service1 = new HttpService("hello")
@@ -50,8 +49,10 @@ public class MockHttpServerTest {
             ok(force(this::sayHello).andThen(json())).andThen(contentJson()))
       .when(get().and(path("/empty")), noContent());
   
+  private static MockHttpServer server = MockHttpServer.listenAt(8080);
+  
   @Test
-  public void hello(MockHttpServer server) {
+  public void hello() {
     server.mount("/path", service1.combine(service2));
     
     HttpClient client = new HttpClient("http://localhost:8080/path");
@@ -63,7 +64,7 @@ public class MockHttpServerTest {
   }
   
   @Test
-  public void helloMissingParam(MockHttpServer server) {
+  public void helloMissingParam() {
     server.mount("/path", service1.combine(service2));
     
     HttpClient client = new HttpClient("http://localhost:8080/path");
@@ -74,7 +75,7 @@ public class MockHttpServerTest {
   }
 
   @Test
-  public void jsonTest(MockHttpServer server) {
+  public void jsonTest() {
     server.mount("/path", service1.combine(service2));
     
     HttpClient client = new HttpClient("http://localhost:8080/path");
@@ -87,7 +88,7 @@ public class MockHttpServerTest {
   }
 
   @Test
-  public void xmlTest(MockHttpServer server) {
+  public void xmlTest() {
     server.mount("/path", service1.combine(service2));
     
     HttpClient client = new HttpClient("http://localhost:8080/path");
@@ -100,7 +101,7 @@ public class MockHttpServerTest {
   }
 
   @Test
-  public void noContentTest(MockHttpServer server) {
+  public void noContentTest() {
     server.mount("/path", service1.combine(service2));
     
     HttpClient client = new HttpClient("http://localhost:8080/path");
@@ -109,6 +110,16 @@ public class MockHttpServerTest {
 
     assertAll(() -> assertEquals(HttpStatus.NO_CONTENT, response.status()),
               () -> assertEquals("", asString(response.body())));
+  }
+  
+  @BeforeAll
+  public static void beforeAll() {
+    server.start();
+  }
+  
+  @AfterAll
+  public static void afterAll() {
+    server.stop();
   }
   
   private String helloWorld(HttpRequest request) {

@@ -2,7 +2,7 @@
  * Copyright (c) 2018, Antonio Gabriel Muñoz Conejo <antoniogmc at gmail dot com>
  * Distributed under the terms of the MIT License
  */
-package com.github.tonivade.zeromock.server;
+package com.github.tonivade.zeromock.junit5;
 
 import static com.github.tonivade.zeromock.core.Deserializers.json;
 import static com.github.tonivade.zeromock.core.Mappings.delete;
@@ -28,9 +28,9 @@ import com.github.tonivade.zeromock.core.HttpStatus;
 import com.github.tonivade.zeromock.core.Predicates;
 import com.github.tonivade.zeromock.core.Requests;
 import com.github.tonivade.zeromock.junit5.MockHttpServerExtension;
+import com.github.tonivade.zeromock.junit5.BooksService.Book;
 import com.github.tonivade.zeromock.server.HttpClient;
 import com.github.tonivade.zeromock.server.MockHttpServer;
-import com.github.tonivade.zeromock.server.BooksService.Book;
 import com.google.gson.reflect.TypeToken;
 
 @ExtendWith(MockHttpServerExtension.class)

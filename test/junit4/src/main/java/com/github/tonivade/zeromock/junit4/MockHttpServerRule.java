@@ -12,6 +12,7 @@ import org.junit.rules.ExternalResource;
 import com.github.tonivade.zeromock.core.HttpRequest;
 import com.github.tonivade.zeromock.core.HttpResponse;
 import com.github.tonivade.zeromock.core.HttpService;
+import com.github.tonivade.zeromock.core.Mappings.Mapping;
 import com.github.tonivade.zeromock.server.MockHttpServer;
 
 public class MockHttpServerRule extends ExternalResource {
@@ -39,6 +40,11 @@ public class MockHttpServerRule extends ExternalResource {
   public MockHttpServerRule when(Predicate<HttpRequest> matcher, 
                                  Function<HttpRequest, HttpResponse> handler) {
     server.when(matcher, handler);
+    return this;
+  }
+
+  public MockHttpServerRule when(Mapping mapping) {
+    server.when(mapping);
     return this;
   }
 
