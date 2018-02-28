@@ -2,6 +2,6 @@ archivesBaseName = 'zeromock-junit4'
 
 dependencies {
   compile project(':server')
-  compile 'junit:junit:4.12'
+  compile libs.junit
 }
 

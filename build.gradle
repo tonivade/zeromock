@@ -1,3 +1,5 @@
+apply from: 'gradle/deps.gradle'
+
 buildscript {
   repositories {
     mavenCentral()
@@ -26,8 +28,8 @@ subprojects {
   }
 
   dependencies {
-    testCompile 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
-    testCompile 'org.junit.vintage:junit-vintage-engine:5.1.0'
-    testCompile 'org.junit.platform:junit-platform-runner:1.1.0'
+    testCompile libs.junitJupiter
+    testCompile libs.junitVintage
+    testCompile libs.junitRunner
   }
 }

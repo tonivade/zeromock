@@ -2,7 +2,6 @@ archivesBaseName = 'zeromock-junit5'
 
 dependencies {
   compile project(':server')
-  compile 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
-  compile 'org.junit.platform:junit-platform-runner:1.1.0'
+  compile libs.junitJupiter
+  compile libs.junitRunner
 }
-
