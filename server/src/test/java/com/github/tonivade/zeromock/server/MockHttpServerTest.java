@@ -8,7 +8,6 @@ import static com.github.tonivade.zeromock.core.Bytes.asString;
 import static com.github.tonivade.zeromock.core.Handlers.badRequest;
 import static com.github.tonivade.zeromock.core.Handlers.contentJson;
 import static com.github.tonivade.zeromock.core.Handlers.contentXml;
-import static com.github.tonivade.zeromock.core.Handlers.force;
 import static com.github.tonivade.zeromock.core.Handlers.noContent;
 import static com.github.tonivade.zeromock.core.Handlers.ok;
 import static com.github.tonivade.zeromock.core.Predicates.acceptsJson;
@@ -23,18 +22,20 @@ import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import com.github.tonivade.zeromock.core.Combinators;
 import com.github.tonivade.zeromock.core.Deserializers;
 import com.github.tonivade.zeromock.core.HttpRequest;
 import com.github.tonivade.zeromock.core.HttpResponse;
 import com.github.tonivade.zeromock.core.HttpService;
 import com.github.tonivade.zeromock.core.HttpStatus;
 import com.github.tonivade.zeromock.core.Requests;
-import com.github.tonivade.zeromock.server.HttpClient;
-import com.github.tonivade.zeromock.server.MockHttpServer;
 
 public class MockHttpServerTest {
 
@@ -44,9 +45,9 @@ public class MockHttpServerTest {
 
   private HttpService service2 = new HttpService("test")
       .when(get().and(path("/test")).and(acceptsXml()), 
-            ok(force(this::sayHello).andThen(xml())).andThen(contentXml()))
+            ok(asFunction(this::sayHello).andThen(xml())).andThen(contentXml()))
       .when(get().and(path("/test")).and(acceptsJson()), 
-            ok(force(this::sayHello).andThen(json())).andThen(contentJson()))
+            ok(asFunction(this::sayHello).andThen(json())).andThen(contentJson()))
       .when(get().and(path("/empty")), noContent());
   
   private static MockHttpServer server = MockHttpServer.listenAt(8080);
@@ -128,5 +129,9 @@ public class MockHttpServerTest {
 
   private Say sayHello() {
     return new Say("hello");
+  }
+
+  private static <T> Function<HttpRequest, T> asFunction(Supplier<T> supplier) {
+    return Combinators.<HttpRequest, T>force(supplier);
   }
 }
