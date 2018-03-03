@@ -11,9 +11,9 @@ import static com.github.tonivade.zeromock.core.Extractors.asInteger;
 import static com.github.tonivade.zeromock.core.Extractors.asString;
 import static com.github.tonivade.zeromock.core.Extractors.body;
 import static com.github.tonivade.zeromock.core.Extractors.pathParam;
-import static com.github.tonivade.zeromock.core.Handlers.contentJson;
 import static com.github.tonivade.zeromock.core.Handlers.created;
 import static com.github.tonivade.zeromock.core.Handlers.ok;
+import static com.github.tonivade.zeromock.core.Headers.contentJson;
 import static com.github.tonivade.zeromock.core.Serializers.json;
 
 import java.util.function.Function;

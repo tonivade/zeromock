@@ -6,10 +6,10 @@ package com.github.tonivade.zeromock.server;
 
 import static com.github.tonivade.zeromock.core.Bytes.asString;
 import static com.github.tonivade.zeromock.core.Handlers.badRequest;
-import static com.github.tonivade.zeromock.core.Handlers.contentJson;
-import static com.github.tonivade.zeromock.core.Handlers.contentXml;
 import static com.github.tonivade.zeromock.core.Handlers.noContent;
 import static com.github.tonivade.zeromock.core.Handlers.ok;
+import static com.github.tonivade.zeromock.core.Headers.contentJson;
+import static com.github.tonivade.zeromock.core.Headers.contentXml;
 import static com.github.tonivade.zeromock.core.Predicates.acceptsJson;
 import static com.github.tonivade.zeromock.core.Predicates.acceptsXml;
 import static com.github.tonivade.zeromock.core.Predicates.get;
