@@ -18,10 +18,30 @@ allprojects {
 subprojects {
   apply plugin: 'java'
   apply plugin: 'eclipse'
+  apply plugin: 'jacoco'
   apply plugin: 'org.junit.platform.gradle.plugin'
 
   sourceCompatibility = '1.8'
   targetCompatibility = '1.8'
+
+  jacoco {
+    toolVersion = '0.8.0'
+    applyTo junitPlatformTest
+  }
+
+  jacocoTestReport {
+    reports {
+      xml.enabled = true
+      html.enabled = true
+      xml.destination file("${buildDir}/reports/jacoco/report.xml")
+    }
+  }
+
+  junitPlatformTest {
+    jacoco {
+      destinationFile = file("${buildDir}/jacoco/test.exec")
+    }
+  }
 
   repositories {
     mavenCentral()
