@@ -58,9 +58,9 @@ allprojects {
 subprojects {
   modifyPom {
     project {
-      name 'ZeroMock-${project.name}'
-      description 'Mock Http Server (mostly) without dependencies'
-      url 'https://github.com/tonivade/zeromock-${project.name}'
+      name "ZeroMock-${project.name}"
+      description "Mock Http Server (mostly) without dependencies"
+      url "https://github.com/tonivade/zeromock"
       inceptionYear '2018'
 
       scm {
