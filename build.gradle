@@ -13,16 +13,14 @@ buildscript {
 }
 
 allprojects {
-  group = 'com.github.tonivade'
-  version = '0.3.0-SNAPSHOT'
-}
-
-subprojects {
   apply plugin: 'java'
   apply plugin: 'eclipse'
   apply plugin: 'jacoco'
   apply plugin: 'com.bmuschko.nexus'
   apply plugin: 'org.junit.platform.gradle.plugin'
+
+  group = 'com.github.tonivade'
+  version = '0.3.0-SNAPSHOT'
 
   sourceCompatibility = '1.8'
   targetCompatibility = '1.8'
@@ -55,7 +53,9 @@ subprojects {
     testCompile libs.junitVintage
     testCompile libs.junitRunner
   }
+}
 
+subprojects {
   modifyPom {
     project {
       name 'ZeroMock-${project.name}'
@@ -97,5 +97,28 @@ subprojects {
     sign = true
     repositoryUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
     snapshotRepositoryUrl = 'https://oss.sonatype.org/content/repositories/snapshots'
+  }
+}
+
+def publishedProjects = subprojects.findAll()
+
+task jacocoFullReport(type: JacocoReport, group: 'Coverage reports') {
+  description = 'Generates an aggregate report from all subprojects'
+
+  dependsOn(publishedProjects.test)
+
+  additionalSourceDirs = files(publishedProjects.sourceSets.main.allSource.srcDirs)
+  sourceDirectories = files(publishedProjects.sourceSets.main.allSource.srcDirs)
+  classDirectories = files(publishedProjects.sourceSets.main.output)
+  executionData = files(publishedProjects.jacocoTestReport.executionData)
+
+  doFirst {
+    executionData = files(executionData.findAll { it.exists() })
+  }
+
+  reports {
+    html.enabled = true
+    xml.enabled = true
+    xml.destination file("${buildDir}/reports/jacoco/fullReport.xml")
   }
 }
