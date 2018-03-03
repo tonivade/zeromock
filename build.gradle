@@ -1,14 +1,17 @@
 apply from: 'gradle/deps.gradle'
 
 buildscript {
+  ext {
+    nexusPlugin = '2.3.1'
+  }
+
   repositories {
     mavenCentral()
     jcenter()
   }
 
   dependencies {
-    classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
-    classpath 'org.junit.platform:junit-platform-gradle-plugin:1.1.0'
+    classpath "com.bmuschko:gradle-nexus-plugin:${nexusPlugin}"
   }
 }
 
@@ -17,7 +20,6 @@ allprojects {
   apply plugin: 'eclipse'
   apply plugin: 'jacoco'
   apply plugin: 'com.bmuschko.nexus'
-  apply plugin: 'org.junit.platform.gradle.plugin'
 
   group = 'com.github.tonivade'
   version = '0.3.0-SNAPSHOT'
@@ -25,9 +27,20 @@ allprojects {
   sourceCompatibility = '1.8'
   targetCompatibility = '1.8'
 
+  repositories {
+    mavenCentral()
+  }
+
+  test {
+    useJUnitPlatform()
+
+    jacoco {
+      destinationFile = file("${buildDir}/jacoco/test.exec")
+    }
+  }
+
   jacoco {
     toolVersion = '0.8.0'
-    applyTo junitPlatformTest
   }
 
   jacocoTestReport {
@@ -36,22 +49,6 @@ allprojects {
       html.enabled = true
       xml.destination file("${buildDir}/reports/jacoco/report.xml")
     }
-  }
-
-  junitPlatformTest {
-    jacoco {
-      destinationFile = file("${buildDir}/jacoco/test.exec")
-    }
-  }
-
-  repositories {
-    mavenCentral()
-  }
-
-  dependencies {
-    testCompile libs.junitJupiter
-    testCompile libs.junitVintage
-    testCompile libs.junitRunner
   }
 }
 
@@ -89,7 +86,7 @@ subprojects {
 
   extraArchive {
     sources = true
-    tests = true
+    tests = false
     javadoc = true
   }
 
@@ -97,6 +94,12 @@ subprojects {
     sign = true
     repositoryUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
     snapshotRepositoryUrl = 'https://oss.sonatype.org/content/repositories/snapshots'
+  }
+
+  dependencies {
+    testCompile libs.junitJupiter
+    testCompile libs.junitVintage
+    testRuntime libs.junitRunner
   }
 }
 
