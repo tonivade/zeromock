@@ -1,0 +1,19 @@
+ext {
+  versions = [ 
+    gson            : '2.8.2',
+    junit           : '4.12',
+    junitEngine     : '5.1.0',
+    junitPlatform   : '1.1.0',
+    equalizer       : '0.2.0',
+    equalsverifier  : '2.4.3'
+  ]
+  libs = [
+    gson            : "com.google.code.gson:gson:$versions.gson",
+    equalizer       : "com.github.tonivade:equalizer:$versions.equalizer",
+    junitJupiter    : "org.junit.jupiter:junit-jupiter-engine:$versions.junitEngine",
+    junitVintage    : "org.junit.vintage:junit-vintage-engine:$versions.junitEngine",
+    junitRunner     : "org.junit.platform:junit-platform-runner:$versions.junitPlatform",
+    junit           : "junit:junit:$versions.junit",
+    equalsverifier  : "nl.jqno.equalsverifier:equalsverifier:$versions.equalsverifier"
+  ]
+}
