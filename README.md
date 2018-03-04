@@ -115,7 +115,7 @@ In this example, a class `Say` is created with the `say` param content, and fina
 
 In the other side, the client can use `Deserializers` class in order to create a Say class again. This class contains functions of type `Function<Bytes, T>` that converts `Bytes` to arbitrary objects.
 
-Of course, you can use static imports for a clearer code if you want, I have added the full names only for explanatory purposes. All examples taken from this [test class](https://github.com/tonivade/zeromock/blob/master/src/test/java/com/github/tonivade/zeromock/ExamplesTest.java)
+Of course, you can use static imports for a clearer code if you want, I have added the full names only for explanatory purposes. All examples taken from this [test class](https://github.com/tonivade/zeromock/blob/master/test/junit5/src/test/java/com/github/tonivade/zeromock/junit5/ExamplesTest.java)
 
 ## License
 
