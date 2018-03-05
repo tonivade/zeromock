@@ -7,7 +7,7 @@ Right now the unique dependency is gson (json object serialization), and gson do
 [![Build Status](https://api.travis-ci.org/tonivade/zeromock.svg?branch=master)](https://travis-ci.org/tonivade/zeromock)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/a3718bd59d674b8592065ac84abdf82c)](https://www.codacy.com/app/tonivade/zeromock?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tonivade/zeromock&amp;utm_campaign=Badge_Grade)
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/a3718bd59d674b8592065ac84abdf82c)](https://www.codacy.com/app/tonivade/zeromock?utm_source=github.com&utm_medium=referral&utm_content=tonivade/zeromock&utm_campaign=Badge_Coverage)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.tonivade/zeromock/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.tonivade/zeromock)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.tonivade/zeromock-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.tonivade/zeromock-core)
 
 ## Why?
 
