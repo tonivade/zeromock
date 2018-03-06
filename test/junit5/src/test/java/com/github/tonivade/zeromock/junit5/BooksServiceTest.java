@@ -25,7 +25,6 @@ import com.github.tonivade.zeromock.core.Deserializers;
 import com.github.tonivade.zeromock.core.HttpResponse;
 import com.github.tonivade.zeromock.core.HttpService;
 import com.github.tonivade.zeromock.core.HttpStatus;
-import com.github.tonivade.zeromock.core.Predicates;
 import com.github.tonivade.zeromock.core.Requests;
 import com.github.tonivade.zeromock.junit5.BooksService.Book;
 import com.github.tonivade.zeromock.server.HttpClient;
@@ -77,7 +76,7 @@ public class BooksServiceTest {
     
     assertAll(() -> assertEquals(HttpStatus.CREATED, response.status()),
               () -> assertEquals(new Book(1, "create"), asBook(response.body())),
-              () -> server.verify(Predicates.post("/store/books").and(body("create"))));
+              () -> server.verify(post("/store/books").and(body("create"))));
   }
   
   @Test
