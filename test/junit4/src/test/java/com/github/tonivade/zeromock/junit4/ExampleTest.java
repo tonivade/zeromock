@@ -2,7 +2,7 @@ package com.github.tonivade.zeromock.junit4;
 
 import static com.github.tonivade.zeromock.core.Bytes.asString;
 import static com.github.tonivade.zeromock.core.Handlers.ok;
-import static com.github.tonivade.zeromock.core.Mappings.get;
+import static com.github.tonivade.zeromock.core.Predicates.get;
 import static com.github.tonivade.zeromock.server.HttpClient.connectTo;
 import static org.junit.Assert.assertEquals;
 
@@ -19,7 +19,7 @@ public class ExampleTest {
   
   @Test
   public void ping() {
-    server.when(get("/ping").then(ok("pong")));
+    server.when(get("/ping")).then(ok("pong"));
     
     HttpResponse response = connectTo("http://localhost:8080").request(Requests.get("/ping"));
     

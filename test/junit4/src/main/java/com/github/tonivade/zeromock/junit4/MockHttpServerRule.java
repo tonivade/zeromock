@@ -4,6 +4,8 @@
  */
 package com.github.tonivade.zeromock.junit4;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -12,7 +14,6 @@ import org.junit.rules.ExternalResource;
 import com.github.tonivade.zeromock.core.HttpRequest;
 import com.github.tonivade.zeromock.core.HttpResponse;
 import com.github.tonivade.zeromock.core.HttpService;
-import com.github.tonivade.zeromock.core.Mappings.Mapping;
 import com.github.tonivade.zeromock.server.MockHttpServer;
 
 public class MockHttpServerRule extends ExternalResource {
@@ -43,13 +44,30 @@ public class MockHttpServerRule extends ExternalResource {
     return this;
   }
 
-  public MockHttpServerRule when(Mapping mapping) {
-    server.when(mapping);
-    return this;
+  public MappingBuilder when(Predicate<HttpRequest> matcher) {
+    return new MappingBuilder(this).when(matcher);
   }
 
   public MockHttpServerRule mount(String path, HttpService service) {
     server.mount(path, service);
     return this;
+  }
+
+  public static final class MappingBuilder {
+    private final MockHttpServerRule server;
+    private Predicate<HttpRequest> matcher;
+    
+    public MappingBuilder(MockHttpServerRule server) {
+      this.server = requireNonNull(server);
+    }
+
+    public MappingBuilder when(Predicate<HttpRequest> matcher) {
+      this.matcher = matcher;
+      return this;
+    }
+
+    public MockHttpServerRule then(Function<HttpRequest, HttpResponse> handler) {
+      return server.when(matcher, handler);
+    }
   }
 }

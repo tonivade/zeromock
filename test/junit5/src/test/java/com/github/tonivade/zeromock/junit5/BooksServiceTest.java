@@ -5,11 +5,11 @@
 package com.github.tonivade.zeromock.junit5;
 
 import static com.github.tonivade.zeromock.core.Deserializers.json;
-import static com.github.tonivade.zeromock.core.Mappings.delete;
-import static com.github.tonivade.zeromock.core.Mappings.get;
-import static com.github.tonivade.zeromock.core.Mappings.post;
-import static com.github.tonivade.zeromock.core.Mappings.put;
 import static com.github.tonivade.zeromock.core.Predicates.body;
+import static com.github.tonivade.zeromock.core.Predicates.delete;
+import static com.github.tonivade.zeromock.core.Predicates.get;
+import static com.github.tonivade.zeromock.core.Predicates.post;
+import static com.github.tonivade.zeromock.core.Predicates.put;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,7 +27,6 @@ import com.github.tonivade.zeromock.core.HttpService;
 import com.github.tonivade.zeromock.core.HttpStatus;
 import com.github.tonivade.zeromock.core.Predicates;
 import com.github.tonivade.zeromock.core.Requests;
-import com.github.tonivade.zeromock.junit5.MockHttpServerExtension;
 import com.github.tonivade.zeromock.junit5.BooksService.Book;
 import com.github.tonivade.zeromock.server.HttpClient;
 import com.github.tonivade.zeromock.server.MockHttpServer;
@@ -39,11 +38,11 @@ public class BooksServiceTest {
   private BooksAPI books = new BooksAPI(new BooksService());
   
   private HttpService booksService = new HttpService("books")
-      .when(get("/books").then(books.findAll()))
-      .when(get("/books/:id").then(books.find()))
-      .when(post("/books").then(books.create()))
-      .when(delete("/books/:id").then(books.delete()))
-      .when(put("/books/:id").then(books.update()));
+      .when(get("/books")).then(books.findAll())
+      .when(get("/books/:id")).then(books.find())
+      .when(post("/books")).then(books.create())
+      .when(delete("/books/:id")).then(books.delete())
+      .when(put("/books/:id")).then(books.update());
   
   @Test
   public void findsBooks(MockHttpServer server) {

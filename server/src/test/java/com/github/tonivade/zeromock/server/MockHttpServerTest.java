@@ -18,6 +18,7 @@ import static com.github.tonivade.zeromock.core.Predicates.path;
 import static com.github.tonivade.zeromock.core.Serializers.json;
 import static com.github.tonivade.zeromock.core.Serializers.plain;
 import static com.github.tonivade.zeromock.core.Serializers.xml;
+import static com.github.tonivade.zeromock.server.HttpClient.connectTo;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,6 +28,7 @@ import java.util.function.Supplier;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.github.tonivade.zeromock.core.Combinators;
@@ -39,6 +41,8 @@ import com.github.tonivade.zeromock.core.Requests;
 
 public class MockHttpServerTest {
 
+  private static final String BASE_URL = "http://localhost:8080/path";
+
   private HttpService service1 = new HttpService("hello")
       .when(get().and(path("/hello")).and(param("name")), ok(plain().compose(this::helloWorld)))
       .when(get().and(path("/hello")).and(param("name").negate()), badRequest("missing parameter name"));
@@ -50,15 +54,15 @@ public class MockHttpServerTest {
             ok(asFunction(this::sayHello).andThen(json())).andThen(contentJson()))
       .when(get().and(path("/empty")), noContent());
   
+  private HttpService service3 = new HttpService("other").when(get("/ping")).then(ok("pong"));
+  
   private static MockHttpServer server = MockHttpServer.listenAt(8080);
   
   @Test
   public void hello() {
     server.mount("/path", service1.combine(service2));
     
-    HttpClient client = new HttpClient("http://localhost:8080/path");
-    
-    HttpResponse response = client.request(Requests.get("/hello").withParam("name", "World"));
+    HttpResponse response = connectTo(BASE_URL).request(Requests.get("/hello").withParam("name", "World"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals("Hello World!", asString(response.body())));
@@ -68,9 +72,7 @@ public class MockHttpServerTest {
   public void helloMissingParam() {
     server.mount("/path", service1.combine(service2));
     
-    HttpClient client = new HttpClient("http://localhost:8080/path");
-    
-    HttpResponse response = client.request(Requests.get("/hello"));
+    HttpResponse response = connectTo(BASE_URL).request(Requests.get("/hello"));
 
     assertEquals(HttpStatus.BAD_REQUEST, response.status());
   }
@@ -79,9 +81,7 @@ public class MockHttpServerTest {
   public void jsonTest() {
     server.mount("/path", service1.combine(service2));
     
-    HttpClient client = new HttpClient("http://localhost:8080/path");
-    
-    HttpResponse response = client.request(Requests.get("/test").withHeader("Accept", "application/json"));
+    HttpResponse response = connectTo(BASE_URL).request(Requests.get("/test").withHeader("Accept", "application/json"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals(sayHello(), Deserializers.json(Say.class).apply(response.body())),
@@ -92,9 +92,7 @@ public class MockHttpServerTest {
   public void xmlTest() {
     server.mount("/path", service1.combine(service2));
     
-    HttpClient client = new HttpClient("http://localhost:8080/path");
-    
-    HttpResponse response = client.request(Requests.get("/test").withHeader("Accept", "text/xml"));
+    HttpResponse response = connectTo(BASE_URL).request(Requests.get("/test").withHeader("Accept", "text/xml"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals(sayHello(), Deserializers.xml(Say.class).apply(response.body())),
@@ -105,12 +103,25 @@ public class MockHttpServerTest {
   public void noContentTest() {
     server.mount("/path", service1.combine(service2));
     
-    HttpClient client = new HttpClient("http://localhost:8080/path");
-    
-    HttpResponse response = client.request(Requests.get("/empty"));
+    HttpResponse response = connectTo(BASE_URL).request(Requests.get("/empty"));
 
     assertAll(() -> assertEquals(HttpStatus.NO_CONTENT, response.status()),
               () -> assertEquals("", asString(response.body())));
+  }
+
+  @Test
+  public void ping() {
+    server.mount("/path", service3);
+    
+    HttpResponse response = connectTo(BASE_URL).request(Requests.get("/ping"));
+
+    assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
+              () -> assertEquals("pong", asString(response.body())));
+  }
+  
+  @BeforeEach
+  public void beforeEach() {
+    server.reset();
   }
   
   @BeforeAll

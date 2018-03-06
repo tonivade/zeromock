@@ -8,6 +8,7 @@ import static com.github.tonivade.zeromock.core.Bytes.asBytes;
 import static com.github.tonivade.zeromock.core.Responses.error;
 import static com.github.tonivade.zeromock.core.Responses.notFound;
 import static java.util.Collections.unmodifiableList;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -16,6 +17,7 @@ import java.net.InetSocketAddress;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.logging.Level;
@@ -29,7 +31,6 @@ import com.github.tonivade.zeromock.core.HttpPath;
 import com.github.tonivade.zeromock.core.HttpRequest;
 import com.github.tonivade.zeromock.core.HttpResponse;
 import com.github.tonivade.zeromock.core.HttpService;
-import com.github.tonivade.zeromock.core.Mappings.Mapping;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
@@ -46,17 +47,22 @@ public final class MockHttpServer {
   private final List<HttpRequest> unmatched = new LinkedList<>();
   private final HttpService root = new HttpService("root");
   
-  private MockHttpServer(int port) {
+  private MockHttpServer(String host, int port, int threads, int backlog) {
     try {
-      server = HttpServer.create(new InetSocketAddress(port), 0);
+      server = HttpServer.create(new InetSocketAddress(host, port), backlog);
+      server.setExecutor(Executors.newFixedThreadPool(threads));
       server.createContext(ROOT, this::handle);
     } catch (IOException e) {
-      throw new UncheckedIOException("unable to start server at port " + port, e);
+      throw new UncheckedIOException("unable to start server at " + host + ":" + port, e);
     }
   }
   
   public static MockHttpServer listenAt(int port) {
-    return new MockHttpServer(port);
+    return builder().port(port).build();
+  }
+  
+  public static Builder builder() {
+    return new Builder();
   }
 
   public MockHttpServer mount(String path, HttpService service) {
@@ -70,9 +76,8 @@ public final class MockHttpServer {
     return this;
   }
   
-  public MockHttpServer when(Mapping mapping) {
-    root.when(mapping);
-    return this;
+  public MappingBuilder when(Predicate<HttpRequest> predicate) {
+    return new MappingBuilder(this).when(predicate);
   }
   
   public void start() {
@@ -140,6 +145,55 @@ public final class MockHttpServer {
     exchange.sendResponseHeaders(response.status().code(), bytes.size());
     try (OutputStream output = exchange.getResponseBody()) {
       exchange.getResponseBody().write(bytes.toArray());
+    }
+  }
+
+  public static final class MappingBuilder {
+    private final MockHttpServer server;
+    private Predicate<HttpRequest> matcher;
+    
+    public MappingBuilder(MockHttpServer server) {
+      this.server = requireNonNull(server);
+    }
+
+    public MappingBuilder when(Predicate<HttpRequest> matcher) {
+      this.matcher = matcher;
+      return this;
+    }
+
+    public MockHttpServer then(Function<HttpRequest, HttpResponse> handler) {
+      return server.when(matcher, handler);
+    }
+  }
+  
+  public static final class Builder {
+    private String host = "localhost";
+    private int port = 8080;
+    private int threads = Runtime.getRuntime().availableProcessors();
+    private int backlog = 0;
+    
+    public Builder host(String host) {
+      this.host = host;
+      return this;
+    }
+    
+    public Builder port(int port) {
+      this.port = port;
+      return this;
+    }
+    
+    public Builder threads(int threads) {
+      this.threads = threads;
+      return this;
+    }
+    
+    public Builder backlog(int backlog) {
+      this.backlog = backlog;
+      return this;
+    }
+    
+    public MockHttpServer build() {
+      return new MockHttpServer(host, port, threads, backlog);
     }
   }
 }

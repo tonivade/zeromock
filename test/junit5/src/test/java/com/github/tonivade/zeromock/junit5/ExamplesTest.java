@@ -8,8 +8,7 @@ import static com.github.tonivade.zeromock.core.Bytes.asString;
 import static com.github.tonivade.zeromock.core.Extractors.pathParam;
 import static com.github.tonivade.zeromock.core.Extractors.queryParam;
 import static com.github.tonivade.zeromock.core.Handlers.ok;
-import static com.github.tonivade.zeromock.core.Mappings.get;
-import static com.github.tonivade.zeromock.core.Predicates.param;
+import static com.github.tonivade.zeromock.core.Predicates.*;
 import static com.github.tonivade.zeromock.core.Serializers.json;
 import static com.github.tonivade.zeromock.core.Serializers.plain;
 import static com.github.tonivade.zeromock.server.HttpClient.connectTo;
@@ -35,7 +34,7 @@ public class ExamplesTest {
 
   @Test
   public void ping(MockHttpServer server) {
-    server.when(get("/ping").then(ok("pong")));
+    server.when(get("/ping")).then(ok("pong"));
     
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/ping"));
     
@@ -44,7 +43,7 @@ public class ExamplesTest {
 
   @Test
   public void echoQueryParam(MockHttpServer server) {
-    server.when(get("/echo").and(param("say")).then(ok(queryParam("say").andThen(plain()))));
+    server.when(get("/echo").and(param("say"))).then(ok(queryParam("say").andThen(plain())));
     
     HttpResponse response = connectTo(BASE_URL)
         .request(Requests.get("/echo").withParam("say", "Hello World!"));
@@ -54,7 +53,7 @@ public class ExamplesTest {
   
   @Test
   public void echoPathParam(MockHttpServer server) {
-    server.when(get("/echo/:message").then(ok(pathParam(1).andThen(plain()))));
+    server.when(get("/echo/:message")).then(ok(pathParam(1).andThen(plain())));
     
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/echo/saysomething"));
     
@@ -63,7 +62,7 @@ public class ExamplesTest {
   
   @Test
   public void pojoSerialization(MockHttpServer server) {
-    server.when(get("/echo").and(param("say")).then(ok(queryParam("say").andThen(Say::new).andThen(json()))));
+    server.when(get("/echo").and(param("say"))).then(ok(queryParam("say").andThen(Say::new).andThen(json())));
     
     HttpResponse response = connectTo(BASE_URL)
         .request(Requests.get("/echo").withParam("say", "Hello World!"));
