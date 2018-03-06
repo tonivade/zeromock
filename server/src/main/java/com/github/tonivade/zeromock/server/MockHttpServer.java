@@ -8,7 +8,6 @@ import static com.github.tonivade.zeromock.core.Bytes.asBytes;
 import static com.github.tonivade.zeromock.core.Responses.error;
 import static com.github.tonivade.zeromock.core.Responses.notFound;
 import static java.util.Collections.unmodifiableList;
-import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -31,6 +30,7 @@ import com.github.tonivade.zeromock.core.HttpPath;
 import com.github.tonivade.zeromock.core.HttpRequest;
 import com.github.tonivade.zeromock.core.HttpResponse;
 import com.github.tonivade.zeromock.core.HttpService;
+import com.github.tonivade.zeromock.core.HttpService.MappingBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
@@ -76,8 +76,8 @@ public final class MockHttpServer {
     return this;
   }
   
-  public MappingBuilder when(Predicate<HttpRequest> predicate) {
-    return new MappingBuilder(this).when(predicate);
+  public MappingBuilder<MockHttpServer> when(Predicate<HttpRequest> predicate) {
+    return new MappingBuilder<>(this::when).when(predicate);
   }
   
   public void start() {
@@ -145,24 +145,6 @@ public final class MockHttpServer {
     exchange.sendResponseHeaders(response.status().code(), bytes.size());
     try (OutputStream output = exchange.getResponseBody()) {
       exchange.getResponseBody().write(bytes.toArray());
-    }
-  }
-
-  public static final class MappingBuilder {
-    private final MockHttpServer server;
-    private Predicate<HttpRequest> matcher;
-    
-    public MappingBuilder(MockHttpServer server) {
-      this.server = requireNonNull(server);
-    }
-
-    public MappingBuilder when(Predicate<HttpRequest> matcher) {
-      this.matcher = matcher;
-      return this;
-    }
-
-    public MockHttpServer then(Function<HttpRequest, HttpResponse> handler) {
-      return server.when(matcher, handler);
     }
   }
   
