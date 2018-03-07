@@ -37,14 +37,14 @@ public class MockHttpServerRule extends ExternalResource {
     return this;
   }
 
-  public MockHttpServerRule when(Predicate<HttpRequest> matcher, 
-                                 Function<HttpRequest, HttpResponse> handler) {
-    server.when(matcher, handler);
+  public MockHttpServerRule add(Predicate<HttpRequest> matcher, 
+                                Function<HttpRequest, HttpResponse> handler) {
+    server.add(matcher, handler);
     return this;
   }
 
   public MappingBuilder<MockHttpServerRule> when(Predicate<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::when).when(matcher);
+    return new MappingBuilder<>(this::add).when(matcher);
   }
 
   public MockHttpServerRule mount(String path, HttpService service) {

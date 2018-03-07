@@ -44,15 +44,16 @@ public class MockHttpServerTest {
   private static final String BASE_URL = "http://localhost:8080/path";
 
   private HttpService service1 = new HttpService("hello")
-      .when(get().and(path("/hello")).and(param("name")), ok(plain().compose(this::helloWorld)))
-      .when(get().and(path("/hello")).and(param("name").negate()), badRequest("missing parameter name"));
+      .when(get().and(path("/hello")).and(param("name"))).then(ok(plain().compose(this::helloWorld)))
+      .when(get().and(path("/hello")).and(param("name").negate())).then(badRequest("missing parameter name"));
 
   private HttpService service2 = new HttpService("test")
-      .when(get().and(path("/test")).and(acceptsXml()), 
-            ok(asFunction(this::sayHello).andThen(xml())).andThen(contentXml()))
-      .when(get().and(path("/test")).and(acceptsJson()), 
-            ok(asFunction(this::sayHello).andThen(json())).andThen(contentJson()))
-      .when(get().and(path("/empty")), noContent());
+      .when(get().and(path("/test")).and(acceptsXml()))
+            .then(ok(asFunction(this::sayHello).andThen(xml())).andThen(contentXml()))
+      .when(get().and(path("/test")).and(acceptsJson()))
+            .then(ok(asFunction(this::sayHello).andThen(json())).andThen(contentJson()))
+      .when(get().and(path("/empty")))
+            .then(noContent());
   
   private HttpService service3 = new HttpService("other").when(get("/ping")).then(ok("pong"));
   

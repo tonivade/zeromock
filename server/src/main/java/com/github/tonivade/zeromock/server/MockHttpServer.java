@@ -70,14 +70,14 @@ public final class MockHttpServer {
     return this;
   }
   
-  public MockHttpServer when(Predicate<HttpRequest> predicate, 
-                             Function<HttpRequest, HttpResponse> handler) {
-    root.when(predicate, handler);
+  public MockHttpServer add(Predicate<HttpRequest> predicate, 
+                            Function<HttpRequest, HttpResponse> handler) {
+    root.add(predicate, handler);
     return this;
   }
   
   public MappingBuilder<MockHttpServer> when(Predicate<HttpRequest> predicate) {
-    return new MappingBuilder<>(this::when).when(predicate);
+    return new MappingBuilder<>(this::add).when(predicate);
   }
   
   public void start() {
