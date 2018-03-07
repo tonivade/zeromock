@@ -4,7 +4,6 @@
  */
 package com.github.tonivade.zeromock.junit4;
 
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -39,7 +38,7 @@ public class MockHttpServerRule extends ExternalResource {
   }
 
   public MockHttpServerRule add(Predicate<HttpRequest> matcher, 
-                                Function<HttpRequest, Optional<HttpResponse>> handler) {
+                                Function<HttpRequest, HttpResponse> handler) {
     server.add(matcher, handler);
     return this;
   }

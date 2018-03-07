@@ -5,7 +5,6 @@
 package com.github.tonivade.zeromock.server;
 
 import static com.github.tonivade.zeromock.core.Bytes.asString;
-import static com.github.tonivade.zeromock.core.Combinators.map;
 import static com.github.tonivade.zeromock.core.Handlers.badRequest;
 import static com.github.tonivade.zeromock.core.Handlers.noContent;
 import static com.github.tonivade.zeromock.core.Handlers.ok;
@@ -50,9 +49,9 @@ public class MockHttpServerTest {
 
   private HttpService service2 = new HttpService("test")
       .when(get().and(path("/test")).and(acceptsXml()))
-            .then(ok(asFunction(this::sayHello).andThen(xml())).andThen(map(contentXml())))
+            .then(ok(asFunction(this::sayHello).andThen(xml())).andThen(contentXml()))
       .when(get().and(path("/test")).and(acceptsJson()))
-            .then(ok(asFunction(this::sayHello).andThen(json())).andThen(map(contentJson())))
+            .then(ok(asFunction(this::sayHello).andThen(json())).andThen(contentJson()))
       .when(get().and(path("/empty")))
             .then(noContent());
   
