@@ -71,7 +71,7 @@ public final class MockHttpServer {
   }
   
   public MockHttpServer add(Predicate<HttpRequest> predicate, 
-                            Function<HttpRequest, HttpResponse> handler) {
+                            Function<HttpRequest, Optional<HttpResponse>> handler) {
     root.add(predicate, handler);
     return this;
   }
