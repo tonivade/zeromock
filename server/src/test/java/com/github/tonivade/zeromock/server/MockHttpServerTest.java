@@ -144,6 +144,6 @@ public class MockHttpServerTest {
   }
 
   private static <T> Function<HttpRequest, T> asFunction(Supplier<T> supplier) {
-    return Combinators.<HttpRequest, T>force(supplier);
+    return Combinators.<HttpRequest, T>adapt(supplier);
   }
 }

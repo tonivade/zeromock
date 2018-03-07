@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock.junit5;
 
-import static com.github.tonivade.zeromock.core.Combinators.force;
+import static com.github.tonivade.zeromock.core.Combinators.adapt;
 import static com.github.tonivade.zeromock.core.Combinators.join;
 import static com.github.tonivade.zeromock.core.Combinators.split;
 import static com.github.tonivade.zeromock.core.Extractors.asInteger;
@@ -31,7 +31,7 @@ public class BooksAPI {
   }
 
   public Function<HttpRequest, HttpResponse> findAll() {
-    return okJson(force(service::findAll));
+    return okJson(adapt(service::findAll));
   }
 
   public Function<HttpRequest, HttpResponse> update() {
@@ -47,7 +47,7 @@ public class BooksAPI {
   }
 
   public Function<HttpRequest, HttpResponse> delete() {
-    return okEmpty(getBookId().andThen(force(service::delete)));
+    return okEmpty(getBookId().andThen(adapt(service::delete)));
   }
 
   private static Function<HttpRequest, Integer> getBookId() {
