@@ -41,7 +41,7 @@ This is the simplest example, a ping application. It uses the Junit5 extension. 
 ```java
   @Test
   public void ping(MockHttpServer server) {
-    server.when(Predicates.get("/ping"), Handlers.ok("pong"));
+    server.when(Predicates.get("/ping")).then(Handlers.ok("pong"));
     
     HttpResponse response = HttpClient.connectTo(BASE_URL).request(Requests.get("/ping"));
     
@@ -62,8 +62,8 @@ Another example of echo:
 ```java
   @Test
   public void echoQueryParam(MockHttpServer server) {
-    server.when(Predicates.get("/echo").and(Predicates.param("say")), 
-                Handlers.ok(Extractors.queryParam("say").andThen(Serializers.plain())));
+    server.when(Predicates.get("/echo").and(Predicates.param("say")))
+          .then(Handlers.ok(Extractors.queryParam("say").andThen(Serializers.plain())));
     
     HttpResponse response = HttpClient.connectTo(BASE_URL)
         .request(Requests.get("/echo").withParam("say", "Hello World!"));
@@ -81,8 +81,8 @@ The same example using path params:
 ```java
   @Test
   public void echoPathParam(MockHttpServer server) {
-    server.when(Predicates.get("/echo/:message"), 
-                Handlers.ok(Extractors.pathParam(1).andThen(Serializers.plain())));
+    server.when(Predicates.get("/echo/:message")) 
+          .then(Handlers.ok(Extractors.pathParam(1).andThen(Serializers.plain())));
     
     HttpResponse response = HttpClient.connectTo(BASE_URL).request(Requests.get("/echo/saysomething"));
     
@@ -97,8 +97,8 @@ And the final example, by now, is an implementation of the echo server using jso
 ```java
   @Test
   public void pojoSerialization(MockHttpServer server) {
-    server.when(Predicates.get("/echo").and(Predicates.param("say")), 
-                Handlers.ok(Extractors.queryParam("say").andThen(Say::new).andThen(Serializers.json())));
+    server.when(Predicates.get("/echo").and(Predicates.param("say"))) 
+          .then(Handlers.ok(Extractors.queryParam("say").andThen(Say::new).andThen(Serializers.json())));
     
     HttpResponse response = HttpClient.connectTo(BASE_URL)
         .request(Requests.get("/echo").withParam("say", "Hello World!"));
