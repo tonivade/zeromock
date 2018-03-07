@@ -14,6 +14,7 @@ import static com.github.tonivade.zeromock.core.Extractors.pathParam;
 import static com.github.tonivade.zeromock.core.Handlers.created;
 import static com.github.tonivade.zeromock.core.Handlers.ok;
 import static com.github.tonivade.zeromock.core.Headers.contentJson;
+import static com.github.tonivade.zeromock.core.Serializers.empty;
 import static com.github.tonivade.zeromock.core.Serializers.json;
 
 import java.util.function.Function;
@@ -46,7 +47,7 @@ public class BooksAPI {
   }
 
   public Function<HttpRequest, HttpResponse> delete() {
-    return okJson(getBookId().andThen(force(service::delete)));
+    return okEmpty(getBookId().andThen(force(service::delete)));
   }
 
   private static Function<HttpRequest, Integer> getBookId() {
@@ -59,6 +60,10 @@ public class BooksAPI {
   
   private static <T> Function<HttpRequest, HttpResponse> okJson(Function<HttpRequest, T> handler) {
     return ok(handler.andThen(json())).andThen(contentJson());
+  }
+  
+  private static <T> Function<HttpRequest, HttpResponse> okEmpty(Function<HttpRequest, T> handler) {
+    return ok(handler.andThen(empty())).andThen(contentJson());
   }
   
   private static <T> Function<HttpRequest, HttpResponse> createdJson(Function<HttpRequest, T> handler) {
