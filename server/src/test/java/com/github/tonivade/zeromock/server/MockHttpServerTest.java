@@ -19,6 +19,7 @@ import static com.github.tonivade.zeromock.core.Serializers.json;
 import static com.github.tonivade.zeromock.core.Serializers.plain;
 import static com.github.tonivade.zeromock.core.Serializers.xml;
 import static com.github.tonivade.zeromock.server.HttpClient.connectTo;
+import static com.github.tonivade.zeromock.server.MockHttpServer.listenAt;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,6 +39,7 @@ import com.github.tonivade.zeromock.core.HttpResponse;
 import com.github.tonivade.zeromock.core.HttpService;
 import com.github.tonivade.zeromock.core.HttpStatus;
 import com.github.tonivade.zeromock.core.Requests;
+import com.github.tonivade.zeromock.core.Responses;
 
 public class MockHttpServerTest {
 
@@ -118,6 +120,16 @@ public class MockHttpServerTest {
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals("pong", asString(response.body())));
+  }
+  
+  @Test
+  public void exec() {
+    listenAt(8082).exec(request -> Responses.ok(request.body())).start();
+
+    HttpResponse response = connectTo("http://localhost:8082").request(Requests.get("/").withBody("echo"));
+
+    assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
+              () -> assertEquals("echo", asString(response.body())));
   }
   
   @BeforeEach

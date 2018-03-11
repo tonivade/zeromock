@@ -5,6 +5,7 @@
 package com.github.tonivade.zeromock.server;
 
 import static com.github.tonivade.zeromock.core.Bytes.asBytes;
+import static com.github.tonivade.zeromock.core.Predicates.all;
 import static com.github.tonivade.zeromock.core.Responses.error;
 import static com.github.tonivade.zeromock.core.Responses.notFound;
 import static java.util.Collections.unmodifiableList;
@@ -70,6 +71,11 @@ public final class MockHttpServer {
     return this;
   }
   
+  public MockHttpServer exec(Function<HttpRequest, HttpResponse> handler) {
+    root.add(all(), handler);
+    return this;
+  }
+  
   public MockHttpServer add(Predicate<HttpRequest> predicate, 
                             Function<HttpRequest, HttpResponse> handler) {
     root.add(predicate, handler);
@@ -80,9 +86,10 @@ public final class MockHttpServer {
     return new MappingBuilder<>(this::add).when(predicate);
   }
   
-  public void start() {
+  public MockHttpServer start() {
     server.start();
     LOG.info(() -> "server listening at " + server.getAddress());
+    return this;
   }
 
   public void stop() {
@@ -122,7 +129,7 @@ public final class MockHttpServer {
       }
     } catch (RuntimeException e) {
       LOG.log(Level.SEVERE, "error processing request: " + exchange.getRequestURI(), e);
-      processResponse(exchange, error(asBytes(e.getMessage())));
+      processResponse(exchange, error(e.getMessage()));
     }
   }
 
