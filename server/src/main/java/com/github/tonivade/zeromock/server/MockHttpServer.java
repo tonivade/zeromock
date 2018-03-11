@@ -5,7 +5,6 @@
 package com.github.tonivade.zeromock.server;
 
 import static com.github.tonivade.zeromock.core.Bytes.asBytes;
-import static com.github.tonivade.zeromock.core.Predicates.all;
 import static com.github.tonivade.zeromock.core.Responses.error;
 import static com.github.tonivade.zeromock.core.Responses.notFound;
 import static java.util.Collections.unmodifiableList;
@@ -72,7 +71,7 @@ public final class MockHttpServer {
   }
   
   public MockHttpServer exec(Function<HttpRequest, HttpResponse> handler) {
-    root.add(all(), handler);
+    root.exec(handler);
     return this;
   }
   
