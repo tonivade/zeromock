@@ -5,11 +5,11 @@
 package com.github.tonivade.zeromock.junit5;
 
 import static com.github.tonivade.zeromock.core.Deserializers.json;
-import static com.github.tonivade.zeromock.core.Predicates.body;
-import static com.github.tonivade.zeromock.core.Predicates.delete;
-import static com.github.tonivade.zeromock.core.Predicates.get;
-import static com.github.tonivade.zeromock.core.Predicates.post;
-import static com.github.tonivade.zeromock.core.Predicates.put;
+import static com.github.tonivade.zeromock.core.Matchers.body;
+import static com.github.tonivade.zeromock.core.Matchers.delete;
+import static com.github.tonivade.zeromock.core.Matchers.get;
+import static com.github.tonivade.zeromock.core.Matchers.post;
+import static com.github.tonivade.zeromock.core.Matchers.put;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;

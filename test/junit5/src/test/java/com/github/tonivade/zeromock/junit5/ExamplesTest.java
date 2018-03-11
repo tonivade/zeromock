@@ -8,7 +8,7 @@ import static com.github.tonivade.zeromock.core.Bytes.asString;
 import static com.github.tonivade.zeromock.core.Extractors.pathParam;
 import static com.github.tonivade.zeromock.core.Extractors.queryParam;
 import static com.github.tonivade.zeromock.core.Handlers.ok;
-import static com.github.tonivade.zeromock.core.Predicates.*;
+import static com.github.tonivade.zeromock.core.Matchers.*;
 import static com.github.tonivade.zeromock.core.Serializers.json;
 import static com.github.tonivade.zeromock.core.Serializers.plain;
 import static com.github.tonivade.zeromock.server.HttpClient.connectTo;
