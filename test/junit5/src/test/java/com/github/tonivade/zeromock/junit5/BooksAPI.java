@@ -5,8 +5,8 @@
 package com.github.tonivade.zeromock.junit5;
 
 import static com.github.tonivade.zeromock.core.Combinators.adapt;
-import static com.github.tonivade.zeromock.core.Combinators.join;
-import static com.github.tonivade.zeromock.core.Combinators.split;
+import static com.github.tonivade.zeromock.core.Combinators.apply;
+import static com.github.tonivade.zeromock.core.Combinators.tupple;
 import static com.github.tonivade.zeromock.core.Extractors.asInteger;
 import static com.github.tonivade.zeromock.core.Extractors.asString;
 import static com.github.tonivade.zeromock.core.Extractors.body;
@@ -35,7 +35,7 @@ public class BooksAPI {
   }
 
   public Function<HttpRequest, HttpResponse> update() {
-    return okJson(join(getBookId(), getBookTitle()).andThen(split(service::update)));
+    return okJson(tupple(getBookId(), getBookTitle()).andThen(apply(service::update)));
   }
 
   public Function<HttpRequest, HttpResponse> find() {
