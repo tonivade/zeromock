@@ -41,7 +41,7 @@ This is the simplest example, a ping application. It uses the Junit5 extension. 
 ```java
   @Test
   public void ping(MockHttpServer server) {
-    server.when(Predicates.get("/ping")).then(Handlers.ok("pong"));
+    server.when(Matchers.get("/ping")).then(Handlers.ok("pong"));
     
     HttpResponse response = HttpClient.connectTo(BASE_URL).request(Requests.get("/ping"));
     
@@ -51,7 +51,7 @@ This is the simplest example, a ping application. It uses the Junit5 extension. 
 
 `MockHttpServer` is the principal class, it listen for requests, finds for a handler, and then executes it. If no handler is found, a `NOT_FOUND(404)` is returned.
 
-The class `Predicates` contains predicates of type `Predicate<HttpRequest>`, with these predicates you can create the matcher function. These functions can be composes using the existing `Predicate` combinators like `and`, `or` and `negate`. In this case, it defines a predicate that matches a `GET` command with `/ping` path.
+The class `Matchers` contains predicates of type `Predicate<HttpRequest>`, with these predicates you can create the matcher function. These functions can be composes using the existing `Predicate` combinators like `and`, `or` and `negate`. In this case, it defines a predicate that matches a `GET` command with `/ping` path.
 
 The class `Handlers` contains functions of type `Function<HttpRequest, HttpResponse>` to represent the response. Also you can combine different functions using `Function` combinators like `andThen` or `compose`. In this case, it defines a `OK(200)` response with `pong` content.
 
@@ -62,7 +62,7 @@ Another example of echo:
 ```java
   @Test
   public void echoQueryParam(MockHttpServer server) {
-    server.when(Predicates.get("/echo").and(Predicates.param("say")))
+    server.when(Matchers.get("/echo").and(Matchers.param("say")))
           .then(Handlers.ok(Extractors.queryParam("say").andThen(Serializers.plain())));
     
     HttpResponse response = HttpClient.connectTo(BASE_URL)
@@ -81,7 +81,7 @@ The same example using path params:
 ```java
   @Test
   public void echoPathParam(MockHttpServer server) {
-    server.when(Predicates.get("/echo/:message")) 
+    server.when(Matchers.get("/echo/:message")) 
           .then(Handlers.ok(Extractors.pathParam(1).andThen(Serializers.plain())));
     
     HttpResponse response = HttpClient.connectTo(BASE_URL).request(Requests.get("/echo/saysomething"));
@@ -97,7 +97,7 @@ And the final example, by now, is an implementation of the echo server using jso
 ```java
   @Test
   public void pojoSerialization(MockHttpServer server) {
-    server.when(Predicates.get("/echo").and(Predicates.param("say"))) 
+    server.when(Matchers.get("/echo").and(Matchers.param("say"))) 
           .then(Handlers.ok(Extractors.queryParam("say").andThen(Say::new).andThen(Serializers.json())));
     
     HttpResponse response = HttpClient.connectTo(BASE_URL)
