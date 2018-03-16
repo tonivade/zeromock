@@ -140,7 +140,7 @@ public final class MockHttpServer {
     HttpMethod method = HttpMethod.valueOf(exchange.getRequestMethod());
     HttpHeaders headers = new HttpHeaders(exchange.getRequestHeaders());
     HttpParams params = new HttpParams(exchange.getRequestURI().getQuery());
-    HttpPath path = new HttpPath(exchange.getRequestURI().getPath());
+    HttpPath path = HttpPath.from(exchange.getRequestURI().getPath());
     Bytes body = asBytes(exchange.getRequestBody());
     return new HttpRequest(method, path, body, headers, params);
   }
