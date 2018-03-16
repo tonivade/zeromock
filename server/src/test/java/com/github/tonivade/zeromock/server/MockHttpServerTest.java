@@ -59,7 +59,7 @@ public class MockHttpServerTest {
   
   private HttpService service3 = new HttpService("other").when(get("/ping")).then(ok("pong"));
   
-  private static MockHttpServer server = MockHttpServer.listenAt(8080);
+  private static MockHttpServer server = listenAt(8080);
   
   @Test
   public void hello() {
