@@ -8,6 +8,7 @@ import static java.util.Arrays.asList;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class BooksService {
 
@@ -15,8 +16,8 @@ public class BooksService {
     return asList(new Book(1, "title"));
   }
 
-  public Book find(Integer id) {
-    return new Book(id, "title");
+  public Optional<Book> find(Integer id) {
+    return Optional.of(new Book(id, "title"));
   }
 
   public Book create(String title) {

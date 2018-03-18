@@ -24,7 +24,6 @@ import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.AfterAll;
@@ -32,8 +31,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.github.tonivade.zeromock.core.Combinators;
 import com.github.tonivade.zeromock.core.Deserializers;
+import com.github.tonivade.zeromock.core.Handler1;
 import com.github.tonivade.zeromock.core.HttpRequest;
 import com.github.tonivade.zeromock.core.HttpResponse;
 import com.github.tonivade.zeromock.core.HttpService;
@@ -87,7 +86,7 @@ public class MockHttpServerTest {
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/test").withHeader("Accept", "application/json"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals(sayHello(), Deserializers.json(Say.class).apply(response.body())),
+              () -> assertEquals(sayHello(), Deserializers.json(Say.class).handle(response.body())),
               () -> assertEquals(asList("application/json"), response.headers().get("Content-type")));
   }
 
@@ -98,7 +97,7 @@ public class MockHttpServerTest {
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/test").withHeader("Accept", "text/xml"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals(sayHello(), Deserializers.xml(Say.class).apply(response.body())),
+              () -> assertEquals(sayHello(), Deserializers.xml(Say.class).handle(response.body())),
               () -> assertEquals(asList("text/xml"), response.headers().get("Content-type")));
   }
 
@@ -155,7 +154,7 @@ public class MockHttpServerTest {
     return new Say("hello");
   }
 
-  private static <T> Function<HttpRequest, T> adapt(Supplier<T> supplier) {
-    return Combinators.adapt(supplier);
+  private static <T> Handler1<HttpRequest, T> adapt(Supplier<T> supplier) {
+    return Handler1.adapt(supplier);
   }
 }

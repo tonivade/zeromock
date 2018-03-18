@@ -17,12 +17,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executors;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.github.tonivade.zeromock.core.Bytes;
+import com.github.tonivade.zeromock.core.Handler1;
 import com.github.tonivade.zeromock.core.HttpHeaders;
 import com.github.tonivade.zeromock.core.HttpMethod;
 import com.github.tonivade.zeromock.core.HttpParams;
@@ -31,6 +30,7 @@ import com.github.tonivade.zeromock.core.HttpRequest;
 import com.github.tonivade.zeromock.core.HttpResponse;
 import com.github.tonivade.zeromock.core.HttpService;
 import com.github.tonivade.zeromock.core.HttpService.MappingBuilder;
+import com.github.tonivade.zeromock.core.Matcher;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
@@ -70,19 +70,18 @@ public final class MockHttpServer {
     return this;
   }
   
-  public MockHttpServer exec(Function<HttpRequest, HttpResponse> handler) {
+  public MockHttpServer exec(Handler1<HttpRequest, HttpResponse> handler) {
     root.exec(handler);
     return this;
   }
   
-  public MockHttpServer add(Predicate<HttpRequest> predicate, 
-                            Function<HttpRequest, HttpResponse> handler) {
-    root.add(predicate, handler);
+  public MockHttpServer add(Matcher matcher, Handler1<HttpRequest, HttpResponse> handler) {
+    root.add(matcher, handler);
     return this;
   }
   
-  public MappingBuilder<MockHttpServer> when(Predicate<HttpRequest> predicate) {
-    return new MappingBuilder<>(this::add).when(predicate);
+  public MappingBuilder<MockHttpServer> when(Matcher matcher) {
+    return new MappingBuilder<>(this::add).when(matcher);
   }
   
   public MockHttpServer start() {
@@ -96,9 +95,9 @@ public final class MockHttpServer {
     LOG.info(() -> "server stopped");
   }
 
-  public MockHttpServer verify(Predicate<HttpRequest> predicate) {
+  public MockHttpServer verify(Matcher matcher) {
     matched.stream()
-      .filter(request -> predicate.test(request))
+      .filter(request -> matcher.match(request))
       .findFirst()
       .orElseThrow(() -> new AssertionError("request not found"));
     return this;
