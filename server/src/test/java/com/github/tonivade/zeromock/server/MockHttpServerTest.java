@@ -51,9 +51,9 @@ public class MockHttpServerTest {
 
   private HttpService service2 = new HttpService("test")
       .when(get().and(path("/test")).and(acceptsXml()))
-            .then(ok(asFunction(this::sayHello).andThen(xml())).andThen(contentXml()))
+            .then(ok(adapt(this::sayHello).andThen(xml())).andThen(contentXml()))
       .when(get().and(path("/test")).and(acceptsJson()))
-            .then(ok(asFunction(this::sayHello).andThen(json())).andThen(contentJson()))
+            .then(ok(adapt(this::sayHello).andThen(json())).andThen(contentJson()))
       .when(get().and(path("/empty")))
             .then(noContent());
   
@@ -155,7 +155,7 @@ public class MockHttpServerTest {
     return new Say("hello");
   }
 
-  private static <T> Function<HttpRequest, T> asFunction(Supplier<T> supplier) {
-    return Combinators.<HttpRequest, T>adapt(supplier);
+  private static <T> Function<HttpRequest, T> adapt(Supplier<T> supplier) {
+    return Combinators.adapt(supplier);
   }
 }
