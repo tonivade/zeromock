@@ -42,7 +42,7 @@ public class Handler1Test {
   
   @Test
   public void liftTest() {
-    Optional<Integer> result = str2int.lift().handle("asdfg");
+    Optional<Integer> result = str2int.lift().unbox().handle("asdfg");
 
     assertEquals(Optional.of(5), result);
   }

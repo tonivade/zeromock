@@ -4,12 +4,12 @@
  */
 package com.github.tonivade.zeromock.junit5;
 
-import static com.github.tonivade.zeromock.core.Handler2.adapt;
 import static com.github.tonivade.zeromock.core.Extractors.asInteger;
 import static com.github.tonivade.zeromock.core.Extractors.asString;
 import static com.github.tonivade.zeromock.core.Extractors.body;
 import static com.github.tonivade.zeromock.core.Extractors.pathParam;
 import static com.github.tonivade.zeromock.core.Handler1.adapt;
+import static com.github.tonivade.zeromock.core.Handler2.adapt;
 import static com.github.tonivade.zeromock.core.Handlers.created;
 import static com.github.tonivade.zeromock.core.Handlers.ok;
 import static com.github.tonivade.zeromock.core.Headers.contentJson;
@@ -17,9 +17,10 @@ import static com.github.tonivade.zeromock.core.Serializers.empty;
 import static com.github.tonivade.zeromock.core.Serializers.json;
 
 import com.github.tonivade.zeromock.core.Handler1;
-import com.github.tonivade.zeromock.core.OptionalHandler;
 import com.github.tonivade.zeromock.core.HttpRequest;
 import com.github.tonivade.zeromock.core.HttpResponse;
+import com.github.tonivade.zeromock.core.Kind.OptionalKind;
+import com.github.tonivade.zeromock.core.OptionalHandler;
 import com.github.tonivade.zeromock.core.Responses;
 
 public class BooksAPI {
@@ -39,7 +40,7 @@ public class BooksAPI {
   }
 
   public Handler1<HttpRequest, HttpResponse> find() {
-    return okOrNoContentJson(getBookId().andThen(service::find)::handle);
+    return okOrNoContentJson(getBookId().andThen(service::find).andThen(OptionalKind::new)::handle);
   }
 
   public Handler1<HttpRequest, HttpResponse> create() {
