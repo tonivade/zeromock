@@ -104,11 +104,11 @@ public class BooksServiceTest {
   }
 
   private Book asBook(Bytes body) {
-    return json(Book.class).apply(body);
+    return json(Book.class).handle(body);
   }
 
   private List<Book> asBooks(Bytes body) {
-    return Deserializers.<List<Book>>json(listOfBooks()).apply(body);
+    return Deserializers.<List<Book>>json(listOfBooks()).handle(body);
   }
   
   private Type listOfBooks() {

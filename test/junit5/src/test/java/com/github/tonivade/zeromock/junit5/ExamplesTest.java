@@ -77,6 +77,6 @@ public class ExamplesTest {
   }
   
   private Say asObject(Bytes body) {
-    return Deserializers.json(Say.class).apply(body);
+    return Deserializers.json(Say.class).handle(body);
   }
 }
