@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock.core;
 
-import java.util.Optional;
+import com.github.tonivade.zeromock.core.Kind.OptionalKind;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -23,7 +23,7 @@ public interface Handler1<T, R> {
   }
   
   default OptionalHandler<T, R> lift() {
-    return value -> Optional.ofNullable(handle(value));
+    return value -> OptionalKind.of(handle(value));
   }
   
   static <T, R> Handler1<T, R> adapt(Supplier<R> supplier) {

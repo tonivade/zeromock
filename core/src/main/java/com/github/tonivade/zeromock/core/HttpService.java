@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
+import com.github.tonivade.zeromock.core.Kind.OptionalKind;
+
 public class HttpService {
   
   private final String name;
@@ -33,7 +35,7 @@ public class HttpService {
   }
 
   public HttpService mount(String path, HttpService service) {
-    addMapping(startsWith(path), adapt(HttpRequest::dropOneLevel).andThen(service::execute)::handle);
+    addMapping(startsWith(path), adapt(HttpRequest::dropOneLevel).andThen(service::execute).andThen(OptionalKind::new)::handle);
     return this;
   }
   
@@ -113,7 +115,7 @@ public class HttpService {
     }
 
     public Optional<HttpResponse> handle(HttpRequest request) {
-      return handler.handle(request);
+      return handler.unbox().handle(request);
     }
   }
 }
