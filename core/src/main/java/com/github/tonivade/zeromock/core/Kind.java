@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 
 public interface Kind<M, T> {
   
-  public static class OptionalKind<T> implements Kind<Optional<?>, T> {
+  class OptionalKind<T> implements Kind<Optional<?>, T> {
     
     private final Optional<T> value;
     
@@ -26,7 +26,7 @@ public interface Kind<M, T> {
     }
   }
   
-  public static class StreamKind<T> implements Kind<Stream<?>, T> {
+  class StreamKind<T> implements Kind<Stream<?>, T> {
     private Stream<T> value;
     
     public StreamKind(Stream<T> value) {
