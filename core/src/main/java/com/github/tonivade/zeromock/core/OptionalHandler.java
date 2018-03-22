@@ -5,18 +5,26 @@
 package com.github.tonivade.zeromock.core;
 
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import com.github.tonivade.zeromock.core.Kind.OptionalKind;
 
-public interface OptionalHandler<T, R> extends HandlerT<OptionalKind.µ, T, R> {
+public interface OptionalHandler<T, R> extends HandlerT<Optional<?>, T, R> {
   
+  @Override
   default <V> OptionalHandler<T, V> map(Handler1<R, V> mapper) {
     return value -> new OptionalKind<V>(unbox().handle(value).map(mapper::handle));
   }
   
-  default <V> OptionalHandler<T, V> flatMap(HandlerT<OptionalKind.µ, R, V> mapper) {
+  @Override
+  default <V> OptionalHandler<T, V> flatMap(HandlerT<Optional<?>, R, V> mapper) {
     return value -> new OptionalKind<V>(unbox().handle(value).flatMap(narrowKind(mapper)::handle));
+  }
+  
+  @Override
+  default OptionalHandler<T, R> filter(Predicate<R> predicate) {
+    return value -> new OptionalKind<R>(unbox().handle(value).filter(predicate));
   }
   
   default Handler1<T, R> orElse(Supplier<R> supplier) {
@@ -27,7 +35,7 @@ public interface OptionalHandler<T, R> extends HandlerT<OptionalKind.µ, T, R> {
     return value -> OptionalKind.narrowKind(handle(value));
   }
   
-  static <T, R> Handler1<T, Optional<R>> narrowKind(HandlerT<OptionalKind.µ, T, R> mapper) {
+  static <T, R> Handler1<T, Optional<R>> narrowKind(HandlerT<Optional<?>, T, R> mapper) {
     return value -> OptionalKind.narrowKind(mapper.handle(value));
   }
 }
