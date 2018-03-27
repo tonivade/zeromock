@@ -4,16 +4,14 @@
  */
 package com.github.tonivade.zeromock.junit5;
 
-import static java.util.Arrays.asList;
-
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class BooksService {
 
-  public List<Book> findAll() {
-    return asList(new Book(1, "title"));
+  public Stream<Book> findAll() {
+    return Stream.of(new Book(1, "title"));
   }
 
   public Optional<Book> find(Integer id) {

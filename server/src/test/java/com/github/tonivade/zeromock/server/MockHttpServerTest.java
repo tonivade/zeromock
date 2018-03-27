@@ -50,11 +50,11 @@ public class MockHttpServerTest {
 
   private HttpService service2 = new HttpService("test")
       .when(get().and(path("/test")).and(acceptsXml()))
-            .then(ok(adapt(this::sayHello).andThen(xml())).andThen(contentXml()))
+            .then(ok(adapt(this::sayHello).andThen(xml())).postHandle(contentXml()))
       .when(get().and(path("/test")).and(acceptsJson()))
-            .then(ok(adapt(this::sayHello).andThen(json())).andThen(contentJson()))
+            .then(ok(adapt(this::sayHello).andThen(json())).postHandle(contentJson()))
       .when(get().and(path("/empty")))
-            .then(noContent());
+            .then(noContent()::handle);
   
   private HttpService service3 = new HttpService("other").when(get("/ping")).then(ok("pong"));
   

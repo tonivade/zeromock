@@ -15,12 +15,14 @@ import static com.github.tonivade.zeromock.core.Handlers.ok;
 import static com.github.tonivade.zeromock.core.Headers.contentJson;
 import static com.github.tonivade.zeromock.core.Serializers.empty;
 import static com.github.tonivade.zeromock.core.Serializers.json;
+import static java.util.stream.Collectors.toList;
 
 import com.github.tonivade.zeromock.core.Handler1;
 import com.github.tonivade.zeromock.core.OptionalHandler;
+import com.github.tonivade.zeromock.core.RequestHandler;
 import com.github.tonivade.zeromock.core.HttpRequest;
-import com.github.tonivade.zeromock.core.HttpResponse;
 import com.github.tonivade.zeromock.core.Responses;
+import com.github.tonivade.zeromock.core.StreamHandler;
 
 public class BooksAPI {
   
@@ -30,23 +32,23 @@ public class BooksAPI {
     this.service = service;
   }
 
-  public Handler1<HttpRequest, HttpResponse> findAll() {
-    return okJson(adapt(service::findAll));
+  public RequestHandler findAll() {
+    return okJson(adapt(service::findAll)::handle);
   }
 
-  public Handler1<HttpRequest, HttpResponse> update() {
+  public RequestHandler update() {
     return okJson(adapt(service::update).compose(getBookId(), getBookTitle()));
   }
 
-  public Handler1<HttpRequest, HttpResponse> find() {
+  public RequestHandler find() {
     return okOrNoContentJson(getBookId().andThen(service::find)::handle);
   }
 
-  public Handler1<HttpRequest, HttpResponse> create() {
+  public RequestHandler create() {
     return createdJson(getBookTitle().andThen(service::create));
   }
 
-  public Handler1<HttpRequest, HttpResponse> delete() {
+  public RequestHandler delete() {
     return okEmpty(getBookId().andThen(adapt(service::delete)));
   }
 
@@ -58,19 +60,27 @@ public class BooksAPI {
     return body().andThen(asString());
   }
   
-  private static <T> Handler1<HttpRequest, HttpResponse> okJson(Handler1<HttpRequest, T> handler) {
-    return ok(handler.andThen(json())).andThen(contentJson());
+  private static <T> RequestHandler okJson(Handler1<HttpRequest, T> handler) {
+    return ok(handler.andThen(json())).postHandle(contentJson());
   }
   
-  private static <T> Handler1<HttpRequest, HttpResponse> okOrNoContentJson(OptionalHandler<HttpRequest, T> handler) {
-    return handler.map(json()).map(Responses::ok).orElse(Responses::noContent).andThen(contentJson());
+  private static <T> RequestHandler okJson(StreamHandler<HttpRequest, T> handler) {
+    return ok(handler.collect(toList()).andThen(json())).postHandle(contentJson());
   }
   
-  private static <T> Handler1<HttpRequest, HttpResponse> okEmpty(Handler1<HttpRequest, T> handler) {
-    return ok(handler.andThen(empty())).andThen(contentJson());
+  private static <T> RequestHandler okOrNoContentJson(OptionalHandler<HttpRequest, T> handler) {
+    return okOrNoContent(handler).postHandle(contentJson());
+  }
+
+  private static <T> RequestHandler okOrNoContent(OptionalHandler<HttpRequest, T> handler) {
+    return handler.map(json()).map(Responses::ok).orElse(Responses::noContent)::handle;
   }
   
-  private static <T> Handler1<HttpRequest, HttpResponse> createdJson(Handler1<HttpRequest, T> handler) {
-    return created(handler.andThen(json())).andThen(contentJson());
+  private static <T> RequestHandler okEmpty(Handler1<HttpRequest, T> handler) {
+    return ok(handler.andThen(empty())).postHandle(contentJson());
+  }
+  
+  private static <T> RequestHandler createdJson(Handler1<HttpRequest, T> handler) {
+    return created(handler.andThen(json())).postHandle(contentJson());
   }
 }
