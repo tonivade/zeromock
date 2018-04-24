@@ -97,7 +97,7 @@ public final class MockHttpServer {
 
   public MockHttpServer verify(Matcher matcher) {
     matched.stream()
-      .filter(request -> matcher.match(request))
+      .filter(matcher::match)
       .findFirst()
       .orElseThrow(() -> new AssertionError("request not found"));
     return this;
