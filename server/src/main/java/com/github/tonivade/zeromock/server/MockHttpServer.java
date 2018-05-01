@@ -5,15 +5,14 @@
 package com.github.tonivade.zeromock.server;
 
 import static com.github.tonivade.zeromock.core.Bytes.asBytes;
+import static com.github.tonivade.zeromock.core.Matchers.get;
 import static com.github.tonivade.zeromock.core.Responses.error;
 import static com.github.tonivade.zeromock.core.Responses.notFound;
-import static java.util.Collections.unmodifiableList;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executors;
@@ -31,6 +30,8 @@ import com.github.tonivade.zeromock.core.HttpService;
 import com.github.tonivade.zeromock.core.HttpService.MappingBuilder;
 import com.github.tonivade.zeromock.core.Matcher;
 import com.github.tonivade.zeromock.core.RequestHandler;
+import com.github.tonivade.zeromock.server.admin.AdminAPI;
+import com.github.tonivade.zeromock.server.admin.AdminService;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
@@ -40,18 +41,23 @@ public final class MockHttpServer {
   private static final Logger LOG = Logger.getLogger(MockHttpServer.class.getName());
   
   private static final String ROOT = "/";
+  private static final String ADMIN = "/__admin";
 
   private final HttpServer server;
 
-  private final List<HttpRequest> matched = new LinkedList<>();
-  private final List<HttpRequest> unmatched = new LinkedList<>();
+  private final AdminService adminService = new AdminService();
+  private final AdminAPI adminAPI = new AdminAPI(adminService);
   private final HttpService root = new HttpService("root");
+  private final HttpService admin = new HttpService("admin")
+      .when(get("/unmatched")).then(adminAPI.unmatched())
+      .when(get("/matched")).then(adminAPI.matched());
   
   private MockHttpServer(String host, int port, int threads, int backlog) {
     try {
       server = HttpServer.create(new InetSocketAddress(host, port), backlog);
       server.setExecutor(Executors.newFixedThreadPool(threads));
       server.createContext(ROOT, this::handle);
+      root.mount(ADMIN, admin);
     } catch (IOException e) {
       throw new UncheckedIOException("unable to start server at " + host + ":" + port, e);
     }
@@ -96,7 +102,7 @@ public final class MockHttpServer {
   }
 
   public MockHttpServer verify(Matcher matcher) {
-    matched.stream()
+    adminService.getMatched().stream()
       .filter(matcher::match)
       .findFirst()
       .orElseThrow(() -> new AssertionError("request not found"));
@@ -104,13 +110,12 @@ public final class MockHttpServer {
   }
   
   public List<HttpRequest> getUnmatched() {
-    return unmodifiableList(unmatched);
+    return adminService.getUnmatched();
   }
 
   public void reset() {
     root.clear();
-    matched.clear();
-    unmatched.clear();
+    adminService.clear();
   }
 
   private void handle(HttpExchange exchange) throws IOException {
@@ -118,12 +123,12 @@ public final class MockHttpServer {
       HttpRequest request = createRequest(exchange);
       Optional<HttpResponse> response = execute(request);
       if (response.isPresent()) {
-        matched.add(request);
+        adminService.addMatched(request);
         processResponse(exchange, response.get());
       } else {
         LOG.fine(() -> "unmatched request " + request);
         processResponse(exchange, notFound());
-        unmatched.add(request);
+        adminService.addUnmatched(request);
       }
     } catch (RuntimeException e) {
       LOG.log(Level.SEVERE, "error processing request: " + exchange.getRequestURI(), e);
