@@ -2,8 +2,8 @@ ext {
   versions = [ 
     gson            : '2.8.2',
     junit           : '4.12',
-    junitEngine     : '5.1.0',
-    junitPlatform   : '1.1.0',
+    junitEngine     : '5.2.0',
+    junitPlatform   : '1.2.0',
     equalizer       : '0.2.0',
     equalsverifier  : '2.4.3'
   ]
