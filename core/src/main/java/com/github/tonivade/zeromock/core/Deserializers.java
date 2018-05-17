@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.lang.reflect.Type;
 
+import javax.xml.bind.DataBindingException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -59,7 +60,7 @@ public final class Deserializers {
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     } catch (JAXBException e) {
-      throw new RuntimeException(e);
+      throw new DataBindingException(e);
     }
   }
 }
