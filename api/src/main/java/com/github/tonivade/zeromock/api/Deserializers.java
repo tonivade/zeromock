@@ -6,9 +6,11 @@ package com.github.tonivade.zeromock.api;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.lang.reflect.Type;
 
+import javax.xml.bind.DataBindingException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -52,13 +54,14 @@ public final class Deserializers {
   
   @SuppressWarnings("unchecked")
   private static <T> T fromXml(Bytes bytes, Class<T> clazz) {
-    try {
+    try (InputStream input = new ByteArrayInputStream(bytes.toArray())) {
       JAXBContext context = JAXBContext.newInstance(clazz);
       Unmarshaller unmarshaller = context.createUnmarshaller();
-      ByteArrayInputStream input = new ByteArrayInputStream(bytes.toArray());
       return (T) unmarshaller.unmarshal(input);
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
     } catch (JAXBException e) {
-      throw new UncheckedIOException(new IOException(e));
+      throw new DataBindingException(e);
     }
   }
 }
