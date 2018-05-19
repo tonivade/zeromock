@@ -5,8 +5,10 @@
 package com.github.tonivade.zeromock.junit5;
 
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Stream;
+
+import com.github.tonivade.zeromock.core.Option;
+import com.github.tonivade.zeromock.core.Try;
 
 public class BooksService {
 
@@ -14,20 +16,20 @@ public class BooksService {
     return Stream.of(new Book(1, "title"));
   }
 
-  public Optional<Book> find(Integer id) {
-    return Optional.of(new Book(id, "title"));
+  public Option<Book> find(Integer id) {
+    return Option.some(new Book(id, "title"));
   }
 
-  public Book create(String title) {
-    return new Book(1, title);
+  public Try<Book> create(String title) {
+    return Try.success(new Book(1, title));
   }
 
-  public Book update(Integer id, String title) {
-    return new Book(id, title);
+  public Try<Book> update(Integer id, String title) {
+    return Try.success(new Book(id, title));
   }
 
-  public void delete(Integer id) {
-    // nothing to do
+  public Try<Void> delete(Integer id) {
+    return Try.success(null);
   }
   
   public static class Book {
