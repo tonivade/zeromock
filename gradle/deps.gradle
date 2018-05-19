@@ -1,11 +1,11 @@
 ext {
   versions = [ 
-    gson            : '2.8.2',
+    gson            : '2.8.4',
     junit           : '4.12',
     junitEngine     : '5.2.0',
     junitPlatform   : '1.2.0',
     equalizer       : '0.2.0',
-    equalsverifier  : '2.4.3'
+    equalsverifier  : '2.4.5'
   ]
   libs = [
     gson            : "com.google.code.gson:gson:$versions.gson",
