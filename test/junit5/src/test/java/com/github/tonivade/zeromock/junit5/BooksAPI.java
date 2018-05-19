@@ -5,23 +5,23 @@
 package com.github.tonivade.zeromock.junit5;
 
 import static com.github.tonivade.zeromock.core.Handler2.adapt;
-import static com.github.tonivade.zeromock.core.Extractors.asInteger;
-import static com.github.tonivade.zeromock.core.Extractors.asString;
-import static com.github.tonivade.zeromock.core.Extractors.body;
-import static com.github.tonivade.zeromock.core.Extractors.pathParam;
+import static com.github.tonivade.zeromock.api.Extractors.asInteger;
+import static com.github.tonivade.zeromock.api.Extractors.asString;
+import static com.github.tonivade.zeromock.api.Extractors.body;
+import static com.github.tonivade.zeromock.api.Extractors.pathParam;
+import static com.github.tonivade.zeromock.api.Handlers.created;
+import static com.github.tonivade.zeromock.api.Handlers.ok;
+import static com.github.tonivade.zeromock.api.Headers.contentJson;
+import static com.github.tonivade.zeromock.api.Serializers.empty;
+import static com.github.tonivade.zeromock.api.Serializers.json;
 import static com.github.tonivade.zeromock.core.Handler1.adapt;
-import static com.github.tonivade.zeromock.core.Handlers.created;
-import static com.github.tonivade.zeromock.core.Handlers.ok;
-import static com.github.tonivade.zeromock.core.Headers.contentJson;
-import static com.github.tonivade.zeromock.core.Serializers.empty;
-import static com.github.tonivade.zeromock.core.Serializers.json;
 import static java.util.stream.Collectors.toList;
 
+import com.github.tonivade.zeromock.api.HttpRequest;
+import com.github.tonivade.zeromock.api.RequestHandler;
+import com.github.tonivade.zeromock.api.Responses;
 import com.github.tonivade.zeromock.core.Handler1;
 import com.github.tonivade.zeromock.core.OptionalHandler;
-import com.github.tonivade.zeromock.core.RequestHandler;
-import com.github.tonivade.zeromock.core.HttpRequest;
-import com.github.tonivade.zeromock.core.Responses;
 import com.github.tonivade.zeromock.core.StreamHandler;
 
 public class BooksAPI {

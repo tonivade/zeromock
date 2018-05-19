@@ -4,8 +4,8 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.zeromock.core.Bytes.asBytes;
-import static com.github.tonivade.zeromock.core.HttpStatus.BAD_REQUEST;
+import static com.github.tonivade.zeromock.api.Bytes.asBytes;
+import static com.github.tonivade.zeromock.api.HttpStatus.BAD_REQUEST;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -13,11 +13,11 @@ import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import com.github.tonivade.zeromock.core.Bytes;
-import com.github.tonivade.zeromock.core.HttpHeaders;
-import com.github.tonivade.zeromock.core.HttpRequest;
-import com.github.tonivade.zeromock.core.HttpResponse;
-import com.github.tonivade.zeromock.core.HttpStatus;
+import com.github.tonivade.zeromock.api.Bytes;
+import com.github.tonivade.zeromock.api.HttpHeaders;
+import com.github.tonivade.zeromock.api.HttpRequest;
+import com.github.tonivade.zeromock.api.HttpResponse;
+import com.github.tonivade.zeromock.api.HttpStatus;
 
 public class HttpClient {
   

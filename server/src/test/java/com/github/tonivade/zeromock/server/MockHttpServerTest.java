@@ -4,20 +4,20 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.zeromock.core.Bytes.asString;
-import static com.github.tonivade.zeromock.core.Handlers.badRequest;
-import static com.github.tonivade.zeromock.core.Handlers.noContent;
-import static com.github.tonivade.zeromock.core.Handlers.ok;
-import static com.github.tonivade.zeromock.core.Headers.contentJson;
-import static com.github.tonivade.zeromock.core.Headers.contentXml;
-import static com.github.tonivade.zeromock.core.Matchers.acceptsJson;
-import static com.github.tonivade.zeromock.core.Matchers.acceptsXml;
-import static com.github.tonivade.zeromock.core.Matchers.get;
-import static com.github.tonivade.zeromock.core.Matchers.param;
-import static com.github.tonivade.zeromock.core.Matchers.path;
-import static com.github.tonivade.zeromock.core.Serializers.json;
-import static com.github.tonivade.zeromock.core.Serializers.plain;
-import static com.github.tonivade.zeromock.core.Serializers.xml;
+import static com.github.tonivade.zeromock.api.Bytes.asString;
+import static com.github.tonivade.zeromock.api.Handlers.badRequest;
+import static com.github.tonivade.zeromock.api.Handlers.noContent;
+import static com.github.tonivade.zeromock.api.Handlers.ok;
+import static com.github.tonivade.zeromock.api.Headers.contentJson;
+import static com.github.tonivade.zeromock.api.Headers.contentXml;
+import static com.github.tonivade.zeromock.api.Matchers.acceptsJson;
+import static com.github.tonivade.zeromock.api.Matchers.acceptsXml;
+import static com.github.tonivade.zeromock.api.Matchers.get;
+import static com.github.tonivade.zeromock.api.Matchers.param;
+import static com.github.tonivade.zeromock.api.Matchers.path;
+import static com.github.tonivade.zeromock.api.Serializers.json;
+import static com.github.tonivade.zeromock.api.Serializers.plain;
+import static com.github.tonivade.zeromock.api.Serializers.xml;
 import static com.github.tonivade.zeromock.server.HttpClient.connectTo;
 import static com.github.tonivade.zeromock.server.MockHttpServer.listenAt;
 import static java.util.Arrays.asList;
@@ -31,14 +31,14 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.github.tonivade.zeromock.core.Deserializers;
+import com.github.tonivade.zeromock.api.Deserializers;
+import com.github.tonivade.zeromock.api.HttpRequest;
+import com.github.tonivade.zeromock.api.HttpResponse;
+import com.github.tonivade.zeromock.api.HttpService;
+import com.github.tonivade.zeromock.api.HttpStatus;
+import com.github.tonivade.zeromock.api.Requests;
+import com.github.tonivade.zeromock.api.Responses;
 import com.github.tonivade.zeromock.core.Handler1;
-import com.github.tonivade.zeromock.core.HttpRequest;
-import com.github.tonivade.zeromock.core.HttpResponse;
-import com.github.tonivade.zeromock.core.HttpService;
-import com.github.tonivade.zeromock.core.HttpStatus;
-import com.github.tonivade.zeromock.core.Requests;
-import com.github.tonivade.zeromock.core.Responses;
 
 public class MockHttpServerTest {
 
