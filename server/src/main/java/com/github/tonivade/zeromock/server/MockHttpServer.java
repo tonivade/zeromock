@@ -4,9 +4,9 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.zeromock.core.Bytes.asBytes;
-import static com.github.tonivade.zeromock.core.Responses.error;
-import static com.github.tonivade.zeromock.core.Responses.notFound;
+import static com.github.tonivade.zeromock.api.Bytes.asBytes;
+import static com.github.tonivade.zeromock.api.Responses.error;
+import static com.github.tonivade.zeromock.api.Responses.notFound;
 import static java.util.Collections.unmodifiableList;
 
 import java.io.IOException;
@@ -20,17 +20,17 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.github.tonivade.zeromock.core.Bytes;
-import com.github.tonivade.zeromock.core.HttpHeaders;
-import com.github.tonivade.zeromock.core.HttpMethod;
-import com.github.tonivade.zeromock.core.HttpParams;
-import com.github.tonivade.zeromock.core.HttpPath;
-import com.github.tonivade.zeromock.core.HttpRequest;
-import com.github.tonivade.zeromock.core.HttpResponse;
-import com.github.tonivade.zeromock.core.HttpService;
-import com.github.tonivade.zeromock.core.HttpService.MappingBuilder;
+import com.github.tonivade.zeromock.api.Bytes;
+import com.github.tonivade.zeromock.api.HttpHeaders;
+import com.github.tonivade.zeromock.api.HttpMethod;
+import com.github.tonivade.zeromock.api.HttpParams;
+import com.github.tonivade.zeromock.api.HttpPath;
+import com.github.tonivade.zeromock.api.HttpRequest;
+import com.github.tonivade.zeromock.api.HttpResponse;
+import com.github.tonivade.zeromock.api.HttpService;
+import com.github.tonivade.zeromock.api.RequestHandler;
+import com.github.tonivade.zeromock.api.HttpService.MappingBuilder;
 import com.github.tonivade.zeromock.core.Matcher;
-import com.github.tonivade.zeromock.core.RequestHandler;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
@@ -75,12 +75,12 @@ public final class MockHttpServer {
     return this;
   }
   
-  public MockHttpServer add(Matcher matcher, RequestHandler handler) {
+  public MockHttpServer add(Matcher<HttpRequest> matcher, RequestHandler handler) {
     root.add(matcher, handler);
     return this;
   }
   
-  public MappingBuilder<MockHttpServer> when(Matcher matcher) {
+  public MappingBuilder<MockHttpServer> when(Matcher<HttpRequest> matcher) {
     return new MappingBuilder<>(this::add).when(matcher);
   }
   
@@ -95,7 +95,7 @@ public final class MockHttpServer {
     LOG.info(() -> "server stopped");
   }
 
-  public MockHttpServer verify(Matcher matcher) {
+  public MockHttpServer verify(Matcher<HttpRequest> matcher) {
     matched.stream()
       .filter(matcher::match)
       .findFirst()

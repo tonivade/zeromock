@@ -1,17 +1,17 @@
 package com.github.tonivade.zeromock.junit4;
 
-import static com.github.tonivade.zeromock.core.Bytes.asString;
-import static com.github.tonivade.zeromock.core.Handlers.ok;
-import static com.github.tonivade.zeromock.core.Matchers.get;
+import static com.github.tonivade.zeromock.api.Bytes.asString;
+import static com.github.tonivade.zeromock.api.Handlers.ok;
+import static com.github.tonivade.zeromock.api.Matchers.get;
 import static com.github.tonivade.zeromock.server.HttpClient.connectTo;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.github.tonivade.zeromock.core.HttpResponse;
-import com.github.tonivade.zeromock.core.HttpStatus;
-import com.github.tonivade.zeromock.core.Requests;
+import com.github.tonivade.zeromock.api.HttpResponse;
+import com.github.tonivade.zeromock.api.HttpStatus;
+import com.github.tonivade.zeromock.api.Requests;
 
 public class ExampleTest {
   @Rule

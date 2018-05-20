@@ -9,8 +9,8 @@ import static tonivade.equalizer.Equalizer.equalizer;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -23,7 +23,7 @@ public abstract class Try<T> {
   }
   
   public static <T> Try<T> failure(String message) {
-    return new Failure<>(new AssertionError(message));
+    return failure(new AssertionError(message));
   }
   
   public static <T> Try<T> failure(Throwable error) {
@@ -72,9 +72,16 @@ public abstract class Try<T> {
     }
     return this;
   }
+  
+  public Try<T> recover(Handler1<Throwable, T> handler) {
+    if (isFailure()) {
+      return Try.of(() -> handler.handle(getCause()));
+    }
+    return this;
+  }
 
-  public Try<T> filter(Predicate<T> predicate) {
-    if (isSuccess() && predicate.test(get())) {
+  public Try<T> filter(Matcher<T> matcher) {
+    if (isSuccess() && matcher.match(get())) {
       return this;
     }
     return failure("filtered");
@@ -94,11 +101,18 @@ public abstract class Try<T> {
     return Stream.empty();
   }
   
-  public static class Success<T> extends Try<T> {
+  public Optional<T> toOptional() {
+    if (isSuccess()) {
+      return Optional.of(get());
+    }
+    return Optional.empty();
+  }
+  
+  static final class Success<T> extends Try<T> {
     private final T value;
     
-    public Success(T value) {
-      this.value = requireNonNull(value);
+    private Success(T value) {
+      this.value = value;
     }
     
     @Override
@@ -139,10 +153,10 @@ public abstract class Try<T> {
     }
   }
   
-  public static class Failure<T> extends Try<T> {
+  static final class Failure<T> extends Try<T> {
     private final Throwable cause;
     
-    public Failure(Throwable cause) {
+    private Failure(Throwable cause) {
       this.cause = requireNonNull(cause);
     }
     

@@ -7,6 +7,7 @@ package com.github.tonivade.zeromock.core;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
+import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -14,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
@@ -92,6 +94,7 @@ public class TryTest {
               () -> assertFalse(try1.isFailure()),
               () -> assertEquals("Hola mundo", try1.get()),
               () -> assertEquals(Try.success("Hola mundo"), try1),
+              () -> assertEquals(Optional.of("Hola mundo"), try1.toOptional()),
               () -> assertEquals(singletonList("Hola mundo"), try1.stream().collect(toList())),
               () -> assertThrows(IllegalStateException.class, () -> try1.getCause()),
               () -> {
@@ -112,6 +115,7 @@ public class TryTest {
     
     assertAll(() -> assertFalse(try1.isSuccess()),
               () -> assertTrue(try1.isFailure()),
+              () -> assertEquals(Optional.empty(), try1.toOptional()),
               () -> assertEquals(Try.failure("Hola mundo"), Try.failure("Hola mundo")),
               () -> assertEquals("Hola mundo", try1.getCause().getMessage()),
               () -> assertEquals(emptyList(), try1.stream().collect(toList())),
@@ -126,6 +130,13 @@ public class TryTest {
                 try1.onSuccess(ref::set);
                 assertNull(ref.get());
               });
+  }
+  
+  @Test
+  public void recover() {
+    Try<String> try1 = Try.<String>failure("error").recover(t -> "Hola mundo");
+
+    assertEquals(Try.success("Hola mundo"), try1);
   }
   
   @Test
