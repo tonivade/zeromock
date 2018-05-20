@@ -11,9 +11,7 @@ import static com.github.tonivade.zeromock.api.Extractors.pathParam;
 import static com.github.tonivade.zeromock.api.Headers.contentJson;
 import static com.github.tonivade.zeromock.api.Serializers.empty;
 import static com.github.tonivade.zeromock.api.Serializers.json;
-import static com.github.tonivade.zeromock.core.Handler2.adapt;
 import static com.github.tonivade.zeromock.core.OptionHandler.adapt;
-import static com.github.tonivade.zeromock.core.StreamHandler.adapt;
 import static com.github.tonivade.zeromock.core.TryHandler.adapt;
 import static java.util.stream.Collectors.toList;
 
@@ -31,7 +29,7 @@ public class BooksAPI {
   }
 
   public RequestHandler findAll() {
-    return adapt(service::findAll)
+    return service.findAll()
         .collect(toList())
         .andThen(json())
         .andThen(Responses::ok)
@@ -39,7 +37,7 @@ public class BooksAPI {
   }
 
   public RequestHandler update() {
-    return adapt(adapt(service::update).compose(getBookId(), getBookTitle()))
+    return adapt(service.update().compose(getBookId(), getBookTitle()))
         .map(json())
         .map(Responses::ok)
         .orElse(Responses::error)
@@ -47,7 +45,7 @@ public class BooksAPI {
   }
 
   public RequestHandler find() {
-    return adapt(getBookId().andThen(service::find))
+    return adapt(getBookId().andThen(service.find()))
         .map(json())
         .map(Responses::ok)
         .orElse(Responses::noContent)
@@ -55,7 +53,7 @@ public class BooksAPI {
   }
 
   public RequestHandler create() {
-    return adapt(getBookTitle().andThen(service::create))
+    return adapt(getBookTitle().andThen(service.create()))
         .map(json())
         .map(Responses::created)
         .orElse(Responses::error)
@@ -63,7 +61,7 @@ public class BooksAPI {
   }
 
   public RequestHandler delete() {
-    return adapt(getBookId().andThen(adapt(service::delete)))
+    return adapt(getBookId().andThen(service.delete()))
         .map(empty())
         .map(Responses::ok)
         .orElse(Responses::error)

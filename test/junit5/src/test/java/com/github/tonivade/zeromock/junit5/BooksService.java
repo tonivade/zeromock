@@ -7,29 +7,33 @@ package com.github.tonivade.zeromock.junit5;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import com.github.tonivade.zeromock.core.Handler2;
 import com.github.tonivade.zeromock.core.Option;
+import com.github.tonivade.zeromock.core.OptionHandler;
+import com.github.tonivade.zeromock.core.StreamHandler;
 import com.github.tonivade.zeromock.core.Try;
+import com.github.tonivade.zeromock.core.TryHandler;
 
 public class BooksService {
 
-  public Stream<Book> findAll() {
-    return Stream.of(new Book(1, "title"));
+  public <T> StreamHandler<T, Book> findAll() {
+    return ignore -> Stream.of(new Book(1, "title"));
   }
 
-  public Option<Book> find(Integer id) {
-    return Option.some(new Book(id, "title"));
+  public OptionHandler<Integer, Book> find() {
+    return id -> Option.some(new Book(id, "title"));
   }
 
-  public Try<Book> create(String title) {
-    return Try.success(new Book(1, title));
+  public TryHandler<String, Book> create() {
+    return title -> Try.success(new Book(1, title));
   }
 
-  public Try<Book> update(Integer id, String title) {
-    return Try.success(new Book(id, title));
+  public Handler2<Integer, String, Try<Book>> update() {
+    return (id, title) -> Try.success(new Book(id, title));
   }
 
-  public Try<Void> delete(Integer id) {
-    return Try.success(null);
+  public TryHandler<Integer, Void> delete() {
+    return id -> Try.success(null);
   }
   
   public static class Book {
