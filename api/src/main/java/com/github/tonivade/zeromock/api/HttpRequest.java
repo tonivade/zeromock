@@ -5,8 +5,9 @@
 package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.zeromock.api.Bytes.asBytes;
+import static com.github.tonivade.zeromock.core.Equal.comparing;
+import static com.github.tonivade.zeromock.core.Equal.equal;
 import static java.util.Objects.requireNonNull;
-import static tonivade.equalizer.Equalizer.equalizer;
 
 import java.util.Objects;
 
@@ -92,12 +93,12 @@ public final class HttpRequest {
   
   @Override
   public boolean equals(Object obj) {
-    return equalizer(this)
-        .append((a, b) -> Objects.equals(a.method, b.method))
-        .append((a, b) -> Objects.equals(a.path, b.path))
-        .append((a, b) -> Objects.equals(a.body, b.body))
-        .append((a, b) -> Objects.equals(a.headers, b.headers))
-        .append((a, b) -> Objects.equals(a.params, b.params))
+    return equal(this)
+        .append(comparing(HttpRequest::method))
+        .append(comparing(HttpRequest::path))
+        .append(comparing(HttpRequest::body))
+        .append(comparing(HttpRequest::headers))
+        .append(comparing(HttpRequest::params))
         .applyTo(obj);
   }
   

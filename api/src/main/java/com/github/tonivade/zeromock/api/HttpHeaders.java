@@ -4,12 +4,12 @@
  */
 package com.github.tonivade.zeromock.api;
 
+import static com.github.tonivade.zeromock.core.Equal.equal;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
-import static tonivade.equalizer.Equalizer.equalizer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,7 +63,7 @@ public final class HttpHeaders {
   
   @Override
   public boolean equals(Object obj) {
-    return equalizer(this)
+    return equal(this)
         .append((a, b) -> Objects.equals(a.headers, b.headers))
         .applyTo(obj);
   }

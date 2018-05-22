@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static tonivade.equalizer.Equalizer.equalizer;
+import static com.github.tonivade.zeromock.core.Equal.equal;
 
 import java.util.Objects;
 
@@ -35,7 +35,7 @@ public final class Say {
 
   @Override
   public boolean equals(Object obj) {
-    return equalizer(this)
+    return equal(this)
         .append((a, b) -> Objects.equals(a.message, b.message))
         .applyTo(obj);
   }

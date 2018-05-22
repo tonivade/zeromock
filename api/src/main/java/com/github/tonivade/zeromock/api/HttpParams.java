@@ -4,11 +4,11 @@
  */
 package com.github.tonivade.zeromock.api;
 
+import static com.github.tonivade.zeromock.core.Equal.equal;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.stream.Collectors.joining;
-import static tonivade.equalizer.Equalizer.equalizer;
 
 import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
@@ -67,7 +67,7 @@ public final class HttpParams {
   
   @Override
   public boolean equals(Object obj) {
-    return equalizer(this)
+    return equal(this)
         .append((a, b) -> Objects.equals(a.params, b.params))
         .applyTo(obj);
   }

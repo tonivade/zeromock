@@ -4,11 +4,12 @@
  */
 package com.github.tonivade.zeromock.api;
 
+import static com.github.tonivade.zeromock.core.Equal.comparing;
+import static com.github.tonivade.zeromock.core.Equal.equal;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
-import static tonivade.equalizer.Equalizer.equalizer;
 
 import java.util.List;
 import java.util.Objects;
@@ -58,7 +59,7 @@ public final class HttpPath {
   
   @Override
   public boolean equals(Object obj) {
-    return equalizer(this)
+    return equal(this)
         .append((a, b) -> Objects.equals(a.value, b.value))
         .applyTo(obj);
   }
@@ -111,8 +112,8 @@ public final class HttpPath {
     
     @Override
     public boolean equals(Object obj) {
-      return equalizer(this)
-          .append((a, b) -> Objects.equals(a.value, b.value))
+      return equal(this)
+          .append(comparing(PathElement::value))
           .applyTo(obj);
     }
     

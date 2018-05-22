@@ -4,12 +4,10 @@ ext {
     junit           : '4.12',
     junitEngine     : '5.2.0',
     junitPlatform   : '1.2.0',
-    equalizer       : '0.2.0',
     equalsverifier  : '2.4.5'
   ]
   libs = [
     gson            : "com.google.code.gson:gson:$versions.gson",
-    equalizer       : "com.github.tonivade:equalizer:$versions.equalizer",
     junitJupiter    : "org.junit.jupiter:junit-jupiter-engine:$versions.junitEngine",
     junitVintage    : "org.junit.vintage:junit-vintage-engine:$versions.junitEngine",
     junitRunner     : "org.junit.platform:junit-platform-runner:$versions.junitPlatform",

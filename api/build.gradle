@@ -3,6 +3,5 @@ archivesBaseName = 'zeromock-api'
 dependencies {
   compile project(':core')
   compile libs.gson
-  compile libs.equalizer
   testCompile libs.equalsverifier
 }
