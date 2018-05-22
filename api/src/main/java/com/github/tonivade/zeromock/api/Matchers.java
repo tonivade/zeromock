@@ -63,7 +63,7 @@ public final class Matchers {
     return method(DELETE);
   }
   
-  public static Matcher <HttpRequest>patch() {
+  public static Matcher<HttpRequest>patch() {
     return method(PATCH);
   }
   
