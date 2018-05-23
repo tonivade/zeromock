@@ -4,36 +4,32 @@
  */
 package com.github.tonivade.zeromock.junit5;
 
-import java.util.Objects;
-import java.util.stream.Stream;
+import static java.util.Arrays.asList;
 
-import com.github.tonivade.zeromock.core.Handler2;
-import com.github.tonivade.zeromock.core.Option;
-import com.github.tonivade.zeromock.core.OptionHandler;
-import com.github.tonivade.zeromock.core.StreamHandler;
-import com.github.tonivade.zeromock.core.Try;
-import com.github.tonivade.zeromock.core.TryHandler;
+import java.util.List;
+import java.util.Objects;
+
+import com.github.tonivade.zeromock.core.Equal;
 
 public class BooksService {
 
-  public <T> StreamHandler<T, Book> findAll() {
-    return ignore -> Stream.of(new Book(1, "title"));
+  public List<Book> findAll() {
+    return asList(new Book(1, "title"));
   }
 
-  public OptionHandler<Integer, Book> find() {
-    return id -> Option.some(new Book(id, "title"));
+  public Book find(Integer id) {
+    return new Book(id, "title");
   }
 
-  public TryHandler<String, Book> create() {
-    return title -> Try.success(new Book(1, title));
+  public Book create(String title) {
+    return new Book(1, title);
   }
 
-  public Handler2<Integer, String, Try<Book>> update() {
-    return (id, title) -> Try.success(new Book(id, title));
+  public Book update(Integer id, String title) {
+    return new Book(id, title);
   }
 
-  public TryHandler<Integer, Void> delete() {
-    return id -> Try.success(null);
+  public void delete(Integer id) {
   }
   
   public static class Book {
@@ -57,15 +53,10 @@ public class BooksService {
 
     @Override
     public boolean equals(Object obj) {
-      if (this == obj)
-        return true;
-      if (obj == null)
-        return false;
-      if (getClass() != obj.getClass())
-        return false;
-      Book other = (Book) obj;
-      return Objects.equals(this.id, other.id) 
-          && Objects.equals(this.title, other.title);
+      return Equal.equal(this)
+          .append((a, b) -> Objects.equals(a.id, b.id))
+          .append((a, b) -> Objects.equals(a.title, b.title))
+          .applyTo(obj);
     }
   }
 }
