@@ -6,8 +6,7 @@ package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.zeromock.api.Bytes.asBytes;
 
-import java.util.function.Supplier;
-
+import com.github.tonivade.zeromock.core.Handler0;
 import com.github.tonivade.zeromock.core.Handler1;
 
 public final class Handlers {
@@ -98,7 +97,7 @@ public final class Handlers {
     return handler.andThen(Responses::error)::handle;
   }
   
-  private static <T> Handler1<T, HttpResponse> adapt(Supplier<HttpResponse> supplier) {
-    return Handler1.<T, HttpResponse>adapt(supplier);
+  private static <T> Handler1<T, HttpResponse> adapt(Handler0<HttpResponse> supplier) {
+    return supplier.toHandler1();
   }
 }

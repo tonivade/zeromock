@@ -24,8 +24,6 @@ import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.function.Supplier;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +36,7 @@ import com.github.tonivade.zeromock.api.HttpService;
 import com.github.tonivade.zeromock.api.HttpStatus;
 import com.github.tonivade.zeromock.api.Requests;
 import com.github.tonivade.zeromock.api.Responses;
+import com.github.tonivade.zeromock.core.Handler0;
 import com.github.tonivade.zeromock.core.Handler1;
 
 public class MockHttpServerTest {
@@ -154,7 +153,7 @@ public class MockHttpServerTest {
     return new Say("hello");
   }
 
-  private static <T> Handler1<HttpRequest, T> adapt(Supplier<T> supplier) {
-    return Handler1.adapt(supplier);
+  private static <T> Handler1<HttpRequest, T> adapt(Handler0<T> supplier) {
+    return supplier.toHandler1();
   }
 }
