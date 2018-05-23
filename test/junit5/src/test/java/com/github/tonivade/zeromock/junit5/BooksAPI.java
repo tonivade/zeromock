@@ -11,8 +11,6 @@ import static com.github.tonivade.zeromock.api.Extractors.pathParam;
 import static com.github.tonivade.zeromock.api.Headers.contentJson;
 import static com.github.tonivade.zeromock.api.Serializers.empty;
 import static com.github.tonivade.zeromock.api.Serializers.json;
-import static com.github.tonivade.zeromock.core.OptionHandler.adapt;
-import static com.github.tonivade.zeromock.core.TryHandler.adapt;
 import static java.util.stream.Collectors.toList;
 
 import com.github.tonivade.zeromock.api.HttpRequest;
@@ -37,7 +35,8 @@ public class BooksAPI {
   }
 
   public RequestHandler update() {
-    return adapt(service.update().compose(getBookId(), getBookTitle()))
+    return service.update().compose(getBookId(), getBookTitle())
+        .liftTry()
         .map(json())
         .map(Responses::ok)
         .orElse(Responses::error)
@@ -45,7 +44,9 @@ public class BooksAPI {
   }
 
   public RequestHandler find() {
-    return adapt(getBookId().andThen(service.find()))
+    return getBookId()
+        .andThen(service.find())
+        .liftOption()
         .map(json())
         .map(Responses::ok)
         .orElse(Responses::noContent)
@@ -53,7 +54,9 @@ public class BooksAPI {
   }
 
   public RequestHandler create() {
-    return adapt(getBookTitle().andThen(service.create()))
+    return getBookTitle()
+        .andThen(service.create())
+        .liftTry()
         .map(json())
         .map(Responses::created)
         .orElse(Responses::error)
@@ -61,7 +64,8 @@ public class BooksAPI {
   }
 
   public RequestHandler delete() {
-    return adapt(getBookId().andThen(service.delete()))
+    return getBookId().andThen(service.delete())
+        .liftTry()
         .map(empty())
         .map(Responses::ok)
         .orElse(Responses::error)
