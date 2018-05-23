@@ -30,6 +30,7 @@ public class BooksService {
   }
 
   public void delete(Integer id) {
+    // nothing to do
   }
   
   public static class Book {
