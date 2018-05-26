@@ -22,7 +22,17 @@ import com.google.gson.JsonParser;
 
 public final class Deserializers {
   
+  private static ThreadLocal<GsonBuilder> gsonImplicit = ThreadLocal.withInitial(GsonBuilder::new);
+  
   private Deserializers() {}
+  
+  public static void withGsonBuilder(GsonBuilder builder) {
+    gsonImplicit.set(builder);
+  }
+
+  public static GsonBuilder gsonBuilder() {
+    return gsonImplicit.get();
+  }
   
   public static Handler1<Bytes, JsonElement> json() {
     return plain().andThen(asJson());
@@ -49,7 +59,7 @@ public final class Deserializers {
   }
   
   private static <T> Handler1<String, T> fromJson(Type type) {
-    return json -> new GsonBuilder().create().fromJson(json, type);
+    return json -> gsonBuilder().create().fromJson(json, type);
   }
   
   @SuppressWarnings("unchecked")
