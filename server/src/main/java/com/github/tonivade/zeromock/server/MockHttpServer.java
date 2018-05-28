@@ -127,7 +127,7 @@ public final class MockHttpServer {
       }
     } catch (RuntimeException e) {
       LOG.log(Level.SEVERE, "error processing request: " + exchange.getRequestURI(), e);
-      processResponse(exchange, error(e.getMessage()));
+      processResponse(exchange, error(e));
     }
   }
 

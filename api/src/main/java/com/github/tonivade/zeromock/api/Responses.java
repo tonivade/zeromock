@@ -13,6 +13,7 @@ import static com.github.tonivade.zeromock.api.HttpStatus.INTERNAL_SERVER_ERROR;
 import static com.github.tonivade.zeromock.api.HttpStatus.NOT_FOUND;
 import static com.github.tonivade.zeromock.api.HttpStatus.NO_CONTENT;
 import static com.github.tonivade.zeromock.api.HttpStatus.OK;
+import static java.util.Objects.requireNonNull;
 
 public final class Responses {
   
@@ -75,7 +76,11 @@ public final class Responses {
   }
 
   public static HttpResponse error(String body) {
-    return error(asBytes(body));
+    return error(asBytes(requireNonNull(body)));
+  }
+
+  public static HttpResponse error(Throwable error) {
+    return error(error.toString());
   }
 
   public static HttpResponse error(Bytes body) {
