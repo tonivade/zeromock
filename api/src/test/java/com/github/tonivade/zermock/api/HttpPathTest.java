@@ -8,11 +8,10 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 
 import com.github.tonivade.zeromock.api.HttpPath;
+import com.github.tonivade.zeromock.core.Option;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
@@ -24,7 +23,7 @@ public class HttpPathTest {
 
     assertAll(() -> assertEquals("/path", httpPath.toPath()),
               () -> assertEquals(1, httpPath.size()),
-              () -> assertEquals(Optional.of("path"), httpPath.getAt(0).map(Object::toString)),
+              () -> assertEquals(Option.some("path"), httpPath.getAt(0).map(Object::toString)),
               () -> assertEquals(true, httpPath.match(HttpPath.from("/path"))),
               () -> assertEquals(false, httpPath.match(HttpPath.from("/other"))));
   }
@@ -35,7 +34,7 @@ public class HttpPathTest {
 
     assertAll(() -> assertEquals("/path/1", httpPath.toPath()),
               () -> assertEquals(2, httpPath.size()),
-              () -> assertEquals(Optional.of("path"), httpPath.getAt(0).map(Object::toString)),
+              () -> assertEquals(Option.some("path"), httpPath.getAt(0).map(Object::toString)),
               () -> assertEquals(HttpPath.from("/1"), httpPath.dropOneLevel()),
               () -> assertEquals(true, httpPath.match(HttpPath.from("/path/:id"))),
               () -> assertEquals(true, httpPath.startsWith(HttpPath.from("/path"))),
@@ -48,7 +47,7 @@ public class HttpPathTest {
 
     assertAll(() -> assertEquals("/", httpPath.toPath()),
               () -> assertEquals(0, httpPath.size()),
-              () -> assertEquals(Optional.empty(), httpPath.getAt(0)),
+              () -> assertEquals(Option.none(), httpPath.getAt(0)),
               () -> assertEquals(true, httpPath.match(HttpPath.from("/"))));
   }
   
@@ -58,8 +57,8 @@ public class HttpPathTest {
     
     assertAll(() -> assertEquals("/path1/path2", httpPath.toPath()),
               () -> assertEquals(2, httpPath.size()),
-              () -> assertEquals(Optional.of("path1"), httpPath.getAt(0).map(Object::toString)), 
-              () -> assertEquals(Optional.of("path2"), httpPath.getAt(1).map(Object::toString)),
+              () -> assertEquals(Option.some("path1"), httpPath.getAt(0).map(Object::toString)), 
+              () -> assertEquals(Option.some("path2"), httpPath.getAt(1).map(Object::toString)),
               () -> assertEquals(true, httpPath.match(HttpPath.from("/path1/path2"))));
   }
   

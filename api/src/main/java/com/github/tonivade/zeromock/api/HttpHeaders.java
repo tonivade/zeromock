@@ -5,33 +5,28 @@
 package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.zeromock.core.Equal.equal;
-import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
-import static java.util.Collections.singletonList;
-import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
+import com.github.tonivade.zeromock.core.InmutableList;
+
 public final class HttpHeaders {
   
-  private final Map<String, List<String>> headers;
+  private final Map<String, InmutableList<String>> headers;
   
-  public HttpHeaders(Map<String, List<String>> headers) {
+  public HttpHeaders(Map<String, InmutableList<String>> headers) {
     this.headers = unmodifiableMap(headers);
   }
 
   public HttpHeaders withHeader(String key, String value) {
-    Map<String, List<String>> newHeaders = new HashMap<>(headers);
-    newHeaders.merge(key, singletonList(value), (oldValue, newValue) -> {
-      List<String> newList = new ArrayList<>(oldValue);
-      newList.addAll(newValue);
-      return unmodifiableList(newList);
+    Map<String, InmutableList<String>> newHeaders = new HashMap<>(headers);
+    newHeaders.merge(key, InmutableList.of(value), (oldValue, newValue) -> {
+      return oldValue.concat(newValue);
     });
     return new HttpHeaders(newHeaders);
   }
@@ -44,8 +39,8 @@ public final class HttpHeaders {
     return headers.containsKey(key);
   }
   
-  public List<String> get(String key) {
-    return headers.getOrDefault(key, emptyList());
+  public InmutableList<String> get(String key) {
+    return headers.getOrDefault(key, InmutableList.empty());
   }
   
   public void forEach(BiConsumer<String, String> consumer) {

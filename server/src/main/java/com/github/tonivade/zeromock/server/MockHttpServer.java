@@ -7,15 +7,16 @@ package com.github.tonivade.zeromock.server;
 import static com.github.tonivade.zeromock.api.Bytes.asBytes;
 import static com.github.tonivade.zeromock.api.Responses.error;
 import static com.github.tonivade.zeromock.api.Responses.notFound;
-import static java.util.Collections.unmodifiableList;
+import static java.util.stream.Collectors.toMap;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
+import java.util.AbstractMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,9 +29,11 @@ import com.github.tonivade.zeromock.api.HttpPath;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpService;
-import com.github.tonivade.zeromock.api.RequestHandler;
 import com.github.tonivade.zeromock.api.HttpService.MappingBuilder;
+import com.github.tonivade.zeromock.api.RequestHandler;
+import com.github.tonivade.zeromock.core.InmutableList;
 import com.github.tonivade.zeromock.core.Matcher;
+import com.github.tonivade.zeromock.core.Option;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
@@ -45,16 +48,22 @@ public final class MockHttpServer {
 
   private final List<HttpRequest> matched = new LinkedList<>();
   private final List<HttpRequest> unmatched = new LinkedList<>();
-  private final HttpService root = new HttpService("root");
+  private final HttpService root;
   
   private MockHttpServer(String host, int port, int threads, int backlog) {
     try {
+      root = new HttpService(ROOT);
       server = HttpServer.create(new InetSocketAddress(host, port), backlog);
       server.setExecutor(Executors.newFixedThreadPool(threads));
       server.createContext(ROOT, this::handle);
     } catch (IOException e) {
       throw new UncheckedIOException("unable to start server at " + host + ":" + port, e);
     }
+  }
+  
+  private MockHttpServer(HttpServer server, HttpService root) {
+    this.server = server;
+    this.root = root;
   }
   
   public static MockHttpServer listenAt(int port) {
@@ -66,18 +75,15 @@ public final class MockHttpServer {
   }
 
   public MockHttpServer mount(String path, HttpService service) {
-    root.mount(path, service);
-    return this;
+    return new MockHttpServer(server, root.mount(path, service));
   }
   
   public MockHttpServer exec(RequestHandler handler) {
-    root.exec(handler);
-    return this;
+    return new MockHttpServer(server, root.exec(handler));
   }
   
   public MockHttpServer add(Matcher<HttpRequest> matcher, RequestHandler handler) {
-    root.add(matcher, handler);
-    return this;
+    return new MockHttpServer(server, root.add(matcher, handler));
   }
   
   public MappingBuilder<MockHttpServer> when(Matcher<HttpRequest> matcher) {
@@ -103,8 +109,8 @@ public final class MockHttpServer {
     return this;
   }
   
-  public List<HttpRequest> getUnmatched() {
-    return unmodifiableList(unmatched);
+  public InmutableList<HttpRequest> getUnmatched() {
+    return InmutableList.of(unmatched);
   }
 
   public void reset() {
@@ -116,7 +122,7 @@ public final class MockHttpServer {
   private void handle(HttpExchange exchange) throws IOException {
     try {
       HttpRequest request = createRequest(exchange);
-      Optional<HttpResponse> response = execute(request);
+      Option<HttpResponse> response = execute(request);
       if (response.isPresent()) {
         matched.add(request);
         processResponse(exchange, response.get());
@@ -131,13 +137,13 @@ public final class MockHttpServer {
     }
   }
 
-  private Optional<HttpResponse> execute(HttpRequest request) {
+  private Option<HttpResponse> execute(HttpRequest request) {
     return root.execute(request);
   }
 
   private HttpRequest createRequest(HttpExchange exchange) throws IOException {
     HttpMethod method = HttpMethod.valueOf(exchange.getRequestMethod());
-    HttpHeaders headers = new HttpHeaders(exchange.getRequestHeaders());
+    HttpHeaders headers = new HttpHeaders(convert(exchange.getRequestHeaders()));
     HttpParams params = new HttpParams(exchange.getRequestURI().getQuery());
     HttpPath path = HttpPath.from(exchange.getRequestURI().getPath());
     Bytes body = asBytes(exchange.getRequestBody());
@@ -151,6 +157,12 @@ public final class MockHttpServer {
     try (OutputStream output = exchange.getResponseBody()) {
       exchange.getResponseBody().write(bytes.toArray());
     }
+  }
+
+  private Map<String, InmutableList<String>> convert(Map<String, List<String>> headerFields) {
+    return headerFields.entrySet().stream()
+        .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(), InmutableList.of(entry.getValue())))
+        .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
   
   public static final class Builder {

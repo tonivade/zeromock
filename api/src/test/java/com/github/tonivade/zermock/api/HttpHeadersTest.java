@@ -4,18 +4,15 @@
  */
 package com.github.tonivade.zermock.api;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
 import com.github.tonivade.zeromock.api.HttpHeaders;
+import com.github.tonivade.zeromock.core.InmutableList;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
@@ -27,7 +24,7 @@ public class HttpHeadersTest {
     assertAll("should be empty and should not contains any key",
               () -> assertTrue(headers.isEmpty()),
               () -> assertFalse(headers.contains("key")),
-              () -> assertEquals(emptyList(), headers.get("key")));
+              () -> assertEquals(InmutableList.empty(), headers.get("key")));
   }
 
   @Test
@@ -37,22 +34,22 @@ public class HttpHeadersTest {
     assertAll("should not be empty and should contains a key", 
               () -> assertFalse(headers.isEmpty()),
               () -> assertTrue(headers.contains("key")),
-              () -> assertEquals(singletonList("value"), headers.get("key")));
+              () -> assertEquals(InmutableList.of("value"), headers.get("key")));
   }
 
   @Test
   public void multipleValues() {
     HttpHeaders headers = HttpHeaders.empty().withHeader("key", "value1").withHeader("key", "value2");
     
-    assertEquals(asList("value1", "value2"), headers.get("key"));
-    assertThrows(UnsupportedOperationException.class, () -> headers.get("key").add("other"));
+    assertEquals(InmutableList.of("value1", "value2"), headers.get("key"));
   }
 
   @Test
   public void inmutable() {
     HttpHeaders headers = HttpHeaders.empty().withHeader("key", "value");
+    headers.get("key").add("other");
    
-    assertThrows(UnsupportedOperationException.class, () -> headers.get("key").add("other"));
+    assertEquals(InmutableList.of("value"), headers.get("key"));
   }
   
   @Test
