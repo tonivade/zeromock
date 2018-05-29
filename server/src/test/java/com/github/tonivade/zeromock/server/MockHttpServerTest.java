@@ -104,7 +104,7 @@ public class MockHttpServerTest {
   public void ping() {
     listenAt(8083).mount("/path", service3).start();
     
-    HttpResponse response = connectTo("http://localhost:8082/path").request(Requests.get("/ping"));
+    HttpResponse response = connectTo("http://localhost:8083/path").request(Requests.get("/ping"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals("pong", asString(response.body())));

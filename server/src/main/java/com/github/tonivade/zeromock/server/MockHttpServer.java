@@ -55,7 +55,6 @@ public final class MockHttpServer {
       root = new HttpService(ROOT);
       server = HttpServer.create(new InetSocketAddress(host, port), backlog);
       server.setExecutor(Executors.newFixedThreadPool(threads));
-      server.createContext(ROOT, this::handle);
     } catch (IOException e) {
       throw new UncheckedIOException("unable to start server at " + host + ":" + port, e);
     }
@@ -92,6 +91,7 @@ public final class MockHttpServer {
   
   public MockHttpServer start() {
     server.start();
+    server.createContext(ROOT, this::handle);
     LOG.info(() -> "server listening at " + server.getAddress());
     return this;
   }
