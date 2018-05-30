@@ -69,8 +69,8 @@ public class HttpServiceTest {
   public void clear() {
     HttpService service = new HttpService("service").add(Matchers.get("/ping"), Handlers.ok("pong"));
     assertEquals(Option.some(Responses.ok("pong")), service.execute(Requests.get("/ping")));
-    HttpService cleared = service.clear();
+    service.clear();
 
-    assertEquals(Option.none(), cleared.execute(Requests.get("/ping")));
+    assertEquals(Option.none(), service.execute(Requests.get("/ping")));
   }
 }

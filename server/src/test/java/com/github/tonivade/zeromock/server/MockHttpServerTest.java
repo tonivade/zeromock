@@ -43,24 +43,26 @@ public class MockHttpServerTest {
 
   private static final String BASE_URL = "http://localhost:8080/path";
 
-  private static HttpService service1 = new HttpService("hello")
-      .when(get().and(path("/hello")).and(param("name"))).then(ok(plain().compose(MockHttpServerTest::helloWorld)))
+  private HttpService service1 = new HttpService("hello")
+      .when(get().and(path("/hello")).and(param("name"))).then(ok(plain().compose(this::helloWorld)))
       .when(get().and(path("/hello")).and(param("name").negate())).then(badRequest("missing parameter name"));
 
-  private static HttpService service2 = new HttpService("test")
+  private HttpService service2 = new HttpService("test")
       .when(get().and(path("/test")).and(acceptsXml()))
-            .then(ok(adapt(MockHttpServerTest::sayHello).andThen(xml())).postHandle(contentXml()))
+            .then(ok(adapt(this::sayHello).andThen(xml())).postHandle(contentXml()))
       .when(get().and(path("/test")).and(acceptsJson()))
-            .then(ok(adapt(MockHttpServerTest::sayHello).andThen(json())).postHandle(contentJson()))
+            .then(ok(adapt(this::sayHello).andThen(json())).postHandle(contentJson()))
       .when(get().and(path("/empty")))
             .then(noContent()::handle);
   
-  private static HttpService service3 = new HttpService("other").when(get("/ping")).then(ok("pong"));
+  private HttpService service3 = new HttpService("other").when(get("/ping")).then(ok("pong"));
   
-  private static MockHttpServer server = listenAt(8080).mount("/path", service1.combine(service2));
+  private static MockHttpServer server = listenAt(8080);
   
   @Test
   public void hello() {
+    server.mount("/path", service1.combine(service2));
+    
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/hello").withParam("name", "World"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
@@ -69,6 +71,8 @@ public class MockHttpServerTest {
   
   @Test
   public void helloMissingParam() {
+    server.mount("/path", service1.combine(service2));
+    
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/hello"));
 
     assertEquals(HttpStatus.BAD_REQUEST, response.status());
@@ -76,6 +80,8 @@ public class MockHttpServerTest {
 
   @Test
   public void jsonTest() {
+    server.mount("/path", service1.combine(service2));
+
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/test").withHeader("Accept", "application/json"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
@@ -85,6 +91,8 @@ public class MockHttpServerTest {
 
   @Test
   public void xmlTest() {
+    server.mount("/path", service1.combine(service2));
+    
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/test").withHeader("Accept", "text/xml"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
@@ -94,6 +102,8 @@ public class MockHttpServerTest {
 
   @Test
   public void noContentTest() {
+    server.mount("/path", service1.combine(service2));
+
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/empty"));
 
     assertAll(() -> assertEquals(HttpStatus.NO_CONTENT, response.status()),
@@ -102,9 +112,9 @@ public class MockHttpServerTest {
 
   @Test
   public void ping() {
-    listenAt(8083).mount("/path", service3).start();
+    server.mount("/path", service3);
     
-    HttpResponse response = connectTo("http://localhost:8083/path").request(Requests.get("/ping"));
+    HttpResponse response = connectTo(BASE_URL).request(Requests.get("/ping"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals("pong", asString(response.body())));
@@ -135,11 +145,11 @@ public class MockHttpServerTest {
     server.stop();
   }
   
-  private static String helloWorld(HttpRequest request) {
+  private String helloWorld(HttpRequest request) {
     return String.format("Hello %s!", request.param("name"));
   }
 
-  private static Say sayHello() {
+  private Say sayHello() {
     return new Say("hello");
   }
 

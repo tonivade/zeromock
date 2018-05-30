@@ -7,8 +7,11 @@ package com.github.tonivade.zeromock.api;
 import static com.github.tonivade.zeromock.core.Equal.equal;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableMap;
+import static java.util.stream.Collectors.toMap;
 
+import java.util.AbstractMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
@@ -66,5 +69,15 @@ public final class HttpHeaders {
   @Override
   public String toString() {
     return "HttpHeaders(" + headers + ")";
+  }
+  
+  public static HttpHeaders from(Map<String, List<String>> headers) {
+    return new HttpHeaders(convert(headers));
+  }
+  
+  private static Map<String, InmutableList<String>> convert(Map<String, List<String>> headerFields) {
+    return headerFields.entrySet().stream()
+        .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(), InmutableList.of(entry.getValue())))
+        .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 }

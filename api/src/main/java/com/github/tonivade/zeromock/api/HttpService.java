@@ -9,6 +9,9 @@ import static com.github.tonivade.zeromock.api.Matchers.startsWith;
 import static com.github.tonivade.zeromock.core.Handler1.adapt;
 import static java.util.Objects.requireNonNull;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.github.tonivade.zeromock.core.Handler2;
 import com.github.tonivade.zeromock.core.InmutableList;
 import com.github.tonivade.zeromock.core.Matcher;
@@ -18,13 +21,13 @@ import com.github.tonivade.zeromock.core.OptionHandler;
 public class HttpService {
   
   private final String name;
-  private final InmutableList<Mapping> mappings;
+  private final List<Mapping> mappings;
   
   public HttpService(String name) {
-    this(name, InmutableList.empty());
+    this(name, new LinkedList<>());
   }
   
-  private HttpService(String name, InmutableList<Mapping> mappings) {
+  private HttpService(String name, List<Mapping> mappings) {
     this.name = requireNonNull(name);
     this.mappings = requireNonNull(mappings);
   }
@@ -34,15 +37,18 @@ public class HttpService {
   }
 
   public HttpService mount(String path, HttpService service) {
-    return new HttpService(name, addMapping(startsWith(path), adapt(HttpRequest::dropOneLevel).andThen(service::execute)::handle));
+    addMapping(startsWith(path), adapt(HttpRequest::dropOneLevel).andThen(service::execute)::handle);
+    return this;
   }
   
   public HttpService exec(RequestHandler handler) {
-    return new HttpService(name, addMapping(all(), handler.liftOption()));
+    addMapping(all(), handler.liftOption());
+    return this;
   }
   
   public HttpService add(Matcher<HttpRequest> matcher, RequestHandler handler) {
-    return new HttpService(name, addMapping(matcher, handler.liftOption()));
+    addMapping(matcher, handler.liftOption());
+    return this;
   }
   
   public MappingBuilder<HttpService> when(Matcher<HttpRequest> matcher) {
@@ -54,7 +60,9 @@ public class HttpService {
   }
   
   public HttpService combine(HttpService other) {
-    return new HttpService(this.name + "+" + other.name, this.mappings.concat(other.mappings));
+    List<Mapping> merge = InmutableList.of(this.mappings)
+        .concat(InmutableList.of(other.mappings)).toMutable();
+    return new HttpService(this.name + "+" + other.name, merge);
   }
   
   @Override
@@ -62,16 +70,16 @@ public class HttpService {
     return "HttpService(" + name + ")";
   }
 
-  public HttpService clear() {
-    return new HttpService(this.name);
+  public void clear() {
+    mappings.clear();
   }
   
-  private InmutableList<Mapping> addMapping(Matcher<HttpRequest> matcher, OptionHandler<HttpRequest, HttpResponse> handler) {
-    return mappings.add(new Mapping(matcher, handler));
+  private void addMapping(Matcher<HttpRequest> matcher, OptionHandler<HttpRequest, HttpResponse> handler) {
+    mappings.add(new Mapping(matcher, handler));
   }
 
   private Option<Mapping> findMapping(HttpRequest request) {
-    return mappings
+    return InmutableList.of(mappings)
         .filter(mapping -> mapping.match(request))
         .head();
   }
