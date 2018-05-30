@@ -16,20 +16,20 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
-import com.github.tonivade.zeromock.core.InmutableList;
+import com.github.tonivade.zeromock.core.InmutableSet;
 
 public final class HttpHeaders {
   
-  private final Map<String, InmutableList<String>> headers;
+  private final Map<String, InmutableSet<String>> headers;
   
-  public HttpHeaders(Map<String, InmutableList<String>> headers) {
+  public HttpHeaders(Map<String, InmutableSet<String>> headers) {
     this.headers = unmodifiableMap(headers);
   }
 
   public HttpHeaders withHeader(String key, String value) {
-    Map<String, InmutableList<String>> newHeaders = new HashMap<>(headers);
-    newHeaders.merge(key, InmutableList.of(value), (oldValue, newValue) -> {
-      return oldValue.concat(newValue);
+    Map<String, InmutableSet<String>> newHeaders = new HashMap<>(headers);
+    newHeaders.merge(key, InmutableSet.of(value), (oldValue, newValue) -> {
+      return oldValue.union(newValue);
     });
     return new HttpHeaders(newHeaders);
   }
@@ -42,8 +42,8 @@ public final class HttpHeaders {
     return headers.containsKey(key);
   }
   
-  public InmutableList<String> get(String key) {
-    return headers.getOrDefault(key, InmutableList.empty());
+  public InmutableSet<String> get(String key) {
+    return headers.getOrDefault(key, InmutableSet.empty());
   }
   
   public void forEach(BiConsumer<String, String> consumer) {
@@ -75,9 +75,9 @@ public final class HttpHeaders {
     return new HttpHeaders(convert(headers));
   }
   
-  private static Map<String, InmutableList<String>> convert(Map<String, List<String>> headerFields) {
+  private static Map<String, InmutableSet<String>> convert(Map<String, List<String>> headerFields) {
     return headerFields.entrySet().stream()
-        .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(), InmutableList.from(entry.getValue())))
+        .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(), InmutableSet.from(entry.getValue())))
         .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 }

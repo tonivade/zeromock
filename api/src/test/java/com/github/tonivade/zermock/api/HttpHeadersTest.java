@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import com.github.tonivade.zeromock.api.HttpHeaders;
-import com.github.tonivade.zeromock.core.InmutableList;
+import com.github.tonivade.zeromock.core.InmutableSet;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
@@ -24,7 +24,7 @@ public class HttpHeadersTest {
     assertAll("should be empty and should not contains any key",
               () -> assertTrue(headers.isEmpty()),
               () -> assertFalse(headers.contains("key")),
-              () -> assertEquals(InmutableList.empty(), headers.get("key")));
+              () -> assertEquals(InmutableSet.empty(), headers.get("key")));
   }
 
   @Test
@@ -34,14 +34,14 @@ public class HttpHeadersTest {
     assertAll("should not be empty and should contains a key", 
               () -> assertFalse(headers.isEmpty()),
               () -> assertTrue(headers.contains("key")),
-              () -> assertEquals(InmutableList.of("value"), headers.get("key")));
+              () -> assertEquals(InmutableSet.of("value"), headers.get("key")));
   }
 
   @Test
   public void multipleValues() {
     HttpHeaders headers = HttpHeaders.empty().withHeader("key", "value1").withHeader("key", "value2");
     
-    assertEquals(InmutableList.of("value1", "value2"), headers.get("key"));
+    assertEquals(InmutableSet.of("value1", "value2"), headers.get("key"));
   }
 
   @Test
@@ -49,7 +49,7 @@ public class HttpHeadersTest {
     HttpHeaders headers = HttpHeaders.empty().withHeader("key", "value");
     headers.get("key").add("other");
    
-    assertEquals(InmutableList.of("value"), headers.get("key"));
+    assertEquals(InmutableSet.of("value"), headers.get("key"));
   }
   
   @Test

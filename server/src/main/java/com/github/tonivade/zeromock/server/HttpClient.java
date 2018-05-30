@@ -6,23 +6,18 @@ package com.github.tonivade.zeromock.server;
 
 import static com.github.tonivade.zeromock.api.Bytes.asBytes;
 import static com.github.tonivade.zeromock.api.HttpStatus.BAD_REQUEST;
-import static java.util.stream.Collectors.toMap;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.AbstractMap;
-import java.util.List;
-import java.util.Map;
 
 import com.github.tonivade.zeromock.api.Bytes;
 import com.github.tonivade.zeromock.api.HttpHeaders;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpStatus;
-import com.github.tonivade.zeromock.core.InmutableList;
 
 public class HttpClient {
   
@@ -61,16 +56,10 @@ public class HttpClient {
   }
 
   private HttpResponse processResponse(HttpURLConnection connection) throws IOException {
-    HttpHeaders headers = new HttpHeaders(convert(connection.getHeaderFields()));
+    HttpHeaders headers = HttpHeaders.from(connection.getHeaderFields());
     Bytes body = deserialize(connection);
     HttpStatus status = HttpStatus.fromCode(connection.getResponseCode());
     return new HttpResponse(status, body, headers);
-  }
-
-  private Map<String, InmutableList<String>> convert(Map<String, List<String>> headerFields) {
-    return headerFields.entrySet().stream()
-        .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(), InmutableList.from(entry.getValue())))
-        .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
   private Bytes deserialize(HttpURLConnection connection) throws IOException {

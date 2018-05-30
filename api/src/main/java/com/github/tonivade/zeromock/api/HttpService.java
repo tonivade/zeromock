@@ -61,7 +61,7 @@ public class HttpService {
   
   public HttpService combine(HttpService other) {
     List<Mapping> merge = InmutableList.from(this.mappings)
-        .concat(InmutableList.from(other.mappings)).toList();
+        .addAll(InmutableList.from(other.mappings)).toList();
     return new HttpService(this.name + "+" + other.name, merge);
   }
   
