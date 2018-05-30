@@ -77,7 +77,7 @@ public final class HttpHeaders {
   
   private static Map<String, InmutableList<String>> convert(Map<String, List<String>> headerFields) {
     return headerFields.entrySet().stream()
-        .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(), InmutableList.of(entry.getValue())))
+        .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(), InmutableList.from(entry.getValue())))
         .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 }

@@ -60,8 +60,8 @@ public class HttpService {
   }
   
   public HttpService combine(HttpService other) {
-    List<Mapping> merge = InmutableList.of(this.mappings)
-        .concat(InmutableList.of(other.mappings)).toMutable();
+    List<Mapping> merge = InmutableList.from(this.mappings)
+        .concat(InmutableList.from(other.mappings)).toList();
     return new HttpService(this.name + "+" + other.name, merge);
   }
   
@@ -79,7 +79,7 @@ public class HttpService {
   }
 
   private Option<Mapping> findMapping(HttpRequest request) {
-    return InmutableList.of(mappings)
+    return InmutableList.from(mappings)
         .filter(mapping -> mapping.match(request))
         .head();
   }
