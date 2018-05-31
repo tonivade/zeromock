@@ -96,7 +96,7 @@ public final class HttpPath {
     private final String value;
     
     private PathElement(String value) {
-      this.value = value;
+      this.value = Objects.requireNonNull(value);
     }
     
     public String value() {

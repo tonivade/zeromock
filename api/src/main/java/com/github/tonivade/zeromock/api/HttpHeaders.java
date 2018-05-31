@@ -5,33 +5,27 @@
 package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.zeromock.core.Equal.equal;
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.unmodifiableMap;
-import static java.util.stream.Collectors.toMap;
+import static java.util.Objects.nonNull;
 
-import java.util.AbstractMap;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
+import com.github.tonivade.zeromock.core.InmutableMap;
 import com.github.tonivade.zeromock.core.InmutableSet;
+import com.github.tonivade.zeromock.core.Tupple2;
 
 public final class HttpHeaders {
   
-  private final Map<String, InmutableSet<String>> headers;
+  private final InmutableMap<String, InmutableSet<String>> headers;
   
-  public HttpHeaders(Map<String, InmutableSet<String>> headers) {
-    this.headers = unmodifiableMap(headers);
+  public HttpHeaders(InmutableMap<String, InmutableSet<String>> headers) {
+    this.headers = Objects.requireNonNull(headers);
   }
 
   public HttpHeaders withHeader(String key, String value) {
-    Map<String, InmutableSet<String>> newHeaders = new HashMap<>(headers);
-    newHeaders.merge(key, InmutableSet.of(value), (oldValue, newValue) -> {
-      return oldValue.union(newValue);
-    });
-    return new HttpHeaders(newHeaders);
+    return new HttpHeaders(headers.merge(key, InmutableSet.of(value), (a, b) -> a.union(b)));
   }
 
   public boolean isEmpty() {
@@ -43,7 +37,7 @@ public final class HttpHeaders {
   }
   
   public InmutableSet<String> get(String key) {
-    return headers.getOrDefault(key, InmutableSet.empty());
+    return headers.getOrDefault(key, InmutableSet::empty);
   }
   
   public void forEach(BiConsumer<String, String> consumer) {
@@ -51,7 +45,7 @@ public final class HttpHeaders {
   }
 
   public static HttpHeaders empty() {
-    return new HttpHeaders(emptyMap());
+    return new HttpHeaders(InmutableMap.empty());
   }
   
   @Override
@@ -75,9 +69,9 @@ public final class HttpHeaders {
     return new HttpHeaders(convert(headers));
   }
   
-  private static Map<String, InmutableSet<String>> convert(Map<String, List<String>> headerFields) {
-    return headerFields.entrySet().stream()
-        .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(), InmutableSet.from(entry.getValue())))
-        .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+  private static InmutableMap<String, InmutableSet<String>> convert(Map<String, List<String>> headerFields) {
+    return InmutableMap.from(headerFields.entrySet().stream()
+        .filter(entry -> nonNull(entry.getKey()))
+        .map(entry -> Tupple2.of(entry.getKey(), InmutableSet.from(entry.getValue()))));
   }
 }

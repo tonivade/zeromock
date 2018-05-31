@@ -59,7 +59,7 @@ public final class HttpRequest {
   }
   
   public String pathParam(int position) {
-    return path.getAt(position).map(PathElement::value).toOptional().orElseThrow(IllegalArgumentException::new);
+    return path.getAt(position).map(PathElement::value).orElseThrow(IllegalArgumentException::new);
   }
   
   public String toUrl() {
