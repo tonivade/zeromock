@@ -47,7 +47,7 @@ public class HttpHeadersTest {
   @Test
   public void inmutable() {
     HttpHeaders headers = HttpHeaders.empty().withHeader("key", "value");
-    headers.get("key").add("other");
+    headers.get("key").append("other");
    
     assertEquals(InmutableSet.of("value"), headers.get("key"));
   }
