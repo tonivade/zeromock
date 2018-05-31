@@ -35,7 +35,7 @@ public final class HttpPath {
   }
   
   public Option<PathElement> getAt(int position) {
-    return value.skip(position).head();
+    return value.drop(position).head();
   }
   
   public boolean match(HttpPath other) {
