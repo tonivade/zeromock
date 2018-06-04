@@ -69,9 +69,14 @@ public final class HttpHeaders {
     return new HttpHeaders(convert(headers));
   }
   
-  private static InmutableMap<String, InmutableSet<String>> convert(Map<String, List<String>> headerFields) {
-    return InmutableMap.from(headerFields.entrySet().stream()
-        .filter(entry -> nonNull(entry.getKey()))
-        .map(entry -> Tupple2.of(entry.getKey(), InmutableSet.from(entry.getValue()))));
+  private static InmutableMap<String, InmutableSet<String>> 
+          convert(Map<String, List<String>> headerFields) {
+    return InmutableMap.from(toTuppleSet(headerFields)).mapValues(InmutableSet::from);
+  }
+
+  private static InmutableSet<Tupple2<String, List<String>>>
+          toTuppleSet(Map<String, List<String>> headerFields) {
+    return InmutableSet.from(headerFields.entrySet())
+        .filter(entry -> nonNull(entry.getKey())).map(Tupple2::from);
   }
 }
