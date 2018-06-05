@@ -56,7 +56,7 @@ public class HttpClient {
   }
 
   private HttpResponse processResponse(HttpURLConnection connection) throws IOException {
-    HttpHeaders headers = new HttpHeaders(connection.getHeaderFields());
+    HttpHeaders headers = HttpHeaders.from(connection.getHeaderFields());
     Bytes body = deserialize(connection);
     HttpStatus status = HttpStatus.fromCode(connection.getResponseCode());
     return new HttpResponse(status, body, headers);

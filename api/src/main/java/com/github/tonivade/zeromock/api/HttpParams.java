@@ -6,8 +6,6 @@ package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.zeromock.core.Equal.equal;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.unmodifiableMap;
 import static java.util.stream.Collectors.joining;
 
 import java.io.UncheckedIOException;
@@ -16,10 +14,12 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Function;
+
+import com.github.tonivade.zeromock.core.InmutableMap;
+import com.github.tonivade.zeromock.core.Option;
+import com.github.tonivade.zeromock.core.Tupple2;
 
 public final class HttpParams {
   
@@ -28,18 +28,18 @@ public final class HttpParams {
   private static final String EQUALS = "=";
   private static final String SEPARATOR = "&";
   
-  private final Map<String, String> params;
+  private final InmutableMap<String, String> params;
   
   public HttpParams(String queryParams) {
     this(queryToMap(queryParams));
   }
   
-  public HttpParams(Map<String, String> params) {
-    this.params = unmodifiableMap(params);
+  public HttpParams(InmutableMap<String, String> params) {
+    this.params = Objects.requireNonNull(params);
   }
   
-  public Optional<String> get(String name) {
-    return Optional.ofNullable(params.get(name));
+  public Option<String> get(String name) {
+    return params.get(name);
   }
 
   public boolean isEmpty() {
@@ -51,9 +51,7 @@ public final class HttpParams {
   }
 
   public HttpParams withParam(String key, String value) {
-    Map<String, String> newParams = new HashMap<>(params);
-    newParams.put(key, value);
-    return new HttpParams(newParams);
+    return new HttpParams(params.put(key, value));
   }
   
   public String toQueryString() {
@@ -78,10 +76,10 @@ public final class HttpParams {
   }
 
   public static HttpParams empty() {
-    return new HttpParams(emptyMap());
+    return new HttpParams(InmutableMap.empty());
   }
   
-  private static Map<String, String> queryToMap(String query) {
+  private static InmutableMap<String, String> queryToMap(String query) {
     Map<String, String> result = new HashMap<>();
     if (query != null) {
       for (String param : query.split(SEPARATOR)) {
@@ -93,16 +91,16 @@ public final class HttpParams {
         }
       }
     }
-    return result;
+    return InmutableMap.from(result);
   }
 
   private String paramsToString() {
-    return BEGIN + params.entrySet().stream()
+    return BEGIN + params.entries().stream()
         .map(entryToString()).collect(joining(SEPARATOR));
   }
 
-  private Function<Entry<String, String>, String> entryToString() {
-    return entry -> entry.getKey() + EQUALS + urlEncode(entry.getValue());
+  private Function<Tupple2<String, String>, String> entryToString() {
+    return entry -> entry.get1() + EQUALS + urlEncode(entry.get2());
   }
 
   private static String urlEncode(String value) {

@@ -18,6 +18,7 @@ import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.RequestHandler;
 import com.github.tonivade.zeromock.api.Responses;
 import com.github.tonivade.zeromock.core.Handler1;
+import com.github.tonivade.zeromock.core.InmutableList;
 
 public class BooksAPI {
   
@@ -29,6 +30,7 @@ public class BooksAPI {
 
   public RequestHandler findAll() {
     return adapt(service::findAll)
+        .andThen(InmutableList::toList)
         .andThen(json())
         .andThen(Responses::ok)
         .andThen(contentJson())::handle;

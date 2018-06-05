@@ -15,7 +15,6 @@ import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,6 +30,7 @@ import com.github.tonivade.zeromock.api.HttpService;
 import com.github.tonivade.zeromock.api.RequestHandler;
 import com.github.tonivade.zeromock.api.HttpService.MappingBuilder;
 import com.github.tonivade.zeromock.core.Matcher;
+import com.github.tonivade.zeromock.core.Option;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
@@ -116,7 +116,7 @@ public final class MockHttpServer {
   private void handle(HttpExchange exchange) throws IOException {
     try {
       HttpRequest request = createRequest(exchange);
-      Optional<HttpResponse> response = execute(request);
+      Option<HttpResponse> response = execute(request);
       if (response.isPresent()) {
         matched.add(request);
         processResponse(exchange, response.get());
@@ -131,13 +131,13 @@ public final class MockHttpServer {
     }
   }
 
-  private Optional<HttpResponse> execute(HttpRequest request) {
+  private Option<HttpResponse> execute(HttpRequest request) {
     return root.execute(request);
   }
 
   private HttpRequest createRequest(HttpExchange exchange) throws IOException {
     HttpMethod method = HttpMethod.valueOf(exchange.getRequestMethod());
-    HttpHeaders headers = new HttpHeaders(exchange.getRequestHeaders());
+    HttpHeaders headers = HttpHeaders.from(exchange.getRequestHeaders());
     HttpParams params = new HttpParams(exchange.getRequestURI().getQuery());
     HttpPath path = HttpPath.from(exchange.getRequestURI().getPath());
     Bytes body = asBytes(exchange.getRequestBody());

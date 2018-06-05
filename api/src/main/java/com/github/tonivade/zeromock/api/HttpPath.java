@@ -6,38 +6,36 @@ package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.zeromock.core.Equal.comparing;
 import static com.github.tonivade.zeromock.core.Equal.equal;
-import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
+
+import com.github.tonivade.zeromock.core.InmutableList;
+import com.github.tonivade.zeromock.core.Option;
 
 public final class HttpPath {
   
   private static final String ROOT = "/";
   private static final String PARAM_PREFIX = ":";
 
-  private final List<PathElement> value;
+  private final InmutableList<PathElement> value;
   
-  private HttpPath(List<PathElement> path) {
-    this.value = unmodifiableList(path);
+  private HttpPath(InmutableList<PathElement> path) {
+    this.value = Objects.requireNonNull(path);
   }
   
   public HttpPath dropOneLevel() {
-    return new HttpPath(value.stream().skip(1).collect(toList()));
+    return new HttpPath(value.tail());
   }
   
   public int size() {
     return value.size();
   }
   
-  public Optional<PathElement> getAt(int position) {
-    return value.size() > position ? Optional.of(value.get(position)): Optional.empty();
+  public Option<PathElement> getAt(int position) {
+    return value.drop(position).head();
   }
   
   public boolean match(HttpPath other) {
@@ -77,14 +75,14 @@ public final class HttpPath {
     if (isNull(path)) {
       throw new IllegalArgumentException("invalid path definition: " + path);
     }
-    return new HttpPath(Stream.of(path).map(HttpPath::toPathElement).collect(toList()));
+    return new HttpPath(InmutableList.of(path).map(HttpPath::toPathElement));
   }
   
   public static HttpPath from(String path) {
     if (isNull(path) || path.isEmpty() || !path.startsWith(ROOT)) {
       throw new IllegalArgumentException("invalid path: " + path);
     }
-    return new HttpPath(Stream.of(path.split(ROOT)).skip(1).map(HttpPath::toPathElement).collect(toList()));
+    return new HttpPath(InmutableList.of(path.split(ROOT)).tail().map(HttpPath::toPathElement));
   }
   
   private static PathElement toPathElement(String value) {
@@ -98,7 +96,7 @@ public final class HttpPath {
     private final String value;
     
     private PathElement(String value) {
-      this.value = value;
+      this.value = Objects.requireNonNull(value);
     }
     
     public String value() {

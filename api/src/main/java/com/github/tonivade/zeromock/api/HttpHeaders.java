@@ -5,35 +5,27 @@
 package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.zeromock.core.Equal.equal;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.singletonList;
-import static java.util.Collections.unmodifiableList;
-import static java.util.Collections.unmodifiableMap;
+import static java.util.Objects.nonNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
+import com.github.tonivade.zeromock.core.InmutableMap;
+import com.github.tonivade.zeromock.core.InmutableSet;
+import com.github.tonivade.zeromock.core.Tupple2;
+
 public final class HttpHeaders {
   
-  private final Map<String, List<String>> headers;
+  private final InmutableMap<String, InmutableSet<String>> headers;
   
-  public HttpHeaders(Map<String, List<String>> headers) {
-    this.headers = unmodifiableMap(headers);
+  public HttpHeaders(InmutableMap<String, InmutableSet<String>> headers) {
+    this.headers = Objects.requireNonNull(headers);
   }
 
   public HttpHeaders withHeader(String key, String value) {
-    Map<String, List<String>> newHeaders = new HashMap<>(headers);
-    newHeaders.merge(key, singletonList(value), (oldValue, newValue) -> {
-      List<String> newList = new ArrayList<>(oldValue);
-      newList.addAll(newValue);
-      return unmodifiableList(newList);
-    });
-    return new HttpHeaders(newHeaders);
+    return new HttpHeaders(headers.merge(key, InmutableSet.of(value), (a, b) -> a.union(b)));
   }
 
   public boolean isEmpty() {
@@ -44,8 +36,8 @@ public final class HttpHeaders {
     return headers.containsKey(key);
   }
   
-  public List<String> get(String key) {
-    return headers.getOrDefault(key, emptyList());
+  public InmutableSet<String> get(String key) {
+    return headers.getOrDefault(key, InmutableSet::empty);
   }
   
   public void forEach(BiConsumer<String, String> consumer) {
@@ -53,7 +45,7 @@ public final class HttpHeaders {
   }
 
   public static HttpHeaders empty() {
-    return new HttpHeaders(emptyMap());
+    return new HttpHeaders(InmutableMap.empty());
   }
   
   @Override
@@ -71,5 +63,20 @@ public final class HttpHeaders {
   @Override
   public String toString() {
     return "HttpHeaders(" + headers + ")";
+  }
+  
+  public static HttpHeaders from(Map<String, List<String>> headers) {
+    return new HttpHeaders(convert(headers));
+  }
+  
+  private static InmutableMap<String, InmutableSet<String>> 
+          convert(Map<String, List<String>> headerFields) {
+    return InmutableMap.from(toTuppleSet(headerFields)).mapValues(InmutableSet::from);
+  }
+
+  private static InmutableSet<Tupple2<String, List<String>>>
+          toTuppleSet(Map<String, List<String>> headerFields) {
+    return InmutableSet.from(headerFields.entrySet())
+        .filter(entry -> nonNull(entry.getKey())).map(Tupple2::from);
   }
 }

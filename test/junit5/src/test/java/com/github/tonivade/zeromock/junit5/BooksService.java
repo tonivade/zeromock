@@ -4,17 +4,15 @@
  */
 package com.github.tonivade.zeromock.junit5;
 
-import static java.util.Arrays.asList;
-
-import java.util.List;
 import java.util.Objects;
 
 import com.github.tonivade.zeromock.core.Equal;
+import com.github.tonivade.zeromock.core.InmutableList;
 
 public class BooksService {
 
-  public List<Book> findAll() {
-    return asList(new Book(1, "title"));
+  public InmutableList<Book> findAll() {
+    return InmutableList.of(new Book(1, "title"));
   }
 
   public Book find(Integer id) {

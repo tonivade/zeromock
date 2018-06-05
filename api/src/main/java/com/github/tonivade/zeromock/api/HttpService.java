@@ -11,11 +11,12 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 import com.github.tonivade.zeromock.core.Handler2;
+import com.github.tonivade.zeromock.core.InmutableList;
 import com.github.tonivade.zeromock.core.Matcher;
-import com.github.tonivade.zeromock.core.OptionalHandler;
+import com.github.tonivade.zeromock.core.Option;
+import com.github.tonivade.zeromock.core.OptionHandler;
 
 public class HttpService {
   
@@ -41,12 +42,12 @@ public class HttpService {
   }
   
   public HttpService exec(RequestHandler handler) {
-    addMapping(all(), handler.liftOptional());
+    addMapping(all(), handler.liftOption());
     return this;
   }
   
   public HttpService add(Matcher<HttpRequest> matcher, RequestHandler handler) {
-    addMapping(matcher, handler.liftOptional());
+    addMapping(matcher, handler.liftOption());
     return this;
   }
   
@@ -54,14 +55,13 @@ public class HttpService {
     return new MappingBuilder<>(this::add).when(matcher);
   }
   
-  public Optional<HttpResponse> execute(HttpRequest request) {
+  public Option<HttpResponse> execute(HttpRequest request) {
     return findMapping(request).flatMap(mapping -> mapping.handle(request));
   }
   
   public HttpService combine(HttpService other) {
-    List<Mapping> merge = new LinkedList<>();
-    merge.addAll(this.mappings);
-    merge.addAll(other.mappings);
+    List<Mapping> merge = InmutableList.from(this.mappings)
+        .appendAll(InmutableList.from(other.mappings)).toList();
     return new HttpService(this.name + "+" + other.name, merge);
   }
   
@@ -74,14 +74,14 @@ public class HttpService {
     mappings.clear();
   }
   
-  private void addMapping(Matcher<HttpRequest> matcher, OptionalHandler<HttpRequest, HttpResponse> handler) {
+  private void addMapping(Matcher<HttpRequest> matcher, OptionHandler<HttpRequest, HttpResponse> handler) {
     mappings.add(new Mapping(matcher, handler));
   }
 
-  private Optional<Mapping> findMapping(HttpRequest request) {
-    return mappings.stream()
+  private Option<Mapping> findMapping(HttpRequest request) {
+    return InmutableList.from(mappings)
         .filter(mapping -> mapping.match(request))
-        .findFirst();
+        .head();
   }
 
   public static final class MappingBuilder<T> {
@@ -104,9 +104,9 @@ public class HttpService {
   
   public static final class Mapping {
     private final Matcher<HttpRequest> matcher;
-    private final OptionalHandler<HttpRequest, HttpResponse> handler;
+    private final OptionHandler<HttpRequest, HttpResponse> handler;
 
-    private Mapping(Matcher<HttpRequest> matcher, OptionalHandler<HttpRequest, HttpResponse> handler) {
+    private Mapping(Matcher<HttpRequest> matcher, OptionHandler<HttpRequest, HttpResponse> handler) {
       this.matcher = requireNonNull(matcher);
       this.handler = requireNonNull(handler);
     }
@@ -115,7 +115,7 @@ public class HttpService {
       return matcher.match(request);
     }
 
-    public Optional<HttpResponse> handle(HttpRequest request) {
+    public Option<HttpResponse> handle(HttpRequest request) {
       return handler.handle(request);
     }
   }

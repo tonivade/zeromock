@@ -15,32 +15,35 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public abstract class Option<T> {
+public interface Option<T> extends Functor<T> {
   
-  private Option() { }
-  
-  public static <T> Option<T> some(T value) {
+  static <T> Option<T> some(T value) {
     return new Some<>(value);
   }
   
-  public static <T> Option<T> none() {
+  static <T> Option<T> none() {
     return new None<>();
   }
 
-  public static <T> Option<T> of(Handler0<T> supplier) {
+  static <T> Option<T> of(Handler0<T> supplier) {
     T value = supplier.handle();
     if (nonNull(value)) {
       return some(value);
     }
     return none();
   }
+
+  static <T> Option<T> from(Optional<T> optional) {
+    return optional.map(Option::some).orElseGet(() -> Option.none());
+  }
   
-  public abstract T get();
-  public abstract boolean isPresent();
-  public abstract boolean isEmpty();
+  T get();
+  boolean isPresent();
+  boolean isEmpty();
   
+  @Override
   @SuppressWarnings("unchecked")
-  public <R> Option<R> map(Handler1<T, R> map) {
+  default <R> Option<R> map(Handler1<T, R> map) {
     if (isPresent()) {
       return some(map.handle(get()));
     }
@@ -48,56 +51,63 @@ public abstract class Option<T> {
   }
 
   @SuppressWarnings("unchecked")
-  public <R> Option<R> flatMap(Handler1<T, Option<R>> map) {
+  default <R> Option<R> flatMap(OptionHandler<T, R> map) {
     if (isPresent()) {
       return map.handle(get());
     }
     return (Option<R>) this;
   }
 
-  public Option<T> ifPresent(Consumer<T> consumer) {
+  default Option<T> ifPresent(Consumer<T> consumer) {
     if (isPresent()) {
       consumer.accept(get());
     }
     return this;
   }
 
-  public Option<T> filter(Matcher<T> matcher) {
+  default Option<T> filter(Matcher<T> matcher) {
     if (isPresent() && matcher.match(get())) {
       return this;
     }
     return none();
   }
 
-  public T orElse(Handler0<T> supplier) {
+  default T orElse(Handler0<T> supplier) {
     if (isEmpty()) {
       return supplier.handle();
     }
     return get();
   }
+
+  default <X extends Throwable> T orElseThrow(Handler0<X> supplier) throws X { 
+    if (isEmpty()) {
+      throw supplier.handle();
+    }
+    return get();
+  }
   
-  public <U> U fold(Handler0<U> orElse, Handler1<T, U> mapper) {
+  default <U> U fold(Handler0<U> orElse, Handler1<T, U> mapper) {
     if (isPresent()) {
       return mapper.handle(get());
     }
     return orElse.handle();
   }
 
-  public Stream<T> stream() {
+  default Stream<T> stream() {
     if (isPresent()) {
       return Stream.of(get());
     }
     return Stream.empty();
   }
   
-  public Optional<T> toOptional() {
+  default Optional<T> toOptional() {
     if (isPresent()) {
       return Optional.of(get());
     }
     return Optional.empty();
   }
 
-  static final class Some<T> extends Option<T> {
+  final class Some<T> implements Option<T> {
     private final T value;
     
     private Some(T value) {
@@ -137,7 +147,7 @@ public abstract class Option<T> {
     }
   }
 
-  static final class None<T> extends Option<T> {
+  final class None<T> implements Option<T> {
 
     private None() { }
 

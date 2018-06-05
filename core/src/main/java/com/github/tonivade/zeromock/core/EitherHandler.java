@@ -4,6 +4,7 @@
  */
 package com.github.tonivade.zeromock.core;
 
+@FunctionalInterface
 public interface EitherHandler<T, L, R> extends Handler1<T, Either<L, R>>{
 
   default <V> EitherHandler<T, L, V> map(Handler1<R, V> handler) {
@@ -14,7 +15,7 @@ public interface EitherHandler<T, L, R> extends Handler1<T, Either<L, R>>{
     return value -> handle(value).mapLeft(handler::handle);
   }
   
-  default <V> EitherHandler<T, L, V> flatMap(Handler1<R, Either<L, V>> handler) {
+  default <V> EitherHandler<T, L, V> flatMap(EitherHandler<R, L, V> handler) {
     return value -> handle(value).flatMap(handler::handle);
   }
   

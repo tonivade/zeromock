@@ -20,7 +20,6 @@ import static com.github.tonivade.zeromock.api.Serializers.plain;
 import static com.github.tonivade.zeromock.api.Serializers.xml;
 import static com.github.tonivade.zeromock.server.HttpClient.connectTo;
 import static com.github.tonivade.zeromock.server.MockHttpServer.listenAt;
-import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -38,6 +37,7 @@ import com.github.tonivade.zeromock.api.Requests;
 import com.github.tonivade.zeromock.api.Responses;
 import com.github.tonivade.zeromock.core.Handler0;
 import com.github.tonivade.zeromock.core.Handler1;
+import com.github.tonivade.zeromock.core.InmutableSet;
 
 public class MockHttpServerTest {
 
@@ -81,12 +81,12 @@ public class MockHttpServerTest {
   @Test
   public void jsonTest() {
     server.mount("/path", service1.combine(service2));
-    
+
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/test").withHeader("Accept", "application/json"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals(sayHello(), Deserializers.json(Say.class).handle(response.body())),
-              () -> assertEquals(asList("application/json"), response.headers().get("Content-type")));
+              () -> assertEquals(InmutableSet.of("application/json"), response.headers().get("Content-type")));
   }
 
   @Test
@@ -97,13 +97,13 @@ public class MockHttpServerTest {
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals(sayHello(), Deserializers.xml(Say.class).handle(response.body())),
-              () -> assertEquals(asList("text/xml"), response.headers().get("Content-type")));
+              () -> assertEquals(InmutableSet.of("text/xml"), response.headers().get("Content-type")));
   }
 
   @Test
   public void noContentTest() {
     server.mount("/path", service1.combine(service2));
-    
+
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/empty"));
 
     assertAll(() -> assertEquals(HttpStatus.NO_CONTENT, response.status()),
