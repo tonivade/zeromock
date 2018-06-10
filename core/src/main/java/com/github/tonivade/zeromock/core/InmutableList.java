@@ -11,6 +11,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -22,8 +24,11 @@ public interface InmutableList<E> extends Sequence<E> {
   List<E> toList();
   
   InmutableList<E> append(E element);
+  InmutableList<E> remove(E element);
 
   InmutableList<E> appendAll(InmutableList<E> other);
+  
+  InmutableList<E> sort(Comparator<E> comparator);
 
   default Option<E> head() {
     return Option.from(stream().findFirst());
@@ -87,15 +92,36 @@ public interface InmutableList<E> extends Sequence<E> {
     }
     
     @Override
+    public InmutableList<E> reverse() {
+      List<E> newList = toList();
+      Collections.reverse(newList);
+      return new JavaBasedInmutableList<>(newList);
+    }
+    
+    @Override
+    public InmutableList<E> sort(Comparator<E> comparator) {
+      List<E> newList = toList();
+      Collections.sort(newList, comparator);
+      return new JavaBasedInmutableList<>(newList);
+    }
+    
+    @Override
     public InmutableList<E> append(E element) {
-      List<E> newList = new ArrayList<>(backend);
+      List<E> newList = toList();
       newList.add(element);
       return new JavaBasedInmutableList<>(newList);
     }
     
     @Override
+    public InmutableList<E> remove(E element) {
+      List<E> newList = toList();
+      newList.remove(element);
+      return new JavaBasedInmutableList<>(newList);
+    }
+    
+    @Override
     public InmutableList<E> appendAll(InmutableList<E> other) {
-      List<E> newList = new ArrayList<>(backend);
+      List<E> newList = toList();
       newList.addAll(other.toList());
       return new JavaBasedInmutableList<>(newList);
     }

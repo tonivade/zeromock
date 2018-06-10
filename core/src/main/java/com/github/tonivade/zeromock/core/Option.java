@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public interface Option<T> extends Functor<T> {
+public interface Option<T> extends Functor<T>, Filterable<T>, Holder<T> {
   
   static <T> Option<T> some(T value) {
     return new Some<>(value);
@@ -37,25 +37,22 @@ public interface Option<T> extends Functor<T> {
     return optional.map(Option::some).orElseGet(() -> Option.none());
   }
   
-  T get();
   boolean isPresent();
   boolean isEmpty();
   
   @Override
-  @SuppressWarnings("unchecked")
   default <R> Option<R> map(Handler1<T, R> map) {
     if (isPresent()) {
       return some(map.handle(get()));
     }
-    return (Option<R>) this;
+    return none();
   }
 
-  @SuppressWarnings("unchecked")
   default <R> Option<R> flatMap(OptionHandler<T, R> map) {
     if (isPresent()) {
       return map.handle(get());
     }
-    return (Option<R>) this;
+    return none();
   }
 
   default Option<T> ifPresent(Consumer<T> consumer) {
@@ -65,6 +62,7 @@ public interface Option<T> extends Functor<T> {
     return this;
   }
 
+  @Override
   default Option<T> filter(Matcher<T> matcher) {
     if (isPresent() && matcher.match(get())) {
       return this;

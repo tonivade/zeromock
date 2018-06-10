@@ -14,7 +14,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public interface Try<T> extends Functor<T> {
+public interface Try<T> extends Functor<T>, Filterable<T>, Holder<T> {
   
   static <T> Try<T> success(T value) {
     return new Success<>(value);
@@ -40,26 +40,23 @@ public interface Try<T> extends Functor<T> {
     }
   }
 
-  T get();
   Throwable getCause();
   boolean isSuccess();
   boolean isFailure();
   
   @Override
-  @SuppressWarnings("unchecked")
   default <R> Try<R> map(Handler1<T, R> map) {
     if (isSuccess()) {
       return success(map.handle(get()));
     }
-    return (Try<R>) this;
+    return failure(getCause());
   }
 
-  @SuppressWarnings("unchecked")
   default <R> Try<R> flatMap(Handler1<T, Try<R>> map) {
     if (isSuccess()) {
       return map.handle(get());
     }
-    return (Try<R>) this;
+    return failure(getCause());
   }
 
   default Try<T> onFailure(Consumer<Throwable> consumer) {
@@ -94,6 +91,7 @@ public interface Try<T> extends Functor<T> {
     return this;
   }
 
+  @Override
   default Try<T> filter(Matcher<T> matcher) {
     if (isSuccess() && matcher.match(get())) {
       return this;
@@ -134,6 +132,13 @@ public interface Try<T> extends Functor<T> {
       return Either.right(get());
     }
     return Either.left(getCause());
+  }
+  
+  default <E> Validation<E, T> toValidation(Handler1<Throwable, E> map) {
+    if (isSuccess()) {
+      return Validation.valid(get());
+    }
+    return Validation.invalid(map.handle(getCause()));
   }
   
   default Option<T> toOption() {

@@ -11,7 +11,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public interface Either<L, R> extends Functor<R> {
+public interface Either<L, R> extends Functor<R>, Holder<R> {
   
   static <L, R> Either<L, R> left(L value) {
     return new Left<L, R>(value);
@@ -26,6 +26,7 @@ public interface Either<L, R> extends Functor<R> {
   L getLeft();
   R getRight();
 
+  @Override
   default R get() {
     if (isRight()) {
       return getRight();
@@ -62,36 +63,32 @@ public interface Either<L, R> extends Functor<R> {
   }
   
   @Override
-  @SuppressWarnings("unchecked")
   default <T> Either<L, T> map(Handler1<R, T> map) {
     if (isRight()) {
       return right(map.handle(getRight()));
     }
-    return (Either<L, T>) this;
+    return left(getLeft());
   }
   
-  @SuppressWarnings("unchecked")
   default <T> Either<T, R> mapLeft(Handler1<L, T> map) {
     if (isLeft()) {
       return left(map.handle(getLeft()));
     }
-    return (Either<T, R>) this;
+    return right(getRight());
   }
 
-  @SuppressWarnings("unchecked")
   default <T> Either<L, T> flatMap(Handler1<R, Either<L, T>> map) {
     if (isRight()) {
       return map.handle(getRight());
     }
-    return (Either<L, T>) this;
+    return left(getLeft());
   }
 
-  @SuppressWarnings("unchecked")
   default <T> Either<T, R> flatMapLeft(Handler1<L, Either<T, R>> map) {
     if (isLeft()) {
       return map.handle(getLeft());
     }
-    return (Either<T, R>) this;
+    return right(getRight());
   }
 
   default Option<Either<L, R>> filter(Matcher<R> matcher) {
@@ -134,6 +131,13 @@ public interface Either<L, R> extends Functor<R> {
       return Option.some(getRight());
     }
     return Option.none();
+  }
+  
+  default Validation<L, R> toValidation() {
+    if (isRight()) {
+      return Validation.valid(getRight());
+    }
+    return Validation.invalid(getLeft());
   }
   
   final class Left<L, R> implements Either<L, R> {
