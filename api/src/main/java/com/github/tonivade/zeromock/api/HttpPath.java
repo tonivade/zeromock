@@ -130,7 +130,7 @@ public final class HttpPath {
     
     @Override
     protected String toPattern() {
-      return value();
+      return super.value();
     }
   }
   

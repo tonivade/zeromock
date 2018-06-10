@@ -24,6 +24,6 @@ public class ExampleTest {
     HttpResponse response = connectTo("http://localhost:8080").request(Requests.get("/ping"));
     
     assertEquals(HttpStatus.OK, response.status());
-    assertEquals(asString(response.body()), "pong");
+    assertEquals("pong", asString(response.body()));
   }
 }
