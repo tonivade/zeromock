@@ -7,12 +7,12 @@ package com.github.tonivade.zeromock.junit5;
 import java.util.Objects;
 
 import com.github.tonivade.zeromock.core.Equal;
-import com.github.tonivade.zeromock.core.InmutableList;
+import com.github.tonivade.zeromock.core.ImmutableList;
 
 public class BooksService {
 
-  public InmutableList<Book> findAll() {
-    return InmutableList.of(new Book(1, "title"));
+  public ImmutableList<Book> findAll() {
+    return ImmutableList.of(new Book(1, "title"));
   }
 
   public Book find(Integer id) {

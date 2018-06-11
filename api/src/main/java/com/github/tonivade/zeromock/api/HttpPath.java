@@ -12,7 +12,7 @@ import static java.util.stream.Collectors.joining;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import com.github.tonivade.zeromock.core.InmutableList;
+import com.github.tonivade.zeromock.core.ImmutableList;
 import com.github.tonivade.zeromock.core.Option;
 
 public final class HttpPath {
@@ -20,9 +20,9 @@ public final class HttpPath {
   private static final String ROOT = "/";
   private static final String PARAM_PREFIX = ":";
 
-  private final InmutableList<PathElement> value;
+  private final ImmutableList<PathElement> value;
   
-  private HttpPath(InmutableList<PathElement> path) {
+  private HttpPath(ImmutableList<PathElement> path) {
     this.value = Objects.requireNonNull(path);
   }
   
@@ -75,14 +75,14 @@ public final class HttpPath {
     if (isNull(path)) {
       throw new IllegalArgumentException("invalid path definition: " + path);
     }
-    return new HttpPath(InmutableList.of(path).map(HttpPath::toPathElement));
+    return new HttpPath(ImmutableList.of(path).map(HttpPath::toPathElement));
   }
   
   public static HttpPath from(String path) {
     if (isNull(path) || path.isEmpty() || !path.startsWith(ROOT)) {
       throw new IllegalArgumentException("invalid path: " + path);
     }
-    return new HttpPath(InmutableList.of(path.split(ROOT)).tail().map(HttpPath::toPathElement));
+    return new HttpPath(ImmutableList.of(path.split(ROOT)).tail().map(HttpPath::toPathElement));
   }
   
   private static PathElement toPathElement(String value) {

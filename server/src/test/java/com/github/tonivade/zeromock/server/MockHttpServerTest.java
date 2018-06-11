@@ -37,7 +37,7 @@ import com.github.tonivade.zeromock.api.Requests;
 import com.github.tonivade.zeromock.api.Responses;
 import com.github.tonivade.zeromock.core.Handler0;
 import com.github.tonivade.zeromock.core.Handler1;
-import com.github.tonivade.zeromock.core.InmutableSet;
+import com.github.tonivade.zeromock.core.ImmutableSet;
 
 public class MockHttpServerTest {
 
@@ -86,7 +86,7 @@ public class MockHttpServerTest {
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals(sayHello(), Deserializers.json(Say.class).handle(response.body())),
-              () -> assertEquals(InmutableSet.of("application/json"), response.headers().get("Content-type")));
+              () -> assertEquals(ImmutableSet.of("application/json"), response.headers().get("Content-type")));
   }
 
   @Test
@@ -97,7 +97,7 @@ public class MockHttpServerTest {
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals(sayHello(), Deserializers.xml(Say.class).handle(response.body())),
-              () -> assertEquals(InmutableSet.of("text/xml"), response.headers().get("Content-type")));
+              () -> assertEquals(ImmutableSet.of("text/xml"), response.headers().get("Content-type")));
   }
 
   @Test

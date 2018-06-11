@@ -12,20 +12,20 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
-import com.github.tonivade.zeromock.core.InmutableMap;
-import com.github.tonivade.zeromock.core.InmutableSet;
-import com.github.tonivade.zeromock.core.Tupple2;
+import com.github.tonivade.zeromock.core.ImmutableMap;
+import com.github.tonivade.zeromock.core.ImmutableSet;
+import com.github.tonivade.zeromock.core.Tuple2;
 
 public final class HttpHeaders {
   
-  private final InmutableMap<String, InmutableSet<String>> headers;
+  private final ImmutableMap<String, ImmutableSet<String>> headers;
   
-  public HttpHeaders(InmutableMap<String, InmutableSet<String>> headers) {
+  public HttpHeaders(ImmutableMap<String, ImmutableSet<String>> headers) {
     this.headers = Objects.requireNonNull(headers);
   }
 
   public HttpHeaders withHeader(String key, String value) {
-    return new HttpHeaders(headers.merge(key, InmutableSet.of(value), (a, b) -> a.union(b)));
+    return new HttpHeaders(headers.merge(key, ImmutableSet.of(value), (a, b) -> a.union(b)));
   }
 
   public boolean isEmpty() {
@@ -36,8 +36,8 @@ public final class HttpHeaders {
     return headers.containsKey(key);
   }
   
-  public InmutableSet<String> get(String key) {
-    return headers.getOrDefault(key, InmutableSet::empty);
+  public ImmutableSet<String> get(String key) {
+    return headers.getOrDefault(key, ImmutableSet::empty);
   }
   
   public void forEach(BiConsumer<String, String> consumer) {
@@ -45,7 +45,7 @@ public final class HttpHeaders {
   }
 
   public static HttpHeaders empty() {
-    return new HttpHeaders(InmutableMap.empty());
+    return new HttpHeaders(ImmutableMap.empty());
   }
   
   @Override
@@ -69,14 +69,14 @@ public final class HttpHeaders {
     return new HttpHeaders(convert(headers));
   }
   
-  private static InmutableMap<String, InmutableSet<String>> 
+  private static ImmutableMap<String, ImmutableSet<String>> 
           convert(Map<String, List<String>> headerFields) {
-    return InmutableMap.from(toTuppleSet(headerFields)).mapValues(InmutableSet::from);
+    return ImmutableMap.from(toTuples(headerFields)).mapValues(ImmutableSet::from);
   }
 
-  private static InmutableSet<Tupple2<String, List<String>>>
-          toTuppleSet(Map<String, List<String>> headerFields) {
-    return InmutableSet.from(headerFields.entrySet())
-        .filter(entry -> nonNull(entry.getKey())).map(Tupple2::from);
+  private static ImmutableSet<Tuple2<String, List<String>>>
+          toTuples(Map<String, List<String>> headerFields) {
+    return ImmutableSet.from(headerFields.entrySet())
+        .filter(entry -> nonNull(entry.getKey())).map(Tuple2::from);
   }
 }

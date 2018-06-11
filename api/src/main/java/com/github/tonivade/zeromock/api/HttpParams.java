@@ -17,9 +17,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-import com.github.tonivade.zeromock.core.InmutableMap;
+import com.github.tonivade.zeromock.core.ImmutableMap;
 import com.github.tonivade.zeromock.core.Option;
-import com.github.tonivade.zeromock.core.Tupple2;
+import com.github.tonivade.zeromock.core.Tuple2;
 
 public final class HttpParams {
   
@@ -28,13 +28,13 @@ public final class HttpParams {
   private static final String EQUALS = "=";
   private static final String SEPARATOR = "&";
   
-  private final InmutableMap<String, String> params;
+  private final ImmutableMap<String, String> params;
   
   public HttpParams(String queryParams) {
     this(queryToMap(queryParams));
   }
   
-  public HttpParams(InmutableMap<String, String> params) {
+  public HttpParams(ImmutableMap<String, String> params) {
     this.params = Objects.requireNonNull(params);
   }
   
@@ -76,10 +76,10 @@ public final class HttpParams {
   }
 
   public static HttpParams empty() {
-    return new HttpParams(InmutableMap.empty());
+    return new HttpParams(ImmutableMap.empty());
   }
   
-  private static InmutableMap<String, String> queryToMap(String query) {
+  private static ImmutableMap<String, String> queryToMap(String query) {
     Map<String, String> result = new HashMap<>();
     if (query != null) {
       for (String param : query.split(SEPARATOR)) {
@@ -91,7 +91,7 @@ public final class HttpParams {
         }
       }
     }
-    return InmutableMap.from(result);
+    return ImmutableMap.from(result);
   }
 
   private String paramsToString() {
@@ -99,7 +99,7 @@ public final class HttpParams {
         .map(entryToString()).collect(joining(SEPARATOR));
   }
 
-  private Function<Tupple2<String, String>, String> entryToString() {
+  private Function<Tuple2<String, String>, String> entryToString() {
     return entry -> entry.get1() + EQUALS + urlEncode(entry.get2());
   }
 

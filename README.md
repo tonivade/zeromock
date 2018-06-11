@@ -26,7 +26,7 @@ So, these are the objetives of this library:
 
 ## How?
 
-First of all, I implemented the model, `HttpRequest` and `HttpResponse`, inmutable objects, and then I implemented the functions to control the model transformations to obtain a response from a request. In the end the controller is a simple `Function<HttpRequest, HttpResponse>`.
+First of all, I implemented the model, `HttpRequest` and `HttpResponse`, immutable objects, and then I implemented the functions to control the model transformations to obtain a response from a request. In the end the controller is a simple `Function<HttpRequest, HttpResponse>`.
 
 Then, I created the server based in the `HttpServer` included inside the JRE. This server is under a `com.sun` package, so, it's not recomended to use, but for my test purposes it's more than enough.
 

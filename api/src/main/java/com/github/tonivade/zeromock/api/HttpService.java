@@ -13,7 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.github.tonivade.zeromock.core.Handler2;
-import com.github.tonivade.zeromock.core.InmutableList;
+import com.github.tonivade.zeromock.core.ImmutableList;
 import com.github.tonivade.zeromock.core.Matcher;
 import com.github.tonivade.zeromock.core.Option;
 import com.github.tonivade.zeromock.core.OptionHandler;
@@ -60,8 +60,8 @@ public class HttpService {
   }
   
   public HttpService combine(HttpService other) {
-    List<Mapping> merge = InmutableList.from(this.mappings)
-        .appendAll(InmutableList.from(other.mappings)).toList();
+    List<Mapping> merge = ImmutableList.from(this.mappings)
+        .appendAll(ImmutableList.from(other.mappings)).toList();
     return new HttpService(this.name + "+" + other.name, merge);
   }
   
@@ -79,7 +79,7 @@ public class HttpService {
   }
 
   private Option<Mapping> findMapping(HttpRequest request) {
-    return InmutableList.from(mappings)
+    return ImmutableList.from(mappings)
         .filter(mapping -> mapping.match(request))
         .head();
   }
