@@ -55,7 +55,7 @@ public final class Deserializers {
   }
   
   private static Handler1<String, JsonElement> asJson() {
-    return json -> new JsonParser().parse(json);
+    return new JsonParser()::parse;
   }
   
   private static <T> Handler1<String, T> fromJson(Type type) {

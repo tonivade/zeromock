@@ -92,7 +92,7 @@ public final class HttpPath {
     return new PathValue(value);
   }
   
-  public static abstract class PathElement {
+  public abstract static class PathElement {
     private final String value;
     
     private PathElement(String value) {

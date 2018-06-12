@@ -15,7 +15,7 @@ public final class Extractors {
   }
 
   public static Handler1<HttpRequest, Bytes> body() {
-    return request -> request.body();
+    return HttpRequest::body;
   }
 
   public static Handler1<HttpRequest, String> queryParam(String name) {
