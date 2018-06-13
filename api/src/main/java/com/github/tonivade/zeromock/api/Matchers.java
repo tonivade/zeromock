@@ -10,7 +10,7 @@ import static com.github.tonivade.zeromock.api.HttpMethod.GET;
 import static com.github.tonivade.zeromock.api.HttpMethod.PATCH;
 import static com.github.tonivade.zeromock.api.HttpMethod.POST;
 import static com.github.tonivade.zeromock.api.HttpMethod.PUT;
-import static com.github.tonivade.zeromock.core.Handler0.unit;
+import static com.github.tonivade.zeromock.core.Producer.unit;
 
 import java.lang.reflect.Type;
 

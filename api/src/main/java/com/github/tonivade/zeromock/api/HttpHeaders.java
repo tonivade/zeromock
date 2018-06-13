@@ -10,8 +10,8 @@ import static java.util.Objects.nonNull;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.BiConsumer;
 
+import com.github.tonivade.zeromock.core.Consumer2;
 import com.github.tonivade.zeromock.core.ImmutableMap;
 import com.github.tonivade.zeromock.core.ImmutableSet;
 import com.github.tonivade.zeromock.core.Tuple2;
@@ -40,8 +40,8 @@ public final class HttpHeaders {
     return headers.getOrDefault(key, ImmutableSet::empty);
   }
   
-  public void forEach(BiConsumer<String, String> consumer) {
-    headers.forEach((key, values) -> values.forEach(value -> consumer.accept(key, value)));
+  public void forEach(Consumer2<String, String> consumer) {
+    headers.forEach((key, values) -> values.forEach(value -> consumer.apply(key, value)));
   }
 
   public static HttpHeaders empty() {

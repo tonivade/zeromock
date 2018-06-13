@@ -35,7 +35,7 @@ import com.github.tonivade.zeromock.api.HttpService;
 import com.github.tonivade.zeromock.api.HttpStatus;
 import com.github.tonivade.zeromock.api.Requests;
 import com.github.tonivade.zeromock.api.Responses;
-import com.github.tonivade.zeromock.core.Handler0;
+import com.github.tonivade.zeromock.core.Producer;
 import com.github.tonivade.zeromock.core.Handler1;
 import com.github.tonivade.zeromock.core.ImmutableSet;
 
@@ -153,7 +153,7 @@ public class MockHttpServerTest {
     return new Say("hello");
   }
 
-  private static <T> Handler1<HttpRequest, T> adapt(Handler0<T> supplier) {
+  private static <T> Handler1<HttpRequest, T> adapt(Producer<T> supplier) {
     return supplier.toHandler1();
   }
 }
