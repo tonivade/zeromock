@@ -10,7 +10,6 @@ import static com.github.tonivade.zeromock.api.HttpMethod.GET;
 import static com.github.tonivade.zeromock.api.HttpMethod.PATCH;
 import static com.github.tonivade.zeromock.api.HttpMethod.POST;
 import static com.github.tonivade.zeromock.api.HttpMethod.PUT;
-import static com.github.tonivade.zeromock.core.Producer.unit;
 
 import java.lang.reflect.Type;
 
@@ -41,7 +40,7 @@ public final class Matchers {
   }
   
   public static Matcher<HttpRequest> param(String name, String value) {
-    return request -> request.params().get(name).map(value::equals).orElse(unit(false));
+    return request -> request.params().get(name).map(value::equals).orElse(false);
   }
   
   public static Matcher<HttpRequest> header(String key, String value) {
