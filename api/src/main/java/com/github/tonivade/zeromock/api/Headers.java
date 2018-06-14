@@ -4,25 +4,25 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import com.github.tonivade.zeromock.core.Handler1;
+import com.github.tonivade.zeromock.core.Function1;
 
 public final class Headers {
 
   private Headers() {}
   
-  public static Handler1<HttpResponse, HttpResponse> contentType(String value) {
+  public static Function1<HttpResponse, HttpResponse> contentType(String value) {
     return response -> response.withHeader("Content-type", value);
   }
   
-  public static Handler1<HttpResponse, HttpResponse> contentPlain() {
+  public static Function1<HttpResponse, HttpResponse> contentPlain() {
     return contentType("text/plain");
   }
   
-  public static Handler1<HttpResponse, HttpResponse> contentJson() {
+  public static Function1<HttpResponse, HttpResponse> contentJson() {
     return contentType("application/json");
   }
   
-  public static Handler1<HttpResponse, HttpResponse> contentXml() {
+  public static Function1<HttpResponse, HttpResponse> contentXml() {
     return contentType("text/xml");
   }
 }

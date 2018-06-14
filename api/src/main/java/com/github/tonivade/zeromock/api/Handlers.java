@@ -7,13 +7,13 @@ package com.github.tonivade.zeromock.api;
 import static com.github.tonivade.zeromock.api.Bytes.asBytes;
 
 import com.github.tonivade.zeromock.core.Producer;
-import com.github.tonivade.zeromock.core.Handler1;
+import com.github.tonivade.zeromock.core.Function1;
 
 public final class Handlers {
   
   private Handlers() {}
 
-  public static <T> Handler1<T, HttpResponse> ok() {
+  public static <T> Function1<T, HttpResponse> ok() {
     return adapt(Responses::ok);
   }
 
@@ -25,8 +25,8 @@ public final class Handlers {
     return ok(request -> body);
   }
 
-  public static RequestHandler ok(Handler1<HttpRequest, Bytes> handler) {
-    return handler.andThen(Responses::ok)::handle;
+  public static RequestHandler ok(Function1<HttpRequest, Bytes> handler) {
+    return handler.andThen(Responses::ok)::apply;
   }
   
   public static RequestHandler created(String body) {
@@ -37,20 +37,20 @@ public final class Handlers {
     return created(request -> body);
   }
   
-  public static RequestHandler created(Handler1<HttpRequest, Bytes> handler) {
-    return handler.andThen(Responses::created)::handle;
+  public static RequestHandler created(Function1<HttpRequest, Bytes> handler) {
+    return handler.andThen(Responses::created)::apply;
   }
   
-  public static <T> Handler1<T, HttpResponse> noContent() {
+  public static <T> Function1<T, HttpResponse> noContent() {
     return adapt(Responses::noContent);
   }
   
-  public static <T> Handler1<T, HttpResponse> forbidden() {
+  public static <T> Function1<T, HttpResponse> forbidden() {
     return adapt(Responses::forbidden);
   }
 
   public static RequestHandler badRequest() {
-    return adapt(Responses::badRequest)::handle;
+    return adapt(Responses::badRequest)::apply;
   }
 
   public static RequestHandler badRequest(String body) {
@@ -61,11 +61,11 @@ public final class Handlers {
     return badRequest(request -> body);
   }
 
-  public static RequestHandler badRequest(Handler1<HttpRequest, Bytes> handler) {
-    return handler.andThen(Responses::badRequest)::handle;
+  public static RequestHandler badRequest(Function1<HttpRequest, Bytes> handler) {
+    return handler.andThen(Responses::badRequest)::apply;
   }
 
-  public static <T> Handler1<T, HttpResponse> notFound() {
+  public static <T> Function1<T, HttpResponse> notFound() {
     return adapt(Responses::notFound);
   }
 
@@ -77,11 +77,11 @@ public final class Handlers {
     return notFound(request -> body);
   }
 
-  public static RequestHandler notFound(Handler1<HttpRequest, Bytes> handler) {
-    return handler.andThen(Responses::notFound)::handle;
+  public static RequestHandler notFound(Function1<HttpRequest, Bytes> handler) {
+    return handler.andThen(Responses::notFound)::apply;
   }
 
-  public static <T> Handler1<T, HttpResponse> error() {
+  public static <T> Function1<T, HttpResponse> error() {
     return adapt(Responses::error);
   }
 
@@ -93,11 +93,11 @@ public final class Handlers {
     return error(request -> body);
   }
   
-  public static RequestHandler error(Handler1<HttpRequest, Bytes> handler) {
-    return handler.andThen(Responses::error)::handle;
+  public static RequestHandler error(Function1<HttpRequest, Bytes> handler) {
+    return handler.andThen(Responses::error)::apply;
   }
   
-  private static <T> Handler1<T, HttpResponse> adapt(Producer<HttpResponse> supplier) {
-    return supplier.toHandler1();
+  private static <T> Function1<T, HttpResponse> adapt(Producer<HttpResponse> supplier) {
+    return supplier.asFunction();
   }
 }

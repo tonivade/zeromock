@@ -108,6 +108,6 @@ public final class Matchers {
   }
 
   private static <T> T json(HttpRequest request, Type type) {
-    return Extractors.body().andThen(Deserializers.<T>json(type)).handle(request);
+    return Extractors.body().andThen(Deserializers.<T>json(type)).apply(request);
   }
 }

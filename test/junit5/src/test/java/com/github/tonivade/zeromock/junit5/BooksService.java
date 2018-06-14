@@ -8,6 +8,7 @@ import java.util.Objects;
 
 import com.github.tonivade.zeromock.core.Equal;
 import com.github.tonivade.zeromock.core.ImmutableList;
+import com.github.tonivade.zeromock.core.Option;
 
 public class BooksService {
 
@@ -15,8 +16,8 @@ public class BooksService {
     return ImmutableList.of(new Book(1, "title"));
   }
 
-  public Book find(Integer id) {
-    return new Book(id, "title");
+  public Option<Book> find(Integer id) {
+    return Option.some(new Book(id, "title"));
   }
 
   public Book create(String title) {

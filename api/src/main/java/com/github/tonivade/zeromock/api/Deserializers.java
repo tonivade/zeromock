@@ -15,7 +15,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import com.github.tonivade.zeromock.core.Handler1;
+import com.github.tonivade.zeromock.core.Function1;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -34,31 +34,31 @@ public final class Deserializers {
     return gsonImplicit.get();
   }
   
-  public static Handler1<Bytes, JsonElement> json() {
+  public static Function1<Bytes, JsonElement> json() {
     return plain().andThen(asJson());
   }
   
-  public static <T> Handler1<Bytes, T> xml(Class<T> clazz) {
+  public static <T> Function1<Bytes, T> xml(Class<T> clazz) {
     return bytes -> Deserializers.<T>fromXml(bytes, clazz);
   }
   
-  public static <T> Handler1<Bytes, T> json(Class<T> clazz) {
+  public static <T> Function1<Bytes, T> json(Class<T> clazz) {
     return plain().andThen(fromJson(clazz));
   }
   
-  public static <T> Handler1<Bytes, T> json(Type type) {
+  public static <T> Function1<Bytes, T> json(Type type) {
     return plain().andThen(fromJson(type));
   }
   
-  public static Handler1<Bytes, String> plain() {
+  public static Function1<Bytes, String> plain() {
     return Bytes::asString;
   }
   
-  private static Handler1<String, JsonElement> asJson() {
+  private static Function1<String, JsonElement> asJson() {
     return new JsonParser()::parse;
   }
   
-  private static <T> Handler1<String, T> fromJson(Type type) {
+  private static <T> Function1<String, T> fromJson(Type type) {
     return json -> gsonBuilder().create().fromJson(json, type);
   }
   
