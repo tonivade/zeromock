@@ -52,7 +52,7 @@ public class BooksAPI {
   public RequestHandler find() {
     return getBookId()
         .andThen(service::find)
-        .asOption()
+        .asOption(Book.class)
         .map(json())
         .map(Responses::ok)
         .orElse(Responses::noContent)
