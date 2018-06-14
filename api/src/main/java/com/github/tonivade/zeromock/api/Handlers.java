@@ -14,7 +14,7 @@ public final class Handlers {
   private Handlers() {}
 
   public static <T> Function1<T, HttpResponse> ok() {
-    return adapt(Responses::ok);
+    return asFunction(Responses::ok);
   }
 
   public static RequestHandler ok(String body) {
@@ -42,15 +42,15 @@ public final class Handlers {
   }
   
   public static <T> Function1<T, HttpResponse> noContent() {
-    return adapt(Responses::noContent);
+    return asFunction(Responses::noContent);
   }
   
   public static <T> Function1<T, HttpResponse> forbidden() {
-    return adapt(Responses::forbidden);
+    return asFunction(Responses::forbidden);
   }
 
   public static RequestHandler badRequest() {
-    return adapt(Responses::badRequest)::apply;
+    return asFunction(Responses::badRequest)::apply;
   }
 
   public static RequestHandler badRequest(String body) {
@@ -66,7 +66,7 @@ public final class Handlers {
   }
 
   public static <T> Function1<T, HttpResponse> notFound() {
-    return adapt(Responses::notFound);
+    return asFunction(Responses::notFound);
   }
 
   public static RequestHandler notFound(String body) {
@@ -82,7 +82,7 @@ public final class Handlers {
   }
 
   public static <T> Function1<T, HttpResponse> error() {
-    return adapt(Responses::error);
+    return asFunction(Responses::error);
   }
 
   public static RequestHandler error(String body) {
@@ -97,7 +97,7 @@ public final class Handlers {
     return handler.andThen(Responses::error)::apply;
   }
   
-  private static <T> Function1<T, HttpResponse> adapt(Producer<HttpResponse> supplier) {
+  private static <T> Function1<T, HttpResponse> asFunction(Producer<HttpResponse> supplier) {
     return supplier.asFunction();
   }
 }
