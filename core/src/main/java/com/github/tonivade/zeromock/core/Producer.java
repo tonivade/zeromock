@@ -4,22 +4,20 @@
  */
 package com.github.tonivade.zeromock.core;
 
-import java.util.function.Supplier;
-
 @FunctionalInterface
 public interface Producer<T> {
   
   T get();
   
-  default <V> Handler1<V, T> toHandler1() {
+  default <V> Function1<V, T> asFunction() {
     return value -> get();
+  }
+  
+  default <R> Function1<T, R> andThen(Function1<T, R> after) {
+    return value -> after.apply(get());
   }
   
   static <T> Producer<T> unit(T value) {
     return () -> value;
-  }
-
-  static <T> Producer<T> adapt(Supplier<T> supplier) {
-    return supplier::get;
   }
 }

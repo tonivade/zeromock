@@ -4,16 +4,16 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import com.github.tonivade.zeromock.core.Handler1;
+import com.github.tonivade.zeromock.core.Function1;
 
 @FunctionalInterface
-public interface RequestHandler extends Handler1<HttpRequest, HttpResponse> {
+public interface RequestHandler extends Function1<HttpRequest, HttpResponse> {
   
-  default RequestHandler preHandle(Handler1<HttpRequest, HttpRequest> before) {
-    return compose(before)::handle;
+  default RequestHandler preHandle(Function1<HttpRequest, HttpRequest> before) {
+    return compose(before)::apply;
   }
   
-  default RequestHandler postHandle(Handler1<HttpResponse, HttpResponse> after) {
-    return andThen(after)::handle;
+  default RequestHandler postHandle(Function1<HttpResponse, HttpResponse> after) {
+    return andThen(after)::apply;
   }
 }

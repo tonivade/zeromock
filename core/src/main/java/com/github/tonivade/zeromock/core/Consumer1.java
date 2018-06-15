@@ -6,22 +6,20 @@ package com.github.tonivade.zeromock.core;
 
 import static com.github.tonivade.zeromock.core.Nothing.nothing;
 
-import java.util.function.Consumer;
-
 @FunctionalInterface
 public interface Consumer1<T> {
 
-  void apply(T value);
+  void accept(T value);
   
-  default Handler1<T, Nothing> toHandler() {
-    return value -> { apply(value); return nothing(); };
+  default Function1<T, Nothing> asFunction() {
+    return value -> { accept(value); return nothing(); };
   }
   
-  default Handler1<T, T> bypass() {
-    return value -> { apply(value); return value; };
+  default Consumer1<T> andThen(Consumer1<T> after) {
+    return value -> { accept(value); after.accept(value); };
   }
   
-  static <T> Consumer1<T> adapt(Consumer<T> consumer) {
-    return consumer::accept;
+  default Function1<T, T> bypass() {
+    return value -> { accept(value); return value; };
   }
 }

@@ -36,7 +36,7 @@ import com.github.tonivade.zeromock.api.HttpStatus;
 import com.github.tonivade.zeromock.api.Requests;
 import com.github.tonivade.zeromock.api.Responses;
 import com.github.tonivade.zeromock.core.Producer;
-import com.github.tonivade.zeromock.core.Handler1;
+import com.github.tonivade.zeromock.core.Function1;
 import com.github.tonivade.zeromock.core.ImmutableSet;
 
 public class MockHttpServerTest {
@@ -53,7 +53,7 @@ public class MockHttpServerTest {
       .when(get().and(path("/test")).and(acceptsJson()))
             .then(ok(adapt(this::sayHello).andThen(json())).postHandle(contentJson()))
       .when(get().and(path("/empty")))
-            .then(noContent()::handle);
+            .then(noContent()::apply);
   
   private HttpService service3 = new HttpService("other").when(get("/ping")).then(ok("pong"));
   
@@ -85,7 +85,7 @@ public class MockHttpServerTest {
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/test").withHeader("Accept", "application/json"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals(sayHello(), Deserializers.json(Say.class).handle(response.body())),
+              () -> assertEquals(sayHello(), Deserializers.json(Say.class).apply(response.body())),
               () -> assertEquals(ImmutableSet.of("application/json"), response.headers().get("Content-type")));
   }
 
@@ -96,7 +96,7 @@ public class MockHttpServerTest {
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/test").withHeader("Accept", "text/xml"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals(sayHello(), Deserializers.xml(Say.class).handle(response.body())),
+              () -> assertEquals(sayHello(), Deserializers.xml(Say.class).apply(response.body())),
               () -> assertEquals(ImmutableSet.of("text/xml"), response.headers().get("Content-type")));
   }
 
@@ -153,7 +153,7 @@ public class MockHttpServerTest {
     return new Say("hello");
   }
 
-  private static <T> Handler1<HttpRequest, T> adapt(Producer<T> supplier) {
-    return supplier.toHandler1();
+  private static <T> Function1<HttpRequest, T> adapt(Producer<T> supplier) {
+    return supplier.asFunction();
   }
 }

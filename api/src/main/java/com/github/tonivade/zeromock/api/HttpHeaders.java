@@ -41,7 +41,7 @@ public final class HttpHeaders {
   }
   
   public void forEach(Consumer2<String, String> consumer) {
-    headers.forEach((key, values) -> values.forEach(value -> consumer.apply(key, value)));
+    headers.forEach((key, values) -> values.forEach(value -> consumer.accept(key, value)));
   }
 
   public static HttpHeaders empty() {

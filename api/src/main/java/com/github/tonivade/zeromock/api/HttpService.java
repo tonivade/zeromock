@@ -6,13 +6,12 @@ package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.zeromock.api.Matchers.all;
 import static com.github.tonivade.zeromock.api.Matchers.startsWith;
-import static com.github.tonivade.zeromock.core.Handler1.adapt;
 import static java.util.Objects.requireNonNull;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import com.github.tonivade.zeromock.core.Handler2;
+import com.github.tonivade.zeromock.core.Function2;
 import com.github.tonivade.zeromock.core.ImmutableList;
 import com.github.tonivade.zeromock.core.Matcher;
 import com.github.tonivade.zeromock.core.Option;
@@ -37,7 +36,7 @@ public class HttpService {
   }
 
   public HttpService mount(String path, HttpService service) {
-    addMapping(startsWith(path), adapt(HttpRequest::dropOneLevel).andThen(service::execute)::handle);
+    addMapping(startsWith(path), request -> service.execute(request.dropOneLevel()));
     return this;
   }
   
@@ -85,10 +84,10 @@ public class HttpService {
   }
 
   public static final class MappingBuilder<T> {
-    private final Handler2<Matcher<HttpRequest>, RequestHandler, T> finisher;
+    private final Function2<Matcher<HttpRequest>, RequestHandler, T> finisher;
     private Matcher<HttpRequest> matcher;
     
-    public MappingBuilder(Handler2<Matcher<HttpRequest>, RequestHandler, T> finisher) {
+    public MappingBuilder(Function2<Matcher<HttpRequest>, RequestHandler, T> finisher) {
       this.finisher = requireNonNull(finisher);
     }
 
@@ -98,7 +97,7 @@ public class HttpService {
     }
 
     public T then(RequestHandler handler) {
-      return finisher.handle(matcher, handler);
+      return finisher.apply(matcher, handler);
     }
   }
   
@@ -116,7 +115,7 @@ public class HttpService {
     }
 
     public Option<HttpResponse> handle(HttpRequest request) {
-      return handler.handle(request);
+      return handler.apply(request);
     }
   }
 }

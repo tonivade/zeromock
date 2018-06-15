@@ -25,8 +25,8 @@ public interface Option<T> extends Functor<T>, Filterable<T>, Holder<T> {
     return (Option<T>) None.INSTANCE;
   }
 
-  static <T> Option<T> of(Producer<T> supplier) {
-    T value = supplier.get();
+  static <T> Option<T> of(Producer<T> producer) {
+    T value = producer.get();
     if (nonNull(value)) {
       return some(value);
     }
@@ -41,23 +41,23 @@ public interface Option<T> extends Functor<T>, Filterable<T>, Holder<T> {
   boolean isEmpty();
   
   @Override
-  default <R> Option<R> map(Handler1<T, R> map) {
+  default <R> Option<R> map(Function1<T, R> mapper) {
     if (isPresent()) {
-      return some(map.handle(get()));
+      return some(mapper.apply(get()));
     }
     return none();
   }
 
-  default <R> Option<R> flatMap(OptionHandler<T, R> map) {
+  default <R> Option<R> flatMap(OptionHandler<T, R> mapper) {
     if (isPresent()) {
-      return map.handle(get());
+      return mapper.apply(get());
     }
     return none();
   }
 
   default Option<T> ifPresent(Consumer1<T> consumer) {
     if (isPresent()) {
-      consumer.apply(get());
+      consumer.accept(get());
     }
     return this;
   }
@@ -74,23 +74,23 @@ public interface Option<T> extends Functor<T>, Filterable<T>, Holder<T> {
     return orElse(Producer.unit(value));
   }
 
-  default T orElse(Producer<T> supplier) {
+  default T orElse(Producer<T> producer) {
     if (isEmpty()) {
-      return supplier.get();
+      return producer.get();
     }
     return get();
   }
 
-  default <X extends Throwable> T orElseThrow(Producer<X> supplier) throws X { 
+  default <X extends Throwable> T orElseThrow(Producer<X> producer) throws X { 
     if (isEmpty()) {
-      throw supplier.get();
+      throw producer.get();
     }
     return get();
   }
   
-  default <U> U fold(Producer<U> orElse, Handler1<T, U> mapper) {
+  default <U> U fold(Producer<U> orElse, Function1<T, U> mapper) {
     if (isPresent()) {
-      return mapper.handle(get());
+      return mapper.apply(get());
     }
     return orElse.get();
   }
@@ -107,6 +107,14 @@ public interface Option<T> extends Functor<T>, Filterable<T>, Holder<T> {
       return Optional.of(get());
     }
     return Optional.empty();
+  }
+  
+  @SuppressWarnings("unchecked")
+  default <V> Option<V> flatten() {
+    if (isPresent()) {
+      return (Option<V>) get();
+    }
+    return none();
   }
 
   final class Some<T> implements Option<T> {
