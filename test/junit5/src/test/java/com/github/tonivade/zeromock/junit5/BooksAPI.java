@@ -19,8 +19,8 @@ import com.github.tonivade.zeromock.core.Consumer1;
 import com.github.tonivade.zeromock.core.Function1;
 import com.github.tonivade.zeromock.core.Function2;
 import com.github.tonivade.zeromock.core.ImmutableList;
+import com.github.tonivade.zeromock.core.OptionHandler;
 import com.github.tonivade.zeromock.core.Producer;
-import com.github.tonivade.zeromock.junit5.BooksService.Book;
 
 public class BooksAPI {
   
@@ -31,7 +31,7 @@ public class BooksAPI {
   }
 
   public RequestHandler findAll() {
-    return ((Producer<ImmutableList<Book>>) service::findAll)
+    return Producer.of(service::findAll)
         .asFunction()
         .andThen(ImmutableList::toList)
         .andThen(json())
@@ -40,7 +40,7 @@ public class BooksAPI {
   }
 
   public RequestHandler update() {
-    return ((Function2<Integer, String, Book>) service::update)
+    return Function2.of(service::update)
         .compose(getBookId(), getBookTitle())
         .liftTry()
         .map(json())
@@ -50,10 +50,8 @@ public class BooksAPI {
   }
 
   public RequestHandler find() {
-    return getBookId()
-        .andThen(service::find)
-        .liftOption()
-        .flatten()
+    return OptionHandler.of(service::find)
+        .compose(getBookId())
         .map(json())
         .map(Responses::ok)
         .orElse(Responses::noContent)
@@ -71,9 +69,8 @@ public class BooksAPI {
   }
 
   public RequestHandler delete() {
-    Consumer1<Integer> delete = service::delete;
     return getBookId()
-        .andThen(delete.asFunction())
+        .andThen(Consumer1.of(service::delete).asFunction())
         .liftTry()
         .map(empty())
         .map(Responses::ok)
