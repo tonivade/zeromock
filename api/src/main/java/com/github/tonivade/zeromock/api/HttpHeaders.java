@@ -14,6 +14,7 @@ import java.util.Objects;
 import com.github.tonivade.zeromock.core.Consumer2;
 import com.github.tonivade.zeromock.core.ImmutableMap;
 import com.github.tonivade.zeromock.core.ImmutableSet;
+import com.github.tonivade.zeromock.core.Tuple;
 import com.github.tonivade.zeromock.core.Tuple2;
 
 public final class HttpHeaders {
@@ -77,6 +78,6 @@ public final class HttpHeaders {
   private static ImmutableSet<Tuple2<String, List<String>>>
           toTuples(Map<String, List<String>> headerFields) {
     return ImmutableSet.from(headerFields.entrySet())
-        .filter(entry -> nonNull(entry.getKey())).map(Tuple2::from);
+        .filter(entry -> nonNull(entry.getKey())).map(Tuple::from);
   }
 }
