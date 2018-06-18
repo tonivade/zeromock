@@ -80,7 +80,7 @@ public final class Responses {
   }
 
   public static HttpResponse error(Throwable error) {
-    return error(error.toString());
+    return error(error.getMessage());
   }
 
   public static HttpResponse error(Bytes body) {

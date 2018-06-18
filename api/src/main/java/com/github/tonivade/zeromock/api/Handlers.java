@@ -97,7 +97,7 @@ public final class Handlers {
     return handler.andThen(Responses::error)::apply;
   }
   
-  private static <T> Function1<T, HttpResponse> asFunction(Producer<HttpResponse> supplier) {
-    return supplier.asFunction();
+  private static <T> Function1<T, HttpResponse> asFunction(Producer<HttpResponse> producer) {
+    return producer.asFunction();
   }
 }
