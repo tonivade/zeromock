@@ -96,10 +96,9 @@ public final class MockHttpServer {
   }
 
   public MockHttpServer verify(Matcher<HttpRequest> matcher) {
-    matched.stream()
-      .filter(matcher::match)
-      .findFirst()
-      .orElseThrow(() -> new AssertionError("request not found"));
+    if (!matches(matcher)) {
+      throw new AssertionError("request not found");
+    }
     return this;
   }
   
@@ -129,6 +128,10 @@ public final class MockHttpServer {
       LOG.log(Level.SEVERE, "error processing request: " + exchange.getRequestURI(), e);
       processResponse(exchange, error(e));
     }
+  }
+
+  private boolean matches(Matcher<HttpRequest> matcher) {
+    return matched.stream().filter(matcher::match).findFirst().isPresent();
   }
 
   private Option<HttpResponse> execute(HttpRequest request) {
