@@ -4,7 +4,6 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import static com.github.tonivade.zeromock.core.Equal.equal;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
@@ -14,6 +13,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+
+import com.github.tonivade.zeromock.core.Equal;
 
 public final class Bytes {
 
@@ -48,7 +49,7 @@ public final class Bytes {
   
   @Override
   public boolean equals(Object obj) {
-    return equal(this)
+    return Equal.of(this)
         .append((a, b) -> Arrays.equals(a.buffer, b.buffer))
         .applyTo(obj);
   }

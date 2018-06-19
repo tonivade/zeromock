@@ -4,7 +4,6 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import static com.github.tonivade.zeromock.core.Equal.equal;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.joining;
 
@@ -17,6 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
+import com.github.tonivade.zeromock.core.Equal;
 import com.github.tonivade.zeromock.core.ImmutableMap;
 import com.github.tonivade.zeromock.core.Option;
 import com.github.tonivade.zeromock.core.Tuple2;
@@ -65,7 +65,7 @@ public final class HttpParams {
   
   @Override
   public boolean equals(Object obj) {
-    return equal(this)
+    return Equal.of(this)
         .append((a, b) -> Objects.equals(a.params, b.params))
         .applyTo(obj);
   }

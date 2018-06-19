@@ -6,12 +6,12 @@ package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.zeromock.api.Bytes.asBytes;
 import static com.github.tonivade.zeromock.core.Equal.comparing;
-import static com.github.tonivade.zeromock.core.Equal.equal;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Objects;
 
 import com.github.tonivade.zeromock.api.HttpPath.PathElement;
+import com.github.tonivade.zeromock.core.Equal;
 
 public final class HttpRequest {
 
@@ -93,7 +93,7 @@ public final class HttpRequest {
   
   @Override
   public boolean equals(Object obj) {
-    return equal(this)
+    return Equal.of(this)
         .append(comparing(HttpRequest::method))
         .append(comparing(HttpRequest::path))
         .append(comparing(HttpRequest::body))

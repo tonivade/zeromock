@@ -53,7 +53,7 @@ public class BooksService {
 
     @Override
     public boolean equals(Object obj) {
-      return Equal.equal(this)
+      return Equal.of(this)
           .append((a, b) -> Objects.equals(a.id, b.id))
           .append((a, b) -> Objects.equals(a.title, b.title))
           .applyTo(obj);

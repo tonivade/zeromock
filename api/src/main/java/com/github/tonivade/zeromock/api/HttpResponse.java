@@ -6,10 +6,11 @@ package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.zeromock.api.Bytes.asString;
 import static com.github.tonivade.zeromock.core.Equal.comparing;
-import static com.github.tonivade.zeromock.core.Equal.equal;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Objects;
+
+import com.github.tonivade.zeromock.core.Equal;
 
 public final class HttpResponse {
 
@@ -50,7 +51,7 @@ public final class HttpResponse {
   
   @Override
   public boolean equals(Object obj) {
-    return equal(this)
+    return Equal.of(this)
         .append(comparing(HttpResponse::status))
         .append(comparing(HttpResponse::body))
         .append(comparing(HttpResponse::headers))

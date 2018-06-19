@@ -4,11 +4,13 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.zeromock.core.Equal.equal;
+import static com.github.tonivade.zeromock.core.Equal.comparing;
 
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlRootElement;
+
+import com.github.tonivade.zeromock.core.Equal;
 
 @XmlRootElement(name = "say")
 public final class Say {
@@ -35,8 +37,8 @@ public final class Say {
 
   @Override
   public boolean equals(Object obj) {
-    return equal(this)
-        .append((a, b) -> Objects.equals(a.message, b.message))
+    return Equal.of(this)
+        .append(comparing(Say::getMessage))
         .applyTo(obj);
   }
 

@@ -4,7 +4,6 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import static com.github.tonivade.zeromock.core.Equal.equal;
 import static java.util.Objects.nonNull;
 
 import java.util.List;
@@ -12,6 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.github.tonivade.zeromock.core.Consumer2;
+import com.github.tonivade.zeromock.core.Equal;
 import com.github.tonivade.zeromock.core.ImmutableMap;
 import com.github.tonivade.zeromock.core.ImmutableSet;
 import com.github.tonivade.zeromock.core.Tuple;
@@ -56,7 +56,7 @@ public final class HttpHeaders {
   
   @Override
   public boolean equals(Object obj) {
-    return equal(this)
+    return Equal.of(this)
         .append((a, b) -> Objects.equals(a.headers, b.headers))
         .applyTo(obj);
   }

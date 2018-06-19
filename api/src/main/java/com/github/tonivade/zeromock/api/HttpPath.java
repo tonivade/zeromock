@@ -5,13 +5,13 @@
 package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.zeromock.core.Equal.comparing;
-import static com.github.tonivade.zeromock.core.Equal.equal;
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.joining;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+import com.github.tonivade.zeromock.core.Equal;
 import com.github.tonivade.zeromock.core.ImmutableList;
 import com.github.tonivade.zeromock.core.Option;
 
@@ -57,7 +57,7 @@ public final class HttpPath {
   
   @Override
   public boolean equals(Object obj) {
-    return equal(this)
+    return Equal.of(this)
         .append((a, b) -> Objects.equals(a.value, b.value))
         .applyTo(obj);
   }
@@ -110,7 +110,7 @@ public final class HttpPath {
     
     @Override
     public boolean equals(Object obj) {
-      return equal(this)
+      return Equal.of(this)
           .append(comparing(PathElement::value))
           .applyTo(obj);
     }

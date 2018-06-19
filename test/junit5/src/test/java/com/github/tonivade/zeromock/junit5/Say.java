@@ -4,9 +4,9 @@
  */
 package com.github.tonivade.zeromock.junit5;
 
-import static com.github.tonivade.zeromock.core.Equal.equal;
-
 import java.util.Objects;
+
+import com.github.tonivade.zeromock.core.Equal;
 
 public final class Say {
   private String message;
@@ -22,7 +22,7 @@ public final class Say {
 
   @Override
   public boolean equals(Object obj) {
-    return equal(this)
+    return Equal.of(this)
         .append((a, b) -> Objects.equals(a.message, b.message))
         .applyTo(obj);
   }
