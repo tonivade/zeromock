@@ -131,7 +131,7 @@ public final class MockHttpServer {
   }
 
   private boolean matches(Matcher<HttpRequest> matcher) {
-    return matched.stream().filter(matcher::match).findFirst().isPresent();
+    return matched.stream().anyMatch(matcher::match);
   }
 
   private Option<HttpResponse> execute(HttpRequest request) {
