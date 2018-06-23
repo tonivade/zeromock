@@ -45,7 +45,7 @@ public final class MockHttpServer {
 
   private final List<HttpRequest> matched = new LinkedList<>();
   private final List<HttpRequest> unmatched = new LinkedList<>();
-  private final HttpService root = new HttpService("root");
+  private final HttpService service = new HttpService("root");
   
   private MockHttpServer(String host, int port, int threads, int backlog) {
     try {
@@ -65,18 +65,18 @@ public final class MockHttpServer {
     return new Builder();
   }
 
-  public MockHttpServer mount(String path, HttpService service) {
-    root.mount(path, service);
+  public MockHttpServer mount(String path, HttpService other) {
+    service.mount(path, other);
     return this;
   }
   
   public MockHttpServer exec(RequestHandler handler) {
-    root.exec(handler);
+    service.exec(handler);
     return this;
   }
   
   public MockHttpServer add(Matcher<HttpRequest> matcher, RequestHandler handler) {
-    root.add(matcher, handler);
+    service.add(matcher, handler);
     return this;
   }
   
@@ -107,7 +107,7 @@ public final class MockHttpServer {
   }
 
   public void reset() {
-    root.clear();
+    service.clear();
     matched.clear();
     unmatched.clear();
   }
@@ -135,7 +135,7 @@ public final class MockHttpServer {
   }
 
   private Option<HttpResponse> execute(HttpRequest request) {
-    return root.execute(request);
+    return service.execute(request);
   }
 
   private HttpRequest createRequest(HttpExchange exchange) throws IOException {
