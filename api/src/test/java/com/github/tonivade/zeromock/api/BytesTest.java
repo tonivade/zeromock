@@ -8,6 +8,7 @@ import static com.github.tonivade.zeromock.api.Bytes.asBytes;
 import static com.github.tonivade.zeromock.api.Bytes.asString;
 import static com.github.tonivade.zeromock.api.Bytes.fromArray;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.concurrent.ThreadLocalRandom.current;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,7 +20,6 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.SecureRandom;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -97,7 +97,6 @@ public class BytesTest {
   }
 
   private static String randomString() {
-    SecureRandom random = new SecureRandom();
-    return new BigInteger(130, random).toString(32);
+    return new BigInteger(130, current()).toString(32);
   }
 }
