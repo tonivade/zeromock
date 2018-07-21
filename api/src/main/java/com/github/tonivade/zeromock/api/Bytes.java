@@ -19,6 +19,7 @@ import com.github.tonivade.zeromock.core.Equal;
 public final class Bytes {
 
   private static final int BUFFER_SIZE = 1024;
+  private static final Bytes EMPTY = new Bytes(new byte[]{});
   
   private final byte[] buffer;
 
@@ -27,7 +28,9 @@ public final class Bytes {
   }
 
   public byte[] toArray() {
-    return buffer;
+    byte[] copy = new byte[buffer.length];
+    System.arraycopy(buffer, 0, copy, 0, buffer.length);
+    return copy;
   }
 
   public ByteBuffer getBuffer() {
@@ -55,7 +58,7 @@ public final class Bytes {
   }
 
   public static Bytes empty() {
-    return new Bytes(new byte[]{});
+    return EMPTY;
   }
   
   public static Bytes fromArray(byte[] array) {
