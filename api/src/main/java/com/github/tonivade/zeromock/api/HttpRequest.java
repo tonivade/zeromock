@@ -4,14 +4,14 @@
  */
 package com.github.tonivade.zeromock.api;
 
+import static com.github.tonivade.purefun.type.Equal.comparing;
 import static com.github.tonivade.zeromock.api.Bytes.asBytes;
-import static com.github.tonivade.zeromock.core.Equal.comparing;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Objects;
 
+import com.github.tonivade.purefun.type.Equal;
 import com.github.tonivade.zeromock.api.HttpPath.PathElement;
-import com.github.tonivade.zeromock.core.Equal;
 
 public final class HttpRequest {
 

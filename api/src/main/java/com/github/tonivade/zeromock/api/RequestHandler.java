@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import com.github.tonivade.zeromock.core.Function1;
+import com.github.tonivade.purefun.Function1;
 
 @FunctionalInterface
 public interface RequestHandler extends Function1<HttpRequest, HttpResponse> {

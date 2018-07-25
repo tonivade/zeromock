@@ -6,8 +6,8 @@ package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.zeromock.api.Bytes.asBytes;
 
-import com.github.tonivade.zeromock.core.Producer;
-import com.github.tonivade.zeromock.core.Function1;
+import com.github.tonivade.purefun.Function1;
+import com.github.tonivade.purefun.Producer;
 
 public final class Handlers {
   

@@ -27,8 +27,6 @@ import org.junit.jupiter.api.DynamicNode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
-import com.github.tonivade.zeromock.api.Bytes;
-
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 public class BytesTest {

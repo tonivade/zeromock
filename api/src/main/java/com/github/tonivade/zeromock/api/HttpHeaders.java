@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import com.github.tonivade.zeromock.core.Consumer2;
-import com.github.tonivade.zeromock.core.Equal;
-import com.github.tonivade.zeromock.core.ImmutableMap;
-import com.github.tonivade.zeromock.core.ImmutableSet;
-import com.github.tonivade.zeromock.core.Tuple;
-import com.github.tonivade.zeromock.core.Tuple2;
+import com.github.tonivade.purefun.Consumer2;
+import com.github.tonivade.purefun.Tuple;
+import com.github.tonivade.purefun.Tuple2;
+import com.github.tonivade.purefun.data.ImmutableMap;
+import com.github.tonivade.purefun.data.ImmutableSet;
+import com.github.tonivade.purefun.type.Equal;
 
 public final class HttpHeaders {
   

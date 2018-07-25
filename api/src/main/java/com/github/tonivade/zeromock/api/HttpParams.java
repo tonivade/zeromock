@@ -16,10 +16,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-import com.github.tonivade.zeromock.core.Equal;
-import com.github.tonivade.zeromock.core.ImmutableMap;
-import com.github.tonivade.zeromock.core.Option;
-import com.github.tonivade.zeromock.core.Tuple2;
+import com.github.tonivade.purefun.Tuple2;
+import com.github.tonivade.purefun.data.ImmutableMap;
+import com.github.tonivade.purefun.type.Equal;
+import com.github.tonivade.purefun.type.Option;
 
 public final class HttpParams {
   

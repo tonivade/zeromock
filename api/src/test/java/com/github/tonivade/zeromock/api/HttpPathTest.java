@@ -10,8 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.tonivade.zeromock.api.HttpPath;
-import com.github.tonivade.zeromock.core.Option;
+import com.github.tonivade.purefun.type.Option;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 

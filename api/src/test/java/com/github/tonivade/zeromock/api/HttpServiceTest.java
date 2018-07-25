@@ -9,12 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.tonivade.zeromock.api.Handlers;
-import com.github.tonivade.zeromock.api.HttpService;
-import com.github.tonivade.zeromock.api.Matchers;
-import com.github.tonivade.zeromock.api.Requests;
-import com.github.tonivade.zeromock.api.Responses;
-import com.github.tonivade.zeromock.core.Option;
+import com.github.tonivade.purefun.type.Option;
 
 public class HttpServiceTest {
 

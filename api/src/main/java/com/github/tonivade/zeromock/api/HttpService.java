@@ -11,11 +11,11 @@ import static java.util.Objects.requireNonNull;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.github.tonivade.zeromock.core.Function2;
-import com.github.tonivade.zeromock.core.ImmutableList;
-import com.github.tonivade.zeromock.core.Matcher;
-import com.github.tonivade.zeromock.core.Option;
-import com.github.tonivade.zeromock.core.OptionHandler;
+import com.github.tonivade.purefun.Function2;
+import com.github.tonivade.purefun.Matcher;
+import com.github.tonivade.purefun.data.ImmutableList;
+import com.github.tonivade.purefun.handler.OptionHandler;
+import com.github.tonivade.purefun.type.Option;
 
 public class HttpService {
   

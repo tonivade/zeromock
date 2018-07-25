@@ -11,8 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.tonivade.zeromock.api.HttpHeaders;
-import com.github.tonivade.zeromock.core.ImmutableSet;
+import com.github.tonivade.purefun.data.ImmutableSet;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 

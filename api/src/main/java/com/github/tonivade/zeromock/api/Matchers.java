@@ -13,7 +13,7 @@ import static com.github.tonivade.zeromock.api.HttpMethod.PUT;
 
 import java.lang.reflect.Type;
 
-import com.github.tonivade.zeromock.core.Matcher;
+import com.github.tonivade.purefun.Matcher;
 
 public final class Matchers {
 
