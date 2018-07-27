@@ -19,6 +19,8 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.github.tonivade.purefun.Matcher;
+import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.zeromock.api.Bytes;
 import com.github.tonivade.zeromock.api.HttpHeaders;
 import com.github.tonivade.zeromock.api.HttpMethod;
@@ -27,10 +29,8 @@ import com.github.tonivade.zeromock.api.HttpPath;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpService;
-import com.github.tonivade.zeromock.api.RequestHandler;
 import com.github.tonivade.zeromock.api.HttpService.MappingBuilder;
-import com.github.tonivade.zeromock.core.Matcher;
-import com.github.tonivade.zeromock.core.Option;
+import com.github.tonivade.zeromock.api.RequestHandler;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 

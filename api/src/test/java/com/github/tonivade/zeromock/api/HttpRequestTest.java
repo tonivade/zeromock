@@ -4,12 +4,9 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-
-import com.github.tonivade.zeromock.api.HttpRequest;
-import com.github.tonivade.zeromock.api.Requests;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 

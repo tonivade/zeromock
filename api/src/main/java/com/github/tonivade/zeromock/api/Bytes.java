@@ -14,7 +14,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import com.github.tonivade.zeromock.core.Equal;
+import com.github.tonivade.purefun.type.Equal;
 
 public final class Bytes {
 

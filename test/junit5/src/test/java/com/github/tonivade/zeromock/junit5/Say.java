@@ -6,7 +6,7 @@ package com.github.tonivade.zeromock.junit5;
 
 import java.util.Objects;
 
-import com.github.tonivade.zeromock.core.Equal;
+import com.github.tonivade.purefun.type.Equal;
 
 public final class Say {
   private String message;

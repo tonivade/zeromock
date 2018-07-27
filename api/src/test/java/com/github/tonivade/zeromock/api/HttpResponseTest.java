@@ -6,8 +6,6 @@ package com.github.tonivade.zeromock.api;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.tonivade.zeromock.api.HttpResponse;
-
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 public class HttpResponseTest {

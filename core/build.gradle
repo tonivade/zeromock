@@ -1,5 +1,0 @@
-archivesBaseName = 'zeromock-core'
-
-dependencies {
-  testCompile libs.equalsverifier
-}

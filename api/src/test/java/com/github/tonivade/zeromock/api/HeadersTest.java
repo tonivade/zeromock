@@ -4,11 +4,11 @@
  */
 package com.github.tonivade.zeromock.api;
 
+import static com.github.tonivade.purefun.data.Sequence.setOf;
 import static com.github.tonivade.zeromock.api.Headers.contentJson;
 import static com.github.tonivade.zeromock.api.Headers.contentPlain;
 import static com.github.tonivade.zeromock.api.Headers.contentXml;
 import static com.github.tonivade.zeromock.api.Responses.ok;
-import static com.github.tonivade.zeromock.core.Sequence.setOf;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

@@ -6,7 +6,13 @@ package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.zeromock.api.Bytes.asBytes;
 import static com.github.tonivade.zeromock.api.Bytes.empty;
-import static com.github.tonivade.zeromock.api.Responses.*;
+import static com.github.tonivade.zeromock.api.Responses.badRequest;
+import static com.github.tonivade.zeromock.api.Responses.created;
+import static com.github.tonivade.zeromock.api.Responses.error;
+import static com.github.tonivade.zeromock.api.Responses.forbidden;
+import static com.github.tonivade.zeromock.api.Responses.noContent;
+import static com.github.tonivade.zeromock.api.Responses.notFound;
+import static com.github.tonivade.zeromock.api.Responses.ok;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

@@ -12,15 +12,15 @@ import static com.github.tonivade.zeromock.api.Headers.contentJson;
 import static com.github.tonivade.zeromock.api.Serializers.empty;
 import static com.github.tonivade.zeromock.api.Serializers.json;
 
+import com.github.tonivade.purefun.Consumer1;
+import com.github.tonivade.purefun.Function1;
+import com.github.tonivade.purefun.Function2;
+import com.github.tonivade.purefun.Producer;
+import com.github.tonivade.purefun.data.ImmutableList;
+import com.github.tonivade.purefun.handler.OptionHandler;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.RequestHandler;
 import com.github.tonivade.zeromock.api.Responses;
-import com.github.tonivade.zeromock.core.Consumer1;
-import com.github.tonivade.zeromock.core.Function1;
-import com.github.tonivade.zeromock.core.Function2;
-import com.github.tonivade.zeromock.core.ImmutableList;
-import com.github.tonivade.zeromock.core.OptionHandler;
-import com.github.tonivade.zeromock.core.Producer;
 
 public class BooksAPI {
   

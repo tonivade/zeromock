@@ -28,6 +28,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.github.tonivade.purefun.Function1;
+import com.github.tonivade.purefun.Producer;
+import com.github.tonivade.purefun.data.ImmutableSet;
 import com.github.tonivade.zeromock.api.Deserializers;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
@@ -35,9 +38,6 @@ import com.github.tonivade.zeromock.api.HttpService;
 import com.github.tonivade.zeromock.api.HttpStatus;
 import com.github.tonivade.zeromock.api.Requests;
 import com.github.tonivade.zeromock.api.Responses;
-import com.github.tonivade.zeromock.core.Producer;
-import com.github.tonivade.zeromock.core.Function1;
-import com.github.tonivade.zeromock.core.ImmutableSet;
 
 public class MockHttpServerTest {
 

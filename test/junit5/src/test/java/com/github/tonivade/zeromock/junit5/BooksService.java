@@ -6,9 +6,9 @@ package com.github.tonivade.zeromock.junit5;
 
 import java.util.Objects;
 
-import com.github.tonivade.zeromock.core.Equal;
-import com.github.tonivade.zeromock.core.ImmutableList;
-import com.github.tonivade.zeromock.core.Option;
+import com.github.tonivade.purefun.data.ImmutableList;
+import com.github.tonivade.purefun.type.Equal;
+import com.github.tonivade.purefun.type.Option;
 
 public class BooksService {
 

@@ -6,11 +6,11 @@ package com.github.tonivade.zeromock.junit4;
 
 import org.junit.rules.ExternalResource;
 
+import com.github.tonivade.purefun.Matcher;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpService;
-import com.github.tonivade.zeromock.api.RequestHandler;
 import com.github.tonivade.zeromock.api.HttpService.MappingBuilder;
-import com.github.tonivade.zeromock.core.Matcher;
+import com.github.tonivade.zeromock.api.RequestHandler;
 import com.github.tonivade.zeromock.server.MockHttpServer;
 
 public class MockHttpServerRule extends ExternalResource {
