@@ -1,7 +1,7 @@
 archivesBaseName = 'zeromock-api'
 
 dependencies {
-  compile 'com.github.tonivade:purefun:0.1.0-SNAPSHOT'
+  compile libs.purefun
   compile libs.gson
   testCompile libs.equalsverifier
 }
