@@ -5,7 +5,7 @@ ext {
     junitEngine     : '5.2.0',
     junitPlatform   : '1.2.0',
     equalsverifier  : '2.4.5',
-    purefun         : '0.1.0'
+    purefun         : '0.2.0'
   ]
   libs = [
     purefun         : "com.github.tonivade:purefun:$versions.purefun",
