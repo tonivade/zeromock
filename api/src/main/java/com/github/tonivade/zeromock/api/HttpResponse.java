@@ -4,13 +4,13 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import static com.github.tonivade.purefun.type.Equal.comparing;
+import static com.github.tonivade.purefun.typeclasses.Equal.comparing;
 import static com.github.tonivade.zeromock.api.Bytes.asString;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Objects;
 
-import com.github.tonivade.purefun.type.Equal;
+import com.github.tonivade.purefun.typeclasses.Equal;
 
 public final class HttpResponse {
 

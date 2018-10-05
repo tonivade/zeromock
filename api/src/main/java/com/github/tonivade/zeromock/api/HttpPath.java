@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import static com.github.tonivade.purefun.type.Equal.comparing;
+import static com.github.tonivade.purefun.typeclasses.Equal.comparing;
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.joining;
 
@@ -12,8 +12,8 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 import com.github.tonivade.purefun.data.ImmutableList;
-import com.github.tonivade.purefun.type.Equal;
 import com.github.tonivade.purefun.type.Option;
+import com.github.tonivade.purefun.typeclasses.Equal;
 
 public final class HttpPath {
   

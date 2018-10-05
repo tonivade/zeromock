@@ -12,7 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.github.tonivade.purefun.Function2;
-import com.github.tonivade.purefun.Matcher;
+import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.data.ImmutableList;
 import com.github.tonivade.purefun.handler.OptionHandler;
 import com.github.tonivade.purefun.type.Option;
@@ -45,12 +45,12 @@ public class HttpService {
     return this;
   }
   
-  public HttpService add(Matcher<HttpRequest> matcher, RequestHandler handler) {
+  public HttpService add(Matcher1<HttpRequest> matcher, RequestHandler handler) {
     addMapping(matcher, handler.liftOption());
     return this;
   }
   
-  public MappingBuilder<HttpService> when(Matcher<HttpRequest> matcher) {
+  public MappingBuilder<HttpService> when(Matcher1<HttpRequest> matcher) {
     return new MappingBuilder<>(this::add).when(matcher);
   }
   
@@ -73,7 +73,7 @@ public class HttpService {
     mappings.clear();
   }
   
-  private void addMapping(Matcher<HttpRequest> matcher, OptionHandler<HttpRequest, HttpResponse> handler) {
+  private void addMapping(Matcher1<HttpRequest> matcher, OptionHandler<HttpRequest, HttpResponse> handler) {
     mappings.add(new Mapping(matcher, handler));
   }
 
@@ -84,14 +84,14 @@ public class HttpService {
   }
 
   public static final class MappingBuilder<T> {
-    private final Function2<Matcher<HttpRequest>, RequestHandler, T> finisher;
-    private Matcher<HttpRequest> matcher;
+    private final Function2<Matcher1<HttpRequest>, RequestHandler, T> finisher;
+    private Matcher1<HttpRequest> matcher;
     
-    public MappingBuilder(Function2<Matcher<HttpRequest>, RequestHandler, T> finisher) {
+    public MappingBuilder(Function2<Matcher1<HttpRequest>, RequestHandler, T> finisher) {
       this.finisher = requireNonNull(finisher);
     }
 
-    public MappingBuilder<T> when(Matcher<HttpRequest> matcher) {
+    public MappingBuilder<T> when(Matcher1<HttpRequest> matcher) {
       this.matcher = matcher;
       return this;
     }
@@ -102,10 +102,10 @@ public class HttpService {
   }
   
   public static final class Mapping {
-    private final Matcher<HttpRequest> matcher;
+    private final Matcher1<HttpRequest> matcher;
     private final OptionHandler<HttpRequest, HttpResponse> handler;
 
-    private Mapping(Matcher<HttpRequest> matcher, OptionHandler<HttpRequest, HttpResponse> handler) {
+    private Mapping(Matcher1<HttpRequest> matcher, OptionHandler<HttpRequest, HttpResponse> handler) {
       this.matcher = requireNonNull(matcher);
       this.handler = requireNonNull(handler);
     }

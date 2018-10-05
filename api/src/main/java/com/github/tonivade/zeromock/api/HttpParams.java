@@ -18,8 +18,8 @@ import java.util.function.Function;
 
 import com.github.tonivade.purefun.Tuple2;
 import com.github.tonivade.purefun.data.ImmutableMap;
-import com.github.tonivade.purefun.type.Equal;
 import com.github.tonivade.purefun.type.Option;
+import com.github.tonivade.purefun.typeclasses.Equal;
 
 public final class HttpParams {
   

@@ -6,7 +6,7 @@ package com.github.tonivade.zeromock.junit4;
 
 import org.junit.rules.ExternalResource;
 
-import com.github.tonivade.purefun.Matcher;
+import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpService;
 import com.github.tonivade.zeromock.api.HttpService.MappingBuilder;
@@ -30,17 +30,17 @@ public class MockHttpServerRule extends ExternalResource {
     server.stop();
   }
 
-  public MockHttpServerRule verify(Matcher<HttpRequest> matcher) {
+  public MockHttpServerRule verify(Matcher1<HttpRequest> matcher) {
     server.verify(matcher);
     return this;
   }
 
-  public MockHttpServerRule add(Matcher<HttpRequest> matcher, RequestHandler handler) {
+  public MockHttpServerRule add(Matcher1<HttpRequest> matcher, RequestHandler handler) {
     server.add(matcher, handler);
     return this;
   }
 
-  public MappingBuilder<MockHttpServerRule> when(Matcher<HttpRequest> matcher) {
+  public MappingBuilder<MockHttpServerRule> when(Matcher1<HttpRequest> matcher) {
     return new MappingBuilder<>(this::add).when(matcher);
   }
 

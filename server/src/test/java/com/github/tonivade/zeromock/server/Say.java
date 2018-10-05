@@ -4,13 +4,13 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.purefun.type.Equal.comparing;
+import static com.github.tonivade.purefun.typeclasses.Equal.comparing;
 
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.github.tonivade.purefun.type.Equal;
+import com.github.tonivade.purefun.typeclasses.Equal;
 
 @XmlRootElement(name = "say")
 public final class Say {

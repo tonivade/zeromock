@@ -19,7 +19,7 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.github.tonivade.purefun.Matcher;
+import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.zeromock.api.Bytes;
 import com.github.tonivade.zeromock.api.HttpHeaders;
@@ -75,12 +75,12 @@ public final class MockHttpServer {
     return this;
   }
   
-  public MockHttpServer add(Matcher<HttpRequest> matcher, RequestHandler handler) {
+  public MockHttpServer add(Matcher1<HttpRequest> matcher, RequestHandler handler) {
     service.add(matcher, handler);
     return this;
   }
   
-  public MappingBuilder<MockHttpServer> when(Matcher<HttpRequest> matcher) {
+  public MappingBuilder<MockHttpServer> when(Matcher1<HttpRequest> matcher) {
     return new MappingBuilder<>(this::add).when(matcher);
   }
   
@@ -95,7 +95,7 @@ public final class MockHttpServer {
     LOG.info(() -> "server stopped");
   }
 
-  public MockHttpServer verify(Matcher<HttpRequest> matcher) {
+  public MockHttpServer verify(Matcher1<HttpRequest> matcher) {
     if (!matches(matcher)) {
       throw new AssertionError("request not found");
     }
@@ -130,7 +130,7 @@ public final class MockHttpServer {
     }
   }
 
-  private boolean matches(Matcher<HttpRequest> matcher) {
+  private boolean matches(Matcher1<HttpRequest> matcher) {
     return matched.stream().anyMatch(matcher::match);
   }
 

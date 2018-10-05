@@ -14,7 +14,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import com.github.tonivade.purefun.type.Equal;
+import com.github.tonivade.purefun.typeclasses.Equal;
 
 public final class Bytes {
 
