@@ -11,10 +11,10 @@ import static java.util.Objects.requireNonNull;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.github.tonivade.purefun.Function1;
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.data.ImmutableList;
-import com.github.tonivade.purefun.handler.OptionHandler;
 import com.github.tonivade.purefun.type.Option;
 
 public class HttpService {
@@ -73,7 +73,7 @@ public class HttpService {
     mappings.clear();
   }
   
-  private void addMapping(Matcher1<HttpRequest> matcher, OptionHandler<HttpRequest, HttpResponse> handler) {
+  private void addMapping(Matcher1<HttpRequest> matcher, Function1<HttpRequest, Option<HttpResponse>> handler) {
     mappings.add(new Mapping(matcher, handler));
   }
 
@@ -103,9 +103,9 @@ public class HttpService {
   
   public static final class Mapping {
     private final Matcher1<HttpRequest> matcher;
-    private final OptionHandler<HttpRequest, HttpResponse> handler;
+    private final Function1<HttpRequest, Option<HttpResponse>> handler;
 
-    private Mapping(Matcher1<HttpRequest> matcher, OptionHandler<HttpRequest, HttpResponse> handler) {
+    private Mapping(Matcher1<HttpRequest> matcher, Function1<HttpRequest, Option<HttpResponse>> handler) {
       this.matcher = requireNonNull(matcher);
       this.handler = requireNonNull(handler);
     }

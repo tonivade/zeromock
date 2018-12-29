@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import static com.github.tonivade.purefun.typeclasses.Equal.comparing;
+import static com.github.tonivade.purefun.typeclasses.Eq.comparing;
 import static com.github.tonivade.zeromock.api.Bytes.asBytes;
 import static java.util.Objects.requireNonNull;
 

@@ -17,7 +17,7 @@ import com.github.tonivade.purefun.Function1;
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Producer;
 import com.github.tonivade.purefun.data.ImmutableList;
-import com.github.tonivade.purefun.handler.OptionHandler;
+import com.github.tonivade.purefun.type.Try;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.RequestHandler;
 import com.github.tonivade.zeromock.api.Responses;
@@ -43,18 +43,18 @@ public class BooksAPI {
     return Function2.of(service::update)
         .compose(getBookId(), getBookTitle())
         .liftTry()
-        .map(json())
-        .map(Responses::ok)
-        .orElse(Responses::error)
+        .andThen(map(json()))
+        .andThen(map(Responses::ok))
+        .andThen(orElse(Responses::error))
         .andThen(contentJson())::apply;
   }
 
   public RequestHandler find() {
-    return OptionHandler.of(service::find)
+    return Function1.of(service::find)
         .compose(getBookId())
-        .map(json())
-        .map(Responses::ok)
-        .orElse(Responses::noContent)
+        .andThen(x -> x.map(json()))
+        .andThen(x -> x.map(Responses::ok))
+        .andThen(x -> x.orElse(Responses::noContent))
         .andThen(contentJson())::apply;
   }
 
@@ -62,9 +62,9 @@ public class BooksAPI {
     return getBookTitle()
         .andThen(service::create)
         .liftTry()
-        .map(json())
-        .map(Responses::created)
-        .orElse(Responses::error)
+        .andThen(map(json()))
+        .andThen(map(Responses::created))
+        .andThen(orElse(Responses::error))
         .andThen(contentJson())::apply;
   }
 
@@ -72,9 +72,9 @@ public class BooksAPI {
     return getBookId()
         .andThen(Consumer1.of(service::delete).asFunction())
         .liftTry()
-        .map(empty())
-        .map(Responses::ok)
-        .orElse(Responses::error)
+        .andThen(map(empty()))
+        .andThen(map(Responses::ok))
+        .andThen(orElse(Responses::error))
         .andThen(contentJson())::apply;
   }
 
@@ -84,5 +84,13 @@ public class BooksAPI {
 
   private static Function1<HttpRequest, String> getBookTitle() {
     return body().andThen(asString());
+  }
+
+  private <T> Function1<Try<T>, T> orElse(Producer<T> response) {
+    return x -> x.orElse(response);
+  }
+
+  private <T, R> Function1<Try<T>, Try<R>> map(Function1<T, R> mapper) {
+    return x -> x.map(mapper);
   }
 }
