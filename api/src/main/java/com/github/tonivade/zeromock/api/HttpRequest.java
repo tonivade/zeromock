@@ -55,11 +55,11 @@ public final class HttpRequest {
   }
   
   public String param(String name) {
-    return params.get(name).orElseThrow(IllegalArgumentException::new);
+    return params.get(name).getOrElseThrow(IllegalArgumentException::new);
   }
   
   public String pathParam(int position) {
-    return path.getAt(position).map(PathElement::value).orElseThrow(IllegalArgumentException::new);
+    return path.getAt(position).map(PathElement::value).getOrElseThrow(IllegalArgumentException::new);
   }
   
   public String toUrl() {

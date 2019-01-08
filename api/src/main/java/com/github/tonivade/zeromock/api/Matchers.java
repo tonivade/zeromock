@@ -40,7 +40,7 @@ public final class Matchers {
   }
   
   public static Matcher1<HttpRequest> param(String name, String value) {
-    return request -> request.params().get(name).map(value::equals).orElse(false);
+    return request -> request.params().get(name).map(value::equals).getOrElse(false);
   }
   
   public static Matcher1<HttpRequest> header(String key, String value) {

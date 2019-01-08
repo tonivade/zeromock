@@ -45,7 +45,7 @@ public class BooksAPI {
         .liftTry()
         .andThen(map(json()))
         .andThen(map(Responses::ok))
-        .andThen(orElse(Responses::error))
+        .andThen(getOrElse(Responses::error))
         .andThen(contentJson())::apply;
   }
 
@@ -54,7 +54,7 @@ public class BooksAPI {
         .compose(getBookId())
         .andThen(x -> x.map(json()))
         .andThen(x -> x.map(Responses::ok))
-        .andThen(x -> x.orElse(Responses::noContent))
+        .andThen(x -> x.getOrElse(Responses::noContent))
         .andThen(contentJson())::apply;
   }
 
@@ -64,7 +64,7 @@ public class BooksAPI {
         .liftTry()
         .andThen(map(json()))
         .andThen(map(Responses::created))
-        .andThen(orElse(Responses::error))
+        .andThen(getOrElse(Responses::error))
         .andThen(contentJson())::apply;
   }
 
@@ -74,7 +74,7 @@ public class BooksAPI {
         .liftTry()
         .andThen(map(empty()))
         .andThen(map(Responses::ok))
-        .andThen(orElse(Responses::error))
+        .andThen(getOrElse(Responses::error))
         .andThen(contentJson())::apply;
   }
 
@@ -86,8 +86,8 @@ public class BooksAPI {
     return body().andThen(asString());
   }
 
-  private <T> Function1<Try<T>, T> orElse(Producer<T> response) {
-    return x -> x.orElse(response);
+  private <T> Function1<Try<T>, T> getOrElse(Producer<T> response) {
+    return x -> x.getOrElse(response);
   }
 
   private <T, R> Function1<Try<T>, Try<R>> map(Function1<T, R> mapper) {
