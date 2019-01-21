@@ -4,13 +4,12 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import static com.github.tonivade.purefun.typeclasses.Eq.comparing;
 import static com.github.tonivade.zeromock.api.Bytes.asBytes;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Objects;
 
-import com.github.tonivade.purefun.typeclasses.Equal;
+import com.github.tonivade.purefun.Equal;
 import com.github.tonivade.zeromock.api.HttpPath.PathElement;
 
 public final class HttpRequest {
@@ -25,7 +24,7 @@ public final class HttpRequest {
     this(method, path, Bytes.empty(), HttpHeaders.empty(), HttpParams.empty());
   }
 
-  public HttpRequest(HttpMethod method, HttpPath path, Bytes body, 
+  public HttpRequest(HttpMethod method, HttpPath path, Bytes body,
                      HttpHeaders headers, HttpParams params) {
     this.method = requireNonNull(method);
     this.path = requireNonNull(path);
@@ -33,35 +32,35 @@ public final class HttpRequest {
     this.headers = requireNonNull(headers);
     this.params = requireNonNull(params);
   }
-  
+
   public HttpMethod method() {
     return method;
   }
-  
+
   public HttpPath path() {
     return path;
   }
-  
+
   public Bytes body() {
     return body;
   }
-  
+
   public HttpHeaders headers() {
     return headers;
   }
-  
+
   public HttpParams params() {
     return params;
   }
-  
+
   public String param(String name) {
     return params.get(name).getOrElseThrow(IllegalArgumentException::new);
   }
-  
+
   public String pathParam(int position) {
     return path.getAt(position).map(PathElement::value).getOrElseThrow(IllegalArgumentException::new);
   }
-  
+
   public String toUrl() {
     return path.toPath() + params.toQueryString();
   }
@@ -85,23 +84,23 @@ public final class HttpRequest {
   public HttpRequest withParam(String key, String value) {
     return new HttpRequest(method, path, body, headers, params.withParam(key, value));
   }
-  
+
   @Override
   public int hashCode() {
     return Objects.hash(method, path, body, headers, params);
   }
-  
+
   @Override
   public boolean equals(Object obj) {
     return Equal.of(this)
-        .append(comparing(HttpRequest::method))
-        .append(comparing(HttpRequest::path))
-        .append(comparing(HttpRequest::body))
-        .append(comparing(HttpRequest::headers))
-        .append(comparing(HttpRequest::params))
+        .comparing(HttpRequest::method)
+        .comparing(HttpRequest::path)
+        .comparing(HttpRequest::body)
+        .comparing(HttpRequest::headers)
+        .comparing(HttpRequest::params)
         .applyTo(obj);
   }
-  
+
   @Override
   public String toString() {
     return "HttpRequest(" + method + " " + toUrl() + ")";

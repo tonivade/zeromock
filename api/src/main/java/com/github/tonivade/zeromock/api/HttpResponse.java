@@ -10,7 +10,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Objects;
 
-import com.github.tonivade.purefun.typeclasses.Equal;
+import com.github.tonivade.purefun.Equal;
 
 public final class HttpResponse {
 
@@ -21,21 +21,21 @@ public final class HttpResponse {
   public HttpResponse(HttpStatus status, Bytes body) {
     this(status, body, HttpHeaders.empty());
   }
-  
+
   public HttpResponse(HttpStatus status, Bytes body, HttpHeaders headers) {
     this.status = requireNonNull(status);
     this.body = requireNonNull(body);
     this.headers = requireNonNull(headers);
   }
-  
+
   public HttpStatus status() {
     return status;
   }
-  
+
   public Bytes body() {
     return body;
   }
-  
+
   public HttpHeaders headers() {
     return headers;
   }
@@ -43,12 +43,12 @@ public final class HttpResponse {
   public HttpResponse withHeader(String key, String value) {
     return new HttpResponse(status, body, headers.withHeader(key, value));
   }
-  
+
   @Override
   public int hashCode() {
     return Objects.hash(status, body, headers);
   }
-  
+
   @Override
   public boolean equals(Object obj) {
     return Equal.of(this)
@@ -57,7 +57,7 @@ public final class HttpResponse {
         .append(comparing(HttpResponse::headers))
         .applyTo(obj);
   }
-  
+
   @Override
   public String toString() {
     return "HttpResponse(" + status + " " + asString(body) + ")";

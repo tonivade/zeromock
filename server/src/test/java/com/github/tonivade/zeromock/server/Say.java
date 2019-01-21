@@ -4,28 +4,26 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.purefun.typeclasses.Eq.comparing;
-
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.github.tonivade.purefun.typeclasses.Equal;
+import com.github.tonivade.purefun.Equal;
 
 @XmlRootElement(name = "say")
 public final class Say {
   private String message;
-  
+
   public Say() {}
 
   public Say(String message) {
     this.message = message;
   }
-  
+
   public void setMessage(String message) {
     this.message = message;
   }
-  
+
   public String getMessage() {
     return message;
   }
@@ -38,7 +36,7 @@ public final class Say {
   @Override
   public boolean equals(Object obj) {
     return Equal.of(this)
-        .append(comparing(Say::getMessage))
+        .comparing(Say::getMessage)
         .applyTo(obj);
   }
 

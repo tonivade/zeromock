@@ -6,9 +6,9 @@ package com.github.tonivade.zeromock.junit5;
 
 import java.util.Objects;
 
+import com.github.tonivade.purefun.Equal;
 import com.github.tonivade.purefun.data.ImmutableList;
 import com.github.tonivade.purefun.type.Option;
-import com.github.tonivade.purefun.typeclasses.Equal;
 
 public class BooksService {
 
@@ -31,7 +31,7 @@ public class BooksService {
   public void delete(Integer id) {
     // nothing to do
   }
-  
+
   public static class Book {
     private final Integer id;
     private final String title;
@@ -40,7 +40,7 @@ public class BooksService {
       this.id = id;
       this.title = title;
     }
-    
+
     @Override
     public String toString() {
       return "Book(id:" + id + ",title:" + title + ")";

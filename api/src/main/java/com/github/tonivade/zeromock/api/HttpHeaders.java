@@ -11,16 +11,16 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.github.tonivade.purefun.Consumer2;
+import com.github.tonivade.purefun.Equal;
 import com.github.tonivade.purefun.Tuple;
 import com.github.tonivade.purefun.Tuple2;
 import com.github.tonivade.purefun.data.ImmutableMap;
 import com.github.tonivade.purefun.data.ImmutableSet;
-import com.github.tonivade.purefun.typeclasses.Equal;
 
 public final class HttpHeaders {
-  
+
   private final ImmutableMap<String, ImmutableSet<String>> headers;
-  
+
   public HttpHeaders(ImmutableMap<String, ImmutableSet<String>> headers) {
     this.headers = Objects.requireNonNull(headers);
   }
@@ -36,11 +36,11 @@ public final class HttpHeaders {
   public boolean contains(String key) {
     return headers.containsKey(key);
   }
-  
+
   public ImmutableSet<String> get(String key) {
     return headers.getOrDefault(key, ImmutableSet::empty);
   }
-  
+
   public void forEach(Consumer2<String, String> consumer) {
     headers.forEach((key, values) -> values.forEach(value -> consumer.accept(key, value)));
   }
@@ -48,12 +48,12 @@ public final class HttpHeaders {
   public static HttpHeaders empty() {
     return new HttpHeaders(ImmutableMap.empty());
   }
-  
+
   @Override
   public int hashCode() {
     return Objects.hash(headers);
   }
-  
+
   @Override
   public boolean equals(Object obj) {
     return Equal.of(this)
@@ -65,12 +65,12 @@ public final class HttpHeaders {
   public String toString() {
     return "HttpHeaders(" + headers + ")";
   }
-  
+
   public static HttpHeaders from(Map<String, List<String>> headers) {
     return new HttpHeaders(convert(headers));
   }
-  
-  private static ImmutableMap<String, ImmutableSet<String>> 
+
+  private static ImmutableMap<String, ImmutableSet<String>>
           convert(Map<String, List<String>> headerFields) {
     return ImmutableMap.from(toTuples(headerFields)).mapValues(ImmutableSet::from);
   }

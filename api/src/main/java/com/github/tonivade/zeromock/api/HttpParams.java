@@ -16,28 +16,28 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
+import com.github.tonivade.purefun.Equal;
 import com.github.tonivade.purefun.Tuple2;
 import com.github.tonivade.purefun.data.ImmutableMap;
 import com.github.tonivade.purefun.type.Option;
-import com.github.tonivade.purefun.typeclasses.Equal;
 
 public final class HttpParams {
-  
+
   private static final String BEGIN = "?";
   private static final String EMPTY = "";
   private static final String EQUALS = "=";
   private static final String SEPARATOR = "&";
-  
+
   private final ImmutableMap<String, String> params;
-  
+
   public HttpParams(String queryParams) {
     this(queryToMap(queryParams));
   }
-  
+
   public HttpParams(ImmutableMap<String, String> params) {
     this.params = Objects.requireNonNull(params);
   }
-  
+
   public Option<String> get(String name) {
     return params.get(name);
   }
@@ -53,23 +53,23 @@ public final class HttpParams {
   public HttpParams withParam(String key, String value) {
     return new HttpParams(params.put(key, value));
   }
-  
+
   public String toQueryString() {
     return params.isEmpty() ? EMPTY : paramsToString();
   }
-  
+
   @Override
   public int hashCode() {
     return Objects.hash(params);
   }
-  
+
   @Override
   public boolean equals(Object obj) {
     return Equal.of(this)
         .append((a, b) -> Objects.equals(a.params, b.params))
         .applyTo(obj);
   }
-  
+
   @Override
   public String toString() {
     return "HttpParams(" + params + ")";
@@ -78,7 +78,7 @@ public final class HttpParams {
   public static HttpParams empty() {
     return new HttpParams(ImmutableMap.empty());
   }
-  
+
   private static ImmutableMap<String, String> queryToMap(String query) {
     Map<String, String> result = new HashMap<>();
     if (query != null) {

@@ -14,13 +14,13 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import com.github.tonivade.purefun.typeclasses.Equal;
+import com.github.tonivade.purefun.Equal;
 
 public final class Bytes {
 
   private static final int BUFFER_SIZE = 1024;
   private static final Bytes EMPTY = new Bytes(new byte[]{});
-  
+
   private final byte[] buffer;
 
   private Bytes(byte[] buffer) {
@@ -40,16 +40,16 @@ public final class Bytes {
   public int size() {
     return buffer.length;
   }
-  
+
   public boolean isEmpty() {
     return size() == 0;
   }
-  
+
   @Override
   public int hashCode() {
     return Arrays.hashCode(buffer);
   }
-  
+
   @Override
   public boolean equals(Object obj) {
     return Equal.of(this)
@@ -60,7 +60,7 @@ public final class Bytes {
   public static Bytes empty() {
     return EMPTY;
   }
-  
+
   public static Bytes fromArray(byte[] array) {
     return new Bytes(array);
   }
@@ -76,11 +76,11 @@ public final class Bytes {
     }
     return new Bytes(out.toByteArray());
   }
-  
+
   public static Bytes asBytes(String string) {
     return new Bytes(string.getBytes(UTF_8));
   }
-  
+
   public static String asString(Bytes buffer) {
     return new String(buffer.toArray(), UTF_8);
   }

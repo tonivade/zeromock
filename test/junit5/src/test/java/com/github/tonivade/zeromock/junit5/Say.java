@@ -6,11 +6,11 @@ package com.github.tonivade.zeromock.junit5;
 
 import java.util.Objects;
 
-import com.github.tonivade.purefun.typeclasses.Equal;
+import com.github.tonivade.purefun.Equal;
 
 public final class Say {
   private String message;
-  
+
   public Say(String message) {
     this.message = message;
   }
