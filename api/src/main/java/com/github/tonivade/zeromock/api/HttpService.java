@@ -8,25 +8,22 @@ import static com.github.tonivade.zeromock.api.Matchers.all;
 import static com.github.tonivade.zeromock.api.Matchers.startsWith;
 import static java.util.Objects.requireNonNull;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import com.github.tonivade.purefun.Function1;
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
-import com.github.tonivade.purefun.data.ImmutableList;
+import com.github.tonivade.purefun.PartialFunction1;
 import com.github.tonivade.purefun.type.Option;
 
 public class HttpService {
   
   private final String name;
-  private final List<Mapping> mappings;
+  private final PartialFunction1<HttpRequest, HttpResponse> mappings;
   
   public HttpService(String name) {
-    this(name, new LinkedList<>());
+    this(name, PartialFunction1.of(Matcher1.never(), Function1.fail()));
   }
   
-  private HttpService(String name, List<Mapping> mappings) {
+  private HttpService(String name, PartialFunction1<HttpRequest, HttpResponse> mappings) {
     this.name = requireNonNull(name);
     this.mappings = requireNonNull(mappings);
   }
@@ -35,19 +32,18 @@ public class HttpService {
     return name;
   }
 
-  public HttpService mount(String path, HttpService service) {
-    addMapping(startsWith(path), request -> service.execute(request.dropOneLevel()));
-    return this;
+  public HttpService mount(String path, HttpService other) {
+    return addMapping(
+        startsWith(path).and(req -> other.mappings.isDefinedAt(req.dropOneLevel())), 
+        req -> other.mappings.apply(req.dropOneLevel()));
   }
   
   public HttpService exec(RequestHandler handler) {
-    addMapping(all(), handler.liftOption());
-    return this;
+    return addMapping(all(), handler);
   }
   
   public HttpService add(Matcher1<HttpRequest> matcher, RequestHandler handler) {
-    addMapping(matcher, handler.liftOption());
-    return this;
+    return addMapping(matcher, handler);
   }
   
   public MappingBuilder<HttpService> when(Matcher1<HttpRequest> matcher) {
@@ -55,32 +51,20 @@ public class HttpService {
   }
   
   public Option<HttpResponse> execute(HttpRequest request) {
-    return findMapping(request).flatMap(mapping -> mapping.handle(request));
+    return mappings.lift().apply(request);
   }
   
   public HttpService combine(HttpService other) {
-    List<Mapping> merge = ImmutableList.from(this.mappings)
-        .appendAll(ImmutableList.from(other.mappings)).toList();
-    return new HttpService(this.name + "+" + other.name, merge);
+    return new HttpService(this.name + "+" + other.name, this.mappings.orElse(other.mappings));
   }
   
   @Override
   public String toString() {
     return "HttpService(" + name + ")";
   }
-
-  public void clear() {
-    mappings.clear();
-  }
   
-  private void addMapping(Matcher1<HttpRequest> matcher, Function1<HttpRequest, Option<HttpResponse>> handler) {
-    mappings.add(new Mapping(matcher, handler));
-  }
-
-  private Option<Mapping> findMapping(HttpRequest request) {
-    return ImmutableList.from(mappings)
-        .filter(mapping -> mapping.match(request))
-        .head();
+  private HttpService addMapping(Matcher1<HttpRequest> matcher, RequestHandler handler) {
+    return new HttpService(name, mappings.orElse(PartialFunction1.of(matcher, handler)));
   }
 
   public static final class MappingBuilder<T> {
@@ -98,24 +82,6 @@ public class HttpService {
 
     public T then(RequestHandler handler) {
       return finisher.apply(matcher, handler);
-    }
-  }
-  
-  public static final class Mapping {
-    private final Matcher1<HttpRequest> matcher;
-    private final Function1<HttpRequest, Option<HttpResponse>> handler;
-
-    private Mapping(Matcher1<HttpRequest> matcher, Function1<HttpRequest, Option<HttpResponse>> handler) {
-      this.matcher = requireNonNull(matcher);
-      this.handler = requireNonNull(handler);
-    }
-
-    public boolean match(HttpRequest request) {
-      return matcher.match(request);
-    }
-
-    public Option<HttpResponse> handle(HttpRequest request) {
-      return handler.apply(request);
     }
   }
 }

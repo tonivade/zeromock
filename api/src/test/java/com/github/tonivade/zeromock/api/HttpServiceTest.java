@@ -59,13 +59,4 @@ public class HttpServiceTest {
     
     assertEquals(Option.some(Responses.ok("pong")), service1.combine(service2).execute(Requests.get("/ping")));
   }
-  
-  @Test
-  public void clear() {
-    HttpService service = new HttpService("service").add(Matchers.get("/ping"), Handlers.ok("pong"));
-    assertEquals(Option.some(Responses.ok("pong")), service.execute(Requests.get("/ping")));
-    service.clear();
-
-    assertEquals(Option.none(), service.execute(Requests.get("/ping")));
-  }
 }

@@ -45,10 +45,12 @@ public final class MockHttpServer {
 
   private final List<HttpRequest> matched = new LinkedList<>();
   private final List<HttpRequest> unmatched = new LinkedList<>();
-  private final HttpService service = new HttpService("root");
+
+  private HttpService service;
   
   private MockHttpServer(String host, int port, int threads, int backlog) {
     try {
+      service = new HttpService("root");
       server = HttpServer.create(new InetSocketAddress(host, port), backlog);
       server.setExecutor(Executors.newFixedThreadPool(threads));
       server.createContext(ROOT, this::handle);
@@ -66,17 +68,17 @@ public final class MockHttpServer {
   }
 
   public MockHttpServer mount(String path, HttpService other) {
-    service.mount(path, other);
+    service = service.mount(path, other);
     return this;
   }
   
   public MockHttpServer exec(RequestHandler handler) {
-    service.exec(handler);
+    service = service.exec(handler);
     return this;
   }
   
   public MockHttpServer add(Matcher1<HttpRequest> matcher, RequestHandler handler) {
-    service.add(matcher, handler);
+    service = service.add(matcher, handler);
     return this;
   }
   
@@ -107,7 +109,7 @@ public final class MockHttpServer {
   }
 
   public void reset() {
-    service.clear();
+    service = new HttpService("root");
     matched.clear();
     unmatched.clear();
   }
