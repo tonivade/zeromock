@@ -4,7 +4,6 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import static com.github.tonivade.purefun.typeclasses.Eq.comparing;
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.joining;
 
@@ -111,7 +110,7 @@ public final class HttpPath {
     @Override
     public boolean equals(Object obj) {
       return Equal.of(this)
-          .append(comparing(PathElement::value))
+          .comparing(PathElement::value)
           .applyTo(obj);
     }
 

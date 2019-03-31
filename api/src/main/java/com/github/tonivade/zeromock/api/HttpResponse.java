@@ -4,7 +4,6 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import static com.github.tonivade.purefun.typeclasses.Eq.comparing;
 import static com.github.tonivade.zeromock.api.Bytes.asString;
 import static java.util.Objects.requireNonNull;
 
@@ -52,9 +51,9 @@ public final class HttpResponse {
   @Override
   public boolean equals(Object obj) {
     return Equal.of(this)
-        .append(comparing(HttpResponse::status))
-        .append(comparing(HttpResponse::body))
-        .append(comparing(HttpResponse::headers))
+        .comparing(HttpResponse::status)
+        .comparing(HttpResponse::body)
+        .comparing(HttpResponse::headers)
         .applyTo(obj);
   }
 
