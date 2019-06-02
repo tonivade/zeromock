@@ -1,3 +1,3 @@
 rootProject.name = 'zeromock-parent'
 
-include "api", "server", "test:junit4", "test:junit5"
+include "api", "server", "test:junit4", "test:junit5", "server-zio"
