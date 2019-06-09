@@ -5,7 +5,7 @@ ext {
     junitEngine     : '5.4.2',
     junitPlatform   : '1.4.2',
     equalsverifier  : '2.5.2',
-    purefun         : '1.0',
+    purefun         : '1.1-SNAPSHOT',
     jaxb            : '2.4.0-b180830.0438'
   ]
   libs = [

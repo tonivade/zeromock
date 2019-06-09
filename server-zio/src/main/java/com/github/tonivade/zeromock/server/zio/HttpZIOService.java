@@ -4,19 +4,20 @@
  */
 package com.github.tonivade.zeromock.server.zio;
 
-import static com.github.tonivade.zeromock.api.Responses.error;
 import static java.util.Objects.requireNonNull;
 
 import com.github.tonivade.purefun.Function1;
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Nothing;
+import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.zio.ZIO;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpService;
 import com.github.tonivade.zeromock.api.RequestHandler;
+import com.github.tonivade.zeromock.api.Responses;
 
 public class HttpZIOService<R extends HasHttpRequest> {
 
@@ -65,7 +66,7 @@ public class HttpZIOService<R extends HasHttpRequest> {
   }
 
   private RequestHandler run(ZIO<R, Nothing, HttpResponse> effect) {
-    return request -> effect.provide(factory.apply(request)).getOrElse(error());
+    return request -> effect.toFuture(factory.apply(request)).await().fold(Responses::error, Either::get);
   }
 
   public static final class MappingBuilder<R extends HasHttpRequest> {
