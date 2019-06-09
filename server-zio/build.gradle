@@ -2,6 +2,6 @@ archivesBaseName = 'zeromock-server-zio'
 
 dependencies {
   compile project(':server')
-  compile 'com.github.tonivade:purefun-zio:1.0-SNAPSHOT'
+  compile libs.purefunZio
 }
 
