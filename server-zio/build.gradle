@@ -3,5 +3,6 @@ archivesBaseName = 'zeromock-server-zio'
 dependencies {
   compile project(':server')
   compile libs.purefunZio
+  compile libs.purefunInstances
 }
 

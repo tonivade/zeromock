@@ -11,6 +11,7 @@ ext {
   libs = [
     purefunCore     : "com.github.tonivade:purefun-core:$versions.purefun",
     purefunZio      : "com.github.tonivade:purefun-zio:$versions.purefun",
+    purefunInstances: "com.github.tonivade:purefun-instances:$versions.purefun",
     gson            : "com.google.code.gson:gson:$versions.gson",
     junitJupiter    : "org.junit.jupiter:junit-jupiter-engine:$versions.junitEngine",
     junitVintage    : "org.junit.vintage:junit-vintage-engine:$versions.junitEngine",
