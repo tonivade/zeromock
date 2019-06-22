@@ -4,73 +4,66 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import static com.github.tonivade.zeromock.api.Matchers.all;
-import static com.github.tonivade.zeromock.api.Matchers.startsWith;
 import static java.util.Objects.requireNonNull;
 
-import com.github.tonivade.purefun.Function1;
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
-import com.github.tonivade.purefun.PartialFunction1;
+import com.github.tonivade.purefun.type.Id;
 import com.github.tonivade.purefun.type.Option;
 
 public class HttpService {
-  
-  private final String name;
-  private final PartialFunction1<HttpRequest, HttpResponse> mappings;
-  
+
+  private HttpServiceK<Id.µ> serviceK;
+
   public HttpService(String name) {
-    this(name, PartialFunction1.of(Matcher1.never(), Function1.fail()));
+    this.serviceK = new HttpServiceK<>(name);
   }
-  
-  private HttpService(String name, PartialFunction1<HttpRequest, HttpResponse> mappings) {
-    this.name = requireNonNull(name);
-    this.mappings = requireNonNull(mappings);
+
+  private HttpService(HttpServiceK<Id.µ> serviceK) {
+    this.serviceK = serviceK;
   }
-  
+
   public String name() {
-    return name;
+    return serviceK.name();
+  }
+
+  public HttpServiceK<Id.µ> serviceK() {
+    return serviceK;
   }
 
   public HttpService mount(String path, HttpService other) {
-    return addMapping(
-        startsWith(path).and(req -> other.mappings.isDefinedAt(req.dropOneLevel())), 
-        req -> other.mappings.apply(req.dropOneLevel()));
+    return new HttpService(serviceK.mount(path, other.serviceK));
   }
-  
+
   public HttpService exec(RequestHandler handler) {
-    return addMapping(all(), handler);
+    return new HttpService(serviceK.exec(handler.liftId()::apply));
   }
-  
+
   public HttpService add(Matcher1<HttpRequest> matcher, RequestHandler handler) {
-    return addMapping(matcher, handler);
+    return new HttpService(serviceK.add(matcher, handler.liftId()::apply));
   }
-  
+
   public MappingBuilder<HttpService> when(Matcher1<HttpRequest> matcher) {
     return new MappingBuilder<>(this::add).when(matcher);
   }
-  
+
   public Option<HttpResponse> execute(HttpRequest request) {
-    return mappings.lift().apply(request);
+    return serviceK.execute(request).map(Id::narrowK).map(Id::get);
   }
-  
+
   public HttpService combine(HttpService other) {
-    return new HttpService(this.name + "+" + other.name, this.mappings.orElse(other.mappings));
+    return new HttpService(this.serviceK.combine(other.serviceK));
   }
-  
+
   @Override
   public String toString() {
-    return "HttpService(" + name + ")";
-  }
-  
-  private HttpService addMapping(Matcher1<HttpRequest> matcher, RequestHandler handler) {
-    return new HttpService(name, mappings.orElse(PartialFunction1.of(matcher, handler)));
+    return "HttpService(" + serviceK.name() + ")";
   }
 
   public static final class MappingBuilder<T> {
     private final Function2<Matcher1<HttpRequest>, RequestHandler, T> finisher;
     private Matcher1<HttpRequest> matcher;
-    
+
     public MappingBuilder(Function2<Matcher1<HttpRequest>, RequestHandler, T> finisher) {
       this.finisher = requireNonNull(finisher);
     }

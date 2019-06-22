@@ -4,188 +4,71 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.zeromock.api.Bytes.asBytes;
-import static com.github.tonivade.zeromock.api.Responses.error;
-import static com.github.tonivade.zeromock.api.Responses.notFound;
-import static java.util.Collections.unmodifiableList;
+import static com.github.tonivade.zeromock.server.MockHttpServerK.sync;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UncheckedIOException;
-import java.net.InetSocketAddress;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.github.tonivade.purefun.Matcher1;
-import com.github.tonivade.purefun.type.Option;
-import com.github.tonivade.zeromock.api.Bytes;
-import com.github.tonivade.zeromock.api.HttpHeaders;
-import com.github.tonivade.zeromock.api.HttpMethod;
-import com.github.tonivade.zeromock.api.HttpParams;
-import com.github.tonivade.zeromock.api.HttpPath;
+import com.github.tonivade.purefun.type.Id;
 import com.github.tonivade.zeromock.api.HttpRequest;
-import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpService;
 import com.github.tonivade.zeromock.api.HttpService.MappingBuilder;
 import com.github.tonivade.zeromock.api.RequestHandler;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpServer;
 
-@SuppressWarnings("restriction")
 public final class MockHttpServer {
-  
-  private static final Logger LOG = Logger.getLogger(MockHttpServer.class.getName());
-  
-  private static final String ROOT = "/";
 
-  private final HttpServer server;
+  private MockHttpServerK<Id.µ> serverK;
 
-  private final List<HttpRequest> matched = new LinkedList<>();
-  private final List<HttpRequest> unmatched = new LinkedList<>();
-
-  private HttpService service;
-  
   private MockHttpServer(String host, int port, int threads, int backlog) {
-    try {
-      service = new HttpService("root");
-      server = HttpServer.create(new InetSocketAddress(host, port), backlog);
-      server.setExecutor(Executors.newFixedThreadPool(threads));
-      server.createContext(ROOT, this::handle);
-    } catch (IOException e) {
-      throw new UncheckedIOException("unable to start server at " + host + ":" + port, e);
-    }
+    this.serverK = sync().host(host).port(port).threads(threads).backlog(backlog).build();
   }
-  
+
+  private MockHttpServer(MockHttpServerK<Id.µ> serverK) {
+    this.serverK = serverK;
+  }
+
   public static MockHttpServer listenAt(int port) {
-    return builder().port(port).build();
-  }
-  
-  public static Builder builder() {
-    return new Builder();
+    return new MockHttpServer(sync().port(port).build());
   }
 
   public MockHttpServer mount(String path, HttpService other) {
-    service = service.mount(path, other);
+    serverK.mount(path, other.serviceK());
     return this;
   }
-  
+
   public MockHttpServer exec(RequestHandler handler) {
-    service = service.exec(handler);
+    serverK.exec(handler.liftId()::apply);
     return this;
   }
-  
+
   public MockHttpServer add(Matcher1<HttpRequest> matcher, RequestHandler handler) {
-    service = service.add(matcher, handler);
+    serverK.add(matcher, handler.liftId()::apply);
     return this;
   }
-  
+
   public MappingBuilder<MockHttpServer> when(Matcher1<HttpRequest> matcher) {
     return new MappingBuilder<>(this::add).when(matcher);
   }
-  
+
   public MockHttpServer start() {
-    server.start();
-    LOG.info(() -> "server listening at " + server.getAddress());
+    serverK.start();
     return this;
   }
 
   public void stop() {
-    server.stop(0);
-    LOG.info(() -> "server stopped");
+    serverK.stop();
   }
 
   public MockHttpServer verify(Matcher1<HttpRequest> matcher) {
-    if (!matches(matcher)) {
-      throw new AssertionError("request not found");
-    }
+    serverK.verify(matcher);
     return this;
   }
-  
+
   public List<HttpRequest> getUnmatched() {
-    return unmodifiableList(unmatched);
+    return serverK.getUnmatched();
   }
 
   public void reset() {
-    service = new HttpService("root");
-    matched.clear();
-    unmatched.clear();
-  }
-
-  private void handle(HttpExchange exchange) throws IOException {
-    try {
-      HttpRequest request = createRequest(exchange);
-      Option<HttpResponse> response = execute(request);
-      if (response.isPresent()) {
-        matched.add(request);
-        processResponse(exchange, response.get());
-      } else {
-        LOG.fine(() -> "unmatched request " + request);
-        processResponse(exchange, notFound());
-        unmatched.add(request);
-      }
-    } catch (RuntimeException e) {
-      LOG.log(Level.SEVERE, "error processing request: " + exchange.getRequestURI(), e);
-      processResponse(exchange, error(e));
-    }
-  }
-
-  private boolean matches(Matcher1<HttpRequest> matcher) {
-    return matched.stream().anyMatch(matcher::match);
-  }
-
-  private Option<HttpResponse> execute(HttpRequest request) {
-    return service.execute(request);
-  }
-
-  private HttpRequest createRequest(HttpExchange exchange) throws IOException {
-    HttpMethod method = HttpMethod.valueOf(exchange.getRequestMethod());
-    HttpHeaders headers = HttpHeaders.from(exchange.getRequestHeaders());
-    HttpParams params = new HttpParams(exchange.getRequestURI().getQuery());
-    HttpPath path = HttpPath.from(exchange.getRequestURI().getPath());
-    Bytes body = asBytes(exchange.getRequestBody());
-    return new HttpRequest(method, path, body, headers, params);
-  }
-
-  private void processResponse(HttpExchange exchange, HttpResponse response) throws IOException {
-    Bytes bytes = response.body();
-    response.headers().forEach((key, value) -> exchange.getResponseHeaders().add(key, value));
-    exchange.sendResponseHeaders(response.status().code(), bytes.size());
-    try (OutputStream output = exchange.getResponseBody()) {
-      exchange.getResponseBody().write(bytes.toArray());
-    }
-  }
-  
-  public static final class Builder {
-    private String host = "localhost";
-    private int port = 8080;
-    private int threads = Runtime.getRuntime().availableProcessors();
-    private int backlog = 0;
-    
-    public Builder host(String host) {
-      this.host = host;
-      return this;
-    }
-    
-    public Builder port(int port) {
-      this.port = port;
-      return this;
-    }
-    
-    public Builder threads(int threads) {
-      this.threads = threads;
-      return this;
-    }
-    
-    public Builder backlog(int backlog) {
-      this.backlog = backlog;
-      return this;
-    }
-    
-    public MockHttpServer build() {
-      return new MockHttpServer(host, port, threads, backlog);
-    }
+    serverK.reset();
   }
 }

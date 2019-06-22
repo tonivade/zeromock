@@ -2,7 +2,7 @@
  * Copyright (c) 2018-2019, Antonio Gabriel Muñoz Conejo <antoniogmc at gmail dot com>
  * Distributed under the terms of the MIT License
  */
-package com.github.tonivade.zeromock.server.zio;
+package com.github.tonivade.zeromock.api;
 
 import static java.util.Objects.requireNonNull;
 
@@ -11,26 +11,27 @@ import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Nothing;
 import com.github.tonivade.purefun.concurrent.Future;
+import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.runtimes.FutureZIORuntime;
 import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.zio.ZIO;
+import com.github.tonivade.zeromock.api.AsyncHttpService;
+import com.github.tonivade.zeromock.api.AsyncRequestHandler;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
-import com.github.tonivade.zeromock.api.HttpService;
-import com.github.tonivade.zeromock.api.RequestHandler;
 import com.github.tonivade.zeromock.api.Responses;
 
 public class HttpZIOService<R extends HasHttpRequest> {
 
-  private final HttpService service;
+  private final AsyncHttpService service;
   private final Function1<HttpRequest, R> factory;
 
   public HttpZIOService(String name, Function1<HttpRequest, R> factory) {
-    this(new HttpService(name), factory);
+    this(new AsyncHttpService(name), factory);
   }
 
-  private HttpZIOService(HttpService service, Function1<HttpRequest, R> factory) {
+  private HttpZIOService(AsyncHttpService service, Function1<HttpRequest, R> factory) {
     this.service = requireNonNull(service);
     this.factory = requireNonNull(factory);
   }
@@ -55,7 +56,7 @@ public class HttpZIOService<R extends HasHttpRequest> {
     return new MappingBuilder<>(this::add).when(matcher);
   }
 
-  public Option<HttpResponse> execute(HttpRequest request) {
+  public Option<Promise<HttpResponse>> execute(HttpRequest request) {
     return service.execute(request);
   }
 
@@ -63,12 +64,12 @@ public class HttpZIOService<R extends HasHttpRequest> {
     return new HttpZIOService<>(this.service.combine(other.service), factory);
   }
 
-  public HttpService build() {
+  public AsyncHttpService build() {
     return service;
   }
 
-  private RequestHandler run(ZIO<R, Nothing, HttpResponse> effect) {
-    return request -> toFuture(effect, request).await().fold(Responses::error, Either::get);
+  private AsyncRequestHandler run(ZIO<R, Nothing, HttpResponse> effect) {
+    return request -> toFuture(effect, request).fold(Responses::error, Either::get);
   }
 
   private Future<Either<Nothing, HttpResponse>> toFuture(ZIO<R, Nothing, HttpResponse> effect, HttpRequest request) {

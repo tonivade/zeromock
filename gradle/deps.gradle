@@ -9,15 +9,16 @@ ext {
     jaxb            : '2.4.0-b180830.0438'
   ]
   libs = [
-    purefunCore     : "com.github.tonivade:purefun-core:$versions.purefun",
-    purefunZio      : "com.github.tonivade:purefun-zio:$versions.purefun",
-    purefunInstances: "com.github.tonivade:purefun-instances:$versions.purefun",
-    gson            : "com.google.code.gson:gson:$versions.gson",
-    junitJupiter    : "org.junit.jupiter:junit-jupiter-engine:$versions.junitEngine",
-    junitVintage    : "org.junit.vintage:junit-vintage-engine:$versions.junitEngine",
-    junitRunner     : "org.junit.platform:junit-platform-runner:$versions.junitPlatform",
-    junit           : "junit:junit:$versions.junit",
-    equalsverifier  : "nl.jqno.equalsverifier:equalsverifier:$versions.equalsverifier",
-    jaxb            : "org.glassfish.jaxb:jaxb-runtime:$versions.jaxb"
+    purefunCore        : "com.github.tonivade:purefun-core:$versions.purefun",
+    purefunZio         : "com.github.tonivade:purefun-zio:$versions.purefun",
+    purefunTypeclasses : "com.github.tonivade:purefun-typeclasses:$versions.purefun",
+    purefunInstances   : "com.github.tonivade:purefun-instances:$versions.purefun",
+    gson               : "com.google.code.gson:gson:$versions.gson",
+    junitJupiter       : "org.junit.jupiter:junit-jupiter-engine:$versions.junitEngine",
+    junitVintage       : "org.junit.vintage:junit-vintage-engine:$versions.junitEngine",
+    junitRunner        : "org.junit.platform:junit-platform-runner:$versions.junitPlatform",
+    junit              : "junit:junit:$versions.junit",
+    equalsverifier     : "nl.jqno.equalsverifier:equalsverifier:$versions.equalsverifier",
+    jaxb               : "org.glassfish.jaxb:jaxb-runtime:$versions.jaxb"
   ]
 }

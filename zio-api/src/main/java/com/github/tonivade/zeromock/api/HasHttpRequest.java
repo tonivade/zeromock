@@ -2,7 +2,7 @@
  * Copyright (c) 2018-2019, Antonio Gabriel Muñoz Conejo <antoniogmc at gmail dot com>
  * Distributed under the terms of the MIT License
  */
-package com.github.tonivade.zeromock.server.zio;
+package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.purefun.zio.ZIO.accessM;
 import static com.github.tonivade.zeromock.api.Deserializers.json;
