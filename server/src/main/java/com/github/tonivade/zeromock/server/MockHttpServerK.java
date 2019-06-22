@@ -23,9 +23,7 @@ import com.github.tonivade.purefun.Function1;
 import com.github.tonivade.purefun.Higher1;
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
-import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.concurrent.Promise;
-import com.github.tonivade.purefun.type.Id;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.zeromock.api.Bytes;
 import com.github.tonivade.zeromock.api.HttpHeaders;
@@ -63,22 +61,6 @@ public abstract class MockHttpServerK<F extends Kind> {
     } catch (IOException e) {
       throw new UncheckedIOException("unable to start server at " + host + ":" + port, e);
     }
-  }
-
-  public static Builder<Id.µ> sync() {
-    return new Builder<>(response -> {
-      Promise<HttpResponse> promise = Promise.make();
-      Id<HttpResponse> id = response.fix1(Id::narrowK);
-      promise.succeeded(id.get());
-      return promise;
-    });
-  }
-
-  public static Builder<Future.µ> async() {
-    return new Builder<>(response -> {
-      Future<HttpResponse> future = response.fix1(Future::narrowK);
-      return future.toPromise();
-    });
   }
 
   public MockHttpServerK<F> mount(String path, HttpServiceK<F> other) {

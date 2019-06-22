@@ -4,31 +4,39 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.zeromock.server.MockHttpServerK.sync;
+import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
 import com.github.tonivade.purefun.Matcher1;
+import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.type.Id;
 import com.github.tonivade.zeromock.api.HttpRequest;
+import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpService;
 import com.github.tonivade.zeromock.api.HttpService.MappingBuilder;
 import com.github.tonivade.zeromock.api.RequestHandler;
+import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
 
 public final class MockHttpServer {
 
   private MockHttpServerK<Id.µ> serverK;
 
-  private MockHttpServer(String host, int port, int threads, int backlog) {
-    this.serverK = sync().host(host).port(port).threads(threads).backlog(backlog).build();
+  private MockHttpServer(MockHttpServerK<Id.µ> serverK) {
+    this.serverK = requireNonNull(serverK);
   }
 
-  private MockHttpServer(MockHttpServerK<Id.µ> serverK) {
-    this.serverK = serverK;
+  public static Builder<Id.µ> builder() {
+    return new Builder<>(response -> {
+      Promise<HttpResponse> promise = Promise.make();
+      Id<HttpResponse> id = response.fix1(Id::narrowK);
+      promise.succeeded(id.get());
+      return promise;
+    });
   }
 
   public static MockHttpServer listenAt(int port) {
-    return new MockHttpServer(sync().port(port).build());
+    return new MockHttpServer(builder().port(port).build());
   }
 
   public MockHttpServer mount(String path, HttpService other) {

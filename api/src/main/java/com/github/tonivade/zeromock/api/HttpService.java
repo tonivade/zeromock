@@ -36,11 +36,11 @@ public class HttpService {
   }
 
   public HttpService exec(RequestHandler handler) {
-    return new HttpService(serviceK.exec(handler.liftId()::apply));
+    return new HttpService(serviceK.exec(handler.sync()));
   }
 
   public HttpService add(Matcher1<HttpRequest> matcher, RequestHandler handler) {
-    return new HttpService(serviceK.add(matcher, handler.liftId()::apply));
+    return new HttpService(serviceK.add(matcher, handler.sync()));
   }
 
   public MappingBuilder<HttpService> when(Matcher1<HttpRequest> matcher) {

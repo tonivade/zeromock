@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.zeromock.server.MockHttpServerK.async;
+import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
@@ -14,21 +14,26 @@ import com.github.tonivade.zeromock.api.AsyncHttpService;
 import com.github.tonivade.zeromock.api.AsyncHttpService.AsyncMappingBuilder;
 import com.github.tonivade.zeromock.api.AsyncRequestHandler;
 import com.github.tonivade.zeromock.api.HttpRequest;
+import com.github.tonivade.zeromock.api.HttpResponse;
+import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
 
 public final class AsyncMockHttpServer {
 
   private MockHttpServerK<Future.µ> serverK;
 
-  private AsyncMockHttpServer(String host, int port, int threads, int backlog) {
-    this.serverK = async().host(host).port(port).threads(threads).backlog(backlog).build();
+  private AsyncMockHttpServer(MockHttpServerK<Future.µ> serverK) {
+    this.serverK = requireNonNull(serverK);
   }
 
-  private AsyncMockHttpServer(MockHttpServerK<Future.µ> serverK) {
-    this.serverK = serverK;
+  public static Builder<Future.µ> builder() {
+    return new Builder<>(response -> {
+      Future<HttpResponse> future = response.fix1(Future::narrowK);
+      return future.toPromise();
+    });
   }
 
   public static AsyncMockHttpServer listenAt(int port) {
-    return new AsyncMockHttpServer(async().port(port).build());
+    return new AsyncMockHttpServer(builder().port(port).build());
   }
 
   public AsyncMockHttpServer mount(String path, AsyncHttpService other) {

@@ -10,10 +10,10 @@ import com.github.tonivade.purefun.Function1;
 import com.github.tonivade.purefun.Producer;
 
 public final class Handlers {
-  
+
   private Handlers() {}
 
-  public static <T> Function1<T, HttpResponse> ok() {
+  public static RequestHandler ok() {
     return asFunction(Responses::ok);
   }
 
@@ -28,29 +28,29 @@ public final class Handlers {
   public static RequestHandler ok(Function1<HttpRequest, Bytes> handler) {
     return handler.andThen(Responses::ok)::apply;
   }
-  
+
   public static RequestHandler created(String body) {
     return created(asBytes(body));
   }
-  
+
   public static RequestHandler created(Bytes body) {
     return created(request -> body);
   }
-  
+
   public static RequestHandler created(Function1<HttpRequest, Bytes> handler) {
     return handler.andThen(Responses::created)::apply;
   }
-  
-  public static <T> Function1<T, HttpResponse> noContent() {
+
+  public static RequestHandler noContent() {
     return asFunction(Responses::noContent);
   }
-  
-  public static <T> Function1<T, HttpResponse> forbidden() {
+
+  public static RequestHandler forbidden() {
     return asFunction(Responses::forbidden);
   }
 
   public static RequestHandler badRequest() {
-    return asFunction(Responses::badRequest)::apply;
+    return asFunction(Responses::badRequest);
   }
 
   public static RequestHandler badRequest(String body) {
@@ -65,7 +65,7 @@ public final class Handlers {
     return handler.andThen(Responses::badRequest)::apply;
   }
 
-  public static <T> Function1<T, HttpResponse> notFound() {
+  public static RequestHandler notFound() {
     return asFunction(Responses::notFound);
   }
 
@@ -81,7 +81,7 @@ public final class Handlers {
     return handler.andThen(Responses::notFound)::apply;
   }
 
-  public static <T> Function1<T, HttpResponse> error() {
+  public static RequestHandler error() {
     return asFunction(Responses::error);
   }
 
@@ -92,12 +92,12 @@ public final class Handlers {
   public static RequestHandler error(Bytes body) {
     return error(request -> body);
   }
-  
+
   public static RequestHandler error(Function1<HttpRequest, Bytes> handler) {
     return handler.andThen(Responses::error)::apply;
   }
-  
-  private static <T> Function1<T, HttpResponse> asFunction(Producer<HttpResponse> producer) {
-    return producer.asFunction();
+
+  private static RequestHandler asFunction(Producer<HttpResponse> producer) {
+    return producer.asFunction()::apply;
   }
 }
