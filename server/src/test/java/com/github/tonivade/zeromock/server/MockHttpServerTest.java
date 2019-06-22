@@ -54,25 +54,25 @@ public class MockHttpServerTest {
             .then(ok(adapt(this::sayHello).andThen(json())).postHandle(contentJson()))
       .when(get().and(path("/empty")))
             .then(noContent()::apply);
-  
+
   private HttpService service3 = new HttpService("other").when(get("/ping")).then(ok("pong"));
-  
+
   private static MockHttpServer server = listenAt(8080);
-  
+
   @Test
   public void hello() {
     server.mount("/path", service1.combine(service2));
-    
+
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/hello").withParam("name", "World"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals("Hello World!", asString(response.body())));
   }
-  
+
   @Test
   public void helloMissingParam() {
     server.mount("/path", service1.combine(service2));
-    
+
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/hello"));
 
     assertEquals(HttpStatus.BAD_REQUEST, response.status());
@@ -92,7 +92,7 @@ public class MockHttpServerTest {
   @Test
   public void xmlTest() {
     server.mount("/path", service1.combine(service2));
-    
+
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/test").withHeader("Accept", "text/xml"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
@@ -113,38 +113,40 @@ public class MockHttpServerTest {
   @Test
   public void ping() {
     server.mount("/path", service3);
-    
+
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/ping"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals("pong", asString(response.body())));
   }
-  
+
   @Test
   public void exec() {
-    listenAt(8082).exec(request -> Responses.ok(request.body())).start();
+    MockHttpServer server = listenAt(8082).exec(request -> Responses.ok(request.body())).start();
 
     HttpResponse response = connectTo("http://localhost:8082").request(Requests.get("/").withBody("echo"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals("echo", asString(response.body())));
+
+    server.stop();
   }
-  
+
   @BeforeEach
   public void beforeEach() {
     server.reset();
   }
-  
+
   @BeforeAll
   public static void beforeAll() {
     server.start();
   }
-  
+
   @AfterAll
   public static void afterAll() {
     server.stop();
   }
-  
+
   private String helloWorld(HttpRequest request) {
     return String.format("Hello %s!", request.param("name"));
   }

@@ -124,12 +124,14 @@ public class AsyncMockHttpServerTest {
   @Test
   public void exec() {
     RequestHandler echo = request -> Responses.ok(request.body());
-    listenAt(8082).exec(echo.async()).start();
+    AsyncMockHttpServer server = listenAt(8082).exec(echo.async()).start();
 
     HttpResponse response = connectTo("http://localhost:8082").request(Requests.get("/").withBody("echo"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals("echo", asString(response.body())));
+
+    server.stop();
   }
 
   @BeforeEach
