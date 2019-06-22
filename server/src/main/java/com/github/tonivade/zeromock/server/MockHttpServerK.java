@@ -5,6 +5,7 @@
 package com.github.tonivade.zeromock.server;
 
 import static com.github.tonivade.zeromock.api.Bytes.asBytes;
+import static com.github.tonivade.zeromock.api.Responses.error;
 import static com.github.tonivade.zeromock.api.Responses.notFound;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.requireNonNull;
@@ -132,7 +133,7 @@ public abstract class MockHttpServerK<F extends Kind> {
   private void handle(HttpExchange exchange) throws IOException {
     HttpRequest request = createRequest(exchange);
     execute(request)
-      .ifPresent(response -> matched(exchange, request, response))
+      .ifPresent(responseK -> matched(exchange, request, responseK))
       .ifEmpty(() -> unmatched(exchange, request));
   }
 
@@ -142,9 +143,11 @@ public abstract class MockHttpServerK<F extends Kind> {
     unmatched.add(request);
   }
 
-  private void matched(HttpExchange exchange, HttpRequest request, Higher1<F, HttpResponse> response) {
+  private void matched(HttpExchange exchange, HttpRequest request, Higher1<F, HttpResponse> responseK) {
     matched.add(request);
-    run(response).onSuccess(value -> processResponse(exchange, value));
+    run(responseK)
+      .onSuccess(response -> processResponse(exchange, response))
+      .onFailure(error -> processResponse(exchange, error(error)));
   }
 
   private boolean matches(Matcher1<HttpRequest> matcher) {
