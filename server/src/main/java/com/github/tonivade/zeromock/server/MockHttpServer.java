@@ -18,7 +18,7 @@ import com.github.tonivade.zeromock.api.HttpService.MappingBuilder;
 import com.github.tonivade.zeromock.api.RequestHandler;
 import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
 
-public final class MockHttpServer {
+public final class MockHttpServer implements HttpServer {
 
   private MockHttpServerK<Id.µ> serverK;
 
@@ -58,24 +58,29 @@ public final class MockHttpServer {
     return new MappingBuilder<>(this::add).when(matcher);
   }
 
+  @Override
   public MockHttpServer start() {
     serverK.start();
     return this;
   }
 
+  @Override
   public void stop() {
     serverK.stop();
   }
 
+  @Override
   public MockHttpServer verify(Matcher1<HttpRequest> matcher) {
     serverK.verify(matcher);
     return this;
   }
 
+  @Override
   public List<HttpRequest> getUnmatched() {
     return serverK.getUnmatched();
   }
 
+  @Override
   public void reset() {
     serverK.reset();
   }

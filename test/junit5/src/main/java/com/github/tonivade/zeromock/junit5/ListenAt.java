@@ -16,4 +16,5 @@ import java.lang.annotation.Target;
 @Target(TYPE)
 public @interface ListenAt {
   int value();
+  boolean async() default false;
 }

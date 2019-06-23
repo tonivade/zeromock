@@ -39,7 +39,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
 @SuppressWarnings("restriction")
-public abstract class MockHttpServerK<F extends Kind> {
+public abstract class MockHttpServerK<F extends Kind> implements com.github.tonivade.zeromock.server.HttpServer {
 
   private static final Logger LOG = Logger.getLogger(MockHttpServer.class.getName());
 
@@ -82,17 +82,20 @@ public abstract class MockHttpServerK<F extends Kind> {
     return new MappingBuilderK<>(this::add).when(matcher);
   }
 
+  @Override
   public MockHttpServerK<F> start() {
     server.start();
     LOG.info(() -> "server listening at " + server.getAddress());
     return this;
   }
 
+  @Override
   public void stop() {
     server.stop(0);
     LOG.info(() -> "server stopped");
   }
 
+  @Override
   public MockHttpServerK<F> verify(Matcher1<HttpRequest> matcher) {
     if (!matches(matcher)) {
       throw new AssertionError("request not found");
@@ -100,10 +103,12 @@ public abstract class MockHttpServerK<F extends Kind> {
     return this;
   }
 
+  @Override
   public List<HttpRequest> getUnmatched() {
     return unmodifiableList(unmatched);
   }
 
+  @Override
   public void reset() {
     service = new HttpServiceK<>("root");
     matched.clear();

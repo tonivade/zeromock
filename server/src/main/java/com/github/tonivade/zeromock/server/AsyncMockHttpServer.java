@@ -17,7 +17,7 @@ import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
 
-public final class AsyncMockHttpServer {
+public final class AsyncMockHttpServer implements HttpServer {
 
   private MockHttpServerK<Future.µ> serverK;
 
@@ -55,24 +55,29 @@ public final class AsyncMockHttpServer {
     return new AsyncMappingBuilder<>(this::add).when(matcher);
   }
 
+  @Override
   public AsyncMockHttpServer start() {
     serverK.start();
     return this;
   }
 
+  @Override
   public void stop() {
     serverK.stop();
   }
 
+  @Override
   public AsyncMockHttpServer verify(Matcher1<HttpRequest> matcher) {
     serverK.verify(matcher);
     return this;
   }
 
+  @Override
   public List<HttpRequest> getUnmatched() {
     return serverK.getUnmatched();
   }
 
+  @Override
   public void reset() {
     serverK.reset();
   }

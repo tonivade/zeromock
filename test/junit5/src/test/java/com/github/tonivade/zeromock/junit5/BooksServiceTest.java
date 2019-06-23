@@ -33,22 +33,22 @@ import com.google.gson.reflect.TypeToken;
 
 @ExtendWith(MockHttpServerExtension.class)
 public class BooksServiceTest {
-  
+
   private BooksAPI books = new BooksAPI(new BooksService());
-  
+
   private HttpService booksService = new HttpService("books")
       .when(get("/books")).then(books.findAll())
       .when(get("/books/:id")).then(books.find())
       .when(post("/books")).then(books.create())
       .when(delete("/books/:id")).then(books.delete())
       .when(put("/books/:id")).then(books.update());
-  
+
   @Test
   public void findsBooks(MockHttpServer server) {
     server.mount("/store", booksService);
-    
+
     HttpClient client = new HttpClient("http://localhost:8080/store");
-    
+
     HttpResponse response = client.request(Requests.get("/books"));
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals(asList(new Book(1, "title")), asBooks(response.body())));
@@ -57,48 +57,48 @@ public class BooksServiceTest {
   @Test
   public void findsBook(MockHttpServer server) {
     server.mount("/store", booksService);
-    
+
     HttpClient client = new HttpClient("http://localhost:8080/store");
-    
+
     HttpResponse response = client.request(Requests.get("/books/1"));
-    
+
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals(new Book(1, "title"), asBook(response.body())));
   }
-  
+
   @Test
   public void createsBook(MockHttpServer server) {
     server.mount("/store", booksService);
-    
+
     HttpClient client = new HttpClient("http://localhost:8080/store");
-    
+
     HttpResponse response = client.request(Requests.post("/books").withBody("create"));
-    
+
     assertAll(() -> assertEquals(HttpStatus.CREATED, response.status()),
               () -> assertEquals(new Book(1, "create"), asBook(response.body())),
               () -> server.verify(post("/store/books").and(body("create"))));
   }
-  
+
   @Test
   public void deletesBook(MockHttpServer server) {
     server.mount("/store", booksService);
-    
+
     HttpClient client = new HttpClient("http://localhost:8080/store");
-    
+
     HttpResponse response = client.request(Requests.delete("/books/1"));
-    
+
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals(null, asBook(response.body())));
   }
-  
+
   @Test
   public void updatesBook(MockHttpServer server) {
     server.mount("/store", booksService);
-    
+
     HttpClient client = new HttpClient("http://localhost:8080/store");
-    
+
     HttpResponse response = client.request(Requests.put("/books/1").withBody("update"));
-    
+
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals(new Book(1, "update"), asBook(response.body())));
   }
@@ -110,7 +110,7 @@ public class BooksServiceTest {
   private List<Book> asBooks(Bytes body) {
     return Deserializers.<List<Book>>json(listOfBooks()).apply(body);
   }
-  
+
   private Type listOfBooks() {
     return new TypeToken<List<Book>>(){}.getType();
   }
