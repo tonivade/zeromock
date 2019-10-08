@@ -1,4 +1,4 @@
-archivesBaseName = 'zeromock-zio-api'
+archivesBaseName = 'zeromock-pure'
 
 dependencies {
   compile project(':api')
