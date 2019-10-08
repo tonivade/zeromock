@@ -12,7 +12,7 @@ import com.github.tonivade.purefun.type.Id;
 public interface SyncRequestHandler extends RequestHandlerK<Id.µ> {
 
   @Override
-  Id<HttpResponse> apply(HttpRequest value);
+  Id<HttpResponse> run(HttpRequest value);
 
   default SyncRequestHandler postHandle(Function1<HttpResponse, HttpResponse> after) {
     return postHandle(IdInstances.functor(), after).andThen(Id::narrowK)::apply;

@@ -4,11 +4,11 @@
  */
 package com.github.tonivade.zeromock.api;
 
+import static com.github.tonivade.purefun.Function1.fail;
 import static com.github.tonivade.zeromock.api.Matchers.all;
 import static com.github.tonivade.zeromock.api.Matchers.startsWith;
 import static java.util.Objects.requireNonNull;
 
-import com.github.tonivade.purefun.Function1;
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Higher1;
 import com.github.tonivade.purefun.Kind;
@@ -22,7 +22,7 @@ public class HttpServiceK<F extends Kind> {
   private final PartialFunction1<HttpRequest, Higher1<F, HttpResponse>> mappings;
 
   public HttpServiceK(String name) {
-    this(name, PartialFunction1.of(Matcher1.never(), Function1.fail()));
+    this(name, PartialFunction1.of(Matcher1.never(), fail(IllegalStateException::new)));
   }
 
   private HttpServiceK(String name, PartialFunction1<HttpRequest, Higher1<F, HttpResponse>> mappings) {

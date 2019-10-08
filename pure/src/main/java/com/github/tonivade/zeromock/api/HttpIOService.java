@@ -59,11 +59,11 @@ public class HttpIOService {
   }
 
   private AsyncRequestHandler run(IORequestHandler handler) {
-    return request -> toFuture(handler.apply(request));
+    return request -> toFuture(handler.apply(request).fix1(IO::narrowK));
   }
 
   private Future<HttpResponse> toFuture(IO<HttpResponse> effect) {
-    return new FutureIORuntime().run(effect);
+    return new FutureIORuntime().run(effect).fix1(Future::narrowK);
   }
 
   public static final class MappingBuilder {

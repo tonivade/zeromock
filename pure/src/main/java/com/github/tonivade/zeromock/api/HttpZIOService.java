@@ -16,11 +16,6 @@ import com.github.tonivade.purefun.runtimes.FutureZIORuntime;
 import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.zio.ZIO;
-import com.github.tonivade.zeromock.api.AsyncHttpService;
-import com.github.tonivade.zeromock.api.AsyncRequestHandler;
-import com.github.tonivade.zeromock.api.HttpRequest;
-import com.github.tonivade.zeromock.api.HttpResponse;
-import com.github.tonivade.zeromock.api.Responses;
 
 public class HttpZIOService<R extends HasHttpRequest> {
 
@@ -73,7 +68,7 @@ public class HttpZIOService<R extends HasHttpRequest> {
   }
 
   private Future<Either<Nothing, HttpResponse>> toFuture(ZIO<R, Nothing, HttpResponse> effect, HttpRequest request) {
-    return new FutureZIORuntime().run(factory.apply(request), effect);
+    return new FutureZIORuntime().run(factory.apply(request), effect).fix1(Future::narrowK);
   }
 
   public static final class MappingBuilder<R extends HasHttpRequest> {
