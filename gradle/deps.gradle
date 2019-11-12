@@ -2,15 +2,16 @@ ext {
   versions = [ 
     gson            : '2.8.5',
     junit           : '4.12',
-    junitEngine     : '5.5.1',
-    junitPlatform   : '1.5.1',
+    junitEngine     : '5.5.2',
+    junitPlatform   : '1.5.2',
     equalsverifier  : '3.1.9',
-    purefun         : '1.3',
+    purefun         : '1.4-SNAPSHOT',
     jaxb            : '2.4.0-b180830.0438'
   ]
   libs = [
     purefunCore        : "com.github.tonivade:purefun-core:$versions.purefun",
     purefunZio         : "com.github.tonivade:purefun-zio:$versions.purefun",
+    purefunIo          : "com.github.tonivade:purefun-monad:$versions.purefun",
     purefunTypeclasses : "com.github.tonivade:purefun-typeclasses:$versions.purefun",
     purefunInstances   : "com.github.tonivade:purefun-instances:$versions.purefun",
     gson               : "com.google.code.gson:gson:$versions.gson",
