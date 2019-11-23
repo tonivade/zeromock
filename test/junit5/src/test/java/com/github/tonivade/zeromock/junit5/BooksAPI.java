@@ -10,7 +10,7 @@ import static com.github.tonivade.zeromock.api.Extractors.body;
 import static com.github.tonivade.zeromock.api.Extractors.pathParam;
 import static com.github.tonivade.zeromock.api.Headers.contentJson;
 import static com.github.tonivade.zeromock.api.Serializers.empty;
-import static com.github.tonivade.zeromock.api.Serializers.json;
+import static com.github.tonivade.zeromock.api.Serializers.objectToJson;
 
 import com.github.tonivade.purefun.Consumer1;
 import com.github.tonivade.purefun.Function1;
@@ -34,7 +34,7 @@ public class BooksAPI {
     return Producer.of(service::findAll)
         .asFunction()
         .andThen(ImmutableList::toList)
-        .andThen(json())
+        .andThen(objectToJson())
         .andThen(Responses::ok)
         .andThen(contentJson())::apply;
   }
@@ -43,7 +43,7 @@ public class BooksAPI {
     return Function2.of(service::update)
         .compose(getBookId(), getBookTitle())
         .liftTry()
-        .andThen(map(json()))
+        .andThen(map(objectToJson()))
         .andThen(map(Responses::ok))
         .andThen(getOrElse(Responses::error))
         .andThen(contentJson())::apply;
@@ -52,7 +52,7 @@ public class BooksAPI {
   public RequestHandler find() {
     return Function1.of(service::find)
         .compose(getBookId())
-        .andThen(x -> x.map(json()))
+        .andThen(x -> x.map(objectToJson()))
         .andThen(x -> x.map(Responses::ok))
         .andThen(x -> x.getOrElse(Responses::noContent))
         .andThen(contentJson())::apply;
@@ -62,7 +62,7 @@ public class BooksAPI {
     return getBookTitle()
         .andThen(service::create)
         .liftTry()
-        .andThen(map(json()))
+        .andThen(map(objectToJson()))
         .andThen(map(Responses::created))
         .andThen(getOrElse(Responses::error))
         .andThen(contentJson())::apply;

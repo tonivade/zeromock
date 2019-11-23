@@ -16,37 +16,35 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import com.github.tonivade.purefun.Function1;
+import com.github.tonivade.purefun.data.ImmutableArray;
+import com.github.tonivade.purefun.data.ImmutableList;
+import com.github.tonivade.purefun.data.ImmutableSet;
+import com.github.tonivade.purefun.data.ImmutableTree;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 public final class Deserializers {
   
-  private static ThreadLocal<GsonBuilder> gsonImplicit = ThreadLocal.withInitial(GsonBuilder::new);
-  
   private Deserializers() {}
-  
-  public static void withGsonBuilder(GsonBuilder builder) {
-    gsonImplicit.set(builder);
-  }
-
-  public static GsonBuilder gsonBuilder() {
-    return gsonImplicit.get();
-  }
   
   public static Function1<Bytes, JsonElement> json() {
     return plain().andThen(asJson());
   }
   
-  public static <T> Function1<Bytes, T> xml(Class<T> clazz) {
+  public static <T> Function1<Bytes, T> xmlToObject(Class<T> clazz) {
     return bytes -> Deserializers.<T>fromXml(bytes, clazz);
   }
   
-  public static <T> Function1<Bytes, T> json(Class<T> clazz) {
+  public static <T> Function1<Bytes, T> jsonToObject(Class<T> clazz) {
     return plain().andThen(fromJson(clazz));
   }
   
-  public static <T> Function1<Bytes, T> json(Type type) {
+  public static <T> Function1<Bytes, T> jsonTo(Type type) {
     return plain().andThen(fromJson(type));
   }
   
@@ -59,7 +57,16 @@ public final class Deserializers {
   }
   
   private static <T> Function1<String, T> fromJson(Type type) {
-    return json -> gsonBuilder().create().fromJson(json, type);
+    return json -> buildGson().fromJson(json, type);
+  }
+
+  private static Gson buildGson() {
+    return new GsonBuilder()
+        .registerTypeAdapter(ImmutableList.class, new ImmutableListAdapter())
+        .registerTypeAdapter(ImmutableArray.class, new ImmutableArrayAdapter())
+        .registerTypeAdapter(ImmutableSet.class, new ImmutableSetAdapter())
+        .registerTypeAdapter(ImmutableTree.class, new ImmutableTreeAdapter())
+        .create();
   }
   
   @SuppressWarnings("unchecked")
@@ -73,5 +80,45 @@ public final class Deserializers {
     } catch (JAXBException e) {
       throw new DataBindingException(e);
     }
+  }
+}
+
+class ImmutableSetAdapter implements JsonDeserializer<ImmutableSet<?>> {
+
+  @Override
+  public ImmutableSet<?> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+      throws JsonParseException {
+    Iterable<?> iterable = context.deserialize(json, Iterable.class);
+    return ImmutableSet.from(iterable);
+  }
+}
+
+class ImmutableArrayAdapter implements JsonDeserializer<ImmutableArray<?>> {
+
+  @Override
+  public ImmutableArray<?> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+      throws JsonParseException {
+    Iterable<?> iterable = context.deserialize(json, Iterable.class);
+    return ImmutableArray.from(iterable);
+  }
+}
+
+class ImmutableTreeAdapter implements JsonDeserializer<ImmutableTree<?>> {
+
+  @Override
+  public ImmutableTree<?> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+      throws JsonParseException {
+    Iterable<?> iterable = context.deserialize(json, Iterable.class);
+    return ImmutableTree.from(iterable);
+  }
+}
+
+class ImmutableListAdapter implements JsonDeserializer<ImmutableList<?>> {
+
+  @Override
+  public ImmutableList<?> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+      throws JsonParseException {
+    Iterable<?> iterable = context.deserialize(json, Iterable.class);
+    return ImmutableList.from(iterable);
   }
 }

@@ -15,9 +15,9 @@ import static com.github.tonivade.zeromock.api.Matchers.acceptsXml;
 import static com.github.tonivade.zeromock.api.Matchers.get;
 import static com.github.tonivade.zeromock.api.Matchers.param;
 import static com.github.tonivade.zeromock.api.Matchers.path;
-import static com.github.tonivade.zeromock.api.Serializers.json;
+import static com.github.tonivade.zeromock.api.Serializers.objectToJson;
 import static com.github.tonivade.zeromock.api.Serializers.plain;
-import static com.github.tonivade.zeromock.api.Serializers.xml;
+import static com.github.tonivade.zeromock.api.Serializers.objectToXml;
 import static com.github.tonivade.zeromock.server.HttpClient.connectTo;
 import static com.github.tonivade.zeromock.server.MockHttpServer.listenAt;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -49,9 +49,9 @@ public class MockHttpServerTest {
 
   private HttpService service2 = new HttpService("test")
       .when(get().and(path("/test")).and(acceptsXml()))
-            .then(ok(adapt(this::sayHello).andThen(xml())).postHandle(contentXml()))
+            .then(ok(adapt(this::sayHello).andThen(objectToXml())).postHandle(contentXml()))
       .when(get().and(path("/test")).and(acceptsJson()))
-            .then(ok(adapt(this::sayHello).andThen(json())).postHandle(contentJson()))
+            .then(ok(adapt(this::sayHello).andThen(objectToJson())).postHandle(contentJson()))
       .when(get().and(path("/empty")))
             .then(noContent()::apply);
 
@@ -85,7 +85,7 @@ public class MockHttpServerTest {
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/test").withHeader("Accept", "application/json"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals(sayHello(), Deserializers.json(Say.class).apply(response.body())),
+              () -> assertEquals(sayHello(), Deserializers.jsonToObject(Say.class).apply(response.body())),
               () -> assertEquals(ImmutableSet.of("application/json"), response.headers().get("Content-type")));
   }
 
@@ -96,7 +96,7 @@ public class MockHttpServerTest {
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/test").withHeader("Accept", "text/xml"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals(sayHello(), Deserializers.xml(Say.class).apply(response.body())),
+              () -> assertEquals(sayHello(), Deserializers.xmlToObject(Say.class).apply(response.body())),
               () -> assertEquals(ImmutableSet.of("text/xml"), response.headers().get("Content-type")));
   }
 

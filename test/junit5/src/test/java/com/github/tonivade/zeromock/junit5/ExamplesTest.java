@@ -10,7 +10,7 @@ import static com.github.tonivade.zeromock.api.Extractors.queryParam;
 import static com.github.tonivade.zeromock.api.Handlers.ok;
 import static com.github.tonivade.zeromock.api.Matchers.get;
 import static com.github.tonivade.zeromock.api.Matchers.param;
-import static com.github.tonivade.zeromock.api.Serializers.json;
+import static com.github.tonivade.zeromock.api.Serializers.objectToJson;
 import static com.github.tonivade.zeromock.api.Serializers.plain;
 import static com.github.tonivade.zeromock.server.HttpClient.connectTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -61,7 +61,7 @@ public class ExamplesTest {
 
   @Test
   public void pojoSerialization(MockHttpServer server) {
-    server.when(get("/echo").and(param("say"))).then(ok(queryParam("say").andThen(Say::new).andThen(json())));
+    server.when(get("/echo").and(param("say"))).then(ok(queryParam("say").andThen(Say::new).andThen(objectToJson())));
 
     HttpResponse response = connectTo(BASE_URL)
         .request(Requests.get("/echo").withParam("say", "Hello World!"));
@@ -77,6 +77,6 @@ public class ExamplesTest {
   }
 
   private Say asObject(Bytes body) {
-    return Deserializers.json(Say.class).apply(body);
+    return Deserializers.jsonToObject(Say.class).apply(body);
   }
 }

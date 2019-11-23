@@ -51,7 +51,7 @@ allprojects {
   }
 
   jacoco {
-    toolVersion = '0.8.4'
+    toolVersion = '0.8.5'
   }
 
   jacocoTestReport {
@@ -121,14 +121,10 @@ task jacocoFullReport(type: JacocoReport, group: 'Coverage reports') {
 
   dependsOn(publishedProjects.test)
 
-  additionalSourceDirs = files(publishedProjects.sourceSets.main.allSource.srcDirs)
-  sourceDirectories = files(publishedProjects.sourceSets.main.allSource.srcDirs)
-  classDirectories = files(publishedProjects.sourceSets.main.output)
-  executionData = files(publishedProjects.jacocoTestReport.executionData)
-
-  doFirst {
-    executionData = files(executionData.findAll { it.exists() })
-  }
+  additionalSourceDirs.from = files(publishedProjects.sourceSets.main.allSource.srcDirs)
+  sourceDirectories.from = files(publishedProjects.sourceSets.main.allSource.srcDirs)
+  classDirectories.from = files(publishedProjects.sourceSets.main.output)
+  executionData.from = files(publishedProjects.jacocoTestReport.executionData).findAll { it.exists() }
 
   reports {
     html.enabled = true

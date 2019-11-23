@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock.junit5;
 
-import static com.github.tonivade.zeromock.api.Deserializers.json;
+import static com.github.tonivade.zeromock.api.Deserializers.jsonToObject;
 import static com.github.tonivade.zeromock.api.Matchers.body;
 import static com.github.tonivade.zeromock.api.Matchers.delete;
 import static com.github.tonivade.zeromock.api.Matchers.get;
@@ -104,11 +104,11 @@ public class BooksServiceTest {
   }
 
   private Book asBook(Bytes body) {
-    return json(Book.class).apply(body);
+    return jsonToObject(Book.class).apply(body);
   }
 
   private List<Book> asBooks(Bytes body) {
-    return Deserializers.<List<Book>>json(listOfBooks()).apply(body);
+    return Deserializers.<List<Book>>jsonTo(listOfBooks()).apply(body);
   }
 
   private Type listOfBooks() {
