@@ -14,7 +14,17 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import com.github.tonivade.purefun.Function1;
-import com.github.tonivade.purefun.data.Sequence;
+import com.github.tonivade.purefun.data.ImmutableArray;
+import com.github.tonivade.purefun.data.ImmutableArray.JavaBasedImmutableArray;
+import com.github.tonivade.purefun.data.ImmutableList;
+import com.github.tonivade.purefun.data.ImmutableList.JavaBasedImmutableList;
+import com.github.tonivade.purefun.data.ImmutableMap;
+import com.github.tonivade.purefun.data.ImmutableMap.JavaBasedImmutableMap;
+import com.github.tonivade.purefun.data.ImmutableSet;
+import com.github.tonivade.purefun.data.ImmutableSet.JavaBasedImmutableSet;
+import com.github.tonivade.purefun.data.ImmutableTree;
+import com.github.tonivade.purefun.data.ImmutableTree.JavaBasedImmutableTree;
+import com.github.tonivade.purefun.data.ImmutableTreeMap.JavaBasedImmutableTreeMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -54,7 +64,14 @@ public final class Serializers {
   }
 
   private static Gson buildGson() {
-    return new GsonBuilder().registerTypeAdapter(Sequence.class, new SequenceAdapter()).create();
+    return new GsonBuilder()
+        .registerTypeAdapter(JavaBasedImmutableList.class, new ImmutableListSerializerAdapter())
+        .registerTypeAdapter(JavaBasedImmutableArray.class, new ImmutableArraySerializerAdapter())
+        .registerTypeAdapter(JavaBasedImmutableSet.class, new ImmutableSetSerializerAdapter())
+        .registerTypeAdapter(JavaBasedImmutableTree.class, new ImmutableTreeSerializerAdapter())
+        .registerTypeAdapter(JavaBasedImmutableMap.class, new ImmutableMapSerializerAdapter())
+        .registerTypeAdapter(JavaBasedImmutableTreeMap.class, new ImmutableMapSerializerAdapter())
+        .create();
   }
   
   private static <T> String toXml(T value) {
@@ -74,10 +91,42 @@ public final class Serializers {
   }
 }
 
-class SequenceAdapter implements JsonSerializer<Sequence<?>> {
+class ImmutableListSerializerAdapter implements JsonSerializer<ImmutableList<?>> {
   
   @Override
-  public JsonElement serialize(Sequence<?> src, Type typeOfSrc, JsonSerializationContext context) {
-    return context.serialize(src.asList().toList());
+  public JsonElement serialize(ImmutableList<?> src, Type typeOfSrc, JsonSerializationContext context) {
+    return context.serialize(src.toList());
+  }
+}
+
+class ImmutableSetSerializerAdapter implements JsonSerializer<ImmutableSet<?>> {
+  
+  @Override
+  public JsonElement serialize(ImmutableSet<?> src, Type typeOfSrc, JsonSerializationContext context) {
+    return context.serialize(src.toSet());
+  }
+}
+
+class ImmutableArraySerializerAdapter implements JsonSerializer<ImmutableArray<?>> {
+  
+  @Override
+  public JsonElement serialize(ImmutableArray<?> src, Type typeOfSrc, JsonSerializationContext context) {
+    return context.serialize(src.toList());
+  }
+}
+
+class ImmutableTreeSerializerAdapter implements JsonSerializer<ImmutableTree<?>> {
+  
+  @Override
+  public JsonElement serialize(ImmutableTree<?> src, Type typeOfSrc, JsonSerializationContext context) {
+    return context.serialize(src.toNavigableSet());
+  }
+}
+
+class ImmutableMapSerializerAdapter implements JsonSerializer<ImmutableMap<?, ?>> {
+
+  @Override
+  public JsonElement serialize(ImmutableMap<?, ?> src, Type typeOfSrc, JsonSerializationContext context) {
+    return context.serialize(src.toMap());
   }
 }
