@@ -59,7 +59,7 @@ public final class HttpIOService {
   }
 
   private AsyncRequestHandler run(IORequestHandler handler) {
-    return request -> toFuture(handler.apply(request).fix1(IO::narrowK));
+    return request -> toFuture(handler.apply(request));
   }
 
   private Future<HttpResponse> toFuture(IO<HttpResponse> effect) {

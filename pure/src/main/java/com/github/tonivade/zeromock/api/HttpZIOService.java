@@ -65,7 +65,7 @@ public final class HttpZIOService<R> {
   }
 
   private AsyncRequestHandler run(ZIORequestHandler<R> effect) {
-    return request -> HttpZIOService.this.toFuture(effect.run(request)).fold(Responses::error, Either::get);
+    return request -> HttpZIOService.this.toFuture(effect.apply(request)).fold(Responses::error, Either::get);
   }
 
   private Future<Either<Nothing, HttpResponse>> toFuture(ZIO<R, Nothing, HttpResponse> effect) {

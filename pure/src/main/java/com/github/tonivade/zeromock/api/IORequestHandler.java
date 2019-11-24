@@ -11,7 +11,9 @@ import com.github.tonivade.purefun.monad.IO;
 public interface IORequestHandler extends RequestHandlerK<IO.µ> {
 
   @Override
-  IO<HttpResponse> run(HttpRequest value);
+  default IO<HttpResponse> apply(HttpRequest value) {
+    return RequestHandlerK.super.apply(value).fix1(IO::narrowK);
+  }
 
   default IORequestHandler postHandle(Function1<HttpResponse, HttpResponse> after) {
     return postHandle(IOInstances.functor(), after).andThen(IO::narrowK)::apply;

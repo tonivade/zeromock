@@ -12,7 +12,9 @@ import com.github.tonivade.purefun.instances.FutureInstances;
 public interface AsyncRequestHandler extends RequestHandlerK<Future.µ> {
 
   @Override
-  Future<HttpResponse> run(HttpRequest value);
+  default Future<HttpResponse> apply(HttpRequest value) {
+    return RequestHandlerK.super.apply(value).fix1(Future::narrowK);
+  }
 
   default AsyncRequestHandler postHandle(Function1<HttpResponse, HttpResponse> after) {
     return postHandle(FutureInstances.functor(), after).andThen(Future::narrowK)::apply;
