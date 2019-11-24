@@ -12,7 +12,7 @@ import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.type.Option;
 
-public class AsyncHttpService {
+public final class AsyncHttpService {
 
   private HttpServiceK<Future.µ> serviceK;
 

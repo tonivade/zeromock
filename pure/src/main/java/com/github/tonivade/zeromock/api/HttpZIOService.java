@@ -18,7 +18,7 @@ import com.github.tonivade.purefun.zio.ZIO;
 import static com.github.tonivade.purefun.Function1.cons;
 import static java.util.Objects.requireNonNull;
 
-public class HttpZIOService<R> {
+public final class HttpZIOService<R> {
 
   private final AsyncHttpService service;
   private final Producer<R> factory;

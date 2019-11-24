@@ -16,7 +16,7 @@ import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.PartialFunction1;
 import com.github.tonivade.purefun.type.Option;
 
-public class HttpServiceK<F extends Kind> {
+public final class HttpServiceK<F extends Kind> {
 
   private final String name;
   private final PartialFunction1<HttpRequest, Higher1<F, HttpResponse>> mappings;

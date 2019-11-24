@@ -14,7 +14,7 @@ import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.purefun.runtimes.FutureIORuntime;
 import com.github.tonivade.purefun.type.Option;
 
-public class HttpIOService {
+public final class HttpIOService {
 
   private final AsyncHttpService service;
 

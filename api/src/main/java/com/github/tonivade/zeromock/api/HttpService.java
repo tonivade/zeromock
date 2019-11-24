@@ -11,7 +11,7 @@ import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.type.Id;
 import com.github.tonivade.purefun.type.Option;
 
-public class HttpService {
+public final class HttpService {
 
   private HttpServiceK<Id.µ> serviceK;
 
