@@ -7,6 +7,7 @@ package com.github.tonivade.zeromock.server;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
@@ -19,21 +20,25 @@ import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
 
 public final class AsyncMockHttpServer implements HttpServer {
 
-  private MockHttpServerK<Future.µ> serverK;
+  private final MockHttpServerK<Future.µ> serverK;
 
   private AsyncMockHttpServer(MockHttpServerK<Future.µ> serverK) {
     this.serverK = requireNonNull(serverK);
   }
 
-  public static Builder<Future.µ> builder() {
+  public static Builder<Future.µ> builder(Executor executor) {
     return new Builder<>(response -> {
       Future<HttpResponse> future = response.fix1(Future::narrowK);
-      return future.toPromise();
+      return future.apply(executor);
     });
   }
 
   public static AsyncMockHttpServer listenAt(int port) {
-    return new AsyncMockHttpServer(builder().port(port).build());
+    return listenAt(port, Future.DEFAULT_EXECUTOR);
+  }
+
+  public static AsyncMockHttpServer listenAt(int port, Executor executor) {
+    return new AsyncMockHttpServer(builder(executor).port(port).build());
   }
 
   public AsyncMockHttpServer mount(String path, AsyncHttpService other) {

@@ -4,8 +4,6 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import java.util.concurrent.Executor;
-
 import com.github.tonivade.purefun.Function1;
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.type.Id;
@@ -14,11 +12,7 @@ import com.github.tonivade.purefun.type.Id;
 public interface RequestHandler extends Function1<HttpRequest, HttpResponse> {
 
   default AsyncRequestHandler async() {
-    return async(Future.DEFAULT_EXECUTOR);
-  }
-
-  default AsyncRequestHandler async(Executor executor) {
-    return request -> Future.run(executor, () -> apply(request));
+    return request -> Future.run(() -> apply(request));
   }
 
   default SyncRequestHandler sync() {

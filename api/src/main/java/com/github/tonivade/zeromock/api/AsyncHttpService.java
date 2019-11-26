@@ -6,6 +6,8 @@ package com.github.tonivade.zeromock.api;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.concurrent.Executor;
+
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
@@ -14,14 +16,16 @@ import com.github.tonivade.purefun.type.Option;
 
 public final class AsyncHttpService {
 
-  private HttpServiceK<Future.µ> serviceK;
+  private final Executor executor;
+  private final HttpServiceK<Future.µ> serviceK;
 
   public AsyncHttpService(String name) {
-    this.serviceK = new HttpServiceK<>(name);
+    this(new HttpServiceK<>(name), Future.DEFAULT_EXECUTOR);
   }
 
-  private AsyncHttpService(HttpServiceK<Future.µ> serviceK) {
-    this.serviceK = serviceK;
+  private AsyncHttpService(HttpServiceK<Future.µ> serviceK, Executor executor) {
+    this.serviceK = requireNonNull(serviceK);
+    this.executor = requireNonNull(executor);
   }
 
   public String name() {
@@ -33,15 +37,15 @@ public final class AsyncHttpService {
   }
 
   public AsyncHttpService mount(String path, AsyncHttpService other) {
-    return new AsyncHttpService(serviceK.mount(path, other.serviceK));
+    return new AsyncHttpService(serviceK.mount(path, other.serviceK), executor);
   }
 
   public AsyncHttpService exec(AsyncRequestHandler handler) {
-    return new AsyncHttpService(serviceK.exec(handler));
+    return new AsyncHttpService(serviceK.exec(handler), executor);
   }
 
   public AsyncHttpService add(Matcher1<HttpRequest> matcher, AsyncRequestHandler handler) {
-    return new AsyncHttpService(serviceK.add(matcher, handler));
+    return new AsyncHttpService(serviceK.add(matcher, handler), executor);
   }
 
   public AsyncMappingBuilder<AsyncHttpService> when(Matcher1<HttpRequest> matcher) {
@@ -49,11 +53,11 @@ public final class AsyncHttpService {
   }
 
   public Option<Promise<HttpResponse>> execute(HttpRequest request) {
-    return serviceK.execute(request).map(Future::narrowK).map(Future::toPromise);
+    return serviceK.execute(request).map(Future::narrowK).map(future -> future.apply(executor));
   }
 
   public AsyncHttpService combine(AsyncHttpService other) {
-    return new AsyncHttpService(this.serviceK.combine(other.serviceK));
+    return new AsyncHttpService(this.serviceK.combine(other.serviceK), executor);
   }
 
   @Override

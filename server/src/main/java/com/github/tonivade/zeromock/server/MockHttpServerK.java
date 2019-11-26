@@ -41,7 +41,7 @@ import com.sun.net.httpserver.HttpServer;
 @SuppressWarnings("restriction")
 public abstract class MockHttpServerK<F extends Kind> implements com.github.tonivade.zeromock.server.HttpServer {
 
-  private static final Logger LOG = Logger.getLogger(MockHttpServer.class.getName());
+  private static final Logger LOG = Logger.getLogger(MockHttpServerK.class.getName());
 
   private static final String ROOT = "/";
 
