@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import com.github.tonivade.purefun.Function1;
+import com.github.tonivade.purefun.Operator1;
 import com.github.tonivade.purefun.instances.IdInstances;
 import com.github.tonivade.purefun.type.Id;
 
@@ -14,7 +14,7 @@ public interface SyncRequestHandler extends RequestHandlerK<Id.µ> {
   @Override
   Id<HttpResponse> run(HttpRequest value);
 
-  default SyncRequestHandler postHandle(Function1<HttpResponse, HttpResponse> after) {
+  default SyncRequestHandler postHandle(Operator1<HttpResponse> after) {
     return postHandle(IdInstances.functor(), after).andThen(Id::narrowK)::apply;
   }
 }

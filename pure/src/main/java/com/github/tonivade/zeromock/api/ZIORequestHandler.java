@@ -4,9 +4,9 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import com.github.tonivade.purefun.Function1;
 import com.github.tonivade.purefun.Higher1;
 import com.github.tonivade.purefun.Nothing;
+import com.github.tonivade.purefun.Operator1;
 import com.github.tonivade.purefun.instances.ZIOInstances;
 import com.github.tonivade.purefun.zio.ZIO;
 
@@ -17,7 +17,7 @@ public interface ZIORequestHandler<R> extends RequestHandlerK<Higher1<Higher1<ZI
     return RequestHandlerK.super.apply(value).fix1(ZIO::narrowK);
   }
 
-  default ZIORequestHandler<R> postHandle(Function1<HttpResponse, HttpResponse> after) {
+  default ZIORequestHandler<R> postHandle(Operator1<HttpResponse> after) {
     return postHandle(ZIOInstances.<R, Nothing>functor(), after).andThen(ZIO::narrowK)::apply;
   }
 }
