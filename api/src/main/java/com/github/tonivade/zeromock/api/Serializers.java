@@ -27,40 +27,70 @@ import com.github.tonivade.purefun.data.ImmutableTree.JavaBasedImmutableTree;
 import com.github.tonivade.purefun.data.ImmutableTreeMap.JavaBasedImmutableTreeMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 public final class Serializers {
-  
+
   private Serializers() {}
-  
+
   public static <T> Function1<T, Bytes> empty() {
-    return value -> Bytes.empty();
+    return Function1.cons(Bytes.empty());
   }
-  
+
+  public static Function1<Throwable, Bytes> throwableToJson() {
+    return Function1.<Throwable, String>of(Serializers::toJson).andThen(Bytes::asBytes);
+  }
+
   public static <T> Function1<T, Bytes> objectToJson() {
-    return Serializers.<T>asJson().andThen(Bytes::asBytes);
+    return Function1.<T, String>of(Serializers::toJson).andThen(Bytes::asBytes);
   }
-  
+
   public static <T> Function1<T, Bytes> objectToXml() {
-    return Serializers.<T>asXml().andThen(Bytes::asBytes);
+    return Function1.<T, String>of(Serializers::toXml).andThen(Bytes::asBytes);
   }
 
   public static <T> Function1<T, Bytes> plain() {
-    return Serializers.<T>asString().andThen(Bytes::asBytes);
-  }
-  
-  private static <T> Function1<T, String> asJson() {
-    return Serializers::toJson;
-  }
-  
-  private static <T> Function1<T, String> asXml() {
-    return Serializers::toXml;
+    return Function1.<T, String>of(Object::toString).andThen(Bytes::asBytes);
   }
 
   private static <T> String toJson(T value) {
     return buildGson().toJson(value);
+  }
+
+  private static String toJson(Throwable error) {
+    return toJson(throwableToJson(error));
+  }
+
+  private static JsonObject throwableToJson(Throwable error) {
+    JsonObject json = new JsonObject();
+    json.addProperty("type", error.getClass().getName());
+    json.addProperty("message", error.getMessage());
+    json.add("trace", stacktrace(error.getStackTrace()));
+    return json;
+  }
+
+  private static <T> String toXml(T value) {
+    try {
+      JAXBContext context = JAXBContext.newInstance(value.getClass());
+      StringWriter writer = new StringWriter();
+      Marshaller marshaller = context.createMarshaller();
+      marshaller.marshal(value, writer);
+      return writer.toString();
+    } catch (JAXBException e) {
+      throw new UncheckedIOException(new IOException(e));
+    }
+  }
+
+  private static JsonElement stacktrace(StackTraceElement[] stackTrace) {
+    JsonArray array = new JsonArray();
+    for (StackTraceElement stackTraceElement : stackTrace) {
+      array.add(stackTraceElement.toString());
+    }
+    return array;
   }
 
   private static Gson buildGson() {
@@ -73,26 +103,10 @@ public final class Serializers {
         .registerTypeAdapter(JavaBasedImmutableTreeMap.class, new ImmutableMapSerializerAdapter())
         .create();
   }
-  
-  private static <T> String toXml(T value) {
-    try {
-      JAXBContext context = JAXBContext.newInstance(value.getClass());
-      StringWriter writer = new StringWriter();
-      Marshaller marshaller = context.createMarshaller();
-      marshaller.marshal(value, writer);
-      return writer.toString();
-    } catch (JAXBException e) {
-      throw new UncheckedIOException(new IOException(e));
-    }
-  }
-  
-  private static <T> Function1<T, String> asString() {
-    return Object::toString;
-  }
 }
 
 class ImmutableListSerializerAdapter implements JsonSerializer<ImmutableList<?>> {
-  
+
   @Override
   public JsonElement serialize(ImmutableList<?> src, Type typeOfSrc, JsonSerializationContext context) {
     return context.serialize(src.toList());
@@ -100,7 +114,7 @@ class ImmutableListSerializerAdapter implements JsonSerializer<ImmutableList<?>>
 }
 
 class ImmutableSetSerializerAdapter implements JsonSerializer<ImmutableSet<?>> {
-  
+
   @Override
   public JsonElement serialize(ImmutableSet<?> src, Type typeOfSrc, JsonSerializationContext context) {
     return context.serialize(src.toSet());
@@ -108,7 +122,7 @@ class ImmutableSetSerializerAdapter implements JsonSerializer<ImmutableSet<?>> {
 }
 
 class ImmutableArraySerializerAdapter implements JsonSerializer<ImmutableArray<?>> {
-  
+
   @Override
   public JsonElement serialize(ImmutableArray<?> src, Type typeOfSrc, JsonSerializationContext context) {
     return context.serialize(src.toList());
@@ -116,7 +130,7 @@ class ImmutableArraySerializerAdapter implements JsonSerializer<ImmutableArray<?
 }
 
 class ImmutableTreeSerializerAdapter implements JsonSerializer<ImmutableTree<?>> {
-  
+
   @Override
   public JsonElement serialize(ImmutableTree<?> src, Type typeOfSrc, JsonSerializationContext context) {
     return context.serialize(src.toNavigableSet());
