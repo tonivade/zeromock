@@ -10,8 +10,8 @@ import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.concurrent.Promise;
+import com.github.tonivade.purefun.instances.FutureInstances;
 import com.github.tonivade.purefun.monad.IO;
-import com.github.tonivade.purefun.runtimes.FutureIORuntime;
 import com.github.tonivade.purefun.type.Option;
 
 public final class HttpIOService {
@@ -63,7 +63,7 @@ public final class HttpIOService {
   }
 
   private Future<HttpResponse> toFuture(IO<HttpResponse> effect) {
-    return new FutureIORuntime().run(effect).fix1(Future::narrowK);
+    return effect.foldMap(FutureInstances.monadDefer()).fix1(Future::narrowK);
   }
 
   public static final class MappingBuilder {

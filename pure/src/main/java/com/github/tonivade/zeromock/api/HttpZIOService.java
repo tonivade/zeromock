@@ -4,19 +4,19 @@
  */
 package com.github.tonivade.zeromock.api;
 
+import static com.github.tonivade.purefun.Function1.cons;
+import static java.util.Objects.requireNonNull;
+
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Nothing;
 import com.github.tonivade.purefun.Producer;
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.concurrent.Promise;
-import com.github.tonivade.purefun.runtimes.FutureZIORuntime;
+import com.github.tonivade.purefun.instances.FutureInstances;
 import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.zio.ZIO;
-
-import static com.github.tonivade.purefun.Function1.cons;
-import static java.util.Objects.requireNonNull;
 
 public final class HttpZIOService<R> {
 
@@ -69,7 +69,7 @@ public final class HttpZIOService<R> {
   }
 
   private Future<Either<Nothing, HttpResponse>> toFuture(ZIO<R, Nothing, HttpResponse> effect) {
-    return new FutureZIORuntime().run(factory.get(), effect).fix1(Future::narrowK);
+    return effect.foldMap(factory.get(), FutureInstances.monadDefer()).fix1(Future::narrowK);
   }
 
   public static final class MappingBuilder<R> {
