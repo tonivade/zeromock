@@ -2,8 +2,7 @@ archivesBaseName = 'zeromock-pure'
 
 dependencies {
   compile project(':api')
-  compile libs.purefunZio
-  compile libs.purefunIo
+  compile libs.purefunEffect
   compile libs.purefunInstances
 }
 

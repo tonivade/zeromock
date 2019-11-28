@@ -12,16 +12,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import com.github.tonivade.purefun.concurrent.Promise;
-import com.github.tonivade.purefun.monad.IO;
+import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.type.Try;
 
-public class HttpIOServiceTest {
+public class HttpUIOServiceTest {
   
   @Test
   public void ping() {
-    HttpIOService service = new HttpIOService("test")
-        .when(get("/ping")).then(request -> IO.pure(ok("pong")));
+    HttpUIOService service = new HttpUIOService("test")
+        .when(get("/ping")).then(request -> UIO.pure(ok("pong")));
     
     Option<Promise<HttpResponse>> execute = service.execute(Requests.get("/ping"));
     
@@ -30,8 +30,8 @@ public class HttpIOServiceTest {
   
   @Test
   public void echo() {
-    HttpIOService service = new HttpIOService("test")
-        .when(get("/echo")).then(request -> IO.task(() -> ok(request.body())));
+    HttpUIOService service = new HttpUIOService("test")
+        .when(get("/echo")).then(request -> UIO.task(() -> ok(request.body())));
     
     Option<Promise<HttpResponse>> execute = service.execute(Requests.get("/echo").withBody(asBytes("hello")));
     

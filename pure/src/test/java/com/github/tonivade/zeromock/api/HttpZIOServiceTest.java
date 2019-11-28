@@ -4,18 +4,19 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import com.github.tonivade.purefun.Nothing;
-import com.github.tonivade.purefun.concurrent.Promise;
-import com.github.tonivade.purefun.type.Option;
-import com.github.tonivade.purefun.type.Try;
-import com.github.tonivade.purefun.zio.Task;
-import com.github.tonivade.purefun.zio.ZIO;
-import org.junit.jupiter.api.Test;
-
 import static com.github.tonivade.zeromock.api.Bytes.asBytes;
 import static com.github.tonivade.zeromock.api.Matchers.get;
 import static com.github.tonivade.zeromock.api.Responses.ok;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+
+import com.github.tonivade.purefun.Nothing;
+import com.github.tonivade.purefun.concurrent.Promise;
+import com.github.tonivade.purefun.effect.Task;
+import com.github.tonivade.purefun.effect.ZIO;
+import com.github.tonivade.purefun.type.Option;
+import com.github.tonivade.purefun.type.Try;
 
 public class HttpZIOServiceTest {
 

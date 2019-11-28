@@ -13,10 +13,10 @@ import com.github.tonivade.purefun.Nothing;
 import com.github.tonivade.purefun.Producer;
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.concurrent.Promise;
+import com.github.tonivade.purefun.effect.ZIO;
 import com.github.tonivade.purefun.instances.FutureInstances;
 import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.purefun.type.Option;
-import com.github.tonivade.purefun.zio.ZIO;
 
 public final class HttpZIOService<R> {
 
