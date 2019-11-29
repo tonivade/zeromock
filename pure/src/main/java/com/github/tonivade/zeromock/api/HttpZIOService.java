@@ -7,6 +7,8 @@ package com.github.tonivade.zeromock.api;
 import static com.github.tonivade.purefun.Function1.cons;
 import static java.util.Objects.requireNonNull;
 
+import java.util.concurrent.Executor;
+
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Nothing;
@@ -20,14 +22,20 @@ import com.github.tonivade.purefun.type.Option;
 
 public final class HttpZIOService<R> {
 
+  private final Executor executor;
   private final AsyncHttpService service;
   private final Producer<R> factory;
 
   public HttpZIOService(String name, Producer<R> factory) {
-    this(new AsyncHttpService(name), factory);
+    this(Future.DEFAULT_EXECUTOR, new AsyncHttpService(name), factory);
   }
 
-  private HttpZIOService(AsyncHttpService service, Producer<R> factory) {
+  public HttpZIOService(Executor executor, String name, Producer<R> factory) {
+    this(executor, new AsyncHttpService(name), factory);
+  }
+
+  private HttpZIOService(Executor executor, AsyncHttpService service, Producer<R> factory) {
+    this.executor = requireNonNull(executor);
     this.service = requireNonNull(service);
     this.factory = requireNonNull(factory);
   }
@@ -37,15 +45,15 @@ public final class HttpZIOService<R> {
   }
 
   public HttpZIOService<R> mount(String path, HttpZIOService<R> other) {
-    return new HttpZIOService<>(this.service.mount(path, other.service), factory);
+    return new HttpZIOService<>(executor, this.service.mount(path, other.service), factory);
   }
 
   public HttpZIOService<R> exec(ZIO<R, Nothing, HttpResponse> method) {
-    return new HttpZIOService<>(service.exec(run(cons(method)::apply)), factory);
+    return new HttpZIOService<>(executor, service.exec(run(cons(method)::apply)), factory);
   }
 
   public HttpZIOService<R> add(Matcher1<HttpRequest> matcher, ZIORequestHandler<R> handler) {
-    return new HttpZIOService<>(service.add(matcher, run(handler)), factory);
+    return new HttpZIOService<>(executor, service.add(matcher, run(handler)), factory);
   }
 
   public MappingBuilder<R> when(Matcher1<HttpRequest> matcher) {
@@ -57,7 +65,7 @@ public final class HttpZIOService<R> {
   }
 
   public HttpZIOService<R> combine(HttpZIOService<R> other) {
-    return new HttpZIOService<>(this.service.combine(other.service), factory);
+    return new HttpZIOService<>(executor, this.service.combine(other.service), factory);
   }
 
   public AsyncHttpService build() {
@@ -69,7 +77,7 @@ public final class HttpZIOService<R> {
   }
 
   private Future<Either<Nothing, HttpResponse>> toFuture(ZIO<R, Nothing, HttpResponse> effect) {
-    return effect.foldMap(factory.get(), FutureInstances.monadDefer()).fix1(Future::narrowK);
+    return effect.foldMap(factory.get(), FutureInstances.monadDefer(executor)).fix1(Future::narrowK);
   }
 
   public static final class MappingBuilder<R> {

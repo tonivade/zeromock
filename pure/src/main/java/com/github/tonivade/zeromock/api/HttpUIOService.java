@@ -6,6 +6,8 @@ package com.github.tonivade.zeromock.api;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.concurrent.Executor;
+
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
@@ -16,13 +18,19 @@ import com.github.tonivade.purefun.type.Option;
 
 public final class HttpUIOService {
 
+  private final Executor executor;
   private final AsyncHttpService service;
 
   public HttpUIOService(String name) {
-    this(new AsyncHttpService(name));
+    this(Future.DEFAULT_EXECUTOR, new AsyncHttpService(name));
   }
 
-  private HttpUIOService(AsyncHttpService service) {
+  public HttpUIOService(Executor executor, String name) {
+    this(executor, new AsyncHttpService(name));
+  }
+
+  private HttpUIOService(Executor executor, AsyncHttpService service) {
+    this.executor = requireNonNull(executor);
     this.service = requireNonNull(service);
   }
 
@@ -31,15 +39,15 @@ public final class HttpUIOService {
   }
 
   public HttpUIOService mount(String path, HttpUIOService other) {
-    return new HttpUIOService(this.service.mount(path, other.service));
+    return new HttpUIOService(executor, this.service.mount(path, other.service));
   }
 
   public HttpUIOService exec(UIORequestHandler handler) {
-    return new HttpUIOService(service.exec(run(handler)));
+    return new HttpUIOService(executor, service.exec(run(handler)));
   }
 
   public HttpUIOService add(Matcher1<HttpRequest> matcher, UIORequestHandler handler) {
-    return new HttpUIOService(service.add(matcher, run(handler)));
+    return new HttpUIOService(executor, service.add(matcher, run(handler)));
   }
 
   public MappingBuilder when(Matcher1<HttpRequest> matcher) {
@@ -51,7 +59,7 @@ public final class HttpUIOService {
   }
 
   public HttpUIOService combine(HttpUIOService other) {
-    return new HttpUIOService(this.service.combine(other.service));
+    return new HttpUIOService(executor, this.service.combine(other.service));
   }
 
   public AsyncHttpService build() {
@@ -63,7 +71,7 @@ public final class HttpUIOService {
   }
 
   private Future<HttpResponse> toFuture(UIO<HttpResponse> effect) {
-    return effect.foldMap(FutureInstances.monadDefer()).fix1(Future::narrowK);
+    return effect.foldMap(FutureInstances.monadDefer(executor)).fix1(Future::narrowK);
   }
 
   public static final class MappingBuilder {
