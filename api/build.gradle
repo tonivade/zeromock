@@ -1,10 +1,10 @@
 archivesBaseName = 'zeromock-api'
 
 dependencies {
-  compile libs.purefunCore
-  compile libs.purefunTypeclasses
-  compile libs.purefunInstances
-  compile libs.gson
-  compile libs.jaxb
-  testCompile libs.equalsverifier
+  api libs.purefunCore
+  implementation libs.purefunTypeclasses
+  implementation libs.purefunInstances
+  implementation libs.gson
+  implementation libs.jaxb
+  testImplementation libs.equalsverifier
 }

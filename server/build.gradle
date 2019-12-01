@@ -1,6 +1,6 @@
 archivesBaseName = 'zeromock-server'
 
 dependencies {
-  compile project(':api')
+  api project(':api')
 }
 
