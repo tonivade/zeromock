@@ -20,7 +20,7 @@ public final class HttpService {
   }
 
   private HttpService(HttpServiceK<Id.µ> serviceK) {
-    this.serviceK = serviceK;
+    this.serviceK = requireNonNull(serviceK);
   }
 
   public String name() {
