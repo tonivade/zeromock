@@ -13,6 +13,11 @@ import com.github.tonivade.purefun.Equal;
 
 public final class HttpResponse {
 
+  private static final Equal<HttpResponse> EQUAL = Equal.of(HttpResponse.class)
+      .comparing(HttpResponse::status)
+      .comparing(HttpResponse::body)
+      .comparing(HttpResponse::headers);
+
   private final HttpStatus status;
   private final Bytes body;
   private final HttpHeaders headers;
@@ -50,11 +55,7 @@ public final class HttpResponse {
 
   @Override
   public boolean equals(Object obj) {
-    return Equal.of(this)
-        .comparing(HttpResponse::status)
-        .comparing(HttpResponse::body)
-        .comparing(HttpResponse::headers)
-        .applyTo(obj);
+    return EQUAL.applyTo(this, obj);
   }
 
   @Override

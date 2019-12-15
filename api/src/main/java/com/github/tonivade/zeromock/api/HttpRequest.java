@@ -14,6 +14,13 @@ import com.github.tonivade.zeromock.api.HttpPath.PathElement;
 
 public final class HttpRequest {
 
+  private static final Equal<HttpRequest> EQUAL = Equal.of(HttpRequest.class)
+      .comparing(HttpRequest::method)
+      .comparing(HttpRequest::path)
+      .comparing(HttpRequest::body)
+      .comparing(HttpRequest::headers)
+      .comparing(HttpRequest::params);
+
   private final HttpMethod method;
   private final HttpPath path;
   private final Bytes body;
@@ -92,13 +99,7 @@ public final class HttpRequest {
 
   @Override
   public boolean equals(Object obj) {
-    return Equal.of(this)
-        .comparing(HttpRequest::method)
-        .comparing(HttpRequest::path)
-        .comparing(HttpRequest::body)
-        .comparing(HttpRequest::headers)
-        .comparing(HttpRequest::params)
-        .applyTo(obj);
+    return EQUAL.applyTo(this, obj);
   }
 
   @Override

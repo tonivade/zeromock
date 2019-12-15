@@ -35,9 +35,9 @@ public final class Say {
 
   @Override
   public boolean equals(Object obj) {
-    return Equal.of(this)
+    return Equal.of(Say.class)
         .comparing(Say::getMessage)
-        .applyTo(obj);
+        .applyTo(this, obj);
   }
 
   @Override

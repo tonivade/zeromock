@@ -23,6 +23,9 @@ import com.github.tonivade.purefun.type.Option;
 
 public final class HttpParams {
 
+  private static final Equal<HttpParams> EQUAL = Equal.of(HttpParams.class)
+      .comparing(h -> h.params);
+
   private static final String BEGIN = "?";
   private static final String EMPTY = "";
   private static final String EQUALS = "=";
@@ -65,9 +68,7 @@ public final class HttpParams {
 
   @Override
   public boolean equals(Object obj) {
-    return Equal.of(this)
-        .append((a, b) -> Objects.equals(a.params, b.params))
-        .applyTo(obj);
+    return EQUAL.applyTo(this, obj);
   }
 
   @Override

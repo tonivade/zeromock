@@ -19,6 +19,9 @@ import com.github.tonivade.purefun.data.ImmutableSet;
 
 public final class HttpHeaders {
 
+  private static final Equal<HttpHeaders> EQUAL = Equal.of(HttpHeaders.class)
+      .comparing(h -> h.headers);
+
   private final ImmutableMap<String, ImmutableSet<String>> headers;
 
   public HttpHeaders(ImmutableMap<String, ImmutableSet<String>> headers) {
@@ -56,9 +59,7 @@ public final class HttpHeaders {
 
   @Override
   public boolean equals(Object obj) {
-    return Equal.of(this)
-        .append((a, b) -> Objects.equals(a.headers, b.headers))
-        .applyTo(obj);
+    return EQUAL.applyTo(this, obj);
   }
 
   @Override

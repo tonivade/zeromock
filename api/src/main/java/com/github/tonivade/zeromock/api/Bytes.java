@@ -18,6 +18,9 @@ import com.github.tonivade.purefun.Equal;
 
 public final class Bytes {
 
+  private static final Equal<Bytes> EQUAL = Equal.of(Bytes.class)
+      .append((a, b) -> Arrays.equals(a.buffer, b.buffer));
+  
   private static final int BUFFER_SIZE = 1024;
   private static final Bytes EMPTY = new Bytes(new byte[]{});
 
@@ -52,9 +55,7 @@ public final class Bytes {
 
   @Override
   public boolean equals(Object obj) {
-    return Equal.of(this)
-        .append((a, b) -> Arrays.equals(a.buffer, b.buffer))
-        .applyTo(obj);
+    return EQUAL.applyTo(this, obj);
   }
 
   public static Bytes empty() {

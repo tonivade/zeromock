@@ -16,6 +16,9 @@ import com.github.tonivade.purefun.type.Option;
 
 public final class HttpPath {
 
+  private static final Equal<HttpPath> EQUAL = Equal.of(HttpPath.class)
+      .comparing(h -> h.value);
+
   private static final String ROOT = "/";
   private static final String PARAM_PREFIX = ":";
 
@@ -56,9 +59,7 @@ public final class HttpPath {
 
   @Override
   public boolean equals(Object obj) {
-    return Equal.of(this)
-        .append((a, b) -> Objects.equals(a.value, b.value))
-        .applyTo(obj);
+    return EQUAL.applyTo(this, obj);
   }
 
   @Override
@@ -92,6 +93,10 @@ public final class HttpPath {
   }
 
   public abstract static class PathElement {
+    
+    private static final Equal<PathElement> EQUAL = Equal.of(PathElement.class)
+        .comparing(PathElement::value);
+
     private final String value;
 
     private PathElement(String value) {
@@ -109,9 +114,7 @@ public final class HttpPath {
 
     @Override
     public boolean equals(Object obj) {
-      return Equal.of(this)
-          .comparing(PathElement::value)
-          .applyTo(obj);
+      return EQUAL.applyTo(this, obj);
     }
 
     @Override

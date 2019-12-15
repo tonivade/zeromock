@@ -22,9 +22,9 @@ public final class Say {
 
   @Override
   public boolean equals(Object obj) {
-    return Equal.of(this)
-        .append((a, b) -> Objects.equals(a.message, b.message))
-        .applyTo(obj);
+    return Equal.of(Say.class)
+        .comparing(s -> s.message)
+        .applyTo(this, obj);
   }
 
   @Override
