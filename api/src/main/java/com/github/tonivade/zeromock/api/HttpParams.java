@@ -23,7 +23,7 @@ import com.github.tonivade.purefun.type.Option;
 
 public final class HttpParams {
 
-  private static final Equal<HttpParams> EQUAL = Equal.of(HttpParams.class)
+  private static final Equal<HttpParams> EQUAL = Equal.<HttpParams>of()
       .comparing(h -> h.params);
 
   private static final String BEGIN = "?";

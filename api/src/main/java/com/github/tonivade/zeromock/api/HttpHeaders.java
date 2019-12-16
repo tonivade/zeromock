@@ -19,7 +19,7 @@ import com.github.tonivade.purefun.data.ImmutableSet;
 
 public final class HttpHeaders {
 
-  private static final Equal<HttpHeaders> EQUAL = Equal.of(HttpHeaders.class)
+  private static final Equal<HttpHeaders> EQUAL = Equal.<HttpHeaders>of()
       .comparing(h -> h.headers);
 
   private final ImmutableMap<String, ImmutableSet<String>> headers;

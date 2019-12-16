@@ -18,7 +18,7 @@ import com.github.tonivade.purefun.Equal;
 
 public final class Bytes {
 
-  private static final Equal<Bytes> EQUAL = Equal.of(Bytes.class)
+  private static final Equal<Bytes> EQUAL = Equal.<Bytes>of()
       .append((a, b) -> Arrays.equals(a.buffer, b.buffer));
   
   private static final int BUFFER_SIZE = 1024;

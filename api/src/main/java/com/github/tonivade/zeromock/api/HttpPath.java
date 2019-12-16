@@ -16,7 +16,7 @@ import com.github.tonivade.purefun.type.Option;
 
 public final class HttpPath {
 
-  private static final Equal<HttpPath> EQUAL = Equal.of(HttpPath.class)
+  private static final Equal<HttpPath> EQUAL = Equal.<HttpPath>of()
       .comparing(h -> h.value);
 
   private static final String ROOT = "/";
@@ -94,7 +94,7 @@ public final class HttpPath {
 
   public abstract static class PathElement {
     
-    private static final Equal<PathElement> EQUAL = Equal.of(PathElement.class)
+    private static final Equal<PathElement> EQUAL = Equal.<PathElement>of()
         .comparing(PathElement::value);
 
     private final String value;

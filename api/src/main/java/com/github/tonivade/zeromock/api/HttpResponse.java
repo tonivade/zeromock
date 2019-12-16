@@ -13,7 +13,7 @@ import com.github.tonivade.purefun.Equal;
 
 public final class HttpResponse {
 
-  private static final Equal<HttpResponse> EQUAL = Equal.of(HttpResponse.class)
+  private static final Equal<HttpResponse> EQUAL = Equal.<HttpResponse>of()
       .comparing(HttpResponse::status)
       .comparing(HttpResponse::body)
       .comparing(HttpResponse::headers);

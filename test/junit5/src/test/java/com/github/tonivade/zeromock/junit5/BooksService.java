@@ -53,7 +53,7 @@ public class BooksService {
 
     @Override
     public boolean equals(Object obj) {
-      return Equal.of(Book.class)
+      return Equal.<Book>of()
           .comparing(b -> b.id)
           .comparing(b -> b.title)
           .applyTo(this, obj);

@@ -14,7 +14,7 @@ import com.github.tonivade.zeromock.api.HttpPath.PathElement;
 
 public final class HttpRequest {
 
-  private static final Equal<HttpRequest> EQUAL = Equal.of(HttpRequest.class)
+  private static final Equal<HttpRequest> EQUAL = Equal.<HttpRequest>of()
       .comparing(HttpRequest::method)
       .comparing(HttpRequest::path)
       .comparing(HttpRequest::body)
