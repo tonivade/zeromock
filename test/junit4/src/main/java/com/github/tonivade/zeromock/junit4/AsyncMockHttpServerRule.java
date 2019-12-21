@@ -8,7 +8,7 @@ import org.junit.rules.ExternalResource;
 
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.zeromock.api.AsyncHttpService;
-import com.github.tonivade.zeromock.api.AsyncHttpService.AsyncMappingBuilder;
+import com.github.tonivade.zeromock.api.AsyncHttpService.MappingBuilder;
 import com.github.tonivade.zeromock.api.AsyncRequestHandler;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.server.AsyncMockHttpServer;
@@ -41,8 +41,8 @@ public class AsyncMockHttpServerRule extends ExternalResource {
     return this;
   }
 
-  public AsyncMappingBuilder<AsyncMockHttpServerRule> when(Matcher1<HttpRequest> matcher) {
-    return new AsyncMappingBuilder<>(this::add).when(matcher);
+  public MappingBuilder<AsyncMockHttpServerRule> when(Matcher1<HttpRequest> matcher) {
+    return new MappingBuilder<>(this::add).when(matcher);
   }
 
   public AsyncMockHttpServerRule mount(String path, AsyncHttpService service) {

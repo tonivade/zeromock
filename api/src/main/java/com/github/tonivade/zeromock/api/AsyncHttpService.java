@@ -28,7 +28,7 @@ public final class AsyncHttpService {
     return serviceK.name();
   }
 
-  public HttpServiceK<Future.µ> serviceK() {
+  public HttpServiceK<Future.µ> build() {
     return serviceK;
   }
 
@@ -44,8 +44,8 @@ public final class AsyncHttpService {
     return new AsyncHttpService(serviceK.add(matcher, handler));
   }
 
-  public AsyncMappingBuilder<AsyncHttpService> when(Matcher1<HttpRequest> matcher) {
-    return new AsyncMappingBuilder<>(this::add).when(matcher);
+  public MappingBuilder<AsyncHttpService> when(Matcher1<HttpRequest> matcher) {
+    return new MappingBuilder<>(this::add).when(matcher);
   }
 
   public Option<Promise<HttpResponse>> execute(HttpRequest request) {
@@ -61,15 +61,15 @@ public final class AsyncHttpService {
     return "AsyncHttpService(" + serviceK.name() + ")";
   }
 
-  public static final class AsyncMappingBuilder<T> {
+  public static final class MappingBuilder<T> {
     private final Function2<Matcher1<HttpRequest>, AsyncRequestHandler, T> finisher;
     private Matcher1<HttpRequest> matcher;
 
-    public AsyncMappingBuilder(Function2<Matcher1<HttpRequest>, AsyncRequestHandler, T> finisher) {
+    public MappingBuilder(Function2<Matcher1<HttpRequest>, AsyncRequestHandler, T> finisher) {
       this.finisher = requireNonNull(finisher);
     }
 
-    public AsyncMappingBuilder<T> when(Matcher1<HttpRequest> matcher) {
+    public MappingBuilder<T> when(Matcher1<HttpRequest> matcher) {
       this.matcher = matcher;
       return this;
     }

@@ -10,6 +10,7 @@ ext {
   ]
   libs = [
     purefunCore        : "com.github.tonivade:purefun-core:$versions.purefun",
+    purefunMonad       : "com.github.tonivade:purefun-monad:$versions.purefun",
     purefunEffect      : "com.github.tonivade:purefun-effect:$versions.purefun",
     purefunTypeclasses : "com.github.tonivade:purefun-typeclasses:$versions.purefun",
     purefunInstances   : "com.github.tonivade:purefun-instances:$versions.purefun",

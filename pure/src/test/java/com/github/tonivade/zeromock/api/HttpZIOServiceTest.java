@@ -4,6 +4,7 @@
  */
 package com.github.tonivade.zeromock.api;
 
+import static com.github.tonivade.purefun.Nothing.nothing;
 import static com.github.tonivade.zeromock.api.Bytes.asBytes;
 import static com.github.tonivade.zeromock.api.Matchers.get;
 import static com.github.tonivade.zeromock.api.Responses.ok;
@@ -12,32 +13,31 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import com.github.tonivade.purefun.Nothing;
-import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.effect.Task;
 import com.github.tonivade.purefun.effect.ZIO;
+import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.purefun.type.Option;
-import com.github.tonivade.purefun.type.Try;
 
 public class HttpZIOServiceTest {
 
   @Test
   public void ping() {
-    HttpZIOService<Nothing> service = new HttpZIOService<>("test", Nothing::nothing)
+    HttpZIOService<Nothing> service = new HttpZIOService<Nothing>("test")
         .when(get("/ping")).then(request -> ZIO.pure(ok("pong")));
     
-    Option<Promise<HttpResponse>> execute = service.execute(Requests.get("/ping"));
+    Option<ZIO<Nothing, Nothing, HttpResponse>> execute = service.execute(Requests.get("/ping"));
     
-    assertEquals(Try.success(ok("pong")), execute.get().get());
+    assertEquals(Either.right(ok("pong")), execute.get().provide(nothing()));
   }
   
   @Test
   public void echo() {
-    HttpZIOService<Nothing> service = new HttpZIOService<>("test", Nothing::nothing)
+    HttpZIOService<Nothing> service = new HttpZIOService<Nothing>("test")
         .when(get("/echo"))
         .then(request -> Task.from(request::body).fold(Responses::error, Responses::ok).<Nothing>toZIO());
     
-    Option<Promise<HttpResponse>> execute = service.execute(Requests.get("/echo").withBody(asBytes("hello")));
+    Option<ZIO<Nothing, Nothing, HttpResponse>> execute = service.execute(Requests.get("/echo").withBody(asBytes("hello")));
     
-    assertEquals(Try.success(ok("hello")), execute.get().get());
+    assertEquals(Either.right(ok("hello")), execute.get().provide(nothing()));
   }
 }

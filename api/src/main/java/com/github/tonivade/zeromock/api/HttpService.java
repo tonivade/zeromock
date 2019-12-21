@@ -27,7 +27,7 @@ public final class HttpService {
     return serviceK.name();
   }
 
-  public HttpServiceK<Id.µ> serviceK() {
+  public HttpServiceK<Id.µ> build() {
     return serviceK;
   }
 

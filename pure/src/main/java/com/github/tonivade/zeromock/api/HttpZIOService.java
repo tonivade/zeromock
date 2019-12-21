@@ -7,37 +7,23 @@ package com.github.tonivade.zeromock.api;
 import static com.github.tonivade.purefun.Function1.cons;
 import static java.util.Objects.requireNonNull;
 
-import java.util.concurrent.Executor;
-
 import com.github.tonivade.purefun.Function2;
+import com.github.tonivade.purefun.Higher1;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Nothing;
-import com.github.tonivade.purefun.Producer;
-import com.github.tonivade.purefun.concurrent.Future;
-import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.effect.ZIO;
-import com.github.tonivade.purefun.instances.FutureInstances;
-import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.purefun.type.Option;
 
 public final class HttpZIOService<R> {
 
-  private final Executor executor;
-  private final AsyncHttpService service;
-  private final Producer<R> factory;
+  private final HttpServiceK<Higher1<Higher1<ZIO.µ, R>, Nothing>> service;
 
-  public HttpZIOService(String name, Producer<R> factory) {
-    this(Future.DEFAULT_EXECUTOR, new AsyncHttpService(name), factory);
+  public HttpZIOService(String name) {
+    this(new HttpServiceK<Higher1<Higher1<ZIO.µ, R>, Nothing>>(name));
   }
 
-  public HttpZIOService(Executor executor, String name, Producer<R> factory) {
-    this(executor, new AsyncHttpService(name), factory);
-  }
-
-  private HttpZIOService(Executor executor, AsyncHttpService service, Producer<R> factory) {
-    this.executor = requireNonNull(executor);
+  private HttpZIOService(HttpServiceK<Higher1<Higher1<ZIO.µ, R>, Nothing>> service) {
     this.service = requireNonNull(service);
-    this.factory = requireNonNull(factory);
   }
 
   public String name() {
@@ -45,55 +31,47 @@ public final class HttpZIOService<R> {
   }
 
   public HttpZIOService<R> mount(String path, HttpZIOService<R> other) {
-    return new HttpZIOService<>(executor, this.service.mount(path, other.service), factory);
+    return new HttpZIOService<>(this.service.mount(path, other.service));
   }
 
   public HttpZIOService<R> exec(ZIO<R, Nothing, HttpResponse> method) {
-    return new HttpZIOService<>(executor, service.exec(run(cons(method)::apply)), factory);
+    return new HttpZIOService<>(service.exec(cons(method)::apply));
   }
 
   public HttpZIOService<R> add(Matcher1<HttpRequest> matcher, ZIORequestHandler<R> handler) {
-    return new HttpZIOService<>(executor, service.add(matcher, run(handler)), factory);
+    return new HttpZIOService<>(service.add(matcher, handler));
   }
 
-  public MappingBuilder<R> when(Matcher1<HttpRequest> matcher) {
+  public MappingBuilder<R, HttpZIOService<R>> when(Matcher1<HttpRequest> matcher) {
     return new MappingBuilder<>(this::add).when(matcher);
   }
 
-  public Option<Promise<HttpResponse>> execute(HttpRequest request) {
-    return service.execute(request);
+  public Option<ZIO<R, Nothing, HttpResponse>> execute(HttpRequest request) {
+    return service.execute(request).map(ZIO::narrowK);
   }
 
   public HttpZIOService<R> combine(HttpZIOService<R> other) {
-    return new HttpZIOService<>(executor, this.service.combine(other.service), factory);
+    return new HttpZIOService<>(this.service.combine(other.service));
   }
 
-  public AsyncHttpService build() {
+  public HttpServiceK<Higher1<Higher1<ZIO.µ, R>, Nothing>> build() {
     return service;
   }
 
-  private AsyncRequestHandler run(ZIORequestHandler<R> effect) {
-    return request -> HttpZIOService.this.toFuture(effect.apply(request)).fold(Responses::error, Either::get);
-  }
-
-  private Future<Either<Nothing, HttpResponse>> toFuture(ZIO<R, Nothing, HttpResponse> effect) {
-    return effect.foldMap(factory.get(), FutureInstances.monadDefer(executor)).fix1(Future::narrowK);
-  }
-
-  public static final class MappingBuilder<R> {
-    private final Function2<Matcher1<HttpRequest>, ZIORequestHandler<R>, HttpZIOService<R>> finisher;
+  public static final class MappingBuilder<R, T> {
+    private final Function2<Matcher1<HttpRequest>, ZIORequestHandler<R>, T> finisher;
     private Matcher1<HttpRequest> matcher;
 
-    public MappingBuilder(Function2<Matcher1<HttpRequest>, ZIORequestHandler<R>, HttpZIOService<R>> finisher) {
+    public MappingBuilder(Function2<Matcher1<HttpRequest>, ZIORequestHandler<R>, T> finisher) {
       this.finisher = requireNonNull(finisher);
     }
 
-    public MappingBuilder<R> when(Matcher1<HttpRequest> matcher) {
+    public MappingBuilder<R, T> when(Matcher1<HttpRequest> matcher) {
       this.matcher = matcher;
       return this;
     }
 
-    public HttpZIOService<R> then(ZIORequestHandler<R> handler) {
+    public T then(ZIORequestHandler<R> handler) {
       return finisher.apply(matcher, handler);
     }
   }

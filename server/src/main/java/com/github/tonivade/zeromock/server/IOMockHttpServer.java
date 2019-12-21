@@ -9,54 +9,55 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import com.github.tonivade.purefun.Matcher1;
-import com.github.tonivade.purefun.concurrent.Future;
-import com.github.tonivade.zeromock.api.AsyncHttpService;
-import com.github.tonivade.zeromock.api.AsyncHttpService.MappingBuilder;
-import com.github.tonivade.zeromock.api.AsyncRequestHandler;
+import com.github.tonivade.purefun.concurrent.Promise;
+import com.github.tonivade.purefun.monad.IO;
+import com.github.tonivade.zeromock.api.HttpIOService;
+import com.github.tonivade.zeromock.api.HttpIOService.MappingBuilder;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
+import com.github.tonivade.zeromock.api.IORequestHandler;
 import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
 
-public final class AsyncMockHttpServer implements HttpServer {
+public final class IOMockHttpServer implements HttpServer {
 
-  private final MockHttpServerK<Future.µ> serverK;
+  private final MockHttpServerK<IO.µ> serverK;
 
-  private AsyncMockHttpServer(MockHttpServerK<Future.µ> serverK) {
+  private IOMockHttpServer(MockHttpServerK<IO.µ> serverK) {
     this.serverK = requireNonNull(serverK);
   }
 
-  public static Builder<Future.µ> builder() {
+  public static Builder<IO.µ> builder() {
     return new Builder<>(response -> {
-      Future<HttpResponse> future = response.fix1(Future::narrowK);
-      return future.toPromise();
+      IO<HttpResponse> future = response.fix1(IO::narrowK);
+      return Promise.<HttpResponse>make().succeeded(future.unsafeRunSync());
     });
   }
 
-  public static AsyncMockHttpServer listenAt(int port) {
-    return new AsyncMockHttpServer(builder().port(port).build());
+  public static IOMockHttpServer listenAt(int port) {
+    return new IOMockHttpServer(builder().port(port).build());
   }
 
-  public AsyncMockHttpServer mount(String path, AsyncHttpService other) {
+  public IOMockHttpServer mount(String path, HttpIOService other) {
     serverK.mount(path, other.build());
     return this;
   }
 
-  public AsyncMockHttpServer exec(AsyncRequestHandler handler) {
+  public IOMockHttpServer exec(IORequestHandler handler) {
     serverK.exec(handler);
     return this;
   }
 
-  public AsyncMockHttpServer add(Matcher1<HttpRequest> matcher, AsyncRequestHandler handler) {
+  public IOMockHttpServer add(Matcher1<HttpRequest> matcher, IORequestHandler handler) {
     serverK.add(matcher, handler);
     return this;
   }
 
-  public MappingBuilder<AsyncMockHttpServer> when(Matcher1<HttpRequest> matcher) {
+  public MappingBuilder<IOMockHttpServer> when(Matcher1<HttpRequest> matcher) {
     return new MappingBuilder<>(this::add).when(matcher);
   }
 
   @Override
-  public AsyncMockHttpServer start() {
+  public IOMockHttpServer start() {
     serverK.start();
     return this;
   }
@@ -67,7 +68,7 @@ public final class AsyncMockHttpServer implements HttpServer {
   }
 
   @Override
-  public AsyncMockHttpServer verify(Matcher1<HttpRequest> matcher) {
+  public IOMockHttpServer verify(Matcher1<HttpRequest> matcher) {
     serverK.verify(matcher);
     return this;
   }

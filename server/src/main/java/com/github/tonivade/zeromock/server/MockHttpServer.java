@@ -40,7 +40,7 @@ public final class MockHttpServer implements HttpServer {
   }
 
   public MockHttpServer mount(String path, HttpService other) {
-    serverK.mount(path, other.serviceK());
+    serverK.mount(path, other.build());
     return this;
   }
 

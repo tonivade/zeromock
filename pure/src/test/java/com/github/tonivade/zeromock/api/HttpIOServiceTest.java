@@ -11,27 +11,27 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.tonivade.purefun.effect.UIO;
+import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.purefun.type.Option;
 
-public class HttpUIOServiceTest {
+public class HttpIOServiceTest {
   
   @Test
   public void ping() {
-    HttpUIOService service = new HttpUIOService("test")
-        .when(get("/ping")).then(request -> UIO.pure(ok("pong")));
+    HttpIOService service = new HttpIOService("test")
+        .when(get("/ping")).then(request -> IO.pure(ok("pong")));
     
-    Option<UIO<HttpResponse>> execute = service.execute(Requests.get("/ping"));
+    Option<IO<HttpResponse>> execute = service.execute(Requests.get("/ping"));
     
     assertEquals(ok("pong"), execute.get().unsafeRunSync());
   }
   
   @Test
   public void echo() {
-    HttpUIOService service = new HttpUIOService("test")
-        .when(get("/echo")).then(request -> UIO.task(() -> ok(request.body())));
+    HttpIOService service = new HttpIOService("test")
+        .when(get("/echo")).then(request -> IO.task(() -> ok(request.body())));
     
-    Option<UIO<HttpResponse>> execute = service.execute(Requests.get("/echo").withBody(asBytes("hello")));
+    Option<IO<HttpResponse>> execute = service.execute(Requests.get("/echo").withBody(asBytes("hello")));
     
     assertEquals(ok("hello"), execute.get().unsafeRunSync());
   }

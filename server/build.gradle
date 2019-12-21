@@ -2,5 +2,8 @@ archivesBaseName = 'zeromock-server'
 
 dependencies {
   api project(':api')
+  api project(':pure')
+  implementation libs.purefunMonad
+  implementation libs.purefunEffect
 }
 

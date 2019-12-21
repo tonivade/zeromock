@@ -6,31 +6,20 @@ package com.github.tonivade.zeromock.api;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.concurrent.Executor;
-
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
-import com.github.tonivade.purefun.concurrent.Future;
-import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.effect.UIO;
-import com.github.tonivade.purefun.instances.FutureInstances;
 import com.github.tonivade.purefun.type.Option;
 
 public final class HttpUIOService {
 
-  private final Executor executor;
-  private final AsyncHttpService service;
+  private final HttpServiceK<UIO.µ> service;
 
   public HttpUIOService(String name) {
-    this(Future.DEFAULT_EXECUTOR, new AsyncHttpService(name));
+    this(new HttpServiceK<UIO.µ>(name));
   }
 
-  public HttpUIOService(Executor executor, String name) {
-    this(executor, new AsyncHttpService(name));
-  }
-
-  private HttpUIOService(Executor executor, AsyncHttpService service) {
-    this.executor = requireNonNull(executor);
+  private HttpUIOService(HttpServiceK<UIO.µ> service) {
     this.service = requireNonNull(service);
   }
 
@@ -39,55 +28,47 @@ public final class HttpUIOService {
   }
 
   public HttpUIOService mount(String path, HttpUIOService other) {
-    return new HttpUIOService(executor, this.service.mount(path, other.service));
+    return new HttpUIOService(this.service.mount(path, other.service));
   }
 
   public HttpUIOService exec(UIORequestHandler handler) {
-    return new HttpUIOService(executor, service.exec(run(handler)));
+    return new HttpUIOService(service.exec(handler));
   }
 
   public HttpUIOService add(Matcher1<HttpRequest> matcher, UIORequestHandler handler) {
-    return new HttpUIOService(executor, service.add(matcher, run(handler)));
+    return new HttpUIOService(service.add(matcher, handler));
   }
 
-  public MappingBuilder when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder(this::add).when(matcher);
+  public MappingBuilder<HttpUIOService> when(Matcher1<HttpRequest> matcher) {
+    return new MappingBuilder<>(this::add).when(matcher);
   }
 
-  public Option<Promise<HttpResponse>> execute(HttpRequest request) {
-    return service.execute(request);
+  public Option<UIO<HttpResponse>> execute(HttpRequest request) {
+    return service.execute(request).map(UIO::narrowK);
   }
 
   public HttpUIOService combine(HttpUIOService other) {
-    return new HttpUIOService(executor, this.service.combine(other.service));
+    return new HttpUIOService(this.service.combine(other.service));
   }
 
-  public AsyncHttpService build() {
+  public HttpServiceK<UIO.µ> build() {
     return service;
   }
 
-  private AsyncRequestHandler run(UIORequestHandler handler) {
-    return request -> toFuture(handler.apply(request));
-  }
-
-  private Future<HttpResponse> toFuture(UIO<HttpResponse> effect) {
-    return effect.foldMap(FutureInstances.monadDefer(executor)).fix1(Future::narrowK);
-  }
-
-  public static final class MappingBuilder {
-    private final Function2<Matcher1<HttpRequest>, UIORequestHandler, HttpUIOService> finisher;
+  public static final class MappingBuilder<T> {
+    private final Function2<Matcher1<HttpRequest>, UIORequestHandler, T> finisher;
     private Matcher1<HttpRequest> matcher;
 
-    public MappingBuilder(Function2<Matcher1<HttpRequest>, UIORequestHandler, HttpUIOService> finisher) {
+    public MappingBuilder(Function2<Matcher1<HttpRequest>, UIORequestHandler, T> finisher) {
       this.finisher = requireNonNull(finisher);
     }
 
-    public MappingBuilder when(Matcher1<HttpRequest> matcher) {
+    public MappingBuilder<T> when(Matcher1<HttpRequest> matcher) {
       this.matcher = matcher;
       return this;
     }
 
-    public HttpUIOService then(UIORequestHandler handler) {
+    public T then(UIORequestHandler handler) {
       return finisher.apply(matcher, handler);
     }
   }
