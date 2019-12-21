@@ -4,6 +4,7 @@
  */
 package com.github.tonivade.zeromock.junit5;
 
+import static com.github.tonivade.zeromock.junit5.ListenAt.Server.SYNC;
 import static java.util.stream.Collectors.joining;
 
 import java.util.Optional;
@@ -17,21 +18,39 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
+import com.github.tonivade.zeromock.junit5.ListenAt.Server;
 import com.github.tonivade.zeromock.server.AsyncMockHttpServer;
 import com.github.tonivade.zeromock.server.HttpServer;
+import com.github.tonivade.zeromock.server.IOMockHttpServer;
 import com.github.tonivade.zeromock.server.MockHttpServer;
+import com.github.tonivade.zeromock.server.UIOMockHttpServer;
+import com.github.tonivade.zeromock.server.ZIOMockHttpServer;
 
-public class MockHttpServerExtension implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback, ParameterResolver {
+public class MockHttpServerExtension
+    implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
   private HttpServer server;
 
   @Override
   public void beforeAll(ExtensionContext context) throws Exception {
     Optional<ListenAt> listenAt = listenAt(context);
-    if (listenAt.map(ListenAt::async).orElse(false)) {
-      server = AsyncMockHttpServer.listenAt(listenAt.map(ListenAt::value).orElse(8080));
-    } else {
-      server = MockHttpServer.listenAt(listenAt.map(ListenAt::value).orElse(8080));
+    Server type = listenAt.map(ListenAt::type).orElse(SYNC);
+    Integer port = listenAt.map(ListenAt::value).orElse(8080);
+    switch (type) {
+    case SYNC:
+      server = MockHttpServer.listenAt(port);
+      break;
+    case ASYNC:
+      server = AsyncMockHttpServer.listenAt(port);
+      break;
+    case IO:
+      server = IOMockHttpServer.listenAt(port);
+      break;
+    case UIO:
+      server = UIOMockHttpServer.listenAt(port);
+      break;
+    case ZIO:
+      throw new UnsupportedOperationException("ZIO not supported yet :(");
     }
     server.start();
   }
@@ -57,7 +76,11 @@ public class MockHttpServerExtension implements BeforeAllCallback, AfterAllCallb
   public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
       throws ParameterResolutionException {
     Class<?> type = parameterContext.getParameter().getType();
-    return type.equals(MockHttpServer.class) || type.equals(AsyncMockHttpServer.class);
+    return type.equals(MockHttpServer.class) 
+        || type.equals(AsyncMockHttpServer.class)
+        || type.equals(IOMockHttpServer.class)
+        || type.equals(UIOMockHttpServer.class)
+        || type.equals(ZIOMockHttpServer.class);
   }
 
   @Override
