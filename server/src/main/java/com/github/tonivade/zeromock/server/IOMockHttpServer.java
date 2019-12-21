@@ -4,11 +4,15 @@
  */
 package com.github.tonivade.zeromock.server;
 
+import static com.github.tonivade.purefun.instances.FutureInstances.monadDefer;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 
+import com.github.tonivade.purefun.Higher1;
 import com.github.tonivade.purefun.Matcher1;
+import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.zeromock.api.HttpIOService;
@@ -26,15 +30,27 @@ public final class IOMockHttpServer implements HttpServer {
     this.serverK = requireNonNull(serverK);
   }
 
-  public static Builder<IO.µ> builder() {
+  public static Builder<IO.µ> sync() {
     return new Builder<>(response -> {
       IO<HttpResponse> future = response.fix1(IO::narrowK);
       return Promise.<HttpResponse>make().succeeded(future.unsafeRunSync());
     });
   }
 
+  public static Builder<IO.µ> async() {
+    return async(Future.DEFAULT_EXECUTOR);
+  }
+
+  public static Builder<IO.µ> async(Executor executor) {
+    return new Builder<>(response -> {
+      IO<HttpResponse> effect = response.fix1(IO::narrowK);
+      Higher1<Future.µ, HttpResponse> future = effect.foldMap(monadDefer(executor));
+      return future.fix1(Future::narrowK).toPromise();
+    });
+  }
+
   public static IOMockHttpServer listenAt(int port) {
-    return new IOMockHttpServer(builder().port(port).build());
+    return new IOMockHttpServer(sync().port(port).build());
   }
 
   public IOMockHttpServer mount(String path, HttpIOService other) {
