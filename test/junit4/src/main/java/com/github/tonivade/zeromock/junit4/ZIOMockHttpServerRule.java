@@ -4,49 +4,17 @@
  */
 package com.github.tonivade.zeromock.junit4;
 
-import org.junit.rules.ExternalResource;
+import static com.github.tonivade.zeromock.server.ZIOMockHttpServer.builder;
 
-import com.github.tonivade.purefun.Matcher1;
-import com.github.tonivade.zeromock.api.HttpRequest;
-import com.github.tonivade.zeromock.api.HttpZIOService;
-import com.github.tonivade.zeromock.api.HttpZIOService.MappingBuilder;
+import com.github.tonivade.purefun.Higher1;
+import com.github.tonivade.purefun.Nothing;
+import com.github.tonivade.purefun.Producer;
+import com.github.tonivade.purefun.effect.ZIO;
 import com.github.tonivade.zeromock.api.ZIORequestHandler;
-import com.github.tonivade.zeromock.server.ZIOMockHttpServer;
 
-public class ZIOMockHttpServerRule<R> extends ExternalResource {
-
-  private final ZIOMockHttpServer<R> server;
+public class ZIOMockHttpServerRule<R> extends AbstractMockServerRule<Higher1<Higher1<ZIO.µ, R>, Nothing>, ZIORequestHandler<R>> {
 
   public ZIOMockHttpServerRule(R env, int port) {
-    this.server = ZIOMockHttpServer.listenAt(env, port);
-  }
-
-  @Override
-  protected void before() throws Throwable {
-    server.start();
-  }
-
-  @Override
-  protected void after() {
-    server.stop();
-  }
-
-  public ZIOMockHttpServerRule<R> verify(Matcher1<HttpRequest> matcher) {
-    server.verify(matcher);
-    return this;
-  }
-
-  public ZIOMockHttpServerRule<R> add(Matcher1<HttpRequest> matcher, ZIORequestHandler<R> handler) {
-    server.add(matcher, handler);
-    return this;
-  }
-
-  public MappingBuilder<R, ZIOMockHttpServerRule<R>> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::add).when(matcher);
-  }
-
-  public ZIOMockHttpServerRule<R> mount(String path, HttpZIOService<R> service) {
-    server.mount(path, service);
-    return this;
+    super(builder(Producer.cons(env)).port(port).build());
   }
 }

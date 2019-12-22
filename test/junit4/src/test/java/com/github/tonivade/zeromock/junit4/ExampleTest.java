@@ -23,13 +23,15 @@ public class ExampleTest {
   @Rule
   public MockHttpServerRule server = new MockHttpServerRule(8080);
   @Rule
-  public AsyncMockHttpServerRule asyncServer = new AsyncMockHttpServerRule(8081);
+  public MockHttpServerRule syncServer = new MockHttpServerRule(8081);
   @Rule
-  public IOMockHttpServerRule ioServer = new IOMockHttpServerRule(8082);
+  public AsyncMockHttpServerRule asyncServer = new AsyncMockHttpServerRule(8082);
   @Rule
-  public UIOMockHttpServerRule uioServer = new UIOMockHttpServerRule(8083);
+  public IOMockHttpServerRule ioServer = new IOMockHttpServerRule(8083);
   @Rule
-  public ZIOMockHttpServerRule<Nothing> zioServer = new ZIOMockHttpServerRule<Nothing>(nothing(), 8084);
+  public UIOMockHttpServerRule uioServer = new UIOMockHttpServerRule(8084);
+  @Rule
+  public ZIOMockHttpServerRule<Nothing> zioServer = new ZIOMockHttpServerRule<Nothing>(nothing(), 8085);
   
   @Test
   public void ping() {
@@ -42,10 +44,20 @@ public class ExampleTest {
   }
   
   @Test
+  public void pingSync() {
+    syncServer.when(get("/ping")).then(ok("pong"));
+    
+    HttpResponse response = connectTo("http://localhost:8081").request(Requests.get("/ping"));
+    
+    assertEquals(HttpStatus.OK, response.status());
+    assertEquals("pong", asString(response.body()));
+  }
+  
+  @Test
   public void pingAsync() {
     asyncServer.when(get("/ping")).then(ok("pong").async());
     
-    HttpResponse response = connectTo("http://localhost:8081").request(Requests.get("/ping"));
+    HttpResponse response = connectTo("http://localhost:8082").request(Requests.get("/ping"));
     
     assertEquals(HttpStatus.OK, response.status());
     assertEquals("pong", asString(response.body()));
@@ -55,7 +67,7 @@ public class ExampleTest {
   public void pingIO() {
     ioServer.when(get("/ping")).then(request -> IO.pure(Responses.ok("pong")));
     
-    HttpResponse response = connectTo("http://localhost:8082").request(Requests.get("/ping"));
+    HttpResponse response = connectTo("http://localhost:8083").request(Requests.get("/ping"));
     
     assertEquals(HttpStatus.OK, response.status());
     assertEquals("pong", asString(response.body()));
@@ -65,7 +77,7 @@ public class ExampleTest {
   public void pingUIO() {
     uioServer.when(get("/ping")).then(request -> UIO.pure(Responses.ok("pong")));
     
-    HttpResponse response = connectTo("http://localhost:8083").request(Requests.get("/ping"));
+    HttpResponse response = connectTo("http://localhost:8084").request(Requests.get("/ping"));
     
     assertEquals(HttpStatus.OK, response.status());
     assertEquals("pong", asString(response.body()));
@@ -75,7 +87,7 @@ public class ExampleTest {
   public void pingZIO() {
     zioServer.when(get("/ping")).then(request -> ZIO.pure(Responses.ok("pong")));
     
-    HttpResponse response = connectTo("http://localhost:8084").request(Requests.get("/ping"));
+    HttpResponse response = connectTo("http://localhost:8085").request(Requests.get("/ping"));
     
     assertEquals(HttpStatus.OK, response.status());
     assertEquals("pong", asString(response.body()));

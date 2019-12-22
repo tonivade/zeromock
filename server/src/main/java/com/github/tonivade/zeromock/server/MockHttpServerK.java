@@ -78,7 +78,7 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
     return this;
   }
 
-  public MappingBuilderK<F, MockHttpServerK<F>> when(Matcher1<HttpRequest> matcher) {
+  public MappingBuilderK<F, RequestHandlerK<F>, MockHttpServerK<F>> when(Matcher1<HttpRequest> matcher) {
     return new MappingBuilderK<>(this::add).when(matcher);
   }
 
