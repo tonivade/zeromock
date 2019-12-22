@@ -4,5 +4,7 @@ dependencies {
   api project(':server')
   api libs.junitJupiter
   api libs.junitRunner
+  implementation libs.purefunMonad
+  implementation libs.purefunEffect
   testImplementation libs.gson
 }

@@ -3,5 +3,7 @@ archivesBaseName = 'zeromock-junit4'
 dependencies {
   api project(':server')
   api libs.junit
+  implementation libs.purefunMonad
+  implementation libs.purefunEffect
 }
 
