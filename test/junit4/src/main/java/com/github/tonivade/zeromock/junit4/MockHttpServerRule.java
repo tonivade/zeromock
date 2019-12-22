@@ -14,6 +14,7 @@ import com.github.tonivade.zeromock.api.RequestHandler;
 import com.github.tonivade.zeromock.server.MockHttpServer;
 
 public class MockHttpServerRule extends ExternalResource {
+
   private final MockHttpServer server;
 
   public MockHttpServerRule(int port) {

@@ -13,30 +13,30 @@ import com.github.tonivade.purefun.type.Option;
 
 public final class HttpIOService {
 
-  private final HttpServiceK<IO.µ> service;
+  private final HttpServiceK<IO.µ> serviceK;
 
   public HttpIOService(String name) {
     this(new HttpServiceK<IO.µ>(name));
   }
 
-  private HttpIOService(HttpServiceK<IO.µ> service) {
-    this.service = requireNonNull(service);
+  private HttpIOService(HttpServiceK<IO.µ> serviceK) {
+    this.serviceK = requireNonNull(serviceK);
   }
 
   public String name() {
-    return service.name();
+    return serviceK.name();
   }
 
   public HttpIOService mount(String path, HttpIOService other) {
-    return new HttpIOService(this.service.mount(path, other.service));
+    return new HttpIOService(this.serviceK.mount(path, other.serviceK));
   }
 
   public HttpIOService exec(IORequestHandler handler) {
-    return new HttpIOService(service.exec(handler));
+    return new HttpIOService(serviceK.exec(handler));
   }
 
   public HttpIOService add(Matcher1<HttpRequest> matcher, IORequestHandler handler) {
-    return new HttpIOService(service.add(matcher, handler));
+    return new HttpIOService(serviceK.add(matcher, handler));
   }
 
   public MappingBuilder<HttpIOService> when(Matcher1<HttpRequest> matcher) {
@@ -44,15 +44,20 @@ public final class HttpIOService {
   }
 
   public Option<IO<HttpResponse>> execute(HttpRequest request) {
-    return service.execute(request).map(IO::narrowK);
+    return serviceK.execute(request).map(IO::narrowK);
   }
 
   public HttpIOService combine(HttpIOService other) {
-    return new HttpIOService(this.service.combine(other.service));
+    return new HttpIOService(this.serviceK.combine(other.serviceK));
   }
 
   public HttpServiceK<IO.µ> build() {
-    return service;
+    return serviceK;
+  }
+
+  @Override
+  public String toString() {
+    return "HttpIOService(" + serviceK.name() + ")";
   }
 
   public static final class MappingBuilder<T> {

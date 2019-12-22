@@ -13,30 +13,30 @@ import com.github.tonivade.purefun.type.Option;
 
 public final class HttpUIOService {
 
-  private final HttpServiceK<UIO.µ> service;
+  private final HttpServiceK<UIO.µ> serviceK;
 
   public HttpUIOService(String name) {
     this(new HttpServiceK<UIO.µ>(name));
   }
 
-  private HttpUIOService(HttpServiceK<UIO.µ> service) {
-    this.service = requireNonNull(service);
+  private HttpUIOService(HttpServiceK<UIO.µ> serviceK) {
+    this.serviceK = requireNonNull(serviceK);
   }
 
   public String name() {
-    return service.name();
+    return serviceK.name();
   }
 
   public HttpUIOService mount(String path, HttpUIOService other) {
-    return new HttpUIOService(this.service.mount(path, other.service));
+    return new HttpUIOService(this.serviceK.mount(path, other.serviceK));
   }
 
   public HttpUIOService exec(UIORequestHandler handler) {
-    return new HttpUIOService(service.exec(handler));
+    return new HttpUIOService(serviceK.exec(handler));
   }
 
   public HttpUIOService add(Matcher1<HttpRequest> matcher, UIORequestHandler handler) {
-    return new HttpUIOService(service.add(matcher, handler));
+    return new HttpUIOService(serviceK.add(matcher, handler));
   }
 
   public MappingBuilder<HttpUIOService> when(Matcher1<HttpRequest> matcher) {
@@ -44,15 +44,20 @@ public final class HttpUIOService {
   }
 
   public Option<UIO<HttpResponse>> execute(HttpRequest request) {
-    return service.execute(request).map(UIO::narrowK);
+    return serviceK.execute(request).map(UIO::narrowK);
   }
 
   public HttpUIOService combine(HttpUIOService other) {
-    return new HttpUIOService(this.service.combine(other.service));
+    return new HttpUIOService(this.serviceK.combine(other.serviceK));
   }
 
   public HttpServiceK<UIO.µ> build() {
-    return service;
+    return serviceK;
+  }
+
+  @Override
+  public String toString() {
+    return "HttpUIOService(" + serviceK.name() + ")";
   }
 
   public static final class MappingBuilder<T> {

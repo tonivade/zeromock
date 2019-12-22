@@ -16,30 +16,30 @@ import com.github.tonivade.purefun.type.Option;
 
 public final class HttpZIOService<R> {
 
-  private final HttpServiceK<Higher1<Higher1<ZIO.µ, R>, Nothing>> service;
+  private final HttpServiceK<Higher1<Higher1<ZIO.µ, R>, Nothing>> serviceK;
 
   public HttpZIOService(String name) {
     this(new HttpServiceK<Higher1<Higher1<ZIO.µ, R>, Nothing>>(name));
   }
 
-  private HttpZIOService(HttpServiceK<Higher1<Higher1<ZIO.µ, R>, Nothing>> service) {
-    this.service = requireNonNull(service);
+  private HttpZIOService(HttpServiceK<Higher1<Higher1<ZIO.µ, R>, Nothing>> serviceK) {
+    this.serviceK = requireNonNull(serviceK);
   }
 
   public String name() {
-    return service.name();
+    return serviceK.name();
   }
 
   public HttpZIOService<R> mount(String path, HttpZIOService<R> other) {
-    return new HttpZIOService<>(this.service.mount(path, other.service));
+    return new HttpZIOService<>(this.serviceK.mount(path, other.serviceK));
   }
 
   public HttpZIOService<R> exec(ZIO<R, Nothing, HttpResponse> method) {
-    return new HttpZIOService<>(service.exec(cons(method)::apply));
+    return new HttpZIOService<>(serviceK.exec(cons(method)::apply));
   }
 
   public HttpZIOService<R> add(Matcher1<HttpRequest> matcher, ZIORequestHandler<R> handler) {
-    return new HttpZIOService<>(service.add(matcher, handler));
+    return new HttpZIOService<>(serviceK.add(matcher, handler));
   }
 
   public MappingBuilder<R, HttpZIOService<R>> when(Matcher1<HttpRequest> matcher) {
@@ -47,15 +47,20 @@ public final class HttpZIOService<R> {
   }
 
   public Option<ZIO<R, Nothing, HttpResponse>> execute(HttpRequest request) {
-    return service.execute(request).map(ZIO::narrowK);
+    return serviceK.execute(request).map(ZIO::narrowK);
   }
 
   public HttpZIOService<R> combine(HttpZIOService<R> other) {
-    return new HttpZIOService<>(this.service.combine(other.service));
+    return new HttpZIOService<>(this.serviceK.combine(other.serviceK));
   }
 
   public HttpServiceK<Higher1<Higher1<ZIO.µ, R>, Nothing>> build() {
-    return service;
+    return serviceK;
+  }
+
+  @Override
+  public String toString() {
+    return "HttpZIOService(" + serviceK.name() + ")";
   }
 
   public static final class MappingBuilder<R, T> {
