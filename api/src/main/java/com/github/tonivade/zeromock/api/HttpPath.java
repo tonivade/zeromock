@@ -5,6 +5,7 @@
 package com.github.tonivade.zeromock.api;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
 
 import java.util.Objects;
@@ -25,7 +26,7 @@ public final class HttpPath {
   private final ImmutableList<PathElement> value;
 
   private HttpPath(ImmutableList<PathElement> path) {
-    this.value = Objects.requireNonNull(path);
+    this.value = requireNonNull(path);
   }
 
   public HttpPath dropOneLevel() {
@@ -100,7 +101,7 @@ public final class HttpPath {
     private final String value;
 
     private PathElement(String value) {
-      this.value = Objects.requireNonNull(value);
+      this.value = requireNonNull(value);
     }
 
     public String value() {

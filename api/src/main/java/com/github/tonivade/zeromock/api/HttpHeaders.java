@@ -5,6 +5,7 @@
 package com.github.tonivade.zeromock.api;
 
 import static java.util.Objects.nonNull;
+import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,7 @@ public final class HttpHeaders {
   private final ImmutableMap<String, ImmutableSet<String>> headers;
 
   public HttpHeaders(ImmutableMap<String, ImmutableSet<String>> headers) {
-    this.headers = Objects.requireNonNull(headers);
+    this.headers = requireNonNull(headers);
   }
 
   public HttpHeaders withHeader(String key, String value) {

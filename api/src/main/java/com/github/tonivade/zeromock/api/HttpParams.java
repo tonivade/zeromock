@@ -5,6 +5,7 @@
 package com.github.tonivade.zeromock.api;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
 
 import java.io.UncheckedIOException;
@@ -38,7 +39,7 @@ public final class HttpParams {
   }
 
   public HttpParams(ImmutableMap<String, String> params) {
-    this.params = Objects.requireNonNull(params);
+    this.params = requireNonNull(params);
   }
 
   public Option<String> get(String name) {

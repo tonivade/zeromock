@@ -16,7 +16,7 @@ public final class HttpService {
   private HttpServiceK<Id.µ> serviceK;
 
   public HttpService(String name) {
-    this.serviceK = new HttpServiceK<>(name);
+    this(new HttpServiceK<>(name));
   }
 
   private HttpService(HttpServiceK<Id.µ> serviceK) {
