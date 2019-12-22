@@ -7,9 +7,8 @@ package com.github.tonivade.zeromock.junit4;
 import static com.github.tonivade.zeromock.server.MockHttpServer.builder;
 
 import com.github.tonivade.purefun.type.Id;
-import com.github.tonivade.zeromock.api.SyncRequestHandler;
 
-public class SyncMockHttpServerRule extends AbstractMockServerRule<Id.µ, SyncRequestHandler> {
+public class SyncMockHttpServerRule extends AbstractMockServerRule<Id.µ> {
 
   public SyncMockHttpServerRule(int port) {
     super(builder().port(port).build());

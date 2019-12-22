@@ -16,7 +16,7 @@ import com.github.tonivade.zeromock.api.HttpServiceK.MappingBuilderK;
 import com.github.tonivade.zeromock.api.RequestHandlerK;
 import com.github.tonivade.zeromock.server.MockHttpServerK;
 
-public abstract class AbstractMockServerRule<F extends Kind, H extends RequestHandlerK<F>> extends ExternalResource {
+public abstract class AbstractMockServerRule<F extends Kind> extends ExternalResource {
 
   private final MockHttpServerK<F> server;
 
@@ -34,21 +34,21 @@ public abstract class AbstractMockServerRule<F extends Kind, H extends RequestHa
     server.stop();
   }
 
-  public AbstractMockServerRule<F, H> verify(Matcher1<HttpRequest> matcher) {
+  public AbstractMockServerRule<F> verify(Matcher1<HttpRequest> matcher) {
     server.verify(matcher);
     return this;
   }
 
-  public AbstractMockServerRule<F, H> add(Matcher1<HttpRequest> matcher, H handler) {
+  public AbstractMockServerRule<F> add(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
     server.add(matcher, handler);
     return this;
   }
 
-  public MappingBuilderK<F, H, AbstractMockServerRule<F, H>> when(Matcher1<HttpRequest> matcher) {
+  public MappingBuilderK<F, AbstractMockServerRule<F>> when(Matcher1<HttpRequest> matcher) {
     return new MappingBuilderK<>(this::add).when(matcher);
   }
 
-  public AbstractMockServerRule<F, H> mount(String path, HttpServiceK<F> service) {
+  public AbstractMockServerRule<F> mount(String path, HttpServiceK<F> service) {
     server.mount(path, service);
     return this;
   }

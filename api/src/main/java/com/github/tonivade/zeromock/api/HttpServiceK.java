@@ -48,7 +48,7 @@ public final class HttpServiceK<F extends Kind> {
     return addMapping(matcher, handler);
   }
 
-  public MappingBuilderK<F, RequestHandlerK<F>, HttpServiceK<F>> when(Matcher1<HttpRequest> matcher) {
+  public MappingBuilderK<F, HttpServiceK<F>> when(Matcher1<HttpRequest> matcher) {
     return new MappingBuilderK<>(this::add).when(matcher);
   }
 
@@ -64,20 +64,20 @@ public final class HttpServiceK<F extends Kind> {
     return new HttpServiceK<>(name, mappings.orElse(PartialFunction1.of(matcher, handler::apply)));
   }
 
-  public static final class MappingBuilderK<F extends Kind, H extends RequestHandlerK<F>, T> {
-    private final Function2<Matcher1<HttpRequest>, H, T> finisher;
+  public static final class MappingBuilderK<F extends Kind, T> {
+    private final Function2<Matcher1<HttpRequest>, RequestHandlerK<F>, T> finisher;
     private Matcher1<HttpRequest> matcher;
 
-    public MappingBuilderK(Function2<Matcher1<HttpRequest>, H, T> finisher) {
+    public MappingBuilderK(Function2<Matcher1<HttpRequest>, RequestHandlerK<F>, T> finisher) {
       this.finisher = requireNonNull(finisher);
     }
 
-    public MappingBuilderK<F, H, T> when(Matcher1<HttpRequest> matcher) {
+    public MappingBuilderK<F, T> when(Matcher1<HttpRequest> matcher) {
       this.matcher = matcher;
       return this;
     }
 
-    public T then(H handler) {
+    public T then(RequestHandlerK<F> handler) {
       return finisher.apply(matcher, handler);
     }
   }
