@@ -34,7 +34,7 @@ public class HttpZIOServiceTest {
   public void echo() {
     HttpZIOService<Nothing> service = new HttpZIOService<Nothing>("test")
         .when(get("/echo"))
-        .then(request -> Task.from(request::body).fold(Responses::error, Responses::ok).<Nothing>toZIO());
+        .then(request -> Task.task(request::body).fold(Responses::error, Responses::ok).<Nothing, Nothing>toZIO());
     
     Option<ZIO<Nothing, Nothing, HttpResponse>> execute = service.execute(Requests.get("/echo").withBody(asBytes("hello")));
     

@@ -46,15 +46,15 @@ public class ZIOMockHttpServerTest {
 
   private HttpZIOService<Nothing> service1 = new HttpZIOService<Nothing>("hello")
       .when(get().and(path("/hello")).and(param("name")))
-        .then(request -> ZIO.<Nothing, Nothing, String>task(() -> helloWorld(request)).map(Responses::ok))
+        .then(request -> ZIO.<Nothing, String>task(() -> helloWorld(request)).fold(Responses::error, Responses::ok))
       .when(get().and(path("/hello")).and(param("name").negate()))
         .then(request -> ZIO.pure(badRequest("missing parameter name")));
 
   private HttpZIOService<Nothing> service2 = new HttpZIOService<Nothing>("test")
       .when(get().and(path("/test")).and(acceptsXml()))
-        .then(request -> ZIO.<Nothing, Nothing, Say>task(this::sayHello).map(objectToXml()).map(Responses::ok).map(contentXml()))
+        .then(request -> ZIO.<Nothing, Say>task(this::sayHello).map(objectToXml()).fold(Responses::error, Responses::ok).map(contentXml()))
       .when(get().and(path("/test")).and(acceptsJson()))
-        .then(request -> ZIO.<Nothing, Nothing, Say>task(this::sayHello).map(objectToJson()).map(Responses::ok).map(contentJson()))
+        .then(request -> ZIO.<Nothing, Say>task(this::sayHello).map(objectToJson()).fold(Responses::error, Responses::ok).map(contentJson()))
       .when(get().and(path("/empty")))
         .then(request -> ZIO.pure(noContent()));
 
