@@ -4,6 +4,8 @@
  */
 package com.github.tonivade.zeromock.api;
 
+import static java.util.Objects.isNull;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,6 +34,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 public final class Deserializers {
   
@@ -62,7 +65,7 @@ public final class Deserializers {
   }
   
   private static <T> Function1<String, T> fromJson(Type type) {
-    return json -> buildGson().fromJson(json, type);
+    return json -> fromJson(json, type);
   }
 
   private static Gson buildGson() {
@@ -87,6 +90,13 @@ public final class Deserializers {
     } catch (JAXBException e) {
       throw new DataBindingException(e);
     }
+  }
+
+  private static <T> T fromJson(String json, Type type) {
+    if (isNull(json) || json.isEmpty()) {
+      throw new JsonSyntaxException("body cannot be null or empty");
+    }
+    return buildGson().fromJson(json, type);
   }
 }
 

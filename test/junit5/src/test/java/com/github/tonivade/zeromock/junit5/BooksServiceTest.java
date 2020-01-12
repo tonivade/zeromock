@@ -4,6 +4,7 @@
  */
 package com.github.tonivade.zeromock.junit5;
 
+import static com.github.tonivade.zeromock.api.Bytes.empty;
 import static com.github.tonivade.zeromock.api.Deserializers.jsonToObject;
 import static com.github.tonivade.zeromock.api.Matchers.body;
 import static com.github.tonivade.zeromock.api.Matchers.delete;
@@ -88,7 +89,7 @@ public class BooksServiceTest {
     HttpResponse response = client.request(Requests.delete("/books/1"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals(null, asBook(response.body())));
+              () -> assertEquals(empty(), response.body()));
   }
 
   @Test
