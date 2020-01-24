@@ -8,7 +8,7 @@ Right now the unique dependency is gson (json object serialization), and gson do
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/a3718bd59d674b8592065ac84abdf82c)](https://www.codacy.com/app/tonivade/zeromock?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tonivade/zeromock&amp;utm_campaign=Badge_Grade)
 [![Sonarcloud Badge](https://sonarcloud.io/api/project_badges/measure?project=com.github.tonivade%3Azeromock-parent&amp;metric=alert_status)](https://sonarcloud.io/dashboard?id=com.github.tonivade%3Azeromock-parent)
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/a3718bd59d674b8592065ac84abdf82c)](https://www.codacy.com/app/tonivade/zeromock?utm_source=github.com&utm_medium=referral&utm_content=tonivade/zeromock&utm_campaign=Badge_Coverage)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.tonivade/zeromock-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.tonivade/zeromock-api)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.tonivade/zeromock-api/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.tonivade/zeromock-api)
 
 ## Why?
 
