@@ -14,8 +14,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
-import java.util.LinkedList;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
@@ -47,8 +50,8 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
 
   private final HttpServer server;
 
-  private final List<HttpRequest> matched = new LinkedList<>();
-  private final List<HttpRequest> unmatched = new LinkedList<>();
+  private final Map<Instant, HttpRequest> matched = new LimitedSizeMap<Instant, HttpRequest>(100);
+  private final Map<Instant, HttpRequest> unmatched = new LimitedSizeMap<Instant, HttpRequest>(100);
 
   private HttpServiceK<F> service;
 
@@ -105,7 +108,7 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
 
   @Override
   public List<HttpRequest> getUnmatched() {
-    return unmodifiableList(unmatched);
+    return unmodifiableList(new ArrayList<>(unmatched.values()));
   }
 
   @Override
@@ -127,18 +130,18 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
   private void unmatched(HttpExchange exchange, HttpRequest request) {
     LOG.fine(() -> "unmatched request " + request);
     processResponse(exchange, notFound());
-    unmatched.add(request);
+    unmatched.put(Instant.now(), request);
   }
 
   private void matched(HttpExchange exchange, HttpRequest request, Higher1<F, HttpResponse> responseK) {
-    matched.add(request);
+    matched.put(Instant.now(), request);
     run(responseK)
       .onSuccess(response -> processResponse(exchange, response))
       .onFailure(error -> processResponse(exchange, error(error)));
   }
 
   private boolean matches(Matcher1<HttpRequest> matcher) {
-    return matched.stream().anyMatch(matcher::match);
+    return matched.values().stream().anyMatch(matcher::match);
   }
 
   private Option<Higher1<F, HttpResponse>> execute(HttpRequest request) {
@@ -160,7 +163,7 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
       response.headers().forEach((key, value) -> exchange.getResponseHeaders().add(key, value));
       exchange.sendResponseHeaders(response.status().code(), bytes.size());
       try (OutputStream output = exchange.getResponseBody()) {
-        exchange.getResponseBody().write(bytes.toArray());
+        output.write(bytes.toArray());
       }
     } catch (IOException e) {
       throw new UncheckedIOException(e);
@@ -208,6 +211,21 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
           return run.apply(response);
         }
       };
+    }
+  }
+
+  private static final class LimitedSizeMap<K, V> extends LinkedHashMap<K, V> {
+
+    private final int maxSize;
+
+    private LimitedSizeMap(int maxSize) {
+      super(maxSize);
+      this.maxSize = maxSize;
+    }
+
+    @Override
+    protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+      return size() > maxSize;
     }
   }
 }
