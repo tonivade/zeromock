@@ -49,7 +49,7 @@ public final class AsyncHttpService {
   }
 
   public Option<Promise<HttpResponse>> execute(HttpRequest request) {
-    return serviceK.execute(request).map(Future::narrowK).map(future -> future.toPromise());
+    return serviceK.execute(request).map(Future::narrowK).map(Future::toPromise);
   }
 
   public AsyncHttpService combine(AsyncHttpService other) {
