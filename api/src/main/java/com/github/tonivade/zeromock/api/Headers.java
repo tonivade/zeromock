@@ -9,6 +9,14 @@ import com.github.tonivade.purefun.Operator1;
 public final class Headers {
 
   private Headers() {}
+
+  public static Operator1<HttpResponse> enableCors() {
+    return response ->
+        response.withHeader("Access-Control-Allow-Origin", "*")
+          .withHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PATCH, PUT")
+          .withHeader("Access-Control-Max-Age", "3600")
+          .withHeader("Access-Control-Allow-Headers", "x-requested-with, origin, content-type, accept");
+  }
   
   public static Operator1<HttpResponse> contentType(String value) {
     return response -> response.withHeader("Content-type", value);
