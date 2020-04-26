@@ -7,6 +7,7 @@ package com.github.tonivade.zeromock.api;
 import static com.github.tonivade.zeromock.api.Bytes.asString;
 import static com.github.tonivade.zeromock.api.HttpMethod.DELETE;
 import static com.github.tonivade.zeromock.api.HttpMethod.GET;
+import static com.github.tonivade.zeromock.api.HttpMethod.OPTIONS;
 import static com.github.tonivade.zeromock.api.HttpMethod.PATCH;
 import static com.github.tonivade.zeromock.api.HttpMethod.POST;
 import static com.github.tonivade.zeromock.api.HttpMethod.PUT;
@@ -62,9 +63,13 @@ public final class Matchers {
   public static Matcher1<HttpRequest> delete() {
     return method(DELETE);
   }
-  
+
   public static Matcher1<HttpRequest>patch() {
     return method(PATCH);
+  }
+
+  public static Matcher1<HttpRequest>options() {
+    return method(OPTIONS);
   }
   
   public static <T> Matcher1<HttpRequest> equalTo(T value) {
@@ -102,9 +107,13 @@ public final class Matchers {
   public static Matcher1<HttpRequest> patch(String path) {
     return patch().and(path(path));
   }
-  
+
   public static Matcher1<HttpRequest> delete(String path) {
     return delete().and(path(path));
+  }
+
+  public static Matcher1<HttpRequest> options(String path) {
+    return options().and(path(path));
   }
 
   private static <T> T json(HttpRequest request, Type type) {
