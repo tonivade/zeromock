@@ -14,7 +14,6 @@ import static com.github.tonivade.zeromock.api.Matchers.acceptsJson;
 import static com.github.tonivade.zeromock.api.Matchers.acceptsXml;
 import static com.github.tonivade.zeromock.api.Matchers.get;
 import static com.github.tonivade.zeromock.api.Matchers.param;
-import static com.github.tonivade.zeromock.api.Matchers.path;
 import static com.github.tonivade.zeromock.api.Serializers.objectToJson;
 import static com.github.tonivade.zeromock.api.Serializers.plain;
 import static com.github.tonivade.zeromock.api.Serializers.objectToXml;
@@ -43,21 +42,21 @@ public class MockHttpServerTest {
 
   private static final String BASE_URL = "http://localhost:8080/path";
 
-  private HttpService service1 = new HttpService("hello")
-      .when(get().and(path("/hello")).and(param("name"))).then(ok(plain().compose(this::helloWorld)))
-      .when(get().and(path("/hello")).and(param("name").negate())).then(badRequest("missing parameter name"));
+  private final HttpService service1 = new HttpService("hello")
+      .when(get("/hello").and(param("name"))).then(ok(plain().compose(this::helloWorld)))
+      .when(get("/hello").and(param("name").negate())).then(badRequest("missing parameter name"));
 
-  private HttpService service2 = new HttpService("test")
-      .when(get().and(path("/test")).and(acceptsXml()))
+  private final HttpService service2 = new HttpService("test")
+      .when(get("/test").and(acceptsXml()))
             .then(ok(adapt(this::sayHello).andThen(objectToXml())).postHandle(contentXml()))
-      .when(get().and(path("/test")).and(acceptsJson()))
+      .when(get("/test").and(acceptsJson()))
             .then(ok(adapt(this::sayHello).andThen(objectToJson())).postHandle(contentJson()))
-      .when(get().and(path("/empty")))
+      .when(get("/empty"))
             .then(noContent()::apply);
 
-  private HttpService service3 = new HttpService("other").when(get("/ping")).then(ok("pong"));
+  private final HttpService service3 = new HttpService("other").when(get("/ping")).then(ok("pong"));
 
-  private static MockHttpServer server = listenAt(8080);
+  private static final MockHttpServer server = listenAt(8080);
 
   @Test
   public void hello() {
@@ -65,8 +64,12 @@ public class MockHttpServerTest {
 
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/hello").withParam("name", "World"));
 
-    assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals("Hello World!", asString(response.body())));
+    assertAll(
+        () -> assertEquals(HttpStatus.OK, response.status()),
+        () -> assertEquals("Hello World!", asString(response.body())),
+        () -> server.verify(get("/path/hello").and(param("name", "World"))),
+        () -> server.verifyNot(get("/path/hello").and(param("name", "everyone")))
+    );
   }
 
   @Test
@@ -75,7 +78,10 @@ public class MockHttpServerTest {
 
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/hello"));
 
-    assertEquals(HttpStatus.BAD_REQUEST, response.status());
+    assertAll(
+        () -> assertEquals(HttpStatus.BAD_REQUEST, response.status()),
+        () -> server.verifyNot(get("/hello").and(param("name")))
+    );
   }
 
   @Test
