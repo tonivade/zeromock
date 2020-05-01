@@ -73,6 +73,12 @@ public final class AsyncMockHttpServer implements HttpServer {
   }
 
   @Override
+  public AsyncMockHttpServer verifyNot(Matcher1<HttpRequest> matcher) {
+    serverK.verifyNot(matcher);
+    return this;
+  }
+
+  @Override
   public List<HttpRequest> getUnmatched() {
     return serverK.getUnmatched();
   }

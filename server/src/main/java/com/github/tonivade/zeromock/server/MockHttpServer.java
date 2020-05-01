@@ -76,6 +76,12 @@ public final class MockHttpServer implements HttpServer {
   }
 
   @Override
+  public MockHttpServer verifyNot(Matcher1<HttpRequest> matcher) {
+    serverK.verifyNot(matcher);
+    return this;
+  }
+
+  @Override
   public List<HttpRequest> getUnmatched() {
     return serverK.getUnmatched();
   }

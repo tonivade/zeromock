@@ -90,6 +90,12 @@ public final class UIOMockHttpServer implements HttpServer {
   }
 
   @Override
+  public UIOMockHttpServer verifyNot(Matcher1<HttpRequest> matcher) {
+    serverK.verifyNot(matcher);
+    return this;
+  }
+
+  @Override
   public List<HttpRequest> getUnmatched() {
     return serverK.getUnmatched();
   }

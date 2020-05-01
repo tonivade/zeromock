@@ -90,6 +90,12 @@ public final class IOMockHttpServer implements HttpServer {
   }
 
   @Override
+  public IOMockHttpServer verifyNot(Matcher1<HttpRequest> matcher) {
+    serverK.verifyNot(matcher);
+    return this;
+  }
+
+  @Override
   public List<HttpRequest> getUnmatched() {
     return serverK.getUnmatched();
   }

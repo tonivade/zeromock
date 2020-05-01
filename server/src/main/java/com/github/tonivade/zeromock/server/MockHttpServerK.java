@@ -107,6 +107,14 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
   }
 
   @Override
+  public MockHttpServerK<F> verifyNot(Matcher1<HttpRequest> matcher) {
+    if (matches(matcher)) {
+      throw new AssertionError("request not found");
+    }
+    return this;
+  }
+
+  @Override
   public List<HttpRequest> getUnmatched() {
     return unmodifiableList(new ArrayList<>(unmatched.values()));
   }

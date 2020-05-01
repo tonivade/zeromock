@@ -93,6 +93,12 @@ public final class ZIOMockHttpServer<R> implements HttpServer {
   }
 
   @Override
+  public ZIOMockHttpServer verifyNot(Matcher1<HttpRequest> matcher) {
+    serverK.verifyNot(matcher);
+    return this;
+  }
+
+  @Override
   public List<HttpRequest> getUnmatched() {
     return serverK.getUnmatched();
   }

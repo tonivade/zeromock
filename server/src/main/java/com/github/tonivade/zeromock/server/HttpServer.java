@@ -18,6 +18,7 @@ public interface HttpServer {
   void reset();
 
   HttpServer verify(Matcher1<HttpRequest> matcher);
+  HttpServer verifyNot(Matcher1<HttpRequest> matcher);
 
   List<HttpRequest> getUnmatched();
 }
