@@ -5,6 +5,9 @@
 package com.github.tonivade.zeromock.api;
 
 import com.github.tonivade.purefun.Function1;
+import com.jayway.jsonpath.JsonPath;
+
+import java.lang.reflect.Type;
 
 public final class Extractors {
   
@@ -18,6 +21,10 @@ public final class Extractors {
     return HttpRequest::body;
   }
 
+  public static <T> Function1<HttpRequest, T> extract(String jsonPath) {
+    return body().andThen(asString()).andThen(jsonPath(jsonPath));
+  }
+
   public static Function1<HttpRequest, String> queryParam(String name) {
     return request -> request.param(name);
   }
@@ -25,7 +32,11 @@ public final class Extractors {
   public static Function1<HttpRequest, String> pathParam(int position) {
     return request -> request.pathParam(position);
   }
-  
+
+  public static <T> Function1<HttpRequest, T> jsonTo(Type type) {
+    return body().andThen(Deserializers.jsonTo(type));
+  }
+
   public static Function1<Bytes, String> asString() {
     return Bytes::asString;
   }
@@ -36,5 +47,9 @@ public final class Extractors {
   
   public static Function1<String, Long> asLong() {
     return Long::parseLong;
+  }
+
+  private static <T> Function1<String, T> jsonPath(String jsonPath) {
+    return json -> JsonPath.read(json, jsonPath);
   }
 }

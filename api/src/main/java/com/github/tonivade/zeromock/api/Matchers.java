@@ -12,8 +12,6 @@ import static com.github.tonivade.zeromock.api.HttpMethod.PATCH;
 import static com.github.tonivade.zeromock.api.HttpMethod.POST;
 import static com.github.tonivade.zeromock.api.HttpMethod.PUT;
 
-import java.lang.reflect.Type;
-
 import com.github.tonivade.purefun.Matcher1;
 
 public final class Matchers {
@@ -71,11 +69,15 @@ public final class Matchers {
   public static Matcher1<HttpRequest>options() {
     return method(OPTIONS);
   }
-  
+
   public static <T> Matcher1<HttpRequest> equalTo(T value) {
-    return request -> json(request, value.getClass()).equals(value);
+    return Extractors.<T>jsonTo(value.getClass()).andThen(value::equals)::apply;
   }
-  
+
+  public static <T> Matcher1<HttpRequest> jsonPath(String jsonPath, Matcher1<T> matcher) {
+    return Extractors.<T>extract(jsonPath).andThen(matcher::match)::apply;
+  }
+
   public static Matcher1<HttpRequest> body(String body) {
     return request -> asString(request.body()).equals(body);
   }
@@ -114,9 +116,5 @@ public final class Matchers {
 
   public static Matcher1<HttpRequest> options(String path) {
     return options().and(path(path));
-  }
-
-  private static <T> T json(HttpRequest request, Type type) {
-    return Extractors.body().andThen(Deserializers.<T>jsonTo(type)).apply(request);
   }
 }

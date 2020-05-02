@@ -6,7 +6,8 @@ ext {
     junitPlatform   : '1.6.0',
     equalsverifier  : '3.1.12',
     purefun         : '1.9-SNAPSHOT',
-    jaxb            : '2.4.0-b180830.0438'
+    jaxb            : '2.4.0-b180830.0438',
+    jsonPath        : '2.4.0'
   ]
   libs = [
     purefunCore        : "com.github.tonivade:purefun-core:$versions.purefun",
@@ -20,6 +21,7 @@ ext {
     junitRunner        : "org.junit.platform:junit-platform-runner:$versions.junitPlatform",
     junit              : "junit:junit:$versions.junit",
     equalsverifier     : "nl.jqno.equalsverifier:equalsverifier:$versions.equalsverifier",
-    jaxb               : "org.glassfish.jaxb:jaxb-runtime:$versions.jaxb"
+    jaxb               : "org.glassfish.jaxb:jaxb-runtime:$versions.jaxb",
+    jsonPath           : "com.jayway.jsonpath:json-path:$versions.jsonPath"
   ]
 }
