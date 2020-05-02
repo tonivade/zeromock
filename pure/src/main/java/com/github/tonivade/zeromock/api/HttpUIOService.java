@@ -16,7 +16,7 @@ public final class HttpUIOService {
   private final HttpServiceK<UIO.µ> serviceK;
 
   public HttpUIOService(String name) {
-    this(new HttpServiceK<UIO.µ>(name));
+    this(new HttpServiceK<>(name));
   }
 
   private HttpUIOService(HttpServiceK<UIO.µ> serviceK) {

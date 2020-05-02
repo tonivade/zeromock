@@ -19,7 +19,7 @@ public final class HttpZIOService<R> {
   private final HttpServiceK<Higher1<Higher1<ZIO.µ, R>, Nothing>> serviceK;
 
   public HttpZIOService(String name) {
-    this(new HttpServiceK<Higher1<Higher1<ZIO.µ, R>, Nothing>>(name));
+    this(new HttpServiceK<>(name));
   }
 
   private HttpZIOService(HttpServiceK<Higher1<Higher1<ZIO.µ, R>, Nothing>> serviceK) {

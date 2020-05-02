@@ -20,7 +20,7 @@ import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
 
 public final class MockHttpServer implements HttpServer {
 
-  private MockHttpServerK<Id.µ> serverK;
+  private final MockHttpServerK<Id.µ> serverK;
 
   private MockHttpServer(MockHttpServerK<Id.µ> serverK) {
     this.serverK = requireNonNull(serverK);
