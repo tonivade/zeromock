@@ -11,7 +11,8 @@ import static com.github.tonivade.zeromock.api.Matchers.delete;
 import static com.github.tonivade.zeromock.api.Matchers.get;
 import static com.github.tonivade.zeromock.api.Matchers.post;
 import static com.github.tonivade.zeromock.api.Matchers.put;
-import static java.util.Arrays.asList;
+import static com.github.tonivade.zeromock.server.HttpClient.connectTo;
+import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -28,16 +29,15 @@ import com.github.tonivade.zeromock.api.HttpService;
 import com.github.tonivade.zeromock.api.HttpStatus;
 import com.github.tonivade.zeromock.api.Requests;
 import com.github.tonivade.zeromock.junit5.BooksService.Book;
-import com.github.tonivade.zeromock.server.HttpClient;
 import com.github.tonivade.zeromock.server.MockHttpServer;
 import com.google.gson.reflect.TypeToken;
 
 @ExtendWith(MockHttpServerExtension.class)
 public class BooksServiceTest {
 
-  private BooksAPI books = new BooksAPI(new BooksService());
+  private final BooksAPI books = new BooksAPI(new BooksService());
 
-  private HttpService booksService = new HttpService("books")
+  private final HttpService booksService = new HttpService("books")
       .when(get("/books")).then(books.findAll())
       .when(get("/books/:id")).then(books.find())
       .when(post("/books")).then(books.create())
@@ -48,20 +48,17 @@ public class BooksServiceTest {
   public void findsBooks(MockHttpServer server) {
     server.mount("/store", booksService);
 
-    HttpClient client = new HttpClient("http://localhost:8080/store");
+    HttpResponse response = connectTo("http://localhost:8080/store").request(Requests.get("/books"));
 
-    HttpResponse response = client.request(Requests.get("/books"));
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals(asList(new Book(1, "title")), asBooks(response.body())));
+              () -> assertEquals(singletonList(new Book(1, "title")), asBooks(response.body())));
   }
 
   @Test
   public void findsBook(MockHttpServer server) {
     server.mount("/store", booksService);
 
-    HttpClient client = new HttpClient("http://localhost:8080/store");
-
-    HttpResponse response = client.request(Requests.get("/books/1"));
+    HttpResponse response = connectTo("http://localhost:8080/store").request(Requests.get("/books/1"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals(new Book(1, "title"), asBook(response.body())));
@@ -71,9 +68,8 @@ public class BooksServiceTest {
   public void createsBook(MockHttpServer server) {
     server.mount("/store", booksService);
 
-    HttpClient client = new HttpClient("http://localhost:8080/store");
-
-    HttpResponse response = client.request(Requests.post("/books").withBody("create"));
+    HttpResponse response =
+        connectTo("http://localhost:8080/store").request(Requests.post("/books").withBody("create"));
 
     assertAll(() -> assertEquals(HttpStatus.CREATED, response.status()),
               () -> assertEquals(new Book(1, "create"), asBook(response.body())),
@@ -84,9 +80,8 @@ public class BooksServiceTest {
   public void deletesBook(MockHttpServer server) {
     server.mount("/store", booksService);
 
-    HttpClient client = new HttpClient("http://localhost:8080/store");
-
-    HttpResponse response = client.request(Requests.delete("/books/1"));
+    HttpResponse response =
+        connectTo("http://localhost:8080/store").request(Requests.delete("/books/1"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals(empty(), response.body()));
@@ -96,9 +91,8 @@ public class BooksServiceTest {
   public void updatesBook(MockHttpServer server) {
     server.mount("/store", booksService);
 
-    HttpClient client = new HttpClient("http://localhost:8080/store");
-
-    HttpResponse response = client.request(Requests.put("/books/1").withBody("update"));
+    HttpResponse response =
+        connectTo("http://localhost:8080/store").request(Requests.put("/books/1").withBody("update"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals(new Book(1, "update"), asBook(response.body())));

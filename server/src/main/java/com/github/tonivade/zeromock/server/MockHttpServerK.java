@@ -50,8 +50,8 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
 
   private final HttpServer server;
 
-  private final Map<Instant, HttpRequest> matched = new LimitedSizeMap<Instant, HttpRequest>(100);
-  private final Map<Instant, HttpRequest> unmatched = new LimitedSizeMap<Instant, HttpRequest>(100);
+  private final Map<Instant, HttpRequest> matched = new LimitedSizeMap<>(100);
+  private final Map<Instant, HttpRequest> unmatched = new LimitedSizeMap<>(100);
 
   private HttpServiceK<F> service;
 
