@@ -7,4 +7,5 @@ dependencies {
   implementation libs.purefunMonad
   implementation libs.purefunEffect
   testImplementation libs.gson
+  testImplementation project(':client')
 }

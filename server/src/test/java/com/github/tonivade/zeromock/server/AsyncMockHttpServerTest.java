@@ -19,7 +19,7 @@ import static com.github.tonivade.zeromock.api.Serializers.objectToJson;
 import static com.github.tonivade.zeromock.api.Serializers.plain;
 import static com.github.tonivade.zeromock.api.Serializers.objectToXml;
 import static com.github.tonivade.zeromock.server.AsyncMockHttpServer.listenAt;
-import static com.github.tonivade.zeromock.server.HttpClient.connectTo;
+import static com.github.tonivade.zeromock.client.HttpClient.connectTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

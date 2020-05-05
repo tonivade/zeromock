@@ -2,7 +2,7 @@
  * Copyright (c) 2018-2020, Antonio Gabriel Muñoz Conejo <antoniogmc at gmail dot com>
  * Distributed under the terms of the MIT License
  */
-package com.github.tonivade.zeromock.server;
+package com.github.tonivade.zeromock.client;
 
 import com.github.tonivade.purefun.Nothing;
 import com.github.tonivade.purefun.concurrent.Future;
@@ -15,6 +15,7 @@ import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpStatus;
 import com.github.tonivade.zeromock.api.Requests;
+import com.github.tonivade.zeromock.server.MockHttpServer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

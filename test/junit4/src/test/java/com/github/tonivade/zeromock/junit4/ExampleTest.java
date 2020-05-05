@@ -8,7 +8,7 @@ import static com.github.tonivade.purefun.Nothing.nothing;
 import static com.github.tonivade.zeromock.api.Bytes.asString;
 import static com.github.tonivade.zeromock.api.Handlers.ok;
 import static com.github.tonivade.zeromock.api.Matchers.get;
-import static com.github.tonivade.zeromock.server.HttpClient.connectTo;
+import static com.github.tonivade.zeromock.client.HttpClient.connectTo;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Rule;
@@ -35,7 +35,7 @@ public class ExampleTest {
   @Rule
   public UIOMockHttpServerRule uioServer = new UIOMockHttpServerRule(8084);
   @Rule
-  public ZIOMockHttpServerRule<Nothing> zioServer = new ZIOMockHttpServerRule<Nothing>(nothing(), 8085);
+  public ZIOMockHttpServerRule<Nothing> zioServer = new ZIOMockHttpServerRule<>(nothing(), 8085);
   
   @Test
   public void ping() {

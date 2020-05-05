@@ -1,11 +1,10 @@
-archivesBaseName = 'zeromock-server'
+archivesBaseName = 'zeromock-client'
 
 dependencies {
   api project(':api')
-  api project(':pure')
   implementation libs.purefunMonad
   implementation libs.purefunEffect
   implementation libs.purefunInstances
-  testImplementation project(':client')
+  testImplementation project(':server')
 }
 
