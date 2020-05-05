@@ -18,7 +18,7 @@ public final class AsyncHttpService {
   private final HttpServiceK<Future.µ> serviceK;
 
   public AsyncHttpService(String name) {
-    this(new HttpServiceK<>(name, FutureInstances.functor()));
+    this(new HttpServiceK<>(name, FutureInstances.monad()));
   }
 
   private AsyncHttpService(HttpServiceK<Future.µ> serviceK) {

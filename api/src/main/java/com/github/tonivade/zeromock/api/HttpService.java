@@ -17,7 +17,7 @@ public final class HttpService {
   private HttpServiceK<Id.µ> serviceK;
 
   public HttpService(String name) {
-    this(new HttpServiceK<>(name, IdInstances.functor()));
+    this(new HttpServiceK<>(name, IdInstances.monad()));
   }
 
   private HttpService(HttpServiceK<Id.µ> serviceK) {

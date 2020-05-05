@@ -30,7 +30,7 @@ public final class MockHttpServer implements HttpServer {
   }
 
   public static Builder<Id.µ> builder() {
-    return new Builder<>(IdInstances.functor(), response -> {
+    return new Builder<>(IdInstances.monad(), response -> {
       Promise<HttpResponse> promise = Promise.make();
       Id<HttpResponse> id = response.fix1(Id::narrowK);
       promise.succeeded(id.get());

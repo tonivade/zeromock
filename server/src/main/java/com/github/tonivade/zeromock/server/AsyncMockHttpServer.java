@@ -27,7 +27,7 @@ public final class AsyncMockHttpServer implements HttpServer {
   }
 
   public static Builder<Future.µ> builder() {
-    return new Builder<>(FutureInstances.functor(), response -> {
+    return new Builder<>(FutureInstances.monad(), response -> {
       Future<HttpResponse> future = response.fix1(Future::narrowK);
       return future.toPromise();
     });

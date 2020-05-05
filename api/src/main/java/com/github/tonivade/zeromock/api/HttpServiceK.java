@@ -16,30 +16,31 @@ import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Operator1;
 import com.github.tonivade.purefun.PartialFunction1;
+import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.purefun.type.Option;
-import com.github.tonivade.purefun.typeclasses.Functor;
+import com.github.tonivade.purefun.typeclasses.Monad;
 
 public final class HttpServiceK<F extends Kind> {
 
   private final String name;
-  private final Functor<F> functor;
+  private final Monad<F> monad;
   private final PartialFunction1<HttpRequest, Higher1<F, HttpResponse>> mappings;
-  private final Operator1<HttpRequest> preFilters;
+  private final Function1<HttpRequest, Either<HttpResponse, HttpRequest>> preFilters;
   private final Operator1<HttpResponse> postFilters;
 
-  public HttpServiceK(String name, Functor<F> functor) {
-    this(name, functor,
+  public HttpServiceK(String name, Monad<F> monad) {
+    this(name, monad,
         PartialFunction1.of(Matcher1.never(), fail(IllegalStateException::new)),
-        Function1.<HttpRequest>identity()::apply,
+        Either::right,
         Function1.<HttpResponse>identity()::apply);
   }
 
-  private HttpServiceK(String name, Functor<F> functor,
+  private HttpServiceK(String name, Monad<F> monad,
                        PartialFunction1<HttpRequest, Higher1<F, HttpResponse>> mappings,
-                       Operator1<HttpRequest> preFilters,
+                       Function1<HttpRequest, Either<HttpResponse, HttpRequest>> preFilters,
                        Operator1<HttpResponse> postFilters) {
     this.name = requireNonNull(name);
-    this.functor = requireNonNull(functor);
+    this.monad = requireNonNull(monad);
     this.mappings = requireNonNull(mappings);
     this.preFilters = requireNonNull(preFilters);
     this.postFilters = requireNonNull(postFilters);
@@ -50,6 +51,8 @@ public final class HttpServiceK<F extends Kind> {
   }
 
   public HttpServiceK<F> mount(String path, HttpServiceK<F> other) {
+    requireNonNull(path);
+    requireNonNull(other);
     return addMapping(
         startsWith(path).and(req -> other.mappings.isDefinedAt(req.dropOneLevel())),
         req -> other.mappings.apply(req.dropOneLevel()));
@@ -76,24 +79,28 @@ public final class HttpServiceK<F extends Kind> {
   }
 
   public Option<Higher1<F, HttpResponse>> execute(HttpRequest request) {
-    return mappings.lift().apply(preFilters.apply(request))
-        .map(response -> functor.map(response, postFilters::apply));
+    return preFilters.apply(request)
+        .fold(response -> Option.some(monad.pure(response)), mappings.lift())
+        .map(response -> monad.map(response, postFilters::apply));
   }
 
   public HttpServiceK<F> combine(HttpServiceK<F> other) {
+    requireNonNull(other);
     return new HttpServiceK<>(
         this.name + "+" + other.name,
-        this.functor,
+        this.monad,
         this.mappings.orElse(other.mappings),
-        this.preFilters.andThen(other.preFilters)::apply,
+        this.preFilters.andThen(either -> either.flatMap(other.preFilters)),
         this.postFilters.andThen(other.postFilters)::apply
     );
   }
 
   private HttpServiceK<F> addMapping(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
+    requireNonNull(matcher);
+    requireNonNull(handler);
     return new HttpServiceK<>(
         this.name,
-        this.functor,
+        this.monad,
         this.mappings.orElse(PartialFunction1.of(matcher, handler::apply)),
         this.preFilters,
         this.postFilters
@@ -101,19 +108,21 @@ public final class HttpServiceK<F extends Kind> {
   }
 
   private HttpServiceK<F> addPreFilter(PreFilter filter) {
+    requireNonNull(filter);
     return new HttpServiceK<>(
         this.name,
-        this.functor,
+        this.monad,
         this.mappings,
-        this.preFilters.andThen(filter::apply)::apply,
+        this.preFilters.andThen(either -> either.flatMap(filter)),
         this.postFilters
     );
   }
 
   private HttpServiceK<F> addPostFilter(PostFilter filter) {
+    requireNonNull(filter);
     return new HttpServiceK<>(
         this.name,
-        this.functor,
+        this.monad,
         this.mappings,
         this.preFilters,
         this.postFilters.andThen(filter::apply)::apply

@@ -29,6 +29,7 @@ import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.typeclasses.Functor;
+import com.github.tonivade.purefun.typeclasses.Monad;
 import com.github.tonivade.zeromock.api.Bytes;
 import com.github.tonivade.zeromock.api.HttpHeaders;
 import com.github.tonivade.zeromock.api.HttpMethod;
@@ -52,20 +53,20 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
   private static final String ROOT = "/";
 
   private final HttpServer server;
-  private final Functor<F> functor;
+  private final Monad<F> monad;
 
   private final Map<Instant, HttpRequest> matched = new LimitedSizeMap<>(100);
   private final Map<Instant, HttpRequest> unmatched = new LimitedSizeMap<>(100);
 
   private HttpServiceK<F> service;
 
-  private MockHttpServerK(String host, int port, int threads, int backlog, Functor<F> functor) {
+  private MockHttpServerK(String host, int port, int threads, int backlog, Monad<F> monad) {
     try {
-      this.service = new HttpServiceK<>("root", functor);
+      this.service = new HttpServiceK<>("root", monad);
       this.server = HttpServer.create(new InetSocketAddress(host, port), backlog);
       this.server.setExecutor(Executors.newFixedThreadPool(threads));
       this.server.createContext(ROOT, this::handle);
-      this.functor = requireNonNull(functor);
+      this.monad = requireNonNull(monad);
     } catch (IOException e) {
       throw new UncheckedIOException("unable to start server at " + host + ":" + port, e);
     }
@@ -136,7 +137,7 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
 
   @Override
   public void reset() {
-    service = new HttpServiceK<>("root", functor);
+    service = new HttpServiceK<>("root", monad);
     matched.clear();
     unmatched.clear();
   }
@@ -200,11 +201,11 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
     private int port = 8080;
     private int threads = Runtime.getRuntime().availableProcessors();
     private int backlog = 0;
-    private final Functor<F> functor;
+    private final Monad<F> monad;
     private final Function1<Higher1<F, HttpResponse>, Promise<HttpResponse>> run;
 
-    public Builder(Functor<F> functor, Function1<Higher1<F, HttpResponse>, Promise<HttpResponse>> run) {
-      this.functor = requireNonNull(functor);
+    public Builder(Monad<F> monad, Function1<Higher1<F, HttpResponse>, Promise<HttpResponse>> run) {
+      this.monad = requireNonNull(monad);
       this.run = requireNonNull(run);
     }
 
@@ -229,7 +230,7 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
     }
 
     public MockHttpServerK<F> build() {
-      return new MockHttpServerK<F>(host, port, threads, backlog, functor) {
+      return new MockHttpServerK<F>(host, port, threads, backlog, monad) {
 
         @Override
         protected Promise<HttpResponse> run(Higher1<F, HttpResponse> response) {

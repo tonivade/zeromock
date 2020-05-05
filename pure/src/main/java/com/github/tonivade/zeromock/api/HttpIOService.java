@@ -17,7 +17,7 @@ public final class HttpIOService {
   private final HttpServiceK<IO.µ> serviceK;
 
   public HttpIOService(String name) {
-    this(new HttpServiceK<>(name, IOInstances.functor()));
+    this(new HttpServiceK<>(name, IOInstances.monad()));
   }
 
   private HttpIOService(HttpServiceK<IO.µ> serviceK) {

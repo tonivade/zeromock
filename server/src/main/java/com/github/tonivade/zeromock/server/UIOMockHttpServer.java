@@ -34,7 +34,7 @@ public final class UIOMockHttpServer implements HttpServer {
   }
 
   public static Builder<UIO.µ> sync() {
-    return new Builder<>(UIOInstances.functor(), response -> {
+    return new Builder<>(UIOInstances.monad(), response -> {
       UIO<HttpResponse> future = response.fix1(UIO::narrowK);
       return Promise.<HttpResponse>make().succeeded(future.unsafeRunSync());
     });
@@ -45,7 +45,7 @@ public final class UIOMockHttpServer implements HttpServer {
   }
 
   public static Builder<UIO.µ> async(Executor executor) {
-    return new Builder<>(UIOInstances.functor(), response -> {
+    return new Builder<>(UIOInstances.monad(), response -> {
       UIO<HttpResponse> effect = response.fix1(UIO::narrowK);
       Higher1<Future.µ, HttpResponse> future = effect.foldMap(monadDefer(executor));
       return future.fix1(Future::narrowK).toPromise();

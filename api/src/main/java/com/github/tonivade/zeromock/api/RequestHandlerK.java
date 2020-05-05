@@ -7,14 +7,14 @@ package com.github.tonivade.zeromock.api;
 import com.github.tonivade.purefun.Function1;
 import com.github.tonivade.purefun.Higher1;
 import com.github.tonivade.purefun.Kind;
-import com.github.tonivade.purefun.Operator1;
 import com.github.tonivade.purefun.typeclasses.Functor;
+import com.github.tonivade.purefun.typeclasses.Monad;
 
 @FunctionalInterface
 public interface RequestHandlerK<F extends Kind> extends Function1<HttpRequest, Higher1<F, HttpResponse>> {
 
-  default RequestHandlerK<F> preHandle(PreFilter before) {
-    return compose(before)::apply;
+  default RequestHandlerK<F> preHandle(Monad<F> monad, PreFilter before) {
+    return request -> before.apply(request).fold(monad::<HttpResponse>pure, this::apply);
   }
 
   default RequestHandlerK<F> postHandle(Functor<F> functor, PostFilter after) {

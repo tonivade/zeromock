@@ -34,7 +34,7 @@ public final class IOMockHttpServer implements HttpServer {
   }
 
   public static Builder<IO.µ> sync() {
-    return new Builder<>(IOInstances.functor(), response -> {
+    return new Builder<>(IOInstances.monad(), response -> {
       IO<HttpResponse> future = response.fix1(IO::narrowK);
       return Promise.<HttpResponse>make().succeeded(future.unsafeRunSync());
     });
@@ -45,7 +45,7 @@ public final class IOMockHttpServer implements HttpServer {
   }
 
   public static Builder<IO.µ> async(Executor executor) {
-    return new Builder<>(IOInstances.functor(), response -> {
+    return new Builder<>(IOInstances.monad(), response -> {
       IO<HttpResponse> effect = response.fix1(IO::narrowK);
       Higher1<Future.µ, HttpResponse> future = effect.foldMap(monadDefer(executor));
       return future.fix1(Future::narrowK).toPromise();

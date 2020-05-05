@@ -37,7 +37,7 @@ public final class ZIOMockHttpServer<R> implements HttpServer {
   }
 
   public static <R> Builder<Higher1<Higher1<ZIO.µ, R>, Nothing>> builder(Producer<R> factory) {
-    return new Builder<>(ZIOInstances.functor(), response -> {
+    return new Builder<>(ZIOInstances.monad(), response -> {
       ZIO<R, Nothing, HttpResponse> future = response.fix1(ZIO::narrowK);
       return Promise.<HttpResponse>make().succeeded(future.provide(factory.get()).get());
     });
@@ -48,7 +48,7 @@ public final class ZIOMockHttpServer<R> implements HttpServer {
   }
 
   public static <R> Builder<Higher1<Higher1<ZIO.µ, R>, Nothing>> async(Executor executor, Producer<R> factory) {
-    return new Builder<>(ZIOInstances.functor(), response -> {
+    return new Builder<>(ZIOInstances.monad(), response -> {
       ZIO<R, Nothing, HttpResponse> effect = response.fix1(ZIO::narrowK);
       Higher1<Future.µ, Either<Nothing, HttpResponse>> future = effect.foldMap(factory.get(), monadDefer(executor));
       return future.fix1(Future::narrowK).map(Either::get).toPromise();
@@ -106,7 +106,7 @@ public final class ZIOMockHttpServer<R> implements HttpServer {
   }
 
   @Override
-  public ZIOMockHttpServer verifyNot(Matcher1<HttpRequest> matcher) {
+  public ZIOMockHttpServer<R> verifyNot(Matcher1<HttpRequest> matcher) {
     serverK.verifyNot(matcher);
     return this;
   }

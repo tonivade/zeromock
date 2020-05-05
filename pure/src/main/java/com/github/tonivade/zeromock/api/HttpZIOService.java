@@ -20,7 +20,7 @@ public final class HttpZIOService<R> {
   private final HttpServiceK<Higher1<Higher1<ZIO.µ, R>, Nothing>> serviceK;
 
   public HttpZIOService(String name) {
-    this(new HttpServiceK<>(name, ZIOInstances.functor()));
+    this(new HttpServiceK<>(name, ZIOInstances.monad()));
   }
 
   private HttpZIOService(HttpServiceK<Higher1<Higher1<ZIO.µ, R>, Nothing>> serviceK) {
