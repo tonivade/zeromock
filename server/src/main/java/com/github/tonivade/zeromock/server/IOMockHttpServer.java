@@ -14,12 +14,15 @@ import com.github.tonivade.purefun.Higher1;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.concurrent.Promise;
+import com.github.tonivade.purefun.instances.IOInstances;
 import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.zeromock.api.HttpIOService;
 import com.github.tonivade.zeromock.api.HttpIOService.MappingBuilder;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.IORequestHandler;
+import com.github.tonivade.zeromock.api.PostFilter;
+import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
 
 public final class IOMockHttpServer implements HttpServer {
@@ -31,7 +34,7 @@ public final class IOMockHttpServer implements HttpServer {
   }
 
   public static Builder<IO.µ> sync() {
-    return new Builder<>(response -> {
+    return new Builder<>(IOInstances.functor(), response -> {
       IO<HttpResponse> future = response.fix1(IO::narrowK);
       return Promise.<HttpResponse>make().succeeded(future.unsafeRunSync());
     });
@@ -42,7 +45,7 @@ public final class IOMockHttpServer implements HttpServer {
   }
 
   public static Builder<IO.µ> async(Executor executor) {
-    return new Builder<>(response -> {
+    return new Builder<>(IOInstances.functor(), response -> {
       IO<HttpResponse> effect = response.fix1(IO::narrowK);
       Higher1<Future.µ, HttpResponse> future = effect.foldMap(monadDefer(executor));
       return future.fix1(Future::narrowK).toPromise();
@@ -60,6 +63,16 @@ public final class IOMockHttpServer implements HttpServer {
 
   public IOMockHttpServer exec(IORequestHandler handler) {
     serverK.exec(handler);
+    return this;
+  }
+
+  public IOMockHttpServer preFilter(PreFilter filter) {
+    serverK.preFilter(filter);
+    return this;
+  }
+
+  public IOMockHttpServer postFilter(PostFilter filter) {
+    serverK.postFilter(filter);
     return this;
   }
 

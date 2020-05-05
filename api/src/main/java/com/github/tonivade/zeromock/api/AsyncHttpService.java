@@ -10,6 +10,7 @@ import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.concurrent.Promise;
+import com.github.tonivade.purefun.instances.FutureInstances;
 import com.github.tonivade.purefun.type.Option;
 
 public final class AsyncHttpService {
@@ -17,7 +18,7 @@ public final class AsyncHttpService {
   private final HttpServiceK<Future.µ> serviceK;
 
   public AsyncHttpService(String name) {
-    this(new HttpServiceK<>(name));
+    this(new HttpServiceK<>(name, FutureInstances.functor()));
   }
 
   private AsyncHttpService(HttpServiceK<Future.µ> serviceK) {
@@ -38,6 +39,14 @@ public final class AsyncHttpService {
 
   public AsyncHttpService exec(AsyncRequestHandler handler) {
     return new AsyncHttpService(serviceK.exec(handler));
+  }
+
+  public AsyncHttpService preFilter(PreFilter filter) {
+    return new AsyncHttpService(serviceK.preFilter(filter));
+  }
+
+  public AsyncHttpService postFilter(PostFilter filter) {
+    return new AsyncHttpService(serviceK.postFilter(filter));
   }
 
   public AsyncHttpService add(Matcher1<HttpRequest> matcher, AsyncRequestHandler handler) {

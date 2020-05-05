@@ -12,6 +12,7 @@ import com.github.tonivade.purefun.Higher1;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Nothing;
 import com.github.tonivade.purefun.effect.ZIO;
+import com.github.tonivade.purefun.instances.ZIOInstances;
 import com.github.tonivade.purefun.type.Option;
 
 public final class HttpZIOService<R> {
@@ -19,7 +20,7 @@ public final class HttpZIOService<R> {
   private final HttpServiceK<Higher1<Higher1<ZIO.µ, R>, Nothing>> serviceK;
 
   public HttpZIOService(String name) {
-    this(new HttpServiceK<>(name));
+    this(new HttpServiceK<>(name, ZIOInstances.functor()));
   }
 
   private HttpZIOService(HttpServiceK<Higher1<Higher1<ZIO.µ, R>, Nothing>> serviceK) {
@@ -36,6 +37,14 @@ public final class HttpZIOService<R> {
 
   public HttpZIOService<R> exec(ZIO<R, Nothing, HttpResponse> method) {
     return new HttpZIOService<>(serviceK.exec(cons(method)::apply));
+  }
+
+  public HttpZIOService<R> preFilter(PreFilter filter) {
+    return new HttpZIOService<>(serviceK.preFilter(filter));
+  }
+
+  public HttpZIOService<R> postFilter(PostFilter filter) {
+    return new HttpZIOService<>(serviceK.postFilter(filter));
   }
 
   public HttpZIOService<R> add(Matcher1<HttpRequest> matcher, ZIORequestHandler<R> handler) {

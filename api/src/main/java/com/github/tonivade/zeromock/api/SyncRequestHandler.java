@@ -14,7 +14,7 @@ public interface SyncRequestHandler extends RequestHandlerK<Id.µ> {
   @Override
   Id<HttpResponse> run(HttpRequest value);
 
-  default SyncRequestHandler postHandle(Operator1<HttpResponse> after) {
+  default SyncRequestHandler postHandle(PostFilter after) {
     return postHandle(IdInstances.functor(), after).andThen(Id::narrowK)::apply;
   }
 }

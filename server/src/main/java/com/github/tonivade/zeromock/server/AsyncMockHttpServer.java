@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
+import com.github.tonivade.purefun.instances.FutureInstances;
 import com.github.tonivade.zeromock.api.AsyncHttpService;
 import com.github.tonivade.zeromock.api.AsyncHttpService.MappingBuilder;
 import com.github.tonivade.zeromock.api.AsyncRequestHandler;
@@ -26,7 +27,7 @@ public final class AsyncMockHttpServer implements HttpServer {
   }
 
   public static Builder<Future.µ> builder() {
-    return new Builder<>(response -> {
+    return new Builder<>(FutureInstances.functor(), response -> {
       Future<HttpResponse> future = response.fix1(Future::narrowK);
       return future.toPromise();
     });

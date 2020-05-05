@@ -20,11 +20,11 @@ public interface RequestHandler extends Function1<HttpRequest, HttpResponse> {
     return request -> Id.of(apply(request));
   }
 
-  default RequestHandler preHandle(Operator1<HttpRequest> before) {
+  default RequestHandler preHandle(PreFilter before) {
     return compose(before)::apply;
   }
 
-  default RequestHandler postHandle(Operator1<HttpResponse> after) {
+  default RequestHandler postHandle(PostFilter after) {
     return andThen(after)::apply;
   }
 }

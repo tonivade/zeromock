@@ -13,11 +13,11 @@ import com.github.tonivade.purefun.typeclasses.Functor;
 @FunctionalInterface
 public interface RequestHandlerK<F extends Kind> extends Function1<HttpRequest, Higher1<F, HttpResponse>> {
 
-  default RequestHandlerK<F> preHandle(Operator1<HttpRequest> before) {
+  default RequestHandlerK<F> preHandle(PreFilter before) {
     return compose(before)::apply;
   }
 
-  default RequestHandlerK<F> postHandle(Functor<F> functor, Operator1<HttpResponse> after) {
+  default RequestHandlerK<F> postHandle(Functor<F> functor, PostFilter after) {
     return andThen(value -> functor.map(value, after))::apply;
   }
 }

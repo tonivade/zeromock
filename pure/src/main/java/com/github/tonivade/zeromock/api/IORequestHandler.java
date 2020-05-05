@@ -15,7 +15,7 @@ public interface IORequestHandler extends RequestHandlerK<IO.µ> {
     return RequestHandlerK.super.apply(value).fix1(IO::narrowK);
   }
 
-  default IORequestHandler postHandle(Operator1<HttpResponse> after) {
+  default IORequestHandler postHandle(PostFilter after) {
     return postHandle(IOInstances.functor(), after).andThen(IO::narrowK)::apply;
   }
 }

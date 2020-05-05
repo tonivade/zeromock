@@ -8,6 +8,7 @@ import static java.util.Objects.requireNonNull;
 
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
+import com.github.tonivade.purefun.instances.IOInstances;
 import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.purefun.type.Option;
 
@@ -16,7 +17,7 @@ public final class HttpIOService {
   private final HttpServiceK<IO.µ> serviceK;
 
   public HttpIOService(String name) {
-    this(new HttpServiceK<>(name));
+    this(new HttpServiceK<>(name, IOInstances.functor()));
   }
 
   private HttpIOService(HttpServiceK<IO.µ> serviceK) {
@@ -33,6 +34,14 @@ public final class HttpIOService {
 
   public HttpIOService exec(IORequestHandler handler) {
     return new HttpIOService(serviceK.exec(handler));
+  }
+
+  public HttpIOService preFilter(PreFilter filter) {
+    return new HttpIOService(serviceK.preFilter(filter));
+  }
+
+  public HttpIOService postFilter(PostFilter filter) {
+    return new HttpIOService(serviceK.postFilter(filter));
   }
 
   public HttpIOService add(Matcher1<HttpRequest> matcher, IORequestHandler handler) {

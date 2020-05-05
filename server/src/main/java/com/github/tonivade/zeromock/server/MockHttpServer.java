@@ -10,11 +10,14 @@ import java.util.List;
 
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Promise;
+import com.github.tonivade.purefun.instances.IdInstances;
 import com.github.tonivade.purefun.type.Id;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpService;
 import com.github.tonivade.zeromock.api.HttpService.MappingBuilder;
+import com.github.tonivade.zeromock.api.PostFilter;
+import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.api.RequestHandler;
 import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
 
@@ -27,7 +30,7 @@ public final class MockHttpServer implements HttpServer {
   }
 
   public static Builder<Id.µ> builder() {
-    return new Builder<>(response -> {
+    return new Builder<>(IdInstances.functor(), response -> {
       Promise<HttpResponse> promise = Promise.make();
       Id<HttpResponse> id = response.fix1(Id::narrowK);
       promise.succeeded(id.get());
@@ -46,6 +49,16 @@ public final class MockHttpServer implements HttpServer {
 
   public MockHttpServer exec(RequestHandler handler) {
     serverK.exec(handler.liftId()::apply);
+    return this;
+  }
+
+  public MockHttpServer preFilter(PreFilter filter) {
+    serverK.preFilter(filter);
+    return this;
+  }
+
+  public MockHttpServer postFilter(PostFilter filter) {
+    serverK.postFilter(filter);
     return this;
   }
 

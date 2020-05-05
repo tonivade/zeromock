@@ -8,6 +8,7 @@ import static java.util.Objects.requireNonNull;
 
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
+import com.github.tonivade.purefun.instances.IdInstances;
 import com.github.tonivade.purefun.type.Id;
 import com.github.tonivade.purefun.type.Option;
 
@@ -16,7 +17,7 @@ public final class HttpService {
   private HttpServiceK<Id.µ> serviceK;
 
   public HttpService(String name) {
-    this(new HttpServiceK<>(name));
+    this(new HttpServiceK<>(name, IdInstances.functor()));
   }
 
   private HttpService(HttpServiceK<Id.µ> serviceK) {
@@ -37,6 +38,14 @@ public final class HttpService {
 
   public HttpService exec(RequestHandler handler) {
     return new HttpService(serviceK.exec(handler.sync()));
+  }
+
+  public HttpService preFilter(PreFilter filter) {
+    return new HttpService(serviceK.preFilter(filter));
+  }
+
+  public HttpService postFilter(PostFilter filter) {
+    return new HttpService(serviceK.postFilter(filter));
   }
 
   public HttpService add(Matcher1<HttpRequest> matcher, RequestHandler handler) {

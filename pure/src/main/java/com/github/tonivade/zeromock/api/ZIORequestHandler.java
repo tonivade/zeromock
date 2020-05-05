@@ -17,7 +17,7 @@ public interface ZIORequestHandler<R> extends RequestHandlerK<Higher1<Higher1<ZI
     return RequestHandlerK.super.apply(value).fix1(ZIO::narrowK);
   }
 
-  default ZIORequestHandler<R> postHandle(Operator1<HttpResponse> after) {
-    return postHandle(ZIOInstances.<R, Nothing>functor(), after).andThen(ZIO::narrowK)::apply;
+  default ZIORequestHandler<R> postHandle(PostFilter after) {
+    return postHandle(ZIOInstances.functor(), after).andThen(ZIO::narrowK)::apply;
   }
 }

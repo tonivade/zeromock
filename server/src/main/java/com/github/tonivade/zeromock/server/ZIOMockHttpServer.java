@@ -17,11 +17,14 @@ import com.github.tonivade.purefun.Producer;
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.effect.ZIO;
+import com.github.tonivade.purefun.instances.ZIOInstances;
 import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpZIOService;
 import com.github.tonivade.zeromock.api.HttpZIOService.MappingBuilder;
+import com.github.tonivade.zeromock.api.PostFilter;
+import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.api.ZIORequestHandler;
 import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
 
@@ -34,7 +37,7 @@ public final class ZIOMockHttpServer<R> implements HttpServer {
   }
 
   public static <R> Builder<Higher1<Higher1<ZIO.µ, R>, Nothing>> builder(Producer<R> factory) {
-    return new Builder<>(response -> {
+    return new Builder<>(ZIOInstances.functor(), response -> {
       ZIO<R, Nothing, HttpResponse> future = response.fix1(ZIO::narrowK);
       return Promise.<HttpResponse>make().succeeded(future.provide(factory.get()).get());
     });
@@ -45,7 +48,7 @@ public final class ZIOMockHttpServer<R> implements HttpServer {
   }
 
   public static <R> Builder<Higher1<Higher1<ZIO.µ, R>, Nothing>> async(Executor executor, Producer<R> factory) {
-    return new Builder<>(response -> {
+    return new Builder<>(ZIOInstances.functor(), response -> {
       ZIO<R, Nothing, HttpResponse> effect = response.fix1(ZIO::narrowK);
       Higher1<Future.µ, Either<Nothing, HttpResponse>> future = effect.foldMap(factory.get(), monadDefer(executor));
       return future.fix1(Future::narrowK).map(Either::get).toPromise();
@@ -63,6 +66,16 @@ public final class ZIOMockHttpServer<R> implements HttpServer {
 
   public ZIOMockHttpServer<R> exec(ZIORequestHandler<R> handler) {
     serverK.exec(handler);
+    return this;
+  }
+
+  public ZIOMockHttpServer<R> preFilter(PreFilter filter) {
+    serverK.preFilter(filter);
+    return this;
+  }
+
+  public ZIOMockHttpServer<R> postFilter(PostFilter filter) {
+    serverK.postFilter(filter);
     return this;
   }
 

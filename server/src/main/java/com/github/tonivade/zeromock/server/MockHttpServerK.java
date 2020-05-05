@@ -28,6 +28,7 @@ import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.type.Option;
+import com.github.tonivade.purefun.typeclasses.Functor;
 import com.github.tonivade.zeromock.api.Bytes;
 import com.github.tonivade.zeromock.api.HttpHeaders;
 import com.github.tonivade.zeromock.api.HttpMethod;
@@ -37,6 +38,8 @@ import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpServiceK;
 import com.github.tonivade.zeromock.api.HttpServiceK.MappingBuilderK;
+import com.github.tonivade.zeromock.api.PostFilter;
+import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.api.RequestHandlerK;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
@@ -49,18 +52,20 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
   private static final String ROOT = "/";
 
   private final HttpServer server;
+  private final Functor<F> functor;
 
   private final Map<Instant, HttpRequest> matched = new LimitedSizeMap<>(100);
   private final Map<Instant, HttpRequest> unmatched = new LimitedSizeMap<>(100);
 
   private HttpServiceK<F> service;
 
-  private MockHttpServerK(String host, int port, int threads, int backlog) {
+  private MockHttpServerK(String host, int port, int threads, int backlog, Functor<F> functor) {
     try {
-      service = new HttpServiceK<>("root");
-      server = HttpServer.create(new InetSocketAddress(host, port), backlog);
-      server.setExecutor(Executors.newFixedThreadPool(threads));
-      server.createContext(ROOT, this::handle);
+      this.service = new HttpServiceK<>("root", functor);
+      this.server = HttpServer.create(new InetSocketAddress(host, port), backlog);
+      this.server.setExecutor(Executors.newFixedThreadPool(threads));
+      this.server.createContext(ROOT, this::handle);
+      this.functor = requireNonNull(functor);
     } catch (IOException e) {
       throw new UncheckedIOException("unable to start server at " + host + ":" + port, e);
     }
@@ -76,13 +81,23 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
     return this;
   }
 
+  public MockHttpServerK<F> preFilter(PreFilter filter) {
+    service = service.preFilter(filter);
+    return this;
+  }
+
+  public MockHttpServerK<F> postFilter(PostFilter filter) {
+    service = service.postFilter(filter);
+    return this;
+  }
+
   public MockHttpServerK<F> add(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
     service = service.add(matcher, handler);
     return this;
   }
 
   public MappingBuilderK<F, MockHttpServerK<F>> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilderK<>(this::add).when(matcher);
+    return new MappingBuilderK<>(this::add).when(requireNonNull(matcher));
   }
 
   @Override
@@ -121,7 +136,7 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
 
   @Override
   public void reset() {
-    service = new HttpServiceK<>("root");
+    service = new HttpServiceK<>("root", functor);
     matched.clear();
     unmatched.clear();
   }
@@ -185,9 +200,11 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
     private int port = 8080;
     private int threads = Runtime.getRuntime().availableProcessors();
     private int backlog = 0;
+    private final Functor<F> functor;
     private final Function1<Higher1<F, HttpResponse>, Promise<HttpResponse>> run;
 
-    public Builder(Function1<Higher1<F, HttpResponse>, Promise<HttpResponse>> run) {
+    public Builder(Functor<F> functor, Function1<Higher1<F, HttpResponse>, Promise<HttpResponse>> run) {
+      this.functor = requireNonNull(functor);
       this.run = requireNonNull(run);
     }
 
@@ -212,7 +229,7 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
     }
 
     public MockHttpServerK<F> build() {
-      return new MockHttpServerK<F>(host, port, threads, backlog) {
+      return new MockHttpServerK<F>(host, port, threads, backlog, functor) {
 
         @Override
         protected Promise<HttpResponse> run(Higher1<F, HttpResponse> response) {
