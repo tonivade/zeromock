@@ -118,6 +118,45 @@ In the other side, the client can use `Deserializers` class in order to create a
 
 Of course, you can use static imports for a clearer code if you want, I have added the full names only for explanatory purposes. All examples taken from this [test class](https://github.com/tonivade/zeromock/blob/master/test/junit5/src/test/java/com/github/tonivade/zeromock/junit5/ExamplesTest.java)
 
+## One Line Server
+
+It's pretty simple, using jbang
+
+```java
+//usr/bin/env jbang "$0" "$@" ; exit $?
+
+//DEPS com.github.tonivade:zeromock-server:0.12.0
+
+import static com.github.tonivade.zeromock.api.Handlers.ok;
+import static com.github.tonivade.zeromock.api.Matchers.get;
+import static com.github.tonivade.zeromock.server.MockHttpServer.listenAt;
+
+public class OneLineApplication {
+
+  public static void main(String[] args) {
+    listenAt(8080)
+        .when(get("/ping")).then(ok("pong"))
+        .start();
+  }
+}
+```
+
+and with kscript:
+
+```kotlin
+#!/usr/bin/env kscript
+
+//DEPS com.github.tonivade:zeromock-server:0.12.0
+
+import com.github.tonivade.zeromock.api.Matchers.get
+import com.github.tonivade.zeromock.api.Handlers.ok
+import com.github.tonivade.zeromock.server.MockHttpServer.listenAt
+
+listenAt(8101)
+  .`when`(get("/ping")).then(ok("pong"))
+  .start()
+```
+
 ## License
 
 This project is released under MIT License
