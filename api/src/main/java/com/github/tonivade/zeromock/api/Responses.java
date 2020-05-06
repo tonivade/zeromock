@@ -13,6 +13,7 @@ import static com.github.tonivade.zeromock.api.HttpStatus.INTERNAL_SERVER_ERROR;
 import static com.github.tonivade.zeromock.api.HttpStatus.NOT_FOUND;
 import static com.github.tonivade.zeromock.api.HttpStatus.NO_CONTENT;
 import static com.github.tonivade.zeromock.api.HttpStatus.OK;
+import static com.github.tonivade.zeromock.api.HttpStatus.SERVICE_UNAVAILABLE;
 import static com.github.tonivade.zeromock.api.HttpStatus.UNAUTHORIZED;
 import static java.util.Objects.requireNonNull;
 
@@ -73,7 +74,7 @@ public final class Responses {
   }
 
   public static HttpResponse unauthorized() {
-    return new HttpResponse(UNAUTHORIZED, empty());
+    return unauthorized(empty());
   }
 
   public static HttpResponse unauthorized(String body) {
@@ -98,5 +99,17 @@ public final class Responses {
 
   public static HttpResponse error(Bytes body) {
     return new HttpResponse(INTERNAL_SERVER_ERROR, body);
+  }
+
+  public static HttpResponse unavailable() {
+    return unavailable(empty());
+  }
+
+  public static HttpResponse unavailable(String body) {
+    return unavailable(asBytes(body));
+  }
+
+  public static HttpResponse unavailable(Bytes body) {
+    return new HttpResponse(SERVICE_UNAVAILABLE, body);
   }
 }
