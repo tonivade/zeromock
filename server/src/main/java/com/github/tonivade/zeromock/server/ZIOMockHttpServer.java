@@ -5,6 +5,7 @@
 package com.github.tonivade.zeromock.server;
 
 import static com.github.tonivade.purefun.instances.FutureInstances.monadDefer;
+import static com.github.tonivade.zeromock.api.PreFilter.filter;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
@@ -25,6 +26,7 @@ import com.github.tonivade.zeromock.api.HttpZIOService;
 import com.github.tonivade.zeromock.api.HttpZIOService.MappingBuilder;
 import com.github.tonivade.zeromock.api.PostFilter;
 import com.github.tonivade.zeromock.api.PreFilter;
+import com.github.tonivade.zeromock.api.RequestHandler;
 import com.github.tonivade.zeromock.api.ZIORequestHandler;
 import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
 
@@ -66,6 +68,11 @@ public final class ZIOMockHttpServer<R> implements HttpServer {
 
   public ZIOMockHttpServer<R> exec(ZIORequestHandler<R> handler) {
     serverK.exec(handler);
+    return this;
+  }
+
+  public ZIOMockHttpServer<R> preFilter(Matcher1<HttpRequest> matcher, RequestHandler handler) {
+    serverK.preFilter(filter(matcher, handler));
     return this;
   }
 

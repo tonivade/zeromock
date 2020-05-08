@@ -4,6 +4,7 @@
  */
 package com.github.tonivade.zeromock.server;
 
+import static com.github.tonivade.zeromock.api.PreFilter.filter;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
@@ -16,6 +17,9 @@ import com.github.tonivade.zeromock.api.AsyncHttpService.MappingBuilder;
 import com.github.tonivade.zeromock.api.AsyncRequestHandler;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
+import com.github.tonivade.zeromock.api.PostFilter;
+import com.github.tonivade.zeromock.api.PreFilter;
+import com.github.tonivade.zeromock.api.RequestHandler;
 import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
 
 public final class AsyncMockHttpServer implements HttpServer {
@@ -44,6 +48,21 @@ public final class AsyncMockHttpServer implements HttpServer {
 
   public AsyncMockHttpServer exec(AsyncRequestHandler handler) {
     serverK.exec(handler);
+    return this;
+  }
+
+  public AsyncMockHttpServer preFilter(PreFilter filter) {
+    serverK.preFilter(filter);
+    return this;
+  }
+
+  public AsyncMockHttpServer preFilter(Matcher1<HttpRequest> matcher, RequestHandler handler) {
+    serverK.preFilter(filter(matcher, handler));
+    return this;
+  }
+
+  public AsyncMockHttpServer postFilter(PostFilter filter) {
+    serverK.postFilter(filter);
     return this;
   }
 
