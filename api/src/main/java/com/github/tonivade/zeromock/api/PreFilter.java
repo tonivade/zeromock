@@ -14,5 +14,4 @@ public interface PreFilter extends Function1<HttpRequest, Either<HttpResponse, H
     return request -> matcher.match(request) ?
         Either.left(handler.apply(request)) : Either.right(request);
   }
-
 }

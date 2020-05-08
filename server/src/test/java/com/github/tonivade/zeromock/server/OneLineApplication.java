@@ -15,7 +15,7 @@ public class OneLineApplication {
 
   public static void main(String[] args) {
     listenAt(8080)
-        .preFilter(header("Authorization"), unauthorized())
+        .preFilter(header("Authorization").negate(), unauthorized())
         .when(get("/ping")).then(ok("pong"))
         .postFilter(contentPlain())
         .start();

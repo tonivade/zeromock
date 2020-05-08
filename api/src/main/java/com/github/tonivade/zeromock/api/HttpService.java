@@ -15,7 +15,7 @@ import com.github.tonivade.purefun.type.Option;
 
 public final class HttpService {
 
-  private HttpServiceK<Id.µ> serviceK;
+  private final HttpServiceK<Id.µ> serviceK;
 
   public HttpService(String name) {
     this(new HttpServiceK<>(name, IdInstances.monad()));

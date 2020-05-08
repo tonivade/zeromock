@@ -113,6 +113,22 @@ public final class Handlers {
     return handler.andThen(Responses::error)::apply;
   }
 
+  public static RequestHandler unavailable() {
+    return asFunction(Responses::unavailable);
+  }
+
+  public static RequestHandler unavailable(String body) {
+    return unavailable(asBytes(body));
+  }
+
+  public static RequestHandler unavailable(Bytes body) {
+    return unavailable(request -> body);
+  }
+
+  public static RequestHandler unavailable(Function1<HttpRequest, Bytes> handler) {
+    return handler.andThen(Responses::unavailable)::apply;
+  }
+
   private static RequestHandler asFunction(Producer<HttpResponse> producer) {
     return producer.asFunction()::apply;
   }
