@@ -81,6 +81,22 @@ public final class Handlers {
     return handler.andThen(Responses::notFound)::apply;
   }
 
+  public static RequestHandler unauthorized() {
+    return asFunction(Responses::unauthorized);
+  }
+
+  public static RequestHandler unauthorized(String body) {
+    return unauthorized(asBytes(body));
+  }
+
+  public static RequestHandler unauthorized(Bytes body) {
+    return unauthorized(request -> body);
+  }
+
+  public static RequestHandler unauthorized(Function1<HttpRequest, Bytes> handler) {
+    return handler.andThen(Responses::unauthorized)::apply;
+  }
+
   public static RequestHandler error() {
     return asFunction(Responses::error);
   }

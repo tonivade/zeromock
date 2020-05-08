@@ -13,6 +13,7 @@ import static com.github.tonivade.zeromock.api.HttpMethod.POST;
 import static com.github.tonivade.zeromock.api.HttpMethod.PUT;
 
 import com.github.tonivade.purefun.Matcher1;
+import com.github.tonivade.purefun.data.ImmutableSet;
 
 public final class Matchers {
 
@@ -41,23 +42,31 @@ public final class Matchers {
   public static Matcher1<HttpRequest> param(String name, String value) {
     return request -> request.params().get(name).map(value::equals).getOrElse(false);
   }
-  
-  public static Matcher1<HttpRequest> header(String key, String value) {
-    return request -> request.headers().get(key).contains(value);
+
+  public static Matcher1<HttpRequest> header(String key) {
+    return request -> request.headers().contains(key);
   }
-  
+
+  public static Matcher1<HttpRequest> header(String key, String value) {
+    return header(key, values -> values.contains(value));
+  }
+
+  public static Matcher1<HttpRequest> header(String key, Matcher1<ImmutableSet<String>> matcher) {
+    return header(key).and(request -> matcher.match(request.headers().get(key)));
+  }
+
   public static Matcher1<HttpRequest> get() {
     return method(GET);
   }
-  
+
   public static Matcher1<HttpRequest> put() {
     return method(PUT);
   }
-  
+
   public static Matcher1<HttpRequest> post() {
     return method(POST);
   }
-  
+
   public static Matcher1<HttpRequest> delete() {
     return method(DELETE);
   }

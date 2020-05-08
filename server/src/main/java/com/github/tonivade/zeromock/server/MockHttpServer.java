@@ -4,6 +4,7 @@
  */
 package com.github.tonivade.zeromock.server;
 
+import static com.github.tonivade.zeromock.api.PreFilter.filter;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
@@ -54,6 +55,11 @@ public final class MockHttpServer implements HttpServer {
 
   public MockHttpServer preFilter(PreFilter filter) {
     serverK.preFilter(filter);
+    return this;
+  }
+
+  public MockHttpServer preFilter(Matcher1<HttpRequest> matcher, RequestHandler handler) {
+    serverK.preFilter(filter(matcher, handler));
     return this;
   }
 
