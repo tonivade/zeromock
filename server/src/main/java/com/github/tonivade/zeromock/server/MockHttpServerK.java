@@ -28,7 +28,6 @@ import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.type.Option;
-import com.github.tonivade.purefun.typeclasses.Functor;
 import com.github.tonivade.purefun.typeclasses.Monad;
 import com.github.tonivade.zeromock.api.Bytes;
 import com.github.tonivade.zeromock.api.HttpHeaders;
@@ -42,6 +41,7 @@ import com.github.tonivade.zeromock.api.HttpServiceK.MappingBuilderK;
 import com.github.tonivade.zeromock.api.PostFilter;
 import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.api.RequestHandlerK;
+import com.github.tonivade.zeromock.api.Responses;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
@@ -146,29 +146,32 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
 
   private void handle(HttpExchange exchange) throws IOException {
     HttpRequest request = createRequest(exchange);
-    execute(request)
-      .ifPresent(responseK -> matched(exchange, request, responseK))
-      .ifEmpty(() -> unmatched(exchange, request));
+    run(monad.map(execute(request), option -> fold(request, option)))
+        .onSuccess(response -> processResponse(exchange, response))
+        .onFailure(error -> processResponse(exchange, error(error)));
   }
 
-  private void unmatched(HttpExchange exchange, HttpRequest request) {
+  private HttpResponse fold(HttpRequest request, Option<HttpResponse> option) {
+    return option
+        .ifPresent(response -> matched(request))
+        .ifEmpty(() -> unmatched(request))
+        .getOrElse(Responses::notFound);
+  }
+
+  private void unmatched(HttpRequest request) {
     LOG.fine(() -> "unmatched request " + request);
-    processResponse(exchange, notFound());
     unmatched.put(Instant.now(), request);
   }
 
-  private void matched(HttpExchange exchange, HttpRequest request, Higher1<F, HttpResponse> responseK) {
+  private void matched(HttpRequest request) {
     matched.put(Instant.now(), request);
-    run(responseK)
-      .onSuccess(response -> processResponse(exchange, response))
-      .onFailure(error -> processResponse(exchange, error(error)));
   }
 
   private boolean matches(Matcher1<HttpRequest> matcher) {
     return matched.values().stream().anyMatch(matcher::match);
   }
 
-  private Option<Higher1<F, HttpResponse>> execute(HttpRequest request) {
+  private Higher1<F, Option<HttpResponse>> execute(HttpRequest request) {
     return service.execute(request);
   }
 

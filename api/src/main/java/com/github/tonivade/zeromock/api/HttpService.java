@@ -62,7 +62,7 @@ public final class HttpService {
   }
 
   public Option<HttpResponse> execute(HttpRequest request) {
-    return serviceK.execute(request).map(Id::narrowK).map(Id::get);
+    return serviceK.execute(request).fix1(Id::narrowK).get();
   }
 
   public HttpService combine(HttpService other) {

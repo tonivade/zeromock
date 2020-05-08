@@ -57,8 +57,8 @@ public final class HttpIOService {
     return new MappingBuilder<>(this::add).when(matcher);
   }
 
-  public Option<IO<HttpResponse>> execute(HttpRequest request) {
-    return serviceK.execute(request).map(IO::narrowK);
+  public IO<Option<HttpResponse>> execute(HttpRequest request) {
+    return serviceK.execute(request).fix1(IO::narrowK);
   }
 
   public HttpIOService combine(HttpIOService other) {

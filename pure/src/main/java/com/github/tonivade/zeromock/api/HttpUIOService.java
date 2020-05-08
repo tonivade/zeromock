@@ -57,8 +57,8 @@ public final class HttpUIOService {
     return new MappingBuilder<>(this::add).when(matcher);
   }
 
-  public Option<UIO<HttpResponse>> execute(HttpRequest request) {
-    return serviceK.execute(request).map(UIO::narrowK);
+  public UIO<Option<HttpResponse>> execute(HttpRequest request) {
+    return serviceK.execute(request).fix1(UIO::narrowK);
   }
 
   public HttpUIOService combine(HttpUIOService other) {

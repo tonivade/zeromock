@@ -21,9 +21,9 @@ public class HttpIOServiceTest {
     HttpIOService service = new HttpIOService("test")
         .when(get("/ping")).then(request -> IO.pure(ok("pong")));
     
-    Option<IO<HttpResponse>> execute = service.execute(Requests.get("/ping"));
+    IO<Option<HttpResponse>> execute = service.execute(Requests.get("/ping"));
     
-    assertEquals(ok("pong"), execute.get().unsafeRunSync());
+    assertEquals(ok("pong"), execute.unsafeRunSync().get());
   }
   
   @Test
@@ -31,8 +31,8 @@ public class HttpIOServiceTest {
     HttpIOService service = new HttpIOService("test")
         .when(get("/echo")).then(request -> IO.task(() -> ok(request.body())));
     
-    Option<IO<HttpResponse>> execute = service.execute(Requests.get("/echo").withBody(asBytes("hello")));
+    IO<Option<HttpResponse>> execute = service.execute(Requests.get("/echo").withBody(asBytes("hello")));
     
-    assertEquals(ok("hello"), execute.get().unsafeRunSync());
+    assertEquals(ok("hello"), execute.unsafeRunSync().get());
   }
 }

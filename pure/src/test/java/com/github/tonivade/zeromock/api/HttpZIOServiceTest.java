@@ -25,9 +25,9 @@ public class HttpZIOServiceTest {
     HttpZIOService<Nothing> service = new HttpZIOService<Nothing>("test")
         .when(get("/ping")).then(request -> ZIO.pure(ok("pong")));
     
-    Option<ZIO<Nothing, Nothing, HttpResponse>> execute = service.execute(Requests.get("/ping"));
+    ZIO<Nothing, Nothing, Option<HttpResponse>> execute = service.execute(Requests.get("/ping"));
     
-    assertEquals(Either.right(ok("pong")), execute.get().provide(nothing()));
+    assertEquals(Option.some(ok("pong")), execute.provide(nothing()).get());
   }
   
   @Test
@@ -36,8 +36,8 @@ public class HttpZIOServiceTest {
         .when(get("/echo"))
         .then(request -> Task.task(request::body).fold(Responses::error, Responses::ok).<Nothing, Nothing>toZIO());
     
-    Option<ZIO<Nothing, Nothing, HttpResponse>> execute = service.execute(Requests.get("/echo").withBody(asBytes("hello")));
-    
-    assertEquals(Either.right(ok("hello")), execute.get().provide(nothing()));
+    ZIO<Nothing, Nothing, Option<HttpResponse>> execute = service.execute(Requests.get("/echo").withBody(asBytes("hello")));
+
+    assertEquals(Option.some(ok("hello")), execute.provide(nothing()).get());
   }
 }

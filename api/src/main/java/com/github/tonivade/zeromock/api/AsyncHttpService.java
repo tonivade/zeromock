@@ -62,8 +62,8 @@ public final class AsyncHttpService {
     return new MappingBuilder<>(this::add).when(matcher);
   }
 
-  public Option<Promise<HttpResponse>> execute(HttpRequest request) {
-    return serviceK.execute(request).map(Future::narrowK).map(Future::toPromise);
+  public Promise<Option<HttpResponse>> execute(HttpRequest request) {
+    return serviceK.execute(request).fix1(Future::narrowK).toPromise();
   }
 
   public AsyncHttpService combine(AsyncHttpService other) {

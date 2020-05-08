@@ -16,6 +16,7 @@ import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Operator1;
 import com.github.tonivade.purefun.PartialFunction1;
+import com.github.tonivade.purefun.instances.OptionInstances;
 import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.typeclasses.Monad;
@@ -78,10 +79,12 @@ public final class HttpServiceK<F extends Kind> {
     return addPostFilter(requireNonNull(filter));
   }
 
-  public Option<Higher1<F, HttpResponse>> execute(HttpRequest request) {
-    return preFilters.apply(request)
-        .fold(response -> Option.some(monad.pure(response)), mappings.lift())
-        .map(response -> monad.map(response, postFilters::apply));
+  public Higher1<F, Option<HttpResponse>> execute(HttpRequest request) {
+    Option<Higher1<F, HttpResponse>> fold = preFilters.apply(request)
+        .fold(
+            response -> Option.some(monad.pure(response)),
+            mappings.andThen(value -> monad.map(value, postFilters::apply)).lift());
+    return monad.map(OptionInstances.traverse().sequence(monad, fold), Option::narrowK);
   }
 
   public HttpServiceK<F> combine(HttpServiceK<F> other) {

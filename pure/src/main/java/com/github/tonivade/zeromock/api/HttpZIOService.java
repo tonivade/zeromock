@@ -60,8 +60,8 @@ public final class HttpZIOService<R> {
     return new MappingBuilder<>(this::add).when(matcher);
   }
 
-  public Option<ZIO<R, Nothing, HttpResponse>> execute(HttpRequest request) {
-    return serviceK.execute(request).map(ZIO::narrowK);
+  public ZIO<R, Nothing, Option<HttpResponse>> execute(HttpRequest request) {
+    return serviceK.execute(request).fix1(ZIO::narrowK);
   }
 
   public HttpZIOService<R> combine(HttpZIOService<R> other) {
