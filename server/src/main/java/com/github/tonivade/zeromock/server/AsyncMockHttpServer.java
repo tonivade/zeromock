@@ -4,23 +4,22 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.zeromock.api.PreFilter.filter;
-import static java.util.Objects.requireNonNull;
-
-import java.util.List;
-
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.instances.FutureInstances;
 import com.github.tonivade.zeromock.api.AsyncHttpService;
 import com.github.tonivade.zeromock.api.AsyncHttpService.MappingBuilder;
+import com.github.tonivade.zeromock.api.AsyncPreFilter;
 import com.github.tonivade.zeromock.api.AsyncRequestHandler;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.PostFilter;
-import com.github.tonivade.zeromock.api.PreFilter;
-import com.github.tonivade.zeromock.api.RequestHandler;
 import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
+
+import java.util.List;
+
+import static com.github.tonivade.zeromock.api.PreFilterK.filter;
+import static java.util.Objects.requireNonNull;
 
 public final class AsyncMockHttpServer implements HttpServer {
 
@@ -51,13 +50,13 @@ public final class AsyncMockHttpServer implements HttpServer {
     return this;
   }
 
-  public AsyncMockHttpServer preFilter(PreFilter filter) {
+  public AsyncMockHttpServer preFilter(AsyncPreFilter filter) {
     serverK.preFilter(filter);
     return this;
   }
 
-  public AsyncMockHttpServer preFilter(Matcher1<HttpRequest> matcher, RequestHandler handler) {
-    serverK.preFilter(filter(matcher, handler));
+  public AsyncMockHttpServer preFilter(Matcher1<HttpRequest> matcher, AsyncRequestHandler handler) {
+    serverK.preFilter(filter(FutureInstances.monad(), matcher, handler));
     return this;
   }
 

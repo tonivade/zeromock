@@ -38,7 +38,7 @@ public final class HttpService {
   }
 
   public HttpService exec(RequestHandler handler) {
-    return new HttpService(serviceK.exec(handler.sync()));
+    return new HttpService(serviceK.exec(handler.liftId()::apply));
   }
 
   public HttpService preFilter(Matcher1<HttpRequest> matcher, RequestHandler handler) {
@@ -46,7 +46,7 @@ public final class HttpService {
   }
 
   public HttpService preFilter(PreFilter filter) {
-    return new HttpService(serviceK.preFilter(filter));
+    return new HttpService(serviceK.preFilter(filter.liftId()::apply));
   }
 
   public HttpService postFilter(PostFilter filter) {
@@ -54,7 +54,7 @@ public final class HttpService {
   }
 
   public HttpService add(Matcher1<HttpRequest> matcher, RequestHandler handler) {
-    return new HttpService(serviceK.add(matcher, handler.sync()));
+    return new HttpService(serviceK.add(matcher, handler.liftId()::apply));
   }
 
   public MappingBuilder<HttpService> when(Matcher1<HttpRequest> matcher) {

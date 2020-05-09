@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import static com.github.tonivade.zeromock.api.PreFilter.filter;
+import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
 
 import com.github.tonivade.purefun.Function2;
@@ -42,11 +42,11 @@ public final class AsyncHttpService {
     return new AsyncHttpService(serviceK.exec(handler));
   }
 
-  public AsyncHttpService preFilter(Matcher1<HttpRequest> matcher, RequestHandler handler) {
-    return preFilter(filter(matcher, handler));
+  public AsyncHttpService preFilter(Matcher1<HttpRequest> matcher, AsyncRequestHandler handler) {
+    return preFilter(filter(FutureInstances.monad(), matcher, handler)::apply);
   }
 
-  public AsyncHttpService preFilter(PreFilter filter) {
+  public AsyncHttpService preFilter(AsyncPreFilter filter) {
     return new AsyncHttpService(serviceK.preFilter(filter));
   }
 

@@ -19,6 +19,7 @@ import com.github.tonivade.purefun.PartialFunction1;
 import com.github.tonivade.purefun.instances.OptionInstances;
 import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.purefun.type.Option;
+import com.github.tonivade.purefun.typeclasses.For;
 import com.github.tonivade.purefun.typeclasses.Monad;
 
 public final class HttpServiceK<F extends Kind> {
@@ -26,19 +27,19 @@ public final class HttpServiceK<F extends Kind> {
   private final String name;
   private final Monad<F> monad;
   private final PartialFunction1<HttpRequest, Higher1<F, HttpResponse>> mappings;
-  private final Function1<HttpRequest, Either<HttpResponse, HttpRequest>> preFilters;
+  private final Function1<HttpRequest, Higher1<F, Either<HttpResponse, HttpRequest>>> preFilters;
   private final Operator1<HttpResponse> postFilters;
 
   public HttpServiceK(String name, Monad<F> monad) {
     this(name, monad,
         PartialFunction1.of(Matcher1.never(), fail(IllegalStateException::new)),
-        Either::right,
+        request -> monad.pure(Either.right(request)),
         Function1.<HttpResponse>identity()::apply);
   }
 
   private HttpServiceK(String name, Monad<F> monad,
                        PartialFunction1<HttpRequest, Higher1<F, HttpResponse>> mappings,
-                       Function1<HttpRequest, Either<HttpResponse, HttpRequest>> preFilters,
+                       Function1<HttpRequest, Higher1<F, Either<HttpResponse, HttpRequest>>> preFilters,
                        Operator1<HttpResponse> postFilters) {
     this.name = requireNonNull(name);
     this.monad = requireNonNull(monad);
@@ -71,7 +72,7 @@ public final class HttpServiceK<F extends Kind> {
     return new MappingBuilderK<>(this::add).when(requireNonNull(matcher));
   }
 
-  public HttpServiceK<F> preFilter(PreFilter filter) {
+  public HttpServiceK<F> preFilter(PreFilterK<F> filter) {
     return addPreFilter(requireNonNull(filter));
   }
 
@@ -80,11 +81,16 @@ public final class HttpServiceK<F extends Kind> {
   }
 
   public Higher1<F, Option<HttpResponse>> execute(HttpRequest request) {
-    Option<Higher1<F, HttpResponse>> fold = preFilters.apply(request)
-        .fold(
-            response -> Option.some(monad.pure(response)),
-            mappings.andThen(value -> monad.map(value, postFilters::apply)).lift());
-    return monad.map(OptionInstances.traverse().sequence(monad, fold), Option::narrowK);
+    Function1<HttpRequest, Option<Higher1<F, HttpResponse>>> mappingsWithPostFilters =
+        mappings.andThen(value -> monad.map(value, postFilters::apply)).lift();
+
+    return For.with(monad)
+        .then(preFilters.apply(request))
+        .flatMap(either -> either.fold(
+            res -> monad.pure(Option.some(res)),
+            mappingsWithPostFilters.andThen(option -> OptionInstances.traverse().sequence(monad, option))))
+        .map(Option::narrowK)
+        .run();
   }
 
   public HttpServiceK<F> combine(HttpServiceK<F> other) {
@@ -93,7 +99,10 @@ public final class HttpServiceK<F extends Kind> {
         this.name + "+" + other.name,
         this.monad,
         this.mappings.orElse(other.mappings),
-        this.preFilters.andThen(either -> either.flatMap(other.preFilters)),
+        this.preFilters.andThen(
+            value -> monad.flatMap(value,
+                either -> either.fold(
+                    response -> monad.pure(Either.left(response)), other.preFilters))),
         this.postFilters.andThen(other.postFilters)::apply
     );
   }
@@ -110,13 +119,16 @@ public final class HttpServiceK<F extends Kind> {
     );
   }
 
-  private HttpServiceK<F> addPreFilter(PreFilter filter) {
+  private HttpServiceK<F> addPreFilter(PreFilterK<F> filter) {
     requireNonNull(filter);
     return new HttpServiceK<>(
         this.name,
         this.monad,
         this.mappings,
-        this.preFilters.andThen(either -> either.flatMap(filter)),
+        this.preFilters.andThen(
+            value -> monad.flatMap(value,
+                either -> either.fold(
+                    response -> monad.pure(Either.left(response)), filter))),
         this.postFilters
     );
   }

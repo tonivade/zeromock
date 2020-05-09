@@ -4,14 +4,14 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import static com.github.tonivade.zeromock.api.PreFilter.filter;
-import static java.util.Objects.requireNonNull;
-
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.instances.IOInstances;
 import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.purefun.type.Option;
+
+import static com.github.tonivade.zeromock.api.PreFilterK.filter;
+import static java.util.Objects.requireNonNull;
 
 public final class HttpIOService {
 
@@ -37,11 +37,11 @@ public final class HttpIOService {
     return new HttpIOService(serviceK.exec(handler));
   }
 
-  public HttpIOService preFilter(Matcher1<HttpRequest> matcher, RequestHandler handler) {
-    return preFilter(filter(matcher, handler));
+  public HttpIOService preFilter(Matcher1<HttpRequest> matcher, IORequestHandler handler) {
+    return preFilter(filter(IOInstances.monad(), matcher, handler)::apply);
   }
 
-  public HttpIOService preFilter(PreFilter filter) {
+  public HttpIOService preFilter(IOPreFilter filter) {
     return new HttpIOService(serviceK.preFilter(filter));
   }
 

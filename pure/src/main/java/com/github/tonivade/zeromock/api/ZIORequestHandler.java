@@ -16,7 +16,7 @@ public interface ZIORequestHandler<R> extends RequestHandlerK<Higher1<Higher1<ZI
     return RequestHandlerK.super.apply(value).fix1(ZIO::narrowK);
   }
 
-  default ZIORequestHandler<R> preHandle(PreFilter before) {
+  default ZIORequestHandler<R> preHandle(ZIOPreFilter<R> before) {
     return RequestHandlerK.super.preHandle(ZIOInstances.<R, Nothing>monad(), before)::apply;
   }
 

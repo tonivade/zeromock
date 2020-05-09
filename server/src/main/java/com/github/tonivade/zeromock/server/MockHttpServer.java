@@ -4,11 +4,6 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.zeromock.api.PreFilter.filter;
-import static java.util.Objects.requireNonNull;
-
-import java.util.List;
-
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.instances.IdInstances;
@@ -21,6 +16,11 @@ import com.github.tonivade.zeromock.api.PostFilter;
 import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.api.RequestHandler;
 import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
+
+import java.util.List;
+
+import static com.github.tonivade.zeromock.api.PreFilterK.filter;
+import static java.util.Objects.requireNonNull;
 
 public final class MockHttpServer implements HttpServer {
 
@@ -54,12 +54,12 @@ public final class MockHttpServer implements HttpServer {
   }
 
   public MockHttpServer preFilter(PreFilter filter) {
-    serverK.preFilter(filter);
+    serverK.preFilter(filter.liftId()::apply);
     return this;
   }
 
   public MockHttpServer preFilter(Matcher1<HttpRequest> matcher, RequestHandler handler) {
-    serverK.preFilter(filter(matcher, handler));
+    serverK.preFilter(filter(IdInstances.monad(), matcher, handler.liftId()::apply)::apply);
     return this;
   }
 

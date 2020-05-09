@@ -5,7 +5,7 @@
 package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.purefun.Function1.cons;
-import static com.github.tonivade.zeromock.api.PreFilter.filter;
+import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
 
 import com.github.tonivade.purefun.Function2;
@@ -40,11 +40,11 @@ public final class HttpZIOService<R> {
     return new HttpZIOService<>(serviceK.exec(cons(method)::apply));
   }
 
-  public HttpZIOService<R> preFilter(Matcher1<HttpRequest> matcher, RequestHandler handler) {
-    return preFilter(filter(matcher, handler));
+  public HttpZIOService<R> preFilter(Matcher1<HttpRequest> matcher, ZIORequestHandler<R> handler) {
+    return preFilter(filter(ZIOInstances.monad(), matcher, handler)::apply);
   }
 
-  public HttpZIOService<R> preFilter(PreFilter filter) {
+  public HttpZIOService<R> preFilter(ZIOPreFilter<R> filter) {
     return new HttpZIOService<>(serviceK.preFilter(filter));
   }
 

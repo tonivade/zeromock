@@ -4,24 +4,6 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.zeromock.api.Bytes.asBytes;
-import static com.github.tonivade.zeromock.api.Responses.error;
-import static com.github.tonivade.zeromock.api.Responses.notFound;
-import static java.util.Collections.unmodifiableList;
-import static java.util.Objects.requireNonNull;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UncheckedIOException;
-import java.net.InetSocketAddress;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.logging.Logger;
-
 import com.github.tonivade.purefun.Function1;
 import com.github.tonivade.purefun.Higher1;
 import com.github.tonivade.purefun.Kind;
@@ -39,11 +21,28 @@ import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpServiceK;
 import com.github.tonivade.zeromock.api.HttpServiceK.MappingBuilderK;
 import com.github.tonivade.zeromock.api.PostFilter;
-import com.github.tonivade.zeromock.api.PreFilter;
+import com.github.tonivade.zeromock.api.PreFilterK;
 import com.github.tonivade.zeromock.api.RequestHandlerK;
 import com.github.tonivade.zeromock.api.Responses;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UncheckedIOException;
+import java.net.InetSocketAddress;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.logging.Logger;
+
+import static com.github.tonivade.zeromock.api.Bytes.asBytes;
+import static com.github.tonivade.zeromock.api.Responses.error;
+import static java.util.Collections.unmodifiableList;
+import static java.util.Objects.requireNonNull;
 
 @SuppressWarnings("restriction")
 public abstract class MockHttpServerK<F extends Kind> implements com.github.tonivade.zeromock.server.HttpServer {
@@ -82,7 +81,7 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
     return this;
   }
 
-  public MockHttpServerK<F> preFilter(PreFilter filter) {
+  public MockHttpServerK<F> preFilter(PreFilterK<F> filter) {
     service = service.preFilter(filter);
     return this;
   }

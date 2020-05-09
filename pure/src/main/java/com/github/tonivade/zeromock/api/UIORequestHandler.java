@@ -14,7 +14,7 @@ public interface UIORequestHandler extends RequestHandlerK<UIO.µ> {
     return RequestHandlerK.super.apply(value).fix1(UIO::narrowK);
   }
 
-  default UIORequestHandler preHandle(PreFilter before) {
+  default UIORequestHandler preHandle(UIOPreFilter before) {
     return RequestHandlerK.super.preHandle(UIOInstances.monad(), before)::apply;
   }
 
