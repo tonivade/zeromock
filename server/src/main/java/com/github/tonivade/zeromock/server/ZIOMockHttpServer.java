@@ -70,9 +70,8 @@ public final class ZIOMockHttpServer<R> implements HttpServer {
     return this;
   }
 
-  public ZIOMockHttpServer<R> preFilter(Matcher1<HttpRequest> matcher, ZIORequestHandler<R> handler) {
-    serverK.preFilter(filter(ZIOInstances.monad(), matcher, handler));
-    return this;
+  public MappingBuilder<R, ZIOMockHttpServer<R>> preFilter(Matcher1<HttpRequest> matcher) {
+    return new MappingBuilder<>(this::addMapping).when(matcher);
   }
 
   public ZIOMockHttpServer<R> preFilter(ZIOPreFilter<R> filter) {
@@ -85,13 +84,18 @@ public final class ZIOMockHttpServer<R> implements HttpServer {
     return this;
   }
 
-  public ZIOMockHttpServer<R> add(Matcher1<HttpRequest> matcher, ZIORequestHandler<R> handler) {
-    serverK.add(matcher, handler);
+  public ZIOMockHttpServer<R> addMapping(Matcher1<HttpRequest> matcher, ZIORequestHandler<R> handler) {
+    serverK.addMapping(matcher, handler);
+    return this;
+  }
+
+  public ZIOMockHttpServer<R> addPreFilter(Matcher1<HttpRequest> matcher, ZIORequestHandler<R> handler) {
+    serverK.preFilter(filter(ZIOInstances.monad(), matcher, handler));
     return this;
   }
 
   public MappingBuilder<R, ZIOMockHttpServer<R>> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::add).when(matcher);
+    return new MappingBuilder<>(this::addMapping).when(matcher);
   }
 
   @Override

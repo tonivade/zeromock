@@ -37,8 +37,8 @@ public final class HttpIOService {
     return new HttpIOService(serviceK.exec(handler));
   }
 
-  public HttpIOService preFilter(Matcher1<HttpRequest> matcher, IORequestHandler handler) {
-    return preFilter(filter(IOInstances.monad(), matcher, handler)::apply);
+  public MappingBuilder<HttpIOService> preFilter(Matcher1<HttpRequest> matcher) {
+    return new MappingBuilder<>(this::addPreFilter).when(requireNonNull(matcher));
   }
 
   public HttpIOService preFilter(IOPreFilter filter) {
@@ -49,12 +49,8 @@ public final class HttpIOService {
     return new HttpIOService(serviceK.postFilter(filter));
   }
 
-  public HttpIOService add(Matcher1<HttpRequest> matcher, IORequestHandler handler) {
-    return new HttpIOService(serviceK.add(matcher, handler));
-  }
-
   public MappingBuilder<HttpIOService> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::add).when(matcher);
+    return new MappingBuilder<>(this::addMapping).when(matcher);
   }
 
   public IO<Option<HttpResponse>> execute(HttpRequest request) {
@@ -67,6 +63,14 @@ public final class HttpIOService {
 
   public HttpServiceK<IO.µ> build() {
     return serviceK;
+  }
+
+  public HttpIOService addMapping(Matcher1<HttpRequest> matcher, IORequestHandler handler) {
+    return new HttpIOService(serviceK.addMapping(matcher, handler));
+  }
+
+  protected HttpIOService addPreFilter(Matcher1<HttpRequest> matcher, IORequestHandler handler) {
+    return preFilter(filter(IOInstances.monad(), matcher, handler)::apply);
   }
 
   @Override

@@ -42,8 +42,8 @@ public final class AsyncHttpService {
     return new AsyncHttpService(serviceK.exec(handler));
   }
 
-  public AsyncHttpService preFilter(Matcher1<HttpRequest> matcher, AsyncRequestHandler handler) {
-    return preFilter(filter(FutureInstances.monad(), matcher, handler)::apply);
+  public MappingBuilder<AsyncHttpService> preFilter(Matcher1<HttpRequest> matcher) {
+    return new MappingBuilder<>(this::addPreFilter).when(requireNonNull(matcher));
   }
 
   public AsyncHttpService preFilter(AsyncPreFilter filter) {
@@ -54,12 +54,8 @@ public final class AsyncHttpService {
     return new AsyncHttpService(serviceK.postFilter(filter));
   }
 
-  public AsyncHttpService add(Matcher1<HttpRequest> matcher, AsyncRequestHandler handler) {
-    return new AsyncHttpService(serviceK.add(matcher, handler));
-  }
-
   public MappingBuilder<AsyncHttpService> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::add).when(matcher);
+    return new MappingBuilder<>(this::addMapping).when(matcher);
   }
 
   public Promise<Option<HttpResponse>> execute(HttpRequest request) {
@@ -68,6 +64,14 @@ public final class AsyncHttpService {
 
   public AsyncHttpService combine(AsyncHttpService other) {
     return new AsyncHttpService(this.serviceK.combine(other.serviceK));
+  }
+
+  protected AsyncHttpService addMapping(Matcher1<HttpRequest> matcher, AsyncRequestHandler handler) {
+    return new AsyncHttpService(serviceK.addMapping(matcher, handler));
+  }
+
+  protected AsyncHttpService addPreFilter(Matcher1<HttpRequest> matcher, AsyncRequestHandler handler) {
+    return preFilter(filter(FutureInstances.monad(), matcher, handler)::apply);
   }
 
   @Override

@@ -53,12 +53,16 @@ public final class MockHttpServer implements HttpServer {
     return this;
   }
 
+  public MappingBuilder<MockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
+    return new MappingBuilder<>(this::addPreFilter).when(matcher);
+  }
+
   public MockHttpServer preFilter(PreFilter filter) {
     serverK.preFilter(filter.liftId()::apply);
     return this;
   }
 
-  public MockHttpServer preFilter(Matcher1<HttpRequest> matcher, RequestHandler handler) {
+  public MockHttpServer addPreFilter(Matcher1<HttpRequest> matcher, RequestHandler handler) {
     serverK.preFilter(filter(IdInstances.monad(), matcher, handler.liftId()::apply)::apply);
     return this;
   }
@@ -68,13 +72,13 @@ public final class MockHttpServer implements HttpServer {
     return this;
   }
 
-  public MockHttpServer add(Matcher1<HttpRequest> matcher, RequestHandler handler) {
-    serverK.add(matcher, handler.liftId()::apply);
+  public MockHttpServer addMapping(Matcher1<HttpRequest> matcher, RequestHandler handler) {
+    serverK.addMapping(matcher, handler.liftId()::apply);
     return this;
   }
 
   public MappingBuilder<MockHttpServer> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::add).when(matcher);
+    return new MappingBuilder<>(this::addMapping).when(matcher);
   }
 
   @Override

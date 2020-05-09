@@ -40,8 +40,8 @@ public final class HttpZIOService<R> {
     return new HttpZIOService<>(serviceK.exec(cons(method)::apply));
   }
 
-  public HttpZIOService<R> preFilter(Matcher1<HttpRequest> matcher, ZIORequestHandler<R> handler) {
-    return preFilter(filter(ZIOInstances.monad(), matcher, handler)::apply);
+  public MappingBuilder<R, HttpZIOService<R>> preFilter(Matcher1<HttpRequest> matcher) {
+    return new MappingBuilder<>(this::addPreFilter).when(requireNonNull(matcher));
   }
 
   public HttpZIOService<R> preFilter(ZIOPreFilter<R> filter) {
@@ -52,12 +52,8 @@ public final class HttpZIOService<R> {
     return new HttpZIOService<>(serviceK.postFilter(filter));
   }
 
-  public HttpZIOService<R> add(Matcher1<HttpRequest> matcher, ZIORequestHandler<R> handler) {
-    return new HttpZIOService<>(serviceK.add(matcher, handler));
-  }
-
   public MappingBuilder<R, HttpZIOService<R>> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::add).when(matcher);
+    return new MappingBuilder<>(this::addMapping).when(matcher);
   }
 
   public ZIO<R, Nothing, Option<HttpResponse>> execute(HttpRequest request) {
@@ -70,6 +66,14 @@ public final class HttpZIOService<R> {
 
   public HttpServiceK<Higher1<Higher1<ZIO.µ, R>, Nothing>> build() {
     return serviceK;
+  }
+
+  protected HttpZIOService<R> addMapping(Matcher1<HttpRequest> matcher, ZIORequestHandler<R> handler) {
+    return new HttpZIOService<>(serviceK.addMapping(matcher, handler));
+  }
+
+  protected HttpZIOService<R> addPreFilter(Matcher1<HttpRequest> matcher, ZIORequestHandler<R> handler) {
+    return preFilter(filter(ZIOInstances.monad(), matcher, handler)::apply);
   }
 
   @Override

@@ -29,13 +29,6 @@ public class HttpServiceTest {
   }
 
   @Test
-  public void add() {
-    HttpService service = new HttpService("service").add(Matchers.get("/ping"), Handlers.ok("pong"));
-    
-    assertEquals(Option.some(Responses.ok("pong")), service.execute(Requests.get("/ping")));
-  }
-
-  @Test
   public void exec() {
     HttpService service = new HttpService("service").exec(Handlers.ok("pong"));
     
@@ -44,7 +37,7 @@ public class HttpServiceTest {
   
   @Test
   public void mount() {
-    HttpService service1 = new HttpService("service1").add(Matchers.get("/ping"), Handlers.ok("pong"));
+    HttpService service1 = new HttpService("service1").when(Matchers.get("/ping")).then(Handlers.ok("pong"));
     HttpService service2 = new HttpService("service2").mount("/path", service1);
     
     assertAll(() -> assertEquals(Option.some(Responses.ok("pong")), service2.execute(Requests.get("/path/ping"))),
@@ -54,7 +47,7 @@ public class HttpServiceTest {
   
   @Test
   public void combine() {
-    HttpService service1 = new HttpService("service1").add(Matchers.get("/ping"), Handlers.ok("pong"));
+    HttpService service1 = new HttpService("service1").when(Matchers.get("/ping")).then(Handlers.ok("pong"));
     HttpService service2 = new HttpService("service2");
     
     assertEquals(Option.some(Responses.ok("pong")), service1.combine(service2).execute(Requests.get("/ping")));

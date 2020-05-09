@@ -67,9 +67,8 @@ public final class IOMockHttpServer implements HttpServer {
     return this;
   }
 
-  public IOMockHttpServer preFilter(Matcher1<HttpRequest> matcher, IORequestHandler handler) {
-    serverK.preFilter(filter(IOInstances.monad(), matcher, handler));
-    return this;
+  public MappingBuilder<IOMockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
+    return new MappingBuilder<>(this::addMapping).when(matcher);
   }
 
   public IOMockHttpServer preFilter(IOPreFilter filter) {
@@ -82,13 +81,18 @@ public final class IOMockHttpServer implements HttpServer {
     return this;
   }
 
-  public IOMockHttpServer add(Matcher1<HttpRequest> matcher, IORequestHandler handler) {
-    serverK.add(matcher, handler);
+  public IOMockHttpServer addMapping(Matcher1<HttpRequest> matcher, IORequestHandler handler) {
+    serverK.addMapping(matcher, handler);
+    return this;
+  }
+
+  public IOMockHttpServer addPreFilter(Matcher1<HttpRequest> matcher, IORequestHandler handler) {
+    serverK.preFilter(filter(IOInstances.monad(), matcher, handler));
     return this;
   }
 
   public MappingBuilder<IOMockHttpServer> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::add).when(matcher);
+    return new MappingBuilder<>(this::addMapping).when(matcher);
   }
 
   @Override

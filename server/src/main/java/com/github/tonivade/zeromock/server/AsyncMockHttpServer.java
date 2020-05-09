@@ -50,13 +50,12 @@ public final class AsyncMockHttpServer implements HttpServer {
     return this;
   }
 
-  public AsyncMockHttpServer preFilter(AsyncPreFilter filter) {
-    serverK.preFilter(filter);
-    return this;
+  public MappingBuilder<AsyncMockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
+    return new MappingBuilder<>(this::addPreFilter).when(requireNonNull(matcher));
   }
 
-  public AsyncMockHttpServer preFilter(Matcher1<HttpRequest> matcher, AsyncRequestHandler handler) {
-    serverK.preFilter(filter(FutureInstances.monad(), matcher, handler));
+  public AsyncMockHttpServer preFilter(AsyncPreFilter filter) {
+    serverK.preFilter(filter);
     return this;
   }
 
@@ -65,13 +64,18 @@ public final class AsyncMockHttpServer implements HttpServer {
     return this;
   }
 
-  public AsyncMockHttpServer add(Matcher1<HttpRequest> matcher, AsyncRequestHandler handler) {
-    serverK.add(matcher, handler);
+  public AsyncMockHttpServer addMapping(Matcher1<HttpRequest> matcher, AsyncRequestHandler handler) {
+    serverK.addMapping(matcher, handler);
+    return this;
+  }
+
+  public AsyncMockHttpServer addPreFilter(Matcher1<HttpRequest> matcher, AsyncRequestHandler handler) {
+    serverK.preFilter(filter(FutureInstances.monad(), matcher, handler));
     return this;
   }
 
   public MappingBuilder<AsyncMockHttpServer> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::add).when(matcher);
+    return new MappingBuilder<>(this::addMapping).when(matcher);
   }
 
   @Override

@@ -25,7 +25,7 @@ public abstract class AbstractMockServerRule<F extends Kind> extends ExternalRes
   }
 
   @Override
-  protected void before() throws Throwable {
+  protected void before() {
     server.start();
   }
 
@@ -39,13 +39,13 @@ public abstract class AbstractMockServerRule<F extends Kind> extends ExternalRes
     return this;
   }
 
-  public AbstractMockServerRule<F> add(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
-    server.add(matcher, handler);
+  public AbstractMockServerRule<F> addMapping(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
+    server.addMapping(matcher, handler);
     return this;
   }
 
   public MappingBuilderK<F, AbstractMockServerRule<F>> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilderK<>(this::add).when(matcher);
+    return new MappingBuilderK<>(this::addMapping).when(matcher);
   }
 
   public AbstractMockServerRule<F> mount(String path, HttpServiceK<F> service) {

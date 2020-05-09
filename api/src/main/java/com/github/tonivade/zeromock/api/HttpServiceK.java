@@ -5,8 +5,10 @@
 package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.purefun.Function1.fail;
+import static com.github.tonivade.purefun.Matcher1.never;
 import static com.github.tonivade.zeromock.api.Matchers.all;
 import static com.github.tonivade.zeromock.api.Matchers.startsWith;
+import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
 
 import com.github.tonivade.purefun.Function1;
@@ -32,7 +34,7 @@ public final class HttpServiceK<F extends Kind> {
 
   public HttpServiceK(String name, Monad<F> monad) {
     this(name, monad,
-        PartialFunction1.of(Matcher1.never(), fail(IllegalStateException::new)),
+        PartialFunction1.of(never(), fail(IllegalStateException::new)),
         request -> monad.pure(Either.right(request)),
         Function1.<HttpResponse>identity()::apply);
   }
@@ -55,29 +57,29 @@ public final class HttpServiceK<F extends Kind> {
   public HttpServiceK<F> mount(String path, HttpServiceK<F> other) {
     requireNonNull(path);
     requireNonNull(other);
-    return addMapping(
+    return _addMapping(
         startsWith(path).and(req -> other.mappings.isDefinedAt(req.dropOneLevel())),
         req -> other.mappings.apply(req.dropOneLevel()));
   }
 
   public HttpServiceK<F> exec(RequestHandlerK<F> handler) {
-    return addMapping(all(), handler);
-  }
-
-  public HttpServiceK<F> add(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
-    return addMapping(matcher, handler);
+    return _addMapping(all(), handler);
   }
 
   public MappingBuilderK<F, HttpServiceK<F>> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilderK<>(this::add).when(requireNonNull(matcher));
+    return new MappingBuilderK<>(this::addMapping).when(requireNonNull(matcher));
+  }
+
+  public MappingBuilderK<F, HttpServiceK<F>> preFilter(Matcher1<HttpRequest> matcher) {
+    return new MappingBuilderK<>(this::addPreFilter).when(requireNonNull(matcher));
   }
 
   public HttpServiceK<F> preFilter(PreFilterK<F> filter) {
-    return addPreFilter(requireNonNull(filter));
+    return _addPreFilter(requireNonNull(filter));
   }
 
   public HttpServiceK<F> postFilter(PostFilter filter) {
-    return addPostFilter(requireNonNull(filter));
+    return _addPostFilter(requireNonNull(filter));
   }
 
   public Higher1<F, Option<HttpResponse>> execute(HttpRequest request) {
@@ -107,7 +109,15 @@ public final class HttpServiceK<F extends Kind> {
     );
   }
 
-  private HttpServiceK<F> addMapping(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
+  public HttpServiceK<F> addMapping(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
+    return _addMapping(matcher, handler);
+  }
+
+  public HttpServiceK<F> addPreFilter(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
+    return _addPreFilter(filter(monad, matcher, handler));
+  }
+
+  private HttpServiceK<F> _addMapping(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
     requireNonNull(matcher);
     requireNonNull(handler);
     return new HttpServiceK<>(
@@ -119,7 +129,7 @@ public final class HttpServiceK<F extends Kind> {
     );
   }
 
-  private HttpServiceK<F> addPreFilter(PreFilterK<F> filter) {
+  private HttpServiceK<F> _addPreFilter(PreFilterK<F> filter) {
     requireNonNull(filter);
     return new HttpServiceK<>(
         this.name,
@@ -133,7 +143,7 @@ public final class HttpServiceK<F extends Kind> {
     );
   }
 
-  private HttpServiceK<F> addPostFilter(PostFilter filter) {
+  private HttpServiceK<F> _addPostFilter(PostFilter filter) {
     requireNonNull(filter);
     return new HttpServiceK<>(
         this.name,

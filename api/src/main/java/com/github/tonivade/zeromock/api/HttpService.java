@@ -41,8 +41,8 @@ public final class HttpService {
     return new HttpService(serviceK.exec(handler.liftId()::apply));
   }
 
-  public HttpService preFilter(Matcher1<HttpRequest> matcher, RequestHandler handler) {
-    return preFilter(filter(matcher, handler));
+  public MappingBuilder<HttpService> preFilter(Matcher1<HttpRequest> matcher) {
+    return new MappingBuilder<>(this::addPreFilter).when(requireNonNull(matcher));
   }
 
   public HttpService preFilter(PreFilter filter) {
@@ -53,12 +53,8 @@ public final class HttpService {
     return new HttpService(serviceK.postFilter(filter));
   }
 
-  public HttpService add(Matcher1<HttpRequest> matcher, RequestHandler handler) {
-    return new HttpService(serviceK.add(matcher, handler.liftId()::apply));
-  }
-
   public MappingBuilder<HttpService> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::add).when(matcher);
+    return new MappingBuilder<>(this::addMapping).when(matcher);
   }
 
   public Option<HttpResponse> execute(HttpRequest request) {
@@ -67,6 +63,14 @@ public final class HttpService {
 
   public HttpService combine(HttpService other) {
     return new HttpService(this.serviceK.combine(other.serviceK));
+  }
+
+  protected HttpService addMapping(Matcher1<HttpRequest> matcher, RequestHandler handler) {
+    return new HttpService(serviceK.addMapping(matcher, handler.liftId()::apply));
+  }
+
+  protected HttpService addPreFilter(Matcher1<HttpRequest> matcher, RequestHandler handler) {
+    return preFilter(filter(matcher, handler));
   }
 
   @Override
