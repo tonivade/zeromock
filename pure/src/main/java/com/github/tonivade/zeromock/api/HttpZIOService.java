@@ -14,6 +14,7 @@ import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Nothing;
 import com.github.tonivade.purefun.effect.ZIO;
 import com.github.tonivade.purefun.instances.ZIOInstances;
+import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.purefun.type.Option;
 
 public final class HttpZIOService<R> {
@@ -44,8 +45,16 @@ public final class HttpZIOService<R> {
     return new MappingBuilder<>(this::addPreFilter).when(requireNonNull(matcher));
   }
 
+  public HttpZIOService<R> preFilter(PreFilter filter) {
+    return preFilter(filter.andThen(ZIO::<R, Nothing, Either<HttpResponse, HttpRequest>>pure)::apply);
+  }
+
   public HttpZIOService<R> preFilter(ZIOPreFilter<R> filter) {
     return new HttpZIOService<>(serviceK.preFilter(filter));
+  }
+
+  public HttpZIOService<R> postFilter(PostFilter filter) {
+    return postFilter(filter.andThen(ZIO::<R, Nothing, HttpResponse>pure)::apply);
   }
 
   public HttpZIOService<R> postFilter(ZIOPostFilter<R> filter) {

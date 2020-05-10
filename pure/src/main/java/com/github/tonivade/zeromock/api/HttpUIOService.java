@@ -41,8 +41,16 @@ public final class HttpUIOService {
     return new MappingBuilder<>(this::addPreFilter).when(requireNonNull(matcher));
   }
 
+  public HttpUIOService preFilter(PreFilter filter) {
+    return preFilter(filter.andThen(UIO::pure)::apply);
+  }
+
   public HttpUIOService preFilter(UIOPreFilter filter) {
     return new HttpUIOService(serviceK.preFilter(filter));
+  }
+
+  public HttpUIOService postFilter(PostFilter filter) {
+    return postFilter(filter.andThen(UIO::pure)::apply);
   }
 
   public HttpUIOService postFilter(UIOPostFilter filter) {

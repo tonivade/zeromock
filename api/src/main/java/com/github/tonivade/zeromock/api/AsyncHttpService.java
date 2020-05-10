@@ -46,11 +46,19 @@ public final class AsyncHttpService {
     return new MappingBuilder<>(this::addPreFilter).when(requireNonNull(matcher));
   }
 
+  public AsyncHttpService preFilter(PreFilter filter) {
+    return preFilter(filter.andThen(Future::success)::apply);
+  }
+
   public AsyncHttpService preFilter(AsyncPreFilter filter) {
     return new AsyncHttpService(serviceK.preFilter(filter));
   }
 
-  public AsyncHttpService postFilter(PostFilterK filter) {
+  public AsyncHttpService postFilter(PostFilter filter) {
+    return postFilter(filter.andThen(Future::success)::apply);
+  }
+
+  public AsyncHttpService postFilter(AsyncPostFilter filter) {
     return new AsyncHttpService(serviceK.postFilter(filter));
   }
 

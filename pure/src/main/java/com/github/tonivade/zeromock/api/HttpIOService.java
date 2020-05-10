@@ -41,8 +41,16 @@ public final class HttpIOService {
     return new MappingBuilder<>(this::addPreFilter).when(requireNonNull(matcher));
   }
 
+  public HttpIOService preFilter(PreFilter filter) {
+    return preFilter(filter.andThen(IO::pure)::apply);
+  }
+
   public HttpIOService preFilter(IOPreFilter filter) {
     return new HttpIOService(serviceK.preFilter(filter));
+  }
+
+  public HttpIOService postFilter(PostFilter filter) {
+    return postFilter(filter.andThen(IO::pure)::apply);
   }
 
   public HttpIOService postFilter(IOPostFilter filter) {
