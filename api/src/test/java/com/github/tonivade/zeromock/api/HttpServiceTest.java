@@ -4,12 +4,17 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
 
-import com.github.tonivade.purefun.type.Option;
+import static com.github.tonivade.purefun.type.Option.none;
+import static com.github.tonivade.purefun.type.Option.some;
+import static com.github.tonivade.zeromock.api.Handlers.forbidden;
+import static com.github.tonivade.zeromock.api.Handlers.ok;
+import static com.github.tonivade.zeromock.api.Headers.contentPlain;
+import static com.github.tonivade.zeromock.api.Matchers.get;
+import static com.github.tonivade.zeromock.api.Matchers.put;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HttpServiceTest {
 
@@ -17,39 +22,62 @@ public class HttpServiceTest {
   public void initialState() {
     HttpService service = new HttpService("service");
     
-    assertAll(() -> assertEquals("service", service.name()),
-              () -> assertEquals(Option.none(), service.execute(Requests.get("/ping"))));
+    assertAll(
+        () -> assertEquals("service", service.name()),
+        () -> assertEquals(none(), service.execute(Requests.get("/ping")))
+    );
   }
 
   @Test
   public void whenThen() {
-    HttpService service = new HttpService("service").when(Matchers.get("/ping")).then(Handlers.ok("pong"));
+    HttpService service = new HttpService("service")
+        .when(get("/ping")).then(ok("pong"));
     
-    assertEquals(Option.some(Responses.ok("pong")), service.execute(Requests.get("/ping")));
+    assertEquals(some(Responses.ok("pong")), service.execute(Requests.get("/ping")));
   }
 
   @Test
   public void exec() {
-    HttpService service = new HttpService("service").exec(Handlers.ok("pong"));
+    HttpService service = new HttpService("service")
+        .exec(ok("pong"));
     
-    assertEquals(Option.some(Responses.ok("pong")), service.execute(Requests.get("/ping")));
+    assertEquals(some(Responses.ok("pong")), service.execute(Requests.get("/ping")));
   }
   
   @Test
   public void mount() {
-    HttpService service1 = new HttpService("service1").when(Matchers.get("/ping")).then(Handlers.ok("pong"));
-    HttpService service2 = new HttpService("service2").mount("/path", service1);
+    HttpService service1 = new HttpService("service1")
+        .when(get("/ping")).then(ok("pong"));
+    HttpService service2 = new HttpService("service2")
+        .mount("/path", service1);
     
-    assertAll(() -> assertEquals(Option.some(Responses.ok("pong")), service2.execute(Requests.get("/path/ping"))),
-              () -> assertEquals(Option.none(), service2.execute(Requests.get("/path/notfound"))),
-              () -> assertEquals(Option.none(), service2.execute(Requests.get("/ping"))));
+    assertAll(
+        () -> assertEquals(some(Responses.ok("pong")), service2.execute(Requests.get("/path/ping"))),
+        () -> assertEquals(none(), service2.execute(Requests.get("/path/notfound"))),
+        () -> assertEquals(none(), service2.execute(Requests.get("/ping")))
+    );
   }
-  
+
   @Test
   public void combine() {
-    HttpService service1 = new HttpService("service1").when(Matchers.get("/ping")).then(Handlers.ok("pong"));
+    HttpService service1 = new HttpService("service1").when(get("/ping")).then(ok("pong"));
     HttpService service2 = new HttpService("service2");
-    
-    assertEquals(Option.some(Responses.ok("pong")), service1.combine(service2).execute(Requests.get("/ping")));
+
+    assertEquals(some(Responses.ok("pong")), service1.combine(service2).execute(Requests.get("/ping")));
+  }
+
+  @Test
+  public void filters() {
+    HttpService service1 = new HttpService("service1")
+        .preFilter(put()).then(forbidden())
+        .when(get("/ping")).then(ok("pong"))
+        .postFilter(contentPlain());
+
+    assertAll(
+        () -> assertEquals(some(Responses.forbidden()), service1.execute(Requests.put("/ping"))),
+        () -> assertEquals(
+            some(Responses.ok("pong").withHeader("Content-type", "text/plain")),
+            service1.execute(Requests.get("/ping")))
+    );
   }
 }
