@@ -20,7 +20,7 @@ import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpServiceK;
 import com.github.tonivade.zeromock.api.HttpServiceK.MappingBuilderK;
-import com.github.tonivade.zeromock.api.PostFilter;
+import com.github.tonivade.zeromock.api.PostFilterK;
 import com.github.tonivade.zeromock.api.PreFilterK;
 import com.github.tonivade.zeromock.api.RequestHandlerK;
 import com.github.tonivade.zeromock.api.Responses;
@@ -90,7 +90,7 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
     return this;
   }
 
-  public MockHttpServerK<F> postFilter(PostFilter filter) {
+  public MockHttpServerK<F> postFilter(PostFilterK<F> filter) {
     service = service.postFilter(filter);
     return this;
   }

@@ -50,7 +50,7 @@ public final class HttpService {
   }
 
   public HttpService postFilter(PostFilter filter) {
-    return new HttpService(serviceK.postFilter(filter));
+    return new HttpService(serviceK.postFilter(filter.liftId()::apply));
   }
 
   public MappingBuilder<HttpService> when(Matcher1<HttpRequest> matcher) {

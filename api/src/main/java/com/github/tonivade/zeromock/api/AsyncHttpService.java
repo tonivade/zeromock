@@ -50,7 +50,7 @@ public final class AsyncHttpService {
     return new AsyncHttpService(serviceK.preFilter(filter));
   }
 
-  public AsyncHttpService postFilter(PostFilter filter) {
+  public AsyncHttpService postFilter(PostFilterK filter) {
     return new AsyncHttpService(serviceK.postFilter(filter));
   }
 

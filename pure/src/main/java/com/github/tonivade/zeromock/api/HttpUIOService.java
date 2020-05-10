@@ -45,7 +45,7 @@ public final class HttpUIOService {
     return new HttpUIOService(serviceK.preFilter(filter));
   }
 
-  public HttpUIOService postFilter(PostFilter filter) {
+  public HttpUIOService postFilter(UIOPostFilter filter) {
     return new HttpUIOService(serviceK.postFilter(filter));
   }
 

@@ -45,7 +45,7 @@ public final class HttpIOService {
     return new HttpIOService(serviceK.preFilter(filter));
   }
 
-  public HttpIOService postFilter(PostFilter filter) {
+  public HttpIOService postFilter(IOPostFilter filter) {
     return new HttpIOService(serviceK.postFilter(filter));
   }
 

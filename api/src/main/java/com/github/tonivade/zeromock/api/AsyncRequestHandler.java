@@ -19,7 +19,7 @@ public interface AsyncRequestHandler extends RequestHandlerK<Future.µ> {
     return RequestHandlerK.super.preHandle(FutureInstances.monad(), before)::apply;
   }
 
-  default AsyncRequestHandler postHandle(PostFilter after) {
-    return RequestHandlerK.super.postHandle(FutureInstances.functor(), after).andThen(Future::narrowK)::apply;
+  default AsyncRequestHandler postHandle(AsyncPostFilter after) {
+    return RequestHandlerK.super.postHandle(FutureInstances.monad(), after)::apply;
   }
 }

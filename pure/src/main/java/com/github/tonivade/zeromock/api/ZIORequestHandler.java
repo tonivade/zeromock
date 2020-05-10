@@ -20,7 +20,7 @@ public interface ZIORequestHandler<R> extends RequestHandlerK<Higher1<Higher1<ZI
     return RequestHandlerK.super.preHandle(ZIOInstances.<R, Nothing>monad(), before)::apply;
   }
 
-  default ZIORequestHandler<R> postHandle(PostFilter after) {
-    return postHandle(ZIOInstances.functor(), after).andThen(ZIO::narrowK)::apply;
+  default ZIORequestHandler<R> postHandle(ZIOPostFilter<R> after) {
+    return RequestHandlerK.super.postHandle(ZIOInstances.<R, Nothing>monad(), after)::apply;
   }
 }

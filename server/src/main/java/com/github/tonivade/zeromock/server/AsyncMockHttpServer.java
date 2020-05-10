@@ -9,11 +9,11 @@ import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.instances.FutureInstances;
 import com.github.tonivade.zeromock.api.AsyncHttpService;
 import com.github.tonivade.zeromock.api.AsyncHttpService.MappingBuilder;
+import com.github.tonivade.zeromock.api.AsyncPostFilter;
 import com.github.tonivade.zeromock.api.AsyncPreFilter;
 import com.github.tonivade.zeromock.api.AsyncRequestHandler;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
-import com.github.tonivade.zeromock.api.PostFilter;
 import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
 
 import java.util.List;
@@ -59,7 +59,7 @@ public final class AsyncMockHttpServer implements HttpServer {
     return this;
   }
 
-  public AsyncMockHttpServer postFilter(PostFilter filter) {
+  public AsyncMockHttpServer postFilter(AsyncPostFilter filter) {
     serverK.postFilter(filter);
     return this;
   }

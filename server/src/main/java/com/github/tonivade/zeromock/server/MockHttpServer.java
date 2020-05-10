@@ -13,6 +13,7 @@ import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpService;
 import com.github.tonivade.zeromock.api.HttpService.MappingBuilder;
 import com.github.tonivade.zeromock.api.PostFilter;
+import com.github.tonivade.zeromock.api.PostFilterK;
 import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.api.RequestHandler;
 import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
@@ -68,7 +69,7 @@ public final class MockHttpServer implements HttpServer {
   }
 
   public MockHttpServer postFilter(PostFilter filter) {
-    serverK.postFilter(filter);
+    serverK.postFilter(filter.liftId()::apply);
     return this;
   }
 

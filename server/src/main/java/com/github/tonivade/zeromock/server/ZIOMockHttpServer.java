@@ -17,7 +17,7 @@ import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpZIOService;
 import com.github.tonivade.zeromock.api.HttpZIOService.MappingBuilder;
-import com.github.tonivade.zeromock.api.PostFilter;
+import com.github.tonivade.zeromock.api.ZIOPostFilter;
 import com.github.tonivade.zeromock.api.ZIOPreFilter;
 import com.github.tonivade.zeromock.api.ZIORequestHandler;
 import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
@@ -79,7 +79,7 @@ public final class ZIOMockHttpServer<R> implements HttpServer {
     return this;
   }
 
-  public ZIOMockHttpServer<R> postFilter(PostFilter filter) {
+  public ZIOMockHttpServer<R> postFilter(ZIOPostFilter<R> filter) {
     serverK.postFilter(filter);
     return this;
   }

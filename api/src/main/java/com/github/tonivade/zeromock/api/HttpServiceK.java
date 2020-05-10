@@ -16,7 +16,6 @@ import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Higher1;
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
-import com.github.tonivade.purefun.Operator1;
 import com.github.tonivade.purefun.PartialFunction1;
 import com.github.tonivade.purefun.instances.OptionInstances;
 import com.github.tonivade.purefun.type.Either;
@@ -30,19 +29,19 @@ public final class HttpServiceK<F extends Kind> {
   private final Monad<F> monad;
   private final PartialFunction1<HttpRequest, Higher1<F, HttpResponse>> mappings;
   private final Function1<HttpRequest, Higher1<F, Either<HttpResponse, HttpRequest>>> preFilters;
-  private final Operator1<HttpResponse> postFilters;
+  private final Function1<HttpResponse, Higher1<F, HttpResponse>> postFilters;
 
   public HttpServiceK(String name, Monad<F> monad) {
     this(name, monad,
         PartialFunction1.of(never(), fail(IllegalStateException::new)),
         request -> monad.pure(Either.right(request)),
-        Function1.<HttpResponse>identity()::apply);
+        monad::<HttpResponse>pure);
   }
 
   private HttpServiceK(String name, Monad<F> monad,
                        PartialFunction1<HttpRequest, Higher1<F, HttpResponse>> mappings,
                        Function1<HttpRequest, Higher1<F, Either<HttpResponse, HttpRequest>>> preFilters,
-                       Operator1<HttpResponse> postFilters) {
+                       Function1<HttpResponse, Higher1<F, HttpResponse>> postFilters) {
     this.name = requireNonNull(name);
     this.monad = requireNonNull(monad);
     this.mappings = requireNonNull(mappings);
@@ -78,13 +77,13 @@ public final class HttpServiceK<F extends Kind> {
     return _addPreFilter(requireNonNull(filter));
   }
 
-  public HttpServiceK<F> postFilter(PostFilter filter) {
+  public HttpServiceK<F> postFilter(PostFilterK<F> filter) {
     return _addPostFilter(requireNonNull(filter));
   }
 
   public Higher1<F, Option<HttpResponse>> execute(HttpRequest request) {
     Function1<HttpRequest, Option<Higher1<F, HttpResponse>>> mappingsWithPostFilters =
-        mappings.andThen(value -> monad.map(value, postFilters::apply)).lift();
+        mappings.andThen(value -> monad.flatMap(value, postFilters::apply)).lift();
 
     return For.with(monad)
         .then(preFilters.apply(request))
@@ -105,7 +104,7 @@ public final class HttpServiceK<F extends Kind> {
             value -> monad.flatMap(value,
                 either -> either.fold(
                     response -> monad.pure(Either.left(response)), other.preFilters))),
-        this.postFilters.andThen(other.postFilters)::apply
+        this.postFilters.andThen(value -> monad.flatMap(value, other.postFilters))::apply
     );
   }
 
@@ -143,14 +142,14 @@ public final class HttpServiceK<F extends Kind> {
     );
   }
 
-  private HttpServiceK<F> _addPostFilter(PostFilter filter) {
+  private HttpServiceK<F> _addPostFilter(PostFilterK<F> filter) {
     requireNonNull(filter);
     return new HttpServiceK<>(
         this.name,
         this.monad,
         this.mappings,
         this.preFilters,
-        this.postFilters.andThen(filter::apply)::apply
+        this.postFilters.andThen(value -> monad.flatMap(value, filter))::apply
     );
   }
 

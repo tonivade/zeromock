@@ -18,7 +18,7 @@ public interface IORequestHandler extends RequestHandlerK<IO.µ> {
     return RequestHandlerK.super.preHandle(IOInstances.monad(), before)::apply;
   }
 
-  default IORequestHandler postHandle(PostFilter after) {
-    return postHandle(IOInstances.functor(), after).andThen(IO::narrowK)::apply;
+  default IORequestHandler postHandle(IOPostFilter after) {
+    return RequestHandlerK.super.postHandle(IOInstances.monad(), after)::apply;
   }
 }

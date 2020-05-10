@@ -4,13 +4,6 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.purefun.instances.FutureInstances.monadDefer;
-import static com.github.tonivade.zeromock.api.PreFilterK.filter;
-import static java.util.Objects.requireNonNull;
-
-import java.util.List;
-import java.util.concurrent.Executor;
-
 import com.github.tonivade.purefun.Higher1;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
@@ -21,10 +14,17 @@ import com.github.tonivade.zeromock.api.HttpIOService;
 import com.github.tonivade.zeromock.api.HttpIOService.MappingBuilder;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
+import com.github.tonivade.zeromock.api.IOPostFilter;
 import com.github.tonivade.zeromock.api.IOPreFilter;
 import com.github.tonivade.zeromock.api.IORequestHandler;
-import com.github.tonivade.zeromock.api.PostFilter;
 import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
+
+import java.util.List;
+import java.util.concurrent.Executor;
+
+import static com.github.tonivade.purefun.instances.FutureInstances.monadDefer;
+import static com.github.tonivade.zeromock.api.PreFilterK.filter;
+import static java.util.Objects.requireNonNull;
 
 public final class IOMockHttpServer implements HttpServer {
 
@@ -76,7 +76,7 @@ public final class IOMockHttpServer implements HttpServer {
     return this;
   }
 
-  public IOMockHttpServer postFilter(PostFilter filter) {
+  public IOMockHttpServer postFilter(IOPostFilter filter) {
     serverK.postFilter(filter);
     return this;
   }

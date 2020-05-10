@@ -48,7 +48,7 @@ public final class HttpZIOService<R> {
     return new HttpZIOService<>(serviceK.preFilter(filter));
   }
 
-  public HttpZIOService<R> postFilter(PostFilter filter) {
+  public HttpZIOService<R> postFilter(ZIOPostFilter<R> filter) {
     return new HttpZIOService<>(serviceK.postFilter(filter));
   }
 

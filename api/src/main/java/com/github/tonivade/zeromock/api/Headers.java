@@ -4,8 +4,6 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import com.github.tonivade.purefun.Operator1;
-
 public final class Headers {
 
   private Headers() {}

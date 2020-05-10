@@ -18,7 +18,7 @@ public interface UIORequestHandler extends RequestHandlerK<UIO.µ> {
     return RequestHandlerK.super.preHandle(UIOInstances.monad(), before)::apply;
   }
 
-  default UIORequestHandler postHandle(PostFilter after) {
-    return postHandle(UIOInstances.functor(), after).andThen(UIO::narrowK)::apply;
+  default UIORequestHandler postHandle(UIOPostFilter after) {
+    return RequestHandlerK.super.postHandle(UIOInstances.monad(), after)::apply;
   }
 }
