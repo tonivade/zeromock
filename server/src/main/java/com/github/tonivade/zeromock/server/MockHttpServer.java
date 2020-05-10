@@ -13,7 +13,6 @@ import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpService;
 import com.github.tonivade.zeromock.api.HttpService.MappingBuilder;
 import com.github.tonivade.zeromock.api.PostFilter;
-import com.github.tonivade.zeromock.api.PostFilterK;
 import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.api.RequestHandler;
 import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
@@ -63,18 +62,18 @@ public final class MockHttpServer implements HttpServer {
     return this;
   }
 
-  public MockHttpServer addPreFilter(Matcher1<HttpRequest> matcher, RequestHandler handler) {
-    serverK.preFilter(filter(IdInstances.monad(), matcher, handler.liftId()::apply)::apply);
-    return this;
-  }
-
   public MockHttpServer postFilter(PostFilter filter) {
     serverK.postFilter(filter.liftId()::apply);
     return this;
   }
 
-  public MockHttpServer addMapping(Matcher1<HttpRequest> matcher, RequestHandler handler) {
+  protected MockHttpServer addMapping(Matcher1<HttpRequest> matcher, RequestHandler handler) {
     serverK.addMapping(matcher, handler.liftId()::apply);
+    return this;
+  }
+
+  protected MockHttpServer addPreFilter(Matcher1<HttpRequest> matcher, RequestHandler handler) {
+    serverK.preFilter(filter(IdInstances.monad(), matcher, handler.liftId()::apply)::apply);
     return this;
   }
 

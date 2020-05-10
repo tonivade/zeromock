@@ -37,7 +37,7 @@ public class MockHttpServerRule extends ExternalResource {
   }
 
   public MockHttpServerRule addMapping(Matcher1<HttpRequest> matcher, RequestHandler handler) {
-    server.addMapping(matcher, handler);
+    server.when(matcher).then(handler);
     return this;
   }
 

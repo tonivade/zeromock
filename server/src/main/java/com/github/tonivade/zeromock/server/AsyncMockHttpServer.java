@@ -14,6 +14,8 @@ import com.github.tonivade.zeromock.api.AsyncPreFilter;
 import com.github.tonivade.zeromock.api.AsyncRequestHandler;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
+import com.github.tonivade.zeromock.api.PostFilter;
+import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
 
 import java.util.List;
@@ -54,9 +56,17 @@ public final class AsyncMockHttpServer implements HttpServer {
     return new MappingBuilder<>(this::addPreFilter).when(requireNonNull(matcher));
   }
 
+  public AsyncMockHttpServer preFilter(PreFilter filter) {
+    return preFilter(filter.andThen(Future::success)::apply);
+  }
+
   public AsyncMockHttpServer preFilter(AsyncPreFilter filter) {
     serverK.preFilter(filter);
     return this;
+  }
+
+  public AsyncMockHttpServer postFilter(PostFilter filter) {
+    return postFilter(filter.andThen(Future::success)::apply);
   }
 
   public AsyncMockHttpServer postFilter(AsyncPostFilter filter) {

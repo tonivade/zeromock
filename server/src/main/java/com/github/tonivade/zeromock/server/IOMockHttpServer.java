@@ -17,6 +17,8 @@ import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.IOPostFilter;
 import com.github.tonivade.zeromock.api.IOPreFilter;
 import com.github.tonivade.zeromock.api.IORequestHandler;
+import com.github.tonivade.zeromock.api.PostFilter;
+import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
 
 import java.util.List;
@@ -71,9 +73,17 @@ public final class IOMockHttpServer implements HttpServer {
     return new MappingBuilder<>(this::addMapping).when(matcher);
   }
 
+  public IOMockHttpServer preFilter(PreFilter filter) {
+    return preFilter(filter.andThen(IO::pure)::apply);
+  }
+
   public IOMockHttpServer preFilter(IOPreFilter filter) {
     serverK.preFilter(filter);
     return this;
+  }
+
+  public IOMockHttpServer postFilter(PostFilter filter) {
+    return postFilter(filter.andThen(IO::pure)::apply);
   }
 
   public IOMockHttpServer postFilter(IOPostFilter filter) {

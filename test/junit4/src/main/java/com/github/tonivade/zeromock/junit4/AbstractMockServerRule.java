@@ -40,7 +40,7 @@ public abstract class AbstractMockServerRule<F extends Kind> extends ExternalRes
   }
 
   public AbstractMockServerRule<F> addMapping(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
-    server.addMapping(matcher, handler);
+    server.when(matcher).then(handler);
     return this;
   }
 

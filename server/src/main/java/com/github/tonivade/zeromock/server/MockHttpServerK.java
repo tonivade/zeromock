@@ -81,6 +81,10 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
     return this;
   }
 
+  public MappingBuilderK<F, MockHttpServerK<F>> when(Matcher1<HttpRequest> matcher) {
+    return new MappingBuilderK<>(this::addMapping).when(requireNonNull(matcher));
+  }
+
   public MappingBuilderK<F, MockHttpServerK<F>> preFilter(Matcher1<HttpRequest> matcher) {
     return new MappingBuilderK<>(this::addPreFilter).when(requireNonNull(matcher));
   }
@@ -93,20 +97,6 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
   public MockHttpServerK<F> postFilter(PostFilterK<F> filter) {
     service = service.postFilter(filter);
     return this;
-  }
-
-  public MockHttpServerK<F> addMapping(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
-    service = service.addMapping(matcher, handler);
-    return this;
-  }
-
-  public MockHttpServerK<F> addPreFilter(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
-    service = service.addPreFilter(matcher, handler);
-    return this;
-  }
-
-  public MappingBuilderK<F, MockHttpServerK<F>> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilderK<>(this::addMapping).when(requireNonNull(matcher));
   }
 
   @Override
@@ -151,6 +141,16 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
   }
 
   protected abstract Promise<HttpResponse> run(Higher1<F, HttpResponse> response);
+
+  protected MockHttpServerK<F> addMapping(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
+    service = service.addMapping(matcher, handler);
+    return this;
+  }
+
+  protected MockHttpServerK<F> addPreFilter(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
+    service = service.addPreFilter(matcher, handler);
+    return this;
+  }
 
   private void handle(HttpExchange exchange) throws IOException {
     HttpRequest request = createRequest(exchange);
