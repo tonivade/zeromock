@@ -13,10 +13,6 @@ public final class Extractors {
   
   private Extractors() {}
 
-  public static Function1<HttpRequest, HttpRequest> identity() {
-    return Function1.identity();
-  }
-
   public static Function1<HttpRequest, Bytes> body() {
     return HttpRequest::body;
   }

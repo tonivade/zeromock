@@ -44,19 +44,19 @@ public class AsyncMockHttpServerTest {
 
   private static final String BASE_URL = "http://localhost:8080/path";
 
-  private AsyncHttpService service1 = new AsyncHttpService("hello")
-      .when(get().and(path("/hello")).and(param("name"))).then(ok(plain().compose(this::helloWorld)).async())
-      .when(get().and(path("/hello")).and(param("name").negate())).then(badRequest("missing parameter name").async());
+  private final AsyncHttpService service1 = new AsyncHttpService("hello")
+      .when(get().and(path("/hello")).and(param("name"))).then(ok(plain().compose(this::helloWorld)).liftFuture()::apply)
+      .when(get().and(path("/hello")).and(param("name").negate())).then(badRequest("missing parameter name").liftFuture()::apply);
 
-  private AsyncHttpService service2 = new AsyncHttpService("test")
+  private final AsyncHttpService service2 = new AsyncHttpService("test")
       .when(get().and(path("/test")).and(acceptsXml()))
-            .then(ok(adapt(this::sayHello).andThen(objectToXml())).postHandle(contentXml()).async())
+            .then(ok(adapt(this::sayHello).andThen(objectToXml())).postHandle(contentXml()).liftFuture()::apply)
       .when(get().and(path("/test")).and(acceptsJson()))
-            .then(ok(adapt(this::sayHello).andThen(objectToJson())).postHandle(contentJson()).async())
+            .then(ok(adapt(this::sayHello).andThen(objectToJson())).postHandle(contentJson()).liftFuture()::apply)
       .when(get().and(path("/empty")))
-            .then(noContent().async());
+            .then(noContent().liftFuture()::apply);
 
-  private AsyncHttpService service3 = new AsyncHttpService("other").when(get("/ping")).then(ok("pong").async());
+  private final AsyncHttpService service3 = new AsyncHttpService("other").when(get("/ping")).then(ok("pong").liftFuture()::apply);
 
   private static AsyncMockHttpServer server = listenAt(8080);
 
@@ -124,7 +124,7 @@ public class AsyncMockHttpServerTest {
   @Test
   public void exec() {
     RequestHandler echo = request -> Responses.ok(request.body());
-    AsyncMockHttpServer server = listenAt(8082).exec(echo.async()).start();
+    AsyncMockHttpServer server = listenAt(8082).exec(echo.liftFuture()::apply).start();
 
     HttpResponse response = connectTo("http://localhost:8082").request(Requests.get("/").withBody("echo"));
 

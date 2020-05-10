@@ -48,7 +48,7 @@ public class ExampleTest {
   
   @Test
   public void pingSync() {
-    syncServer.when(get("/ping")).then(ok("pong").sync());
+    syncServer.when(get("/ping")).then(ok("pong").liftId()::apply);
     
     HttpResponse response = ping("http://localhost:8081");
     
@@ -57,7 +57,7 @@ public class ExampleTest {
   
   @Test
   public void pingAsync() {
-    asyncServer.when(get("/ping")).then(ok("pong").async());
+    asyncServer.when(get("/ping")).then(ok("pong").liftFuture()::apply);
     
     HttpResponse response = ping("http://localhost:8082");
     

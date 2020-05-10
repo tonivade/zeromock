@@ -5,6 +5,7 @@
 package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.zeromock.api.Bytes.asBytes;
+import static com.github.tonivade.zeromock.api.Headers.contentPlain;
 import static com.github.tonivade.zeromock.api.Matchers.get;
 import static com.github.tonivade.zeromock.api.Responses.ok;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,18 +22,19 @@ public class HttpUIOServiceTest {
     HttpUIOService service = new HttpUIOService("test")
         .when(get("/ping")).then(request -> UIO.pure(ok("pong")));
     
-    Option<UIO<HttpResponse>> execute = service.execute(Requests.get("/ping"));
+    UIO<Option<HttpResponse>> execute = service.execute(Requests.get("/ping"));
     
-    assertEquals(ok("pong"), execute.get().unsafeRunSync());
+    assertEquals(ok("pong"), execute.unsafeRunSync().get());
   }
   
   @Test
   public void echo() {
     HttpUIOService service = new HttpUIOService("test")
-        .when(get("/echo")).then(request -> UIO.task(() -> ok(request.body())));
-    
-    Option<UIO<HttpResponse>> execute = service.execute(Requests.get("/echo").withBody(asBytes("hello")));
-    
-    assertEquals(ok("hello"), execute.get().unsafeRunSync());
+        .when(get("/echo")).then(request -> UIO.task(() -> ok(request.body())))
+        .postFilter(contentPlain());
+
+    UIO<Option<HttpResponse>> execute = service.execute(Requests.get("/echo").withBody(asBytes("hello")));
+
+    assertEquals(ok("hello").withHeader("Content-type", "text/plain"), execute.unsafeRunSync().get());
   }
 }

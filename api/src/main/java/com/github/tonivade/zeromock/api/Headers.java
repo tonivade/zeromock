@@ -4,13 +4,11 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import com.github.tonivade.purefun.Operator1;
-
 public final class Headers {
 
   private Headers() {}
 
-  public static Operator1<HttpResponse> enableCors() {
+  public static PostFilter enableCors() {
     return response ->
         response.withHeader("Access-Control-Allow-Origin", "*")
           .withHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PATCH, PUT")
@@ -18,19 +16,19 @@ public final class Headers {
           .withHeader("Access-Control-Allow-Headers", "x-requested-with, origin, content-type, accept");
   }
   
-  public static Operator1<HttpResponse> contentType(String value) {
+  public static PostFilter contentType(String value) {
     return response -> response.withHeader("Content-type", value);
   }
   
-  public static Operator1<HttpResponse> contentPlain() {
+  public static PostFilter contentPlain() {
     return contentType("text/plain");
   }
   
-  public static Operator1<HttpResponse> contentJson() {
+  public static PostFilter contentJson() {
     return contentType("application/json");
   }
   
-  public static Operator1<HttpResponse> contentXml() {
+  public static PostFilter contentXml() {
     return contentType("text/xml");
   }
 }

@@ -4,11 +4,28 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.zeromock.api.Bytes.asBytes;
-import static com.github.tonivade.zeromock.api.Responses.error;
-import static com.github.tonivade.zeromock.api.Responses.notFound;
-import static java.util.Collections.unmodifiableList;
-import static java.util.Objects.requireNonNull;
+import com.github.tonivade.purefun.Function1;
+import com.github.tonivade.purefun.Higher1;
+import com.github.tonivade.purefun.Kind;
+import com.github.tonivade.purefun.Matcher1;
+import com.github.tonivade.purefun.concurrent.Promise;
+import com.github.tonivade.purefun.type.Option;
+import com.github.tonivade.purefun.typeclasses.Monad;
+import com.github.tonivade.zeromock.api.Bytes;
+import com.github.tonivade.zeromock.api.HttpHeaders;
+import com.github.tonivade.zeromock.api.HttpMethod;
+import com.github.tonivade.zeromock.api.HttpParams;
+import com.github.tonivade.zeromock.api.HttpPath;
+import com.github.tonivade.zeromock.api.HttpRequest;
+import com.github.tonivade.zeromock.api.HttpResponse;
+import com.github.tonivade.zeromock.api.HttpServiceK;
+import com.github.tonivade.zeromock.api.HttpServiceK.MappingBuilderK;
+import com.github.tonivade.zeromock.api.PostFilterK;
+import com.github.tonivade.zeromock.api.PreFilterK;
+import com.github.tonivade.zeromock.api.RequestHandlerK;
+import com.github.tonivade.zeromock.api.Responses;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -22,24 +39,10 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
-import com.github.tonivade.purefun.Function1;
-import com.github.tonivade.purefun.Higher1;
-import com.github.tonivade.purefun.Kind;
-import com.github.tonivade.purefun.Matcher1;
-import com.github.tonivade.purefun.concurrent.Promise;
-import com.github.tonivade.purefun.type.Option;
-import com.github.tonivade.zeromock.api.Bytes;
-import com.github.tonivade.zeromock.api.HttpHeaders;
-import com.github.tonivade.zeromock.api.HttpMethod;
-import com.github.tonivade.zeromock.api.HttpParams;
-import com.github.tonivade.zeromock.api.HttpPath;
-import com.github.tonivade.zeromock.api.HttpRequest;
-import com.github.tonivade.zeromock.api.HttpResponse;
-import com.github.tonivade.zeromock.api.HttpServiceK;
-import com.github.tonivade.zeromock.api.HttpServiceK.MappingBuilderK;
-import com.github.tonivade.zeromock.api.RequestHandlerK;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpServer;
+import static com.github.tonivade.zeromock.api.Bytes.asBytes;
+import static com.github.tonivade.zeromock.api.Responses.error;
+import static java.util.Collections.unmodifiableList;
+import static java.util.Objects.requireNonNull;
 
 @SuppressWarnings("restriction")
 public abstract class MockHttpServerK<F extends Kind> implements com.github.tonivade.zeromock.server.HttpServer {
@@ -49,18 +52,20 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
   private static final String ROOT = "/";
 
   private final HttpServer server;
+  private final Monad<F> monad;
 
   private final Map<Instant, HttpRequest> matched = new LimitedSizeMap<>(100);
   private final Map<Instant, HttpRequest> unmatched = new LimitedSizeMap<>(100);
 
   private HttpServiceK<F> service;
 
-  private MockHttpServerK(String host, int port, int threads, int backlog) {
+  private MockHttpServerK(String host, int port, int threads, int backlog, Monad<F> monad) {
     try {
-      service = new HttpServiceK<>("root");
-      server = HttpServer.create(new InetSocketAddress(host, port), backlog);
-      server.setExecutor(Executors.newFixedThreadPool(threads));
-      server.createContext(ROOT, this::handle);
+      this.service = new HttpServiceK<>("root", monad);
+      this.server = HttpServer.create(new InetSocketAddress(host, port), backlog);
+      this.server.setExecutor(Executors.newFixedThreadPool(threads));
+      this.server.createContext(ROOT, this::handle);
+      this.monad = requireNonNull(monad);
     } catch (IOException e) {
       throw new UncheckedIOException("unable to start server at " + host + ":" + port, e);
     }
@@ -76,13 +81,22 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
     return this;
   }
 
-  public MockHttpServerK<F> add(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
-    service = service.add(matcher, handler);
+  public MappingBuilderK<F, MockHttpServerK<F>> when(Matcher1<HttpRequest> matcher) {
+    return new MappingBuilderK<>(this::addMapping).when(requireNonNull(matcher));
+  }
+
+  public MappingBuilderK<F, MockHttpServerK<F>> preFilter(Matcher1<HttpRequest> matcher) {
+    return new MappingBuilderK<>(this::addPreFilter).when(requireNonNull(matcher));
+  }
+
+  public MockHttpServerK<F> preFilter(PreFilterK<F> filter) {
+    service = service.preFilter(filter);
     return this;
   }
 
-  public MappingBuilderK<F, MockHttpServerK<F>> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilderK<>(this::add).when(matcher);
+  public MockHttpServerK<F> postFilter(PostFilterK<F> filter) {
+    service = service.postFilter(filter);
+    return this;
   }
 
   @Override
@@ -121,38 +135,51 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
 
   @Override
   public void reset() {
-    service = new HttpServiceK<>("root");
+    service = new HttpServiceK<>("root", monad);
     matched.clear();
     unmatched.clear();
   }
 
   protected abstract Promise<HttpResponse> run(Higher1<F, HttpResponse> response);
 
-  private void handle(HttpExchange exchange) throws IOException {
-    HttpRequest request = createRequest(exchange);
-    execute(request)
-      .ifPresent(responseK -> matched(exchange, request, responseK))
-      .ifEmpty(() -> unmatched(exchange, request));
+  protected MockHttpServerK<F> addMapping(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
+    service = service.addMapping(matcher, handler);
+    return this;
   }
 
-  private void unmatched(HttpExchange exchange, HttpRequest request) {
+  protected MockHttpServerK<F> addPreFilter(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
+    service = service.addPreFilter(matcher, handler);
+    return this;
+  }
+
+  private void handle(HttpExchange exchange) throws IOException {
+    HttpRequest request = createRequest(exchange);
+    run(monad.map(execute(request), option -> fold(request, option)))
+        .onSuccess(response -> processResponse(exchange, response))
+        .onFailure(error -> processResponse(exchange, error(error)));
+  }
+
+  private HttpResponse fold(HttpRequest request, Option<HttpResponse> option) {
+    return option
+        .ifPresent(response -> matched(request))
+        .ifEmpty(() -> unmatched(request))
+        .getOrElse(Responses::notFound);
+  }
+
+  private void unmatched(HttpRequest request) {
     LOG.fine(() -> "unmatched request " + request);
-    processResponse(exchange, notFound());
     unmatched.put(Instant.now(), request);
   }
 
-  private void matched(HttpExchange exchange, HttpRequest request, Higher1<F, HttpResponse> responseK) {
+  private void matched(HttpRequest request) {
     matched.put(Instant.now(), request);
-    run(responseK)
-      .onSuccess(response -> processResponse(exchange, response))
-      .onFailure(error -> processResponse(exchange, error(error)));
   }
 
   private boolean matches(Matcher1<HttpRequest> matcher) {
     return matched.values().stream().anyMatch(matcher::match);
   }
 
-  private Option<Higher1<F, HttpResponse>> execute(HttpRequest request) {
+  private Higher1<F, Option<HttpResponse>> execute(HttpRequest request) {
     return service.execute(request);
   }
 
@@ -185,9 +212,11 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
     private int port = 8080;
     private int threads = Runtime.getRuntime().availableProcessors();
     private int backlog = 0;
+    private final Monad<F> monad;
     private final Function1<Higher1<F, HttpResponse>, Promise<HttpResponse>> run;
 
-    public Builder(Function1<Higher1<F, HttpResponse>, Promise<HttpResponse>> run) {
+    public Builder(Monad<F> monad, Function1<Higher1<F, HttpResponse>, Promise<HttpResponse>> run) {
+      this.monad = requireNonNull(monad);
       this.run = requireNonNull(run);
     }
 
@@ -212,7 +241,7 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
     }
 
     public MockHttpServerK<F> build() {
-      return new MockHttpServerK<F>(host, port, threads, backlog) {
+      return new MockHttpServerK<F>(host, port, threads, backlog, monad) {
 
         @Override
         protected Promise<HttpResponse> run(Higher1<F, HttpResponse> response) {

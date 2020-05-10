@@ -5,26 +5,17 @@
 package com.github.tonivade.zeromock.api;
 
 import com.github.tonivade.purefun.Function1;
-import com.github.tonivade.purefun.Operator1;
-import com.github.tonivade.purefun.concurrent.Future;
-import com.github.tonivade.purefun.type.Id;
+
+import static com.github.tonivade.purefun.Function1.identity;
 
 @FunctionalInterface
 public interface RequestHandler extends Function1<HttpRequest, HttpResponse> {
 
-  default AsyncRequestHandler async() {
-    return request -> Future.async(() -> apply(request));
+  default RequestHandler preHandle(PreFilter before) {
+    return request -> before.apply(request).fold(identity(), this::apply);
   }
 
-  default SyncRequestHandler sync() {
-    return request -> Id.of(apply(request));
-  }
-
-  default RequestHandler preHandle(Operator1<HttpRequest> before) {
-    return compose(before)::apply;
-  }
-
-  default RequestHandler postHandle(Operator1<HttpResponse> after) {
+  default RequestHandler postHandle(PostFilter after) {
     return andThen(after)::apply;
   }
 }

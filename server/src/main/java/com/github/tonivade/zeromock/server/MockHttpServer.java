@@ -4,19 +4,23 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.List;
-
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Promise;
+import com.github.tonivade.purefun.instances.IdInstances;
 import com.github.tonivade.purefun.type.Id;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpService;
 import com.github.tonivade.zeromock.api.HttpService.MappingBuilder;
+import com.github.tonivade.zeromock.api.PostFilter;
+import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.api.RequestHandler;
 import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
+
+import java.util.List;
+
+import static com.github.tonivade.zeromock.api.PreFilterK.filter;
+import static java.util.Objects.requireNonNull;
 
 public final class MockHttpServer implements HttpServer {
 
@@ -27,7 +31,7 @@ public final class MockHttpServer implements HttpServer {
   }
 
   public static Builder<Id.µ> builder() {
-    return new Builder<>(response -> {
+    return new Builder<>(IdInstances.monad(), response -> {
       Promise<HttpResponse> promise = Promise.make();
       Id<HttpResponse> id = response.fix1(Id::narrowK);
       promise.succeeded(id.get());
@@ -49,13 +53,32 @@ public final class MockHttpServer implements HttpServer {
     return this;
   }
 
-  public MockHttpServer add(Matcher1<HttpRequest> matcher, RequestHandler handler) {
-    serverK.add(matcher, handler.liftId()::apply);
+  public MappingBuilder<MockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
+    return new MappingBuilder<>(this::addPreFilter).when(matcher);
+  }
+
+  public MockHttpServer preFilter(PreFilter filter) {
+    serverK.preFilter(filter.liftId()::apply);
+    return this;
+  }
+
+  public MockHttpServer postFilter(PostFilter filter) {
+    serverK.postFilter(filter.liftId()::apply);
+    return this;
+  }
+
+  protected MockHttpServer addMapping(Matcher1<HttpRequest> matcher, RequestHandler handler) {
+    serverK.addMapping(matcher, handler.liftId()::apply);
+    return this;
+  }
+
+  protected MockHttpServer addPreFilter(Matcher1<HttpRequest> matcher, RequestHandler handler) {
+    serverK.preFilter(filter(IdInstances.monad(), matcher, handler.liftId()::apply)::apply);
     return this;
   }
 
   public MappingBuilder<MockHttpServer> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::add).when(matcher);
+    return new MappingBuilder<>(this::addMapping).when(matcher);
   }
 
   @Override

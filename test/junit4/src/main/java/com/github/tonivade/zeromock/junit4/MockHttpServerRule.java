@@ -22,7 +22,7 @@ public class MockHttpServerRule extends ExternalResource {
   }
 
   @Override
-  protected void before() throws Throwable {
+  protected void before() {
     server.start();
   }
 
@@ -36,13 +36,13 @@ public class MockHttpServerRule extends ExternalResource {
     return this;
   }
 
-  public MockHttpServerRule add(Matcher1<HttpRequest> matcher, RequestHandler handler) {
-    server.add(matcher, handler);
+  public MockHttpServerRule addMapping(Matcher1<HttpRequest> matcher, RequestHandler handler) {
+    server.when(matcher).then(handler);
     return this;
   }
 
   public MappingBuilder<MockHttpServerRule> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::add).when(matcher);
+    return new MappingBuilder<>(this::addMapping).when(matcher);
   }
 
   public MockHttpServerRule mount(String path, HttpService service) {

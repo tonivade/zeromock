@@ -21,7 +21,9 @@ import static com.github.tonivade.zeromock.client.HttpClient.connectTo;
 import static com.github.tonivade.zeromock.server.UIOMockHttpServer.listenAt;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.github.tonivade.zeromock.api.Headers;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,13 +44,13 @@ public class UIOMockHttpServerTest {
 
   private static final String BASE_URL = "http://localhost:8080/path";
 
-  private HttpUIOService service1 = new HttpUIOService("hello")
+  private final HttpUIOService service1 = new HttpUIOService("hello")
       .when(get().and(path("/hello")).and(param("name")))
         .then(request -> UIO.task(() -> helloWorld(request)).map(Responses::ok))
       .when(get().and(path("/hello")).and(param("name").negate()))
         .then(request -> UIO.pure(badRequest("missing parameter name")));
 
-  private HttpUIOService service2 = new HttpUIOService("test")
+  private final HttpUIOService service2 = new HttpUIOService("test")
       .when(get().and(path("/test")).and(acceptsXml()))
         .then(request -> UIO.task(this::sayHello).map(objectToXml()).map(Responses::ok).map(contentXml()))
       .when(get().and(path("/test")).and(acceptsJson()))
@@ -56,7 +58,7 @@ public class UIOMockHttpServerTest {
       .when(get().and(path("/empty")))
         .then(request -> UIO.pure(noContent()));
 
-  private HttpUIOService service3 = new HttpUIOService("other").when(get("/ping")).then(request -> UIO.pure(ok("pong")));
+  private final HttpUIOService service3 = new HttpUIOService("other").when(get("/ping")).then(request -> UIO.pure(ok("pong")));
 
   private static UIOMockHttpServer server = listenAt(8080);
 
@@ -66,8 +68,10 @@ public class UIOMockHttpServerTest {
 
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/hello").withParam("name", "World"));
 
-    assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals("Hello World!", asString(response.body())));
+    assertAll(
+        () -> assertEquals(HttpStatus.OK, response.status()),
+        () -> assertEquals("Hello World!", asString(response.body()))
+    );
   }
 
   @Test
@@ -85,9 +89,11 @@ public class UIOMockHttpServerTest {
 
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/test").withHeader("Accept", "application/json"));
 
-    assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals(sayHello(), Deserializers.jsonToObject(Say.class).apply(response.body())),
-              () -> assertEquals(ImmutableSet.of("application/json"), response.headers().get("Content-type")));
+    assertAll(
+        () -> assertEquals(HttpStatus.OK, response.status()),
+        () -> assertEquals(sayHello(), Deserializers.jsonToObject(Say.class).apply(response.body())),
+        () -> assertEquals(ImmutableSet.of("application/json"), response.headers().get("Content-type"))
+    );
   }
 
   @Test
@@ -96,9 +102,11 @@ public class UIOMockHttpServerTest {
 
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/test").withHeader("Accept", "text/xml"));
 
-    assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals(sayHello(), Deserializers.xmlToObject(Say.class).apply(response.body())),
-              () -> assertEquals(ImmutableSet.of("text/xml"), response.headers().get("Content-type")));
+    assertAll(
+        () -> assertEquals(HttpStatus.OK, response.status()),
+        () -> assertEquals(sayHello(), Deserializers.xmlToObject(Say.class).apply(response.body())),
+        () -> assertEquals(ImmutableSet.of("text/xml"), response.headers().get("Content-type"))
+    );
   }
 
   @Test
@@ -107,18 +115,23 @@ public class UIOMockHttpServerTest {
 
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/empty"));
 
-    assertAll(() -> assertEquals(HttpStatus.NO_CONTENT, response.status()),
-              () -> assertEquals("", asString(response.body())));
+    assertAll(
+        () -> assertEquals(HttpStatus.NO_CONTENT, response.status()),
+        () -> assertEquals("", asString(response.body()))
+    );
   }
 
   @Test
   public void ping() {
-    server.mount("/path", service3);
+    server.mount("/path", service3.postFilter(contentJson()));
 
     HttpResponse response = connectTo(BASE_URL).request(Requests.get("/ping"));
 
-    assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals("pong", asString(response.body())));
+    assertAll(
+        () -> assertEquals(HttpStatus.OK, response.status()),
+        () -> assertEquals("pong", asString(response.body())),
+        () -> assertTrue(response.headers().contains("Content-type"))
+    );
   }
 
   @Test
@@ -128,8 +141,10 @@ public class UIOMockHttpServerTest {
 
     HttpResponse response = connectTo("http://localhost:8082").request(Requests.get("/").withBody("echo"));
 
-    assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals("echo", asString(response.body())));
+    assertAll(
+        () -> assertEquals(HttpStatus.OK, response.status()),
+        () -> assertEquals("echo", asString(response.body()))
+    );
 
     server.stop();
   }
