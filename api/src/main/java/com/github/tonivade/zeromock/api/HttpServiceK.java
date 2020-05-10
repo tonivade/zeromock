@@ -9,6 +9,7 @@ import static com.github.tonivade.purefun.Matcher1.never;
 import static com.github.tonivade.zeromock.api.Matchers.all;
 import static com.github.tonivade.zeromock.api.Matchers.startsWith;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
+import static com.github.tonivade.zeromock.api.Responses.notFound;
 import static java.util.Objects.requireNonNull;
 
 import com.github.tonivade.purefun.Function1;
@@ -58,7 +59,7 @@ public final class HttpServiceK<F extends Kind> {
     requireNonNull(other);
     return _addMapping(
         startsWith(path).and(req -> other.mappings.isDefinedAt(req.dropOneLevel())),
-        req -> other.mappings.apply(req.dropOneLevel()));
+        req -> monad.map(other.execute(req.dropOneLevel()), option -> option.getOrElse(notFound())));
   }
 
   public HttpServiceK<F> exec(RequestHandlerK<F> handler) {

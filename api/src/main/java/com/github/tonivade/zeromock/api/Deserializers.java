@@ -45,7 +45,7 @@ public final class Deserializers {
   }
   
   public static <T> Function1<Bytes, T> xmlToObject(Class<T> clazz) {
-    return bytes -> Deserializers.<T>fromXml(bytes, clazz);
+    return bytes -> Deserializers.fromXml(bytes, clazz);
   }
   
   public static <T> Function1<Bytes, T> jsonToObject(Class<T> clazz) {
@@ -61,7 +61,7 @@ public final class Deserializers {
   }
   
   private static Function1<String, JsonElement> asJson() {
-    return new JsonParser()::parse;
+    return JsonParser::parseString;
   }
   
   private static <T> Function1<String, T> fromJson(Type type) {
