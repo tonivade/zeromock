@@ -7,6 +7,7 @@ package com.github.tonivade.zeromock.api;
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.effect.UIO;
+import com.github.tonivade.purefun.effect.UIO_;
 import com.github.tonivade.purefun.instances.UIOInstances;
 import com.github.tonivade.purefun.type.Option;
 
@@ -15,13 +16,13 @@ import static java.util.Objects.requireNonNull;
 
 public final class HttpUIOService {
 
-  private final HttpServiceK<UIO.µ> serviceK;
+  private final HttpServiceK<UIO_> serviceK;
 
   public HttpUIOService(String name) {
     this(new HttpServiceK<>(name, UIOInstances.monad()));
   }
 
-  private HttpUIOService(HttpServiceK<UIO.µ> serviceK) {
+  private HttpUIOService(HttpServiceK<UIO_> serviceK) {
     this.serviceK = requireNonNull(serviceK);
   }
 
@@ -62,14 +63,14 @@ public final class HttpUIOService {
   }
 
   public UIO<Option<HttpResponse>> execute(HttpRequest request) {
-    return serviceK.execute(request).fix1(UIO::narrowK);
+    return serviceK.execute(request).fix1(UIO_::narrowK);
   }
 
   public HttpUIOService combine(HttpUIOService other) {
     return new HttpUIOService(this.serviceK.combine(other.serviceK));
   }
 
-  public HttpServiceK<UIO.µ> build() {
+  public HttpServiceK<UIO_> build() {
     return serviceK;
   }
 

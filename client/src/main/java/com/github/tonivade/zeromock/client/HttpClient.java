@@ -6,6 +6,7 @@ package com.github.tonivade.zeromock.client;
 
 import com.github.tonivade.purefun.instances.IOInstances;
 import com.github.tonivade.purefun.monad.IO;
+import com.github.tonivade.purefun.monad.IO_;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 
@@ -13,9 +14,9 @@ import static java.util.Objects.requireNonNull;
 
 public class HttpClient {
 
-  private final HttpClientK<IO.µ> client;
+  private final HttpClientK<IO_> client;
 
-  public HttpClient(HttpClientK<IO.µ> client) {
+  public HttpClient(HttpClientK<IO_> client) {
     this.client = requireNonNull(client);
   }
 
@@ -24,6 +25,6 @@ public class HttpClient {
   }
 
   public HttpResponse request(HttpRequest request) {
-    return client.request(request).fix1(IO::narrowK).unsafeRunSync();
+    return client.request(request).fix1(IO_::narrowK).unsafeRunSync();
   }
 }

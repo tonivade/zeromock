@@ -8,6 +8,7 @@ import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.instances.IOInstances;
 import com.github.tonivade.purefun.monad.IO;
+import com.github.tonivade.purefun.monad.IO_;
 import com.github.tonivade.purefun.type.Option;
 
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
@@ -15,13 +16,13 @@ import static java.util.Objects.requireNonNull;
 
 public final class HttpIOService {
 
-  private final HttpServiceK<IO.µ> serviceK;
+  private final HttpServiceK<IO_> serviceK;
 
   public HttpIOService(String name) {
     this(new HttpServiceK<>(name, IOInstances.monad()));
   }
 
-  private HttpIOService(HttpServiceK<IO.µ> serviceK) {
+  private HttpIOService(HttpServiceK<IO_> serviceK) {
     this.serviceK = requireNonNull(serviceK);
   }
 
@@ -62,14 +63,14 @@ public final class HttpIOService {
   }
 
   public IO<Option<HttpResponse>> execute(HttpRequest request) {
-    return serviceK.execute(request).fix1(IO::narrowK);
+    return serviceK.execute(request).fix1(IO_::narrowK);
   }
 
   public HttpIOService combine(HttpIOService other) {
     return new HttpIOService(this.serviceK.combine(other.serviceK));
   }
 
-  public HttpServiceK<IO.µ> build() {
+  public HttpServiceK<IO_> build() {
     return serviceK;
   }
 

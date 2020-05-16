@@ -13,19 +13,20 @@ import com.github.tonivade.purefun.Higher1;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Nothing;
 import com.github.tonivade.purefun.effect.ZIO;
+import com.github.tonivade.purefun.effect.ZIO_;
 import com.github.tonivade.purefun.instances.ZIOInstances;
 import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.purefun.type.Option;
 
 public final class HttpZIOService<R> {
 
-  private final HttpServiceK<Higher1<Higher1<ZIO.µ, R>, Nothing>> serviceK;
+  private final HttpServiceK<Higher1<Higher1<ZIO_, R>, Nothing>> serviceK;
 
   public HttpZIOService(String name) {
     this(new HttpServiceK<>(name, ZIOInstances.monad()));
   }
 
-  private HttpZIOService(HttpServiceK<Higher1<Higher1<ZIO.µ, R>, Nothing>> serviceK) {
+  private HttpZIOService(HttpServiceK<Higher1<Higher1<ZIO_, R>, Nothing>> serviceK) {
     this.serviceK = requireNonNull(serviceK);
   }
 
@@ -66,14 +67,14 @@ public final class HttpZIOService<R> {
   }
 
   public ZIO<R, Nothing, Option<HttpResponse>> execute(HttpRequest request) {
-    return serviceK.execute(request).fix1(ZIO::narrowK);
+    return serviceK.execute(request).fix1(ZIO_::narrowK);
   }
 
   public HttpZIOService<R> combine(HttpZIOService<R> other) {
     return new HttpZIOService<>(this.serviceK.combine(other.serviceK));
   }
 
-  public HttpServiceK<Higher1<Higher1<ZIO.µ, R>, Nothing>> build() {
+  public HttpServiceK<Higher1<Higher1<ZIO_, R>, Nothing>> build() {
     return serviceK;
   }
 

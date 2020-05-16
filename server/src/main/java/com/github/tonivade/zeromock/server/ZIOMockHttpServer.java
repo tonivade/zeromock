@@ -9,8 +9,10 @@ import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Nothing;
 import com.github.tonivade.purefun.Producer;
 import com.github.tonivade.purefun.concurrent.Future;
+import com.github.tonivade.purefun.concurrent.Future_;
 import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.effect.ZIO;
+import com.github.tonivade.purefun.effect.ZIO_;
 import com.github.tonivade.purefun.instances.ZIOInstances;
 import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.zeromock.api.HttpRequest;
@@ -33,28 +35,28 @@ import static java.util.Objects.requireNonNull;
 
 public final class ZIOMockHttpServer<R> implements HttpServer {
 
-  private final MockHttpServerK<Higher1<Higher1<ZIO.µ, R>, Nothing>> serverK;
+  private final MockHttpServerK<Higher1<Higher1<ZIO_, R>, Nothing>> serverK;
 
-  private ZIOMockHttpServer(MockHttpServerK<Higher1<Higher1<ZIO.µ, R>, Nothing>> serverK) {
+  private ZIOMockHttpServer(MockHttpServerK<Higher1<Higher1<ZIO_, R>, Nothing>> serverK) {
     this.serverK = requireNonNull(serverK);
   }
 
-  public static <R> Builder<Higher1<Higher1<ZIO.µ, R>, Nothing>> builder(Producer<R> factory) {
+  public static <R> Builder<Higher1<Higher1<ZIO_, R>, Nothing>> builder(Producer<R> factory) {
     return new Builder<>(ZIOInstances.monad(), response -> {
-      ZIO<R, Nothing, HttpResponse> future = response.fix1(ZIO::narrowK);
+      ZIO<R, Nothing, HttpResponse> future = response.fix1(ZIO_::narrowK);
       return Promise.<HttpResponse>make().succeeded(future.provide(factory.get()).get());
     });
   }
 
-  public static <R> Builder<Higher1<Higher1<ZIO.µ, R>, Nothing>> async(Producer<R> factory) {
+  public static <R> Builder<Higher1<Higher1<ZIO_, R>, Nothing>> async(Producer<R> factory) {
     return async(Future.DEFAULT_EXECUTOR, factory);
   }
 
-  public static <R> Builder<Higher1<Higher1<ZIO.µ, R>, Nothing>> async(Executor executor, Producer<R> factory) {
+  public static <R> Builder<Higher1<Higher1<ZIO_, R>, Nothing>> async(Executor executor, Producer<R> factory) {
     return new Builder<>(ZIOInstances.monad(), response -> {
-      ZIO<R, Nothing, HttpResponse> effect = response.fix1(ZIO::narrowK);
-      Higher1<Future.µ, Either<Nothing, HttpResponse>> future = effect.foldMap(factory.get(), monadDefer(executor));
-      return future.fix1(Future::narrowK).map(Either::get).toPromise();
+      ZIO<R, Nothing, HttpResponse> effect = response.fix1(ZIO_::narrowK);
+      Higher1<Future_, Either<Nothing, HttpResponse>> future = effect.foldMap(factory.get(), monadDefer(executor));
+      return future.fix1(Future_::narrowK).map(Either::get).toPromise();
     });
   }
 

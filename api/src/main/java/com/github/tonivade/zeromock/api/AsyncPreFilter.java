@@ -5,12 +5,13 @@
 package com.github.tonivade.zeromock.api;
 
 import com.github.tonivade.purefun.concurrent.Future;
+import com.github.tonivade.purefun.concurrent.Future_;
 import com.github.tonivade.purefun.type.Either;
 
-public interface AsyncPreFilter extends PreFilterK<Future.µ> {
+public interface AsyncPreFilter extends PreFilterK<Future_> {
 
   @Override
   default Future<Either<HttpResponse, HttpRequest>> apply(HttpRequest value) {
-    return PreFilterK.super.apply(value).fix1(Future::narrowK);
+    return PreFilterK.super.apply(value).fix1(Future_::narrowK);
   }
 }

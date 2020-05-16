@@ -4,11 +4,11 @@
  */
 package com.github.tonivade.zeromock.junit4;
 
+import com.github.tonivade.purefun.effect.UIO_;
+
 import static com.github.tonivade.zeromock.server.UIOMockHttpServer.sync;
 
-import com.github.tonivade.purefun.effect.UIO;
-
-public class UIOMockHttpServerRule extends AbstractMockServerRule<UIO.µ> {
+public class UIOMockHttpServerRule extends AbstractMockServerRule<UIO_> {
 
   public UIOMockHttpServerRule(int port) {
     super(sync().port(port).build());

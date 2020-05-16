@@ -6,6 +6,7 @@ package com.github.tonivade.zeromock.client;
 
 import com.github.tonivade.purefun.Higher1;
 import com.github.tonivade.purefun.effect.ZIO;
+import com.github.tonivade.purefun.effect.ZIO_;
 import com.github.tonivade.purefun.instances.ZIOInstances;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
@@ -14,9 +15,9 @@ import static java.util.Objects.requireNonNull;
 
 public class ZIOHttpClient<R> {
 
-  private final HttpClientK<Higher1<Higher1<ZIO.µ, R>, Throwable>> client;
+  private final HttpClientK<Higher1<Higher1<ZIO_, R>, Throwable>> client;
 
-  public ZIOHttpClient(HttpClientK<Higher1<Higher1<ZIO.µ, R>, Throwable>> client) {
+  public ZIOHttpClient(HttpClientK<Higher1<Higher1<ZIO_, R>, Throwable>> client) {
     this.client = requireNonNull(client);
   }
 
@@ -25,6 +26,6 @@ public class ZIOHttpClient<R> {
   }
 
   public ZIO<R, Throwable, HttpResponse> request(HttpRequest request) {
-    return client.request(request).fix1(ZIO::narrowK);
+    return client.request(request).fix1(ZIO_::narrowK);
   }
 }

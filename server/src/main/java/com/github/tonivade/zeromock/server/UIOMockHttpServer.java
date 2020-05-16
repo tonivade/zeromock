@@ -7,8 +7,10 @@ package com.github.tonivade.zeromock.server;
 import com.github.tonivade.purefun.Higher1;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
+import com.github.tonivade.purefun.concurrent.Future_;
 import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.effect.UIO;
+import com.github.tonivade.purefun.effect.UIO_;
 import com.github.tonivade.purefun.instances.UIOInstances;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
@@ -30,28 +32,28 @@ import static java.util.Objects.requireNonNull;
 
 public final class UIOMockHttpServer implements HttpServer {
 
-  private final MockHttpServerK<UIO.µ> serverK;
+  private final MockHttpServerK<UIO_> serverK;
 
-  private UIOMockHttpServer(MockHttpServerK<UIO.µ> serverK) {
+  private UIOMockHttpServer(MockHttpServerK<UIO_> serverK) {
     this.serverK = requireNonNull(serverK);
   }
 
-  public static Builder<UIO.µ> sync() {
+  public static Builder<UIO_> sync() {
     return new Builder<>(UIOInstances.monad(), response -> {
-      UIO<HttpResponse> future = response.fix1(UIO::narrowK);
+      UIO<HttpResponse> future = response.fix1(UIO_::narrowK);
       return Promise.<HttpResponse>make().succeeded(future.unsafeRunSync());
     });
   }
 
-  public static Builder<UIO.µ> async() {
+  public static Builder<UIO_> async() {
     return async(Future.DEFAULT_EXECUTOR);
   }
 
-  public static Builder<UIO.µ> async(Executor executor) {
+  public static Builder<UIO_> async(Executor executor) {
     return new Builder<>(UIOInstances.monad(), response -> {
-      UIO<HttpResponse> effect = response.fix1(UIO::narrowK);
-      Higher1<Future.µ, HttpResponse> future = effect.foldMap(monadDefer(executor));
-      return future.fix1(Future::narrowK).toPromise();
+      UIO<HttpResponse> effect = response.fix1(UIO_::narrowK);
+      Higher1<Future_, HttpResponse> future = effect.foldMap(monadDefer(executor));
+      return future.fix1(Future_::narrowK).toPromise();
     });
   }
 

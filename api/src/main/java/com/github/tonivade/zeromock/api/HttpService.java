@@ -10,18 +10,18 @@ import static java.util.Objects.requireNonNull;
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.instances.IdInstances;
-import com.github.tonivade.purefun.type.Id;
+import com.github.tonivade.purefun.type.Id_;
 import com.github.tonivade.purefun.type.Option;
 
 public final class HttpService {
 
-  private final HttpServiceK<Id.µ> serviceK;
+  private final HttpServiceK<Id_> serviceK;
 
   public HttpService(String name) {
     this(new HttpServiceK<>(name, IdInstances.monad()));
   }
 
-  private HttpService(HttpServiceK<Id.µ> serviceK) {
+  private HttpService(HttpServiceK<Id_> serviceK) {
     this.serviceK = requireNonNull(serviceK);
   }
 
@@ -29,7 +29,7 @@ public final class HttpService {
     return serviceK.name();
   }
 
-  public HttpServiceK<Id.µ> build() {
+  public HttpServiceK<Id_> build() {
     return serviceK;
   }
 
@@ -58,7 +58,7 @@ public final class HttpService {
   }
 
   public Option<HttpResponse> execute(HttpRequest request) {
-    return serviceK.execute(request).fix1(Id::narrowK).get();
+    return serviceK.execute(request).fix1(Id_::narrowK).get();
   }
 
   public HttpService combine(HttpService other) {

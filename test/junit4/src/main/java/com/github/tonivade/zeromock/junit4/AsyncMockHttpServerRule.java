@@ -6,9 +6,9 @@ package com.github.tonivade.zeromock.junit4;
 
 import static com.github.tonivade.zeromock.server.AsyncMockHttpServer.builder;
 
-import com.github.tonivade.purefun.concurrent.Future;
+import com.github.tonivade.purefun.concurrent.Future_;
 
-public class AsyncMockHttpServerRule extends AbstractMockServerRule<Future.µ> {
+public class AsyncMockHttpServerRule extends AbstractMockServerRule<Future_> {
 
   public AsyncMockHttpServerRule(int port) {
     super(builder().port(port).build());

@@ -10,19 +10,20 @@ import static java.util.Objects.requireNonNull;
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
+import com.github.tonivade.purefun.concurrent.Future_;
 import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.instances.FutureInstances;
 import com.github.tonivade.purefun.type.Option;
 
 public final class AsyncHttpService {
 
-  private final HttpServiceK<Future.µ> serviceK;
+  private final HttpServiceK<Future_> serviceK;
 
   public AsyncHttpService(String name) {
     this(new HttpServiceK<>(name, FutureInstances.monad()));
   }
 
-  private AsyncHttpService(HttpServiceK<Future.µ> serviceK) {
+  private AsyncHttpService(HttpServiceK<Future_> serviceK) {
     this.serviceK = requireNonNull(serviceK);
   }
 
@@ -30,7 +31,7 @@ public final class AsyncHttpService {
     return serviceK.name();
   }
 
-  public HttpServiceK<Future.µ> build() {
+  public HttpServiceK<Future_> build() {
     return serviceK;
   }
 
@@ -67,7 +68,7 @@ public final class AsyncHttpService {
   }
 
   public Promise<Option<HttpResponse>> execute(HttpRequest request) {
-    return serviceK.execute(request).fix1(Future::narrowK).toPromise();
+    return serviceK.execute(request).fix1(Future_::narrowK).toPromise();
   }
 
   public AsyncHttpService combine(AsyncHttpService other) {
