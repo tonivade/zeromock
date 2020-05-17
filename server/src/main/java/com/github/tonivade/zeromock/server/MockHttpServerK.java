@@ -253,6 +253,8 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
 
   private static final class LimitedSizeMap<K, V> extends LinkedHashMap<K, V> {
 
+    private static final long serialVersionUID = 1L;
+
     private final int maxSize;
 
     private LimitedSizeMap(int maxSize) {
