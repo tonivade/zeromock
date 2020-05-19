@@ -7,6 +7,7 @@ package com.github.tonivade.zeromock.api;
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.effect.UIO;
+import com.github.tonivade.purefun.effect.UIOOf;
 import com.github.tonivade.purefun.effect.UIO_;
 import com.github.tonivade.purefun.instances.UIOInstances;
 import com.github.tonivade.purefun.type.Option;
@@ -63,7 +64,7 @@ public final class HttpUIOService {
   }
 
   public UIO<Option<HttpResponse>> execute(HttpRequest request) {
-    return serviceK.execute(request).fix1(UIO_::narrowK);
+    return serviceK.execute(request).fix1(UIOOf::narrowK);
   }
 
   public HttpUIOService combine(HttpUIOService other) {

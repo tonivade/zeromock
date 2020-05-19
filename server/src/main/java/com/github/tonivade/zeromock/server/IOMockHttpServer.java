@@ -7,10 +7,12 @@ package com.github.tonivade.zeromock.server;
 import com.github.tonivade.purefun.Higher1;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
+import com.github.tonivade.purefun.concurrent.FutureOf;
 import com.github.tonivade.purefun.concurrent.Future_;
 import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.instances.IOInstances;
 import com.github.tonivade.purefun.monad.IO;
+import com.github.tonivade.purefun.monad.IOOf;
 import com.github.tonivade.purefun.monad.IO_;
 import com.github.tonivade.zeromock.api.HttpIOService;
 import com.github.tonivade.zeromock.api.HttpIOService.MappingBuilder;
@@ -40,7 +42,7 @@ public final class IOMockHttpServer implements HttpServer {
 
   public static Builder<IO_> sync() {
     return new Builder<>(IOInstances.monad(), response -> {
-      IO<HttpResponse> future = response.fix1(IO_::narrowK);
+      IO<HttpResponse> future = response.fix1(IOOf::narrowK);
       return Promise.<HttpResponse>make().succeeded(future.unsafeRunSync());
     });
   }
@@ -51,9 +53,9 @@ public final class IOMockHttpServer implements HttpServer {
 
   public static Builder<IO_> async(Executor executor) {
     return new Builder<>(IOInstances.monad(), response -> {
-      IO<HttpResponse> effect = response.fix1(IO_::narrowK);
+      IO<HttpResponse> effect = response.fix1(IOOf::narrowK);
       Higher1<Future_, HttpResponse> future = effect.foldMap(monadDefer(executor));
-      return future.fix1(Future_::narrowK).toPromise();
+      return future.fix1(FutureOf::narrowK).toPromise();
     });
   }
 

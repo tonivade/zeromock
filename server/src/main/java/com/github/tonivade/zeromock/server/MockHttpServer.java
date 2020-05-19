@@ -8,6 +8,7 @@ import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.instances.IdInstances;
 import com.github.tonivade.purefun.type.Id;
+import com.github.tonivade.purefun.type.IdOf;
 import com.github.tonivade.purefun.type.Id_;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
@@ -34,7 +35,7 @@ public final class MockHttpServer implements HttpServer {
   public static Builder<Id_> builder() {
     return new Builder<>(IdInstances.monad(), response -> {
       Promise<HttpResponse> promise = Promise.make();
-      Id<HttpResponse> id = response.fix1(Id_::narrowK);
+      Id<HttpResponse> id = response.fix1(IdOf::narrowK);
       promise.succeeded(id.get());
       return promise;
     });

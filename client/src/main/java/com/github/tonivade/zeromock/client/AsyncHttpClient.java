@@ -5,6 +5,7 @@
 package com.github.tonivade.zeromock.client;
 
 import com.github.tonivade.purefun.concurrent.Future;
+import com.github.tonivade.purefun.concurrent.FutureOf;
 import com.github.tonivade.purefun.concurrent.Future_;
 import com.github.tonivade.purefun.instances.FutureInstances;
 import com.github.tonivade.zeromock.api.HttpRequest;
@@ -25,6 +26,6 @@ public class AsyncHttpClient {
   }
 
   public Future<HttpResponse> request(HttpRequest request) {
-    return client.request(request).fix1(Future_::narrowK);
+    return client.request(request).fix1(FutureOf::narrowK);
   }
 }

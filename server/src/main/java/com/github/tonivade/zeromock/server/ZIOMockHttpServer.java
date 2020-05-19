@@ -9,9 +9,11 @@ import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Nothing;
 import com.github.tonivade.purefun.Producer;
 import com.github.tonivade.purefun.concurrent.Future;
+import com.github.tonivade.purefun.concurrent.FutureOf;
 import com.github.tonivade.purefun.concurrent.Future_;
 import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.effect.ZIO;
+import com.github.tonivade.purefun.effect.ZIOOf;
 import com.github.tonivade.purefun.effect.ZIO_;
 import com.github.tonivade.purefun.instances.ZIOInstances;
 import com.github.tonivade.purefun.type.Either;
@@ -43,7 +45,7 @@ public final class ZIOMockHttpServer<R> implements HttpServer {
 
   public static <R> Builder<Higher1<Higher1<ZIO_, R>, Nothing>> builder(Producer<R> factory) {
     return new Builder<>(ZIOInstances.monad(), response -> {
-      ZIO<R, Nothing, HttpResponse> future = response.fix1(ZIO_::narrowK);
+      ZIO<R, Nothing, HttpResponse> future = response.fix1(ZIOOf::narrowK);
       return Promise.<HttpResponse>make().succeeded(future.provide(factory.get()).get());
     });
   }
@@ -54,9 +56,9 @@ public final class ZIOMockHttpServer<R> implements HttpServer {
 
   public static <R> Builder<Higher1<Higher1<ZIO_, R>, Nothing>> async(Executor executor, Producer<R> factory) {
     return new Builder<>(ZIOInstances.monad(), response -> {
-      ZIO<R, Nothing, HttpResponse> effect = response.fix1(ZIO_::narrowK);
+      ZIO<R, Nothing, HttpResponse> effect = response.fix1(ZIOOf::narrowK);
       Higher1<Future_, Either<Nothing, HttpResponse>> future = effect.foldMap(factory.get(), monadDefer(executor));
-      return future.fix1(Future_::narrowK).map(Either::get).toPromise();
+      return future.fix1(FutureOf::narrowK).map(Either::get).toPromise();
     });
   }
 

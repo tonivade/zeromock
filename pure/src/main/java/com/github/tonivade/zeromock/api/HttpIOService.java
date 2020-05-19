@@ -8,6 +8,7 @@ import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.instances.IOInstances;
 import com.github.tonivade.purefun.monad.IO;
+import com.github.tonivade.purefun.monad.IOOf;
 import com.github.tonivade.purefun.monad.IO_;
 import com.github.tonivade.purefun.type.Option;
 
@@ -63,7 +64,7 @@ public final class HttpIOService {
   }
 
   public IO<Option<HttpResponse>> execute(HttpRequest request) {
-    return serviceK.execute(request).fix1(IO_::narrowK);
+    return serviceK.execute(request).fix1(IOOf::narrowK);
   }
 
   public HttpIOService combine(HttpIOService other) {

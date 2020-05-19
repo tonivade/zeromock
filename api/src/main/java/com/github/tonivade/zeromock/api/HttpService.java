@@ -10,6 +10,7 @@ import static java.util.Objects.requireNonNull;
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.instances.IdInstances;
+import com.github.tonivade.purefun.type.IdOf;
 import com.github.tonivade.purefun.type.Id_;
 import com.github.tonivade.purefun.type.Option;
 
@@ -58,7 +59,7 @@ public final class HttpService {
   }
 
   public Option<HttpResponse> execute(HttpRequest request) {
-    return serviceK.execute(request).fix1(Id_::narrowK).get();
+    return serviceK.execute(request).fix1(IdOf::narrowK).get();
   }
 
   public HttpService combine(HttpService other) {

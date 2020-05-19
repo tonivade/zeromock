@@ -5,6 +5,7 @@
 package com.github.tonivade.zeromock.api;
 
 import com.github.tonivade.purefun.effect.UIO;
+import com.github.tonivade.purefun.effect.UIOOf;
 import com.github.tonivade.purefun.effect.UIO_;
 import com.github.tonivade.purefun.instances.UIOInstances;
 
@@ -12,7 +13,7 @@ public interface UIORequestHandler extends RequestHandlerK<UIO_> {
 
   @Override
   default UIO<HttpResponse> apply(HttpRequest value) {
-    return RequestHandlerK.super.apply(value).fix1(UIO_::narrowK);
+    return RequestHandlerK.super.apply(value).fix1(UIOOf::narrowK);
   }
 
   default UIORequestHandler preHandle(UIOPreFilter before) {

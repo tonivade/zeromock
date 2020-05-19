@@ -5,6 +5,7 @@
 package com.github.tonivade.zeromock.client;
 
 import com.github.tonivade.purefun.effect.UIO;
+import com.github.tonivade.purefun.effect.UIOOf;
 import com.github.tonivade.purefun.effect.UIO_;
 import com.github.tonivade.purefun.instances.UIOInstances;
 import com.github.tonivade.zeromock.api.HttpRequest;
@@ -25,6 +26,6 @@ public class UIOHttpClient {
   }
 
   public UIO<HttpResponse> request(HttpRequest request) {
-    return client.request(request).fix1(UIO_::narrowK);
+    return client.request(request).fix1(UIOOf::narrowK);
   }
 }

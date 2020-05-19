@@ -10,6 +10,7 @@ import static java.util.Objects.requireNonNull;
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
+import com.github.tonivade.purefun.concurrent.FutureOf;
 import com.github.tonivade.purefun.concurrent.Future_;
 import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.instances.FutureInstances;
@@ -68,7 +69,7 @@ public final class AsyncHttpService {
   }
 
   public Promise<Option<HttpResponse>> execute(HttpRequest request) {
-    return serviceK.execute(request).fix1(Future_::narrowK).toPromise();
+    return serviceK.execute(request).fix1(FutureOf::narrowK).toPromise();
   }
 
   public AsyncHttpService combine(AsyncHttpService other) {

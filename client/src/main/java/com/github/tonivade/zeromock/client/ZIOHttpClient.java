@@ -6,6 +6,7 @@ package com.github.tonivade.zeromock.client;
 
 import com.github.tonivade.purefun.Higher1;
 import com.github.tonivade.purefun.effect.ZIO;
+import com.github.tonivade.purefun.effect.ZIOOf;
 import com.github.tonivade.purefun.effect.ZIO_;
 import com.github.tonivade.purefun.instances.ZIOInstances;
 import com.github.tonivade.zeromock.api.HttpRequest;
@@ -26,6 +27,6 @@ public class ZIOHttpClient<R> {
   }
 
   public ZIO<R, Throwable, HttpResponse> request(HttpRequest request) {
-    return client.request(request).fix1(ZIO_::narrowK);
+    return client.request(request).fix1(ZIOOf::narrowK);
   }
 }

@@ -21,7 +21,7 @@ import com.github.tonivade.purefun.PartialFunction1;
 import com.github.tonivade.purefun.instances.OptionInstances;
 import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.purefun.type.Option;
-import com.github.tonivade.purefun.type.Option_;
+import com.github.tonivade.purefun.type.OptionOf;
 import com.github.tonivade.purefun.typeclasses.For;
 import com.github.tonivade.purefun.typeclasses.Monad;
 
@@ -92,7 +92,7 @@ public final class HttpServiceK<F extends Kind> {
         .flatMap(either -> either.fold(
             res -> monad.pure(Option.some(res)),
             mappingsWithPostFilters.andThen(option -> OptionInstances.traverse().sequence(monad, option))))
-        .map(Option_::narrowK)
+        .map(OptionOf::narrowK)
         .run();
   }
 

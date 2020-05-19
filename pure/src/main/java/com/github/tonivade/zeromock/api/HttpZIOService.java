@@ -13,6 +13,7 @@ import com.github.tonivade.purefun.Higher1;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Nothing;
 import com.github.tonivade.purefun.effect.ZIO;
+import com.github.tonivade.purefun.effect.ZIOOf;
 import com.github.tonivade.purefun.effect.ZIO_;
 import com.github.tonivade.purefun.instances.ZIOInstances;
 import com.github.tonivade.purefun.type.Either;
@@ -67,7 +68,7 @@ public final class HttpZIOService<R> {
   }
 
   public ZIO<R, Nothing, Option<HttpResponse>> execute(HttpRequest request) {
-    return serviceK.execute(request).fix1(ZIO_::narrowK);
+    return serviceK.execute(request).fix1(ZIOOf::narrowK);
   }
 
   public HttpZIOService<R> combine(HttpZIOService<R> other) {

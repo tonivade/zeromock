@@ -5,6 +5,7 @@
 package com.github.tonivade.zeromock.client;
 
 import com.github.tonivade.purefun.instances.IOInstances;
+import com.github.tonivade.purefun.monad.IOOf;
 import com.github.tonivade.purefun.monad.IO_;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
@@ -24,6 +25,6 @@ public class HttpClient {
   }
 
   public HttpResponse request(HttpRequest request) {
-    return client.request(request).fix1(IO_::narrowK).unsafeRunSync();
+    return client.request(request).fix1(IOOf::narrowK).unsafeRunSync();
   }
 }

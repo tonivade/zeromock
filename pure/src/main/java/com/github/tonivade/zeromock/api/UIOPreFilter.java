@@ -5,6 +5,7 @@
 package com.github.tonivade.zeromock.api;
 
 import com.github.tonivade.purefun.effect.UIO;
+import com.github.tonivade.purefun.effect.UIOOf;
 import com.github.tonivade.purefun.effect.UIO_;
 import com.github.tonivade.purefun.type.Either;
 
@@ -12,6 +13,6 @@ public interface UIOPreFilter extends PreFilterK<UIO_> {
 
   @Override
   default UIO<Either<HttpResponse, HttpRequest>> apply(HttpRequest value) {
-    return PreFilterK.super.apply(value).fix1(UIO_::narrowK);
+    return PreFilterK.super.apply(value).fix1(UIOOf::narrowK);
   }
 }
