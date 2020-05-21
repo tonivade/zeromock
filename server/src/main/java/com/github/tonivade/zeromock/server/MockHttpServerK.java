@@ -4,10 +4,25 @@
  */
 package com.github.tonivade.zeromock.server;
 
+import static com.github.tonivade.zeromock.api.Bytes.asBytes;
+import static com.github.tonivade.zeromock.api.Responses.error;
+import static java.util.Collections.unmodifiableList;
+import static java.util.Objects.requireNonNull;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UncheckedIOException;
+import java.net.InetSocketAddress;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 import com.github.tonivade.purefun.Function1;
-import com.github.tonivade.purefun.Higher1;
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
+import com.github.tonivade.purefun.Witness;
 import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.typeclasses.Monad;
@@ -27,25 +42,8 @@ import com.github.tonivade.zeromock.api.Responses;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UncheckedIOException;
-import java.net.InetSocketAddress;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.logging.Logger;
-
-import static com.github.tonivade.zeromock.api.Bytes.asBytes;
-import static com.github.tonivade.zeromock.api.Responses.error;
-import static java.util.Collections.unmodifiableList;
-import static java.util.Objects.requireNonNull;
-
 @SuppressWarnings("restriction")
-public abstract class MockHttpServerK<F extends Kind> implements com.github.tonivade.zeromock.server.HttpServer {
+public abstract class MockHttpServerK<F extends Witness> implements com.github.tonivade.zeromock.server.HttpServer {
 
   private static final Logger LOG = Logger.getLogger(MockHttpServerK.class.getName());
 
@@ -140,7 +138,7 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
     unmatched.clear();
   }
 
-  protected abstract Promise<HttpResponse> run(Higher1<F, HttpResponse> response);
+  protected abstract Promise<HttpResponse> run(Kind<F, HttpResponse> response);
 
   protected MockHttpServerK<F> addMapping(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
     service = service.addMapping(matcher, handler);
@@ -179,7 +177,7 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
     return matched.values().stream().anyMatch(matcher::match);
   }
 
-  private Higher1<F, Option<HttpResponse>> execute(HttpRequest request) {
+  private Kind<F, Option<HttpResponse>> execute(HttpRequest request) {
     return service.execute(request);
   }
 
@@ -207,15 +205,15 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
     }
   }
 
-  public static final class Builder<F extends Kind> {
+  public static final class Builder<F extends Witness> {
     private String host = "localhost";
     private int port = 8080;
     private int threads = Runtime.getRuntime().availableProcessors();
     private int backlog = 0;
     private final Monad<F> monad;
-    private final Function1<Higher1<F, HttpResponse>, Promise<HttpResponse>> run;
+    private final Function1<Kind<F, HttpResponse>, Promise<HttpResponse>> run;
 
-    public Builder(Monad<F> monad, Function1<Higher1<F, HttpResponse>, Promise<HttpResponse>> run) {
+    public Builder(Monad<F> monad, Function1<Kind<F, HttpResponse>, Promise<HttpResponse>> run) {
       this.monad = requireNonNull(monad);
       this.run = requireNonNull(run);
     }
@@ -244,7 +242,7 @@ public abstract class MockHttpServerK<F extends Kind> implements com.github.toni
       return new MockHttpServerK<F>(host, port, threads, backlog, monad) {
 
         @Override
-        protected Promise<HttpResponse> run(Higher1<F, HttpResponse> response) {
+        protected Promise<HttpResponse> run(Kind<F, HttpResponse> response) {
           return run.apply(response);
         }
       };

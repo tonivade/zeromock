@@ -13,6 +13,6 @@ public interface AsyncPreFilter extends PreFilterK<Future_> {
 
   @Override
   default Future<Either<HttpResponse, HttpRequest>> apply(HttpRequest value) {
-    return PreFilterK.super.apply(value).fix1(FutureOf::narrowK);
+    return PreFilterK.super.apply(value).fix(FutureOf::narrowK);
   }
 }

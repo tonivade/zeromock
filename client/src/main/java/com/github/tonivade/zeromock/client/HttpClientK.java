@@ -7,13 +7,11 @@ package com.github.tonivade.zeromock.client;
 import static com.github.tonivade.zeromock.api.Bytes.asBytes;
 import static com.github.tonivade.zeromock.api.HttpStatus.BAD_REQUEST;
 import static java.util.Objects.requireNonNull;
-
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
-import com.github.tonivade.purefun.Higher1;
 import com.github.tonivade.purefun.Kind;
+import com.github.tonivade.purefun.Witness;
 import com.github.tonivade.purefun.data.NonEmptyString;
 import com.github.tonivade.purefun.typeclasses.For;
 import com.github.tonivade.purefun.typeclasses.MonadDefer;
@@ -23,21 +21,21 @@ import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpStatus;
 
-public class HttpClientK<F extends Kind> {
-  
+public class HttpClientK<F extends Witness> {
+
   private final NonEmptyString baseUrl;
   private final MonadDefer<F> monad;
-  
+
   protected HttpClientK(String baseUrl, MonadDefer<F> monad) {
     this.baseUrl = NonEmptyString.of(baseUrl);
     this.monad = requireNonNull(monad);
   }
-  
-  public static <F extends Kind> HttpClientK<F> connectTo(String baseUrl, MonadDefer<F> monad) {
+
+  public static <F extends Witness> HttpClientK<F> connectTo(String baseUrl, MonadDefer<F> monad) {
     return new HttpClientK<>(baseUrl, monad);
   }
-  
-  public Higher1<F, HttpResponse> request(HttpRequest request) {
+
+  public Kind<F, HttpResponse> request(HttpRequest request) {
     return For.with(monad)
         .then(createConnection(request))
         .flatMap(this::connect)
@@ -45,14 +43,14 @@ public class HttpClientK<F extends Kind> {
         .run();
   }
 
-  private Higher1<F, HttpURLConnection> connect(HttpURLConnection connection) {
+  private Kind<F, HttpURLConnection> connect(HttpURLConnection connection) {
     return monad.later(() -> {
       connection.connect();
       return connection;
     });
   }
 
-  private Higher1<F, HttpURLConnection> createConnection(HttpRequest request) {
+  private Kind<F, HttpURLConnection> createConnection(HttpRequest request) {
     return monad.later(() -> {
         URL url = new URL(baseUrl.get() + request.toUrl());
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -68,7 +66,7 @@ public class HttpClientK<F extends Kind> {
       });
   }
 
-  private Higher1<F, HttpResponse> processResponse(HttpURLConnection connection) {
+  private Kind<F, HttpResponse> processResponse(HttpURLConnection connection) {
     return For.with(monad)
         .then(status(connection))
         .then(body(connection))
@@ -76,15 +74,15 @@ public class HttpClientK<F extends Kind> {
         .apply(HttpResponse::new);
   }
 
-  private Higher1<F, HttpHeaders> headers(HttpURLConnection connection) {
+  private Kind<F, HttpHeaders> headers(HttpURLConnection connection) {
     return monad.later(() -> HttpHeaders.from(connection.getHeaderFields()));
   }
 
-  private Higher1<F, HttpStatus> status(HttpURLConnection connection) {
+  private Kind<F, HttpStatus> status(HttpURLConnection connection) {
     return monad.later(() -> HttpStatus.fromCode(connection.getResponseCode()));
   }
 
-  private Higher1<F, Bytes> body(HttpURLConnection connection) {
+  private Kind<F, Bytes> body(HttpURLConnection connection) {
     return monad.later(() -> {
       Bytes body = Bytes.empty();
       if (connection.getContentLength() > 0) {

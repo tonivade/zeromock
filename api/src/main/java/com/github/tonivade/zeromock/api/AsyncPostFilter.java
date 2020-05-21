@@ -12,7 +12,7 @@ public interface AsyncPostFilter extends PostFilterK<Future_> {
 
   @Override
   default Future<HttpResponse> apply(HttpResponse value) {
-    return PostFilterK.super.apply(value).fix1(FutureOf::narrowK);
+    return PostFilterK.super.apply(value).fix(FutureOf::narrowK);
   }
 }
 

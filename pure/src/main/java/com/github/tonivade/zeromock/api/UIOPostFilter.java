@@ -12,7 +12,7 @@ public interface UIOPostFilter extends PostFilterK<UIO_> {
 
   @Override
   default UIO<HttpResponse> apply(HttpResponse value) {
-    return PostFilterK.super.apply(value).fix1(UIOOf::narrowK);
+    return PostFilterK.super.apply(value).fix(UIOOf::narrowK);
   }
 }
 

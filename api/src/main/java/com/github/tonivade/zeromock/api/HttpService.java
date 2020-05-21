@@ -6,7 +6,6 @@ package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.zeromock.api.PreFilter.filter;
 import static java.util.Objects.requireNonNull;
-
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.instances.IdInstances;
@@ -59,11 +58,11 @@ public final class HttpService {
   }
 
   public Option<HttpResponse> execute(HttpRequest request) {
-    return serviceK.execute(request).fix1(IdOf::narrowK).get();
+    return serviceK.execute(request).fix(IdOf::narrowK).get();
   }
 
   public HttpService combine(HttpService other) {
-    return new HttpService(this.serviceK.combine(other.serviceK));
+    return new HttpService(serviceK.combine(other.serviceK));
   }
 
   protected HttpService addMapping(Matcher1<HttpRequest> matcher, RequestHandler handler) {

@@ -7,9 +7,8 @@ package com.github.tonivade.zeromock.api;
 import static com.github.tonivade.purefun.Function1.cons;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
-
 import com.github.tonivade.purefun.Function2;
-import com.github.tonivade.purefun.Higher1;
+import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Nothing;
 import com.github.tonivade.purefun.effect.ZIO;
@@ -21,13 +20,13 @@ import com.github.tonivade.purefun.type.Option;
 
 public final class HttpZIOService<R> {
 
-  private final HttpServiceK<Higher1<Higher1<ZIO_, R>, Nothing>> serviceK;
+  private final HttpServiceK<Kind<Kind<ZIO_, R>, Nothing>> serviceK;
 
   public HttpZIOService(String name) {
     this(new HttpServiceK<>(name, ZIOInstances.monad()));
   }
 
-  private HttpZIOService(HttpServiceK<Higher1<Higher1<ZIO_, R>, Nothing>> serviceK) {
+  private HttpZIOService(HttpServiceK<Kind<Kind<ZIO_, R>, Nothing>> serviceK) {
     this.serviceK = requireNonNull(serviceK);
   }
 
@@ -68,14 +67,14 @@ public final class HttpZIOService<R> {
   }
 
   public ZIO<R, Nothing, Option<HttpResponse>> execute(HttpRequest request) {
-    return serviceK.execute(request).fix1(ZIOOf::narrowK);
+    return serviceK.execute(request).fix(ZIOOf::narrowK);
   }
 
   public HttpZIOService<R> combine(HttpZIOService<R> other) {
     return new HttpZIOService<>(this.serviceK.combine(other.serviceK));
   }
 
-  public HttpServiceK<Higher1<Higher1<ZIO_, R>, Nothing>> build() {
+  public HttpServiceK<Kind<Kind<ZIO_, R>, Nothing>> build() {
     return serviceK;
   }
 

@@ -11,13 +11,12 @@ import static com.github.tonivade.zeromock.api.Matchers.startsWith;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static com.github.tonivade.zeromock.api.Responses.notFound;
 import static java.util.Objects.requireNonNull;
-
 import com.github.tonivade.purefun.Function1;
 import com.github.tonivade.purefun.Function2;
-import com.github.tonivade.purefun.Higher1;
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.PartialFunction1;
+import com.github.tonivade.purefun.Witness;
 import com.github.tonivade.purefun.instances.OptionInstances;
 import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.purefun.type.Option;
@@ -25,13 +24,13 @@ import com.github.tonivade.purefun.type.OptionOf;
 import com.github.tonivade.purefun.typeclasses.For;
 import com.github.tonivade.purefun.typeclasses.Monad;
 
-public final class HttpServiceK<F extends Kind> {
+public final class HttpServiceK<F extends Witness> {
 
   private final String name;
   private final Monad<F> monad;
-  private final PartialFunction1<HttpRequest, Higher1<F, HttpResponse>> mappings;
-  private final Function1<HttpRequest, Higher1<F, Either<HttpResponse, HttpRequest>>> preFilters;
-  private final Function1<HttpResponse, Higher1<F, HttpResponse>> postFilters;
+  private final PartialFunction1<HttpRequest, Kind<F, HttpResponse>> mappings;
+  private final Function1<HttpRequest, Kind<F, Either<HttpResponse, HttpRequest>>> preFilters;
+  private final Function1<HttpResponse, Kind<F, HttpResponse>> postFilters;
 
   public HttpServiceK(String name, Monad<F> monad) {
     this(name, monad,
@@ -41,9 +40,9 @@ public final class HttpServiceK<F extends Kind> {
   }
 
   private HttpServiceK(String name, Monad<F> monad,
-                       PartialFunction1<HttpRequest, Higher1<F, HttpResponse>> mappings,
-                       Function1<HttpRequest, Higher1<F, Either<HttpResponse, HttpRequest>>> preFilters,
-                       Function1<HttpResponse, Higher1<F, HttpResponse>> postFilters) {
+                       PartialFunction1<HttpRequest, Kind<F, HttpResponse>> mappings,
+                       Function1<HttpRequest, Kind<F, Either<HttpResponse, HttpRequest>>> preFilters,
+                       Function1<HttpResponse, Kind<F, HttpResponse>> postFilters) {
     this.name = requireNonNull(name);
     this.monad = requireNonNull(monad);
     this.mappings = requireNonNull(mappings);
@@ -83,8 +82,8 @@ public final class HttpServiceK<F extends Kind> {
     return _addPostFilter(requireNonNull(filter));
   }
 
-  public Higher1<F, Option<HttpResponse>> execute(HttpRequest request) {
-    Function1<HttpRequest, Option<Higher1<F, HttpResponse>>> mappingsWithPostFilters =
+  public Kind<F, Option<HttpResponse>> execute(HttpRequest request) {
+    Function1<HttpRequest, Option<Kind<F, HttpResponse>>> mappingsWithPostFilters =
         mappings.andThen(value -> monad.flatMap(value, postFilters::apply)).lift();
 
     return For.with(monad)
@@ -155,7 +154,7 @@ public final class HttpServiceK<F extends Kind> {
     );
   }
 
-  public static final class MappingBuilderK<F extends Kind, T> {
+  public static final class MappingBuilderK<F extends Witness, T> {
     private final Function2<Matcher1<HttpRequest>, RequestHandlerK<F>, T> finisher;
     private Matcher1<HttpRequest> matcher;
 

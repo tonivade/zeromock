@@ -4,6 +4,9 @@
  */
 package com.github.tonivade.zeromock.server;
 
+import static com.github.tonivade.zeromock.api.PreFilterK.filter;
+import static java.util.Objects.requireNonNull;
+import java.util.List;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.concurrent.FutureOf;
@@ -20,11 +23,6 @@ import com.github.tonivade.zeromock.api.PostFilter;
 import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
 
-import java.util.List;
-
-import static com.github.tonivade.zeromock.api.PreFilterK.filter;
-import static java.util.Objects.requireNonNull;
-
 public final class AsyncMockHttpServer implements HttpServer {
 
   private final MockHttpServerK<Future_> serverK;
@@ -35,7 +33,7 @@ public final class AsyncMockHttpServer implements HttpServer {
 
   public static Builder<Future_> builder() {
     return new Builder<>(FutureInstances.monad(), response -> {
-      Future<HttpResponse> future = response.fix1(FutureOf::narrowK);
+      Future<HttpResponse> future = response.fix(FutureOf::narrowK);
       return future.toPromise();
     });
   }

@@ -4,6 +4,8 @@
  */
 package com.github.tonivade.zeromock.api;
 
+import static com.github.tonivade.zeromock.api.PreFilterK.filter;
+import static java.util.Objects.requireNonNull;
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.effect.UIO;
@@ -11,9 +13,6 @@ import com.github.tonivade.purefun.effect.UIOOf;
 import com.github.tonivade.purefun.effect.UIO_;
 import com.github.tonivade.purefun.instances.UIOInstances;
 import com.github.tonivade.purefun.type.Option;
-
-import static com.github.tonivade.zeromock.api.PreFilterK.filter;
-import static java.util.Objects.requireNonNull;
 
 public final class HttpUIOService {
 
@@ -32,7 +31,7 @@ public final class HttpUIOService {
   }
 
   public HttpUIOService mount(String path, HttpUIOService other) {
-    return new HttpUIOService(this.serviceK.mount(path, other.serviceK));
+    return new HttpUIOService(serviceK.mount(path, other.serviceK));
   }
 
   public HttpUIOService exec(UIORequestHandler handler) {
@@ -64,11 +63,11 @@ public final class HttpUIOService {
   }
 
   public UIO<Option<HttpResponse>> execute(HttpRequest request) {
-    return serviceK.execute(request).fix1(UIOOf::narrowK);
+    return serviceK.execute(request).fix(UIOOf::narrowK);
   }
 
   public HttpUIOService combine(HttpUIOService other) {
-    return new HttpUIOService(this.serviceK.combine(other.serviceK));
+    return new HttpUIOService(serviceK.combine(other.serviceK));
   }
 
   public HttpServiceK<UIO_> build() {

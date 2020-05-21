@@ -14,7 +14,7 @@ public interface AsyncRequestHandler extends RequestHandlerK<Future_> {
 
   @Override
   default Future<HttpResponse> apply(HttpRequest value) {
-    return RequestHandlerK.super.apply(value).fix1(FutureOf::narrowK);
+    return RequestHandlerK.super.apply(value).fix(FutureOf::narrowK);
   }
 
   default AsyncRequestHandler preHandle(AsyncPreFilter before) {

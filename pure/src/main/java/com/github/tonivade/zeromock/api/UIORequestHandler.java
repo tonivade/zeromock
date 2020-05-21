@@ -13,7 +13,7 @@ public interface UIORequestHandler extends RequestHandlerK<UIO_> {
 
   @Override
   default UIO<HttpResponse> apply(HttpRequest value) {
-    return RequestHandlerK.super.apply(value).fix1(UIOOf::narrowK);
+    return RequestHandlerK.super.apply(value).fix(UIOOf::narrowK);
   }
 
   default UIORequestHandler preHandle(UIOPreFilter before) {

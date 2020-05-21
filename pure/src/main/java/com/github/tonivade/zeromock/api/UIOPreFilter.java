@@ -13,6 +13,6 @@ public interface UIOPreFilter extends PreFilterK<UIO_> {
 
   @Override
   default UIO<Either<HttpResponse, HttpRequest>> apply(HttpRequest value) {
-    return PreFilterK.super.apply(value).fix1(UIOOf::narrowK);
+    return PreFilterK.super.apply(value).fix(UIOOf::narrowK);
   }
 }

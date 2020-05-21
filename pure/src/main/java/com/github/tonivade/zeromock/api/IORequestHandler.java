@@ -13,7 +13,7 @@ public interface IORequestHandler extends RequestHandlerK<IO_> {
 
   @Override
   default IO<HttpResponse> apply(HttpRequest value) {
-    return RequestHandlerK.super.apply(value).fix1(IOOf::narrowK);
+    return RequestHandlerK.super.apply(value).fix(IOOf::narrowK);
   }
 
   default IORequestHandler preHandle(IOPreFilter before) {

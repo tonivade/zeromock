@@ -4,7 +4,12 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import com.github.tonivade.purefun.Higher1;
+import static com.github.tonivade.purefun.instances.FutureInstances.monadDefer;
+import static com.github.tonivade.zeromock.api.PreFilterK.filter;
+import static java.util.Objects.requireNonNull;
+import java.util.List;
+import java.util.concurrent.Executor;
+import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.concurrent.FutureOf;
@@ -25,13 +30,6 @@ import com.github.tonivade.zeromock.api.UIOPreFilter;
 import com.github.tonivade.zeromock.api.UIORequestHandler;
 import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
 
-import java.util.List;
-import java.util.concurrent.Executor;
-
-import static com.github.tonivade.purefun.instances.FutureInstances.monadDefer;
-import static com.github.tonivade.zeromock.api.PreFilterK.filter;
-import static java.util.Objects.requireNonNull;
-
 public final class UIOMockHttpServer implements HttpServer {
 
   private final MockHttpServerK<UIO_> serverK;
@@ -42,7 +40,7 @@ public final class UIOMockHttpServer implements HttpServer {
 
   public static Builder<UIO_> sync() {
     return new Builder<>(UIOInstances.monad(), response -> {
-      UIO<HttpResponse> future = response.fix1(UIOOf::narrowK);
+      UIO<HttpResponse> future = response.fix(UIOOf::narrowK);
       return Promise.<HttpResponse>make().succeeded(future.unsafeRunSync());
     });
   }
@@ -53,9 +51,9 @@ public final class UIOMockHttpServer implements HttpServer {
 
   public static Builder<UIO_> async(Executor executor) {
     return new Builder<>(UIOInstances.monad(), response -> {
-      UIO<HttpResponse> effect = response.fix1(UIOOf::narrowK);
-      Higher1<Future_, HttpResponse> future = effect.foldMap(monadDefer(executor));
-      return future.fix1(FutureOf::narrowK).toPromise();
+      UIO<HttpResponse> effect = response.fix(UIOOf::narrowK);
+      Kind<Future_, HttpResponse> future = effect.foldMap(monadDefer(executor));
+      return future.fix(FutureOf::narrowK).toPromise();
     });
   }
 

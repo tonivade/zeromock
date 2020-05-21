@@ -4,14 +4,13 @@
  */
 package com.github.tonivade.zeromock.client;
 
+import static java.util.Objects.requireNonNull;
 import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purefun.effect.UIOOf;
 import com.github.tonivade.purefun.effect.UIO_;
 import com.github.tonivade.purefun.instances.UIOInstances;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
-
-import static java.util.Objects.requireNonNull;
 
 public class UIOHttpClient {
 
@@ -26,6 +25,6 @@ public class UIOHttpClient {
   }
 
   public UIO<HttpResponse> request(HttpRequest request) {
-    return client.request(request).fix1(UIOOf::narrowK);
+    return client.request(request).fix(UIOOf::narrowK);
   }
 }

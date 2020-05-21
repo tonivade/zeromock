@@ -12,7 +12,7 @@ public interface IOPostFilter extends PostFilterK<IO_> {
 
   @Override
   default IO<HttpResponse> apply(HttpResponse value) {
-    return PostFilterK.super.apply(value).fix1(IOOf::narrowK);
+    return PostFilterK.super.apply(value).fix(IOOf::narrowK);
   }
 }
 

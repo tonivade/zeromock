@@ -6,7 +6,6 @@ package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
-
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
@@ -69,11 +68,11 @@ public final class AsyncHttpService {
   }
 
   public Promise<Option<HttpResponse>> execute(HttpRequest request) {
-    return serviceK.execute(request).fix1(FutureOf::narrowK).toPromise();
+    return serviceK.execute(request).fix(FutureOf::narrowK).toPromise();
   }
 
   public AsyncHttpService combine(AsyncHttpService other) {
-    return new AsyncHttpService(this.serviceK.combine(other.serviceK));
+    return new AsyncHttpService(serviceK.combine(other.serviceK));
   }
 
   protected AsyncHttpService addMapping(Matcher1<HttpRequest> matcher, AsyncRequestHandler handler) {

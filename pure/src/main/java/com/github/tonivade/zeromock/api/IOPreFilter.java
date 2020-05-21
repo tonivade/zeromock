@@ -13,6 +13,6 @@ public interface IOPreFilter extends PreFilterK<IO_> {
 
   @Override
   default IO<Either<HttpResponse, HttpRequest>> apply(HttpRequest value) {
-    return PreFilterK.super.apply(value).fix1(IOOf::narrowK);
+    return PreFilterK.super.apply(value).fix(IOOf::narrowK);
   }
 }

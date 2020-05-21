@@ -4,18 +4,18 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import com.github.tonivade.purefun.Higher1;
+import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Nothing;
 import com.github.tonivade.purefun.effect.ZIO;
 import com.github.tonivade.purefun.effect.ZIOOf;
 import com.github.tonivade.purefun.effect.ZIO_;
 import com.github.tonivade.purefun.instances.ZIOInstances;
 
-public interface ZIORequestHandler<R> extends RequestHandlerK<Higher1<Higher1<ZIO_, R>, Nothing>> {
+public interface ZIORequestHandler<R> extends RequestHandlerK<Kind<Kind<ZIO_, R>, Nothing>> {
 
   @Override
   default ZIO<R, Nothing, HttpResponse> apply(HttpRequest value) {
-    return RequestHandlerK.super.apply(value).fix1(ZIOOf::narrowK);
+    return RequestHandlerK.super.apply(value).fix(ZIOOf::narrowK);
   }
 
   default ZIORequestHandler<R> preHandle(ZIOPreFilter<R> before) {
