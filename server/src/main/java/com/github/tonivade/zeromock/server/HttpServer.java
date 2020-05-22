@@ -5,7 +5,6 @@
 package com.github.tonivade.zeromock.server;
 
 import java.util.List;
-
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.zeromock.api.HttpRequest;
 
@@ -16,6 +15,8 @@ public interface HttpServer {
   void stop();
 
   void reset();
+
+  int getPort();
 
   HttpServer verify(Matcher1<HttpRequest> matcher);
   HttpServer verifyNot(Matcher1<HttpRequest> matcher);

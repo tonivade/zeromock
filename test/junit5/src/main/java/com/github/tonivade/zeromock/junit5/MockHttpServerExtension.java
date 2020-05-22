@@ -32,13 +32,12 @@ public class MockHttpServerExtension
     implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
   private HttpServer server;
-  private int port;
 
   @Override
   public void beforeAll(ExtensionContext context) throws Exception {
     Optional<ListenAt> listenAt = listenAt(context);
     Server type = listenAt.map(ListenAt::type).orElse(SYNC);
-    port = listenAt.map(ListenAt::value).orElse(8080);
+    int port = listenAt.map(ListenAt::value).orElse(8080);
     switch (type) {
     case SYNC:
       server = MockHttpServer.listenAt(port);
@@ -89,7 +88,7 @@ public class MockHttpServerExtension
     }
     if (clientInstance(type)) {
       // TODO return the instance corresponding to type
-      return HttpClient.connectTo("http://localhost:" + port);
+      return HttpClient.connectTo("http://localhost:" + server.getPort());
     }
     throw new ParameterResolutionException("invalid param");
   }

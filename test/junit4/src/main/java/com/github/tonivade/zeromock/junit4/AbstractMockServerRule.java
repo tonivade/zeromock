@@ -12,6 +12,7 @@ import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpServiceK;
 import com.github.tonivade.zeromock.api.HttpServiceK.MappingBuilderK;
 import com.github.tonivade.zeromock.api.RequestHandlerK;
+import com.github.tonivade.zeromock.client.HttpClient;
 import com.github.tonivade.zeromock.server.MockHttpServerK;
 
 public abstract class AbstractMockServerRule<F extends Witness> extends ExternalResource {
@@ -32,8 +33,17 @@ public abstract class AbstractMockServerRule<F extends Witness> extends External
     server.stop();
   }
 
+  public HttpClient client() {
+    return HttpClient.connectTo("http://localhost:" + server.getPort());
+  }
+
   public AbstractMockServerRule<F> verify(Matcher1<HttpRequest> matcher) {
     server.verify(matcher);
+    return this;
+  }
+
+  public AbstractMockServerRule<F> verifyNot(Matcher1<HttpRequest> matcher) {
+    server.verifyNot(matcher);
     return this;
   }
 

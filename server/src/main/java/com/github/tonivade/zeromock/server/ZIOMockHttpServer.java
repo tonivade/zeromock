@@ -41,6 +41,11 @@ public final class ZIOMockHttpServer<R> implements HttpServer {
     this.serverK = requireNonNull(serverK);
   }
 
+  @Override
+  public int getPort() {
+    return serverK.getPort();
+  }
+
   public static <R> Builder<Kind<Kind<ZIO_, R>, Nothing>> builder(Producer<R> factory) {
     return new Builder<>(ZIOInstances.monad(), response -> {
       ZIO<R, Nothing, HttpResponse> future = response.fix(ZIOOf::narrowK);

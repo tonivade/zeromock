@@ -31,6 +31,11 @@ public final class AsyncMockHttpServer implements HttpServer {
     this.serverK = requireNonNull(serverK);
   }
 
+  @Override
+  public int getPort() {
+    return serverK.getPort();
+  }
+
   public static Builder<Future_> builder() {
     return new Builder<>(FutureInstances.monad(), response -> {
       Future<HttpResponse> future = response.fix(FutureOf::narrowK);

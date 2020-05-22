@@ -38,6 +38,11 @@ public final class IOMockHttpServer implements HttpServer {
     this.serverK = requireNonNull(serverK);
   }
 
+  @Override
+  public int getPort() {
+    return serverK.getPort();
+  }
+
   public static Builder<IO_> sync() {
     return new Builder<>(IOInstances.monad(), response -> {
       IO<HttpResponse> future = response.fix(IOOf::narrowK);

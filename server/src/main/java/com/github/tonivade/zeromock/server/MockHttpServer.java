@@ -30,6 +30,11 @@ public final class MockHttpServer implements HttpServer {
     this.serverK = requireNonNull(serverK);
   }
 
+  @Override
+  public int getPort() {
+    return serverK.getPort();
+  }
+
   public static Builder<Id_> builder() {
     return new Builder<>(IdInstances.monad(), response -> {
       Promise<HttpResponse> promise = Promise.make();

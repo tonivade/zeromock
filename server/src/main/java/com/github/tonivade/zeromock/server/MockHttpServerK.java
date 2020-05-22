@@ -55,10 +55,13 @@ public abstract class MockHttpServerK<F extends Witness> implements com.github.t
   private final Map<Instant, HttpRequest> matched = new LimitedSizeMap<>(100);
   private final Map<Instant, HttpRequest> unmatched = new LimitedSizeMap<>(100);
 
+  private final int port;
+
   private HttpServiceK<F> service;
 
   private MockHttpServerK(String host, int port, int threads, int backlog, Monad<F> monad) {
     try {
+      this.port = port;
       this.service = new HttpServiceK<>("root", monad);
       this.server = HttpServer.create(new InetSocketAddress(host, port), backlog);
       this.server.setExecutor(Executors.newFixedThreadPool(threads));
@@ -67,6 +70,11 @@ public abstract class MockHttpServerK<F extends Witness> implements com.github.t
     } catch (IOException e) {
       throw new UncheckedIOException("unable to start server at " + host + ":" + port, e);
     }
+  }
+
+  @Override
+  public int getPort() {
+    return port;
   }
 
   public MockHttpServerK<F> mount(String path, HttpServiceK<F> other) {

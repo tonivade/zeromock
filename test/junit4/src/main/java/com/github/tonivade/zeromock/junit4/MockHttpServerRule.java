@@ -5,12 +5,12 @@
 package com.github.tonivade.zeromock.junit4;
 
 import org.junit.rules.ExternalResource;
-
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpService;
 import com.github.tonivade.zeromock.api.HttpService.MappingBuilder;
 import com.github.tonivade.zeromock.api.RequestHandler;
+import com.github.tonivade.zeromock.client.HttpClient;
 import com.github.tonivade.zeromock.server.MockHttpServer;
 
 public class MockHttpServerRule extends ExternalResource {
@@ -18,7 +18,7 @@ public class MockHttpServerRule extends ExternalResource {
   private final MockHttpServer server;
 
   public MockHttpServerRule(int port) {
-    this.server = MockHttpServer.listenAt(port);
+    server = MockHttpServer.listenAt(port);
   }
 
   @Override
@@ -31,8 +31,17 @@ public class MockHttpServerRule extends ExternalResource {
     server.stop();
   }
 
+  public HttpClient client() {
+    return HttpClient.connectTo("http://localhost:" + server.getPort());
+  }
+
   public MockHttpServerRule verify(Matcher1<HttpRequest> matcher) {
     server.verify(matcher);
+    return this;
+  }
+
+  public MockHttpServerRule verifyNot(Matcher1<HttpRequest> matcher) {
+    server.verifyNot(matcher);
     return this;
   }
 

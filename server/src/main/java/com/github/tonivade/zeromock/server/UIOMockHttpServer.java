@@ -38,6 +38,11 @@ public final class UIOMockHttpServer implements HttpServer {
     this.serverK = requireNonNull(serverK);
   }
 
+  @Override
+  public int getPort() {
+    return serverK.getPort();
+  }
+
   public static Builder<UIO_> sync() {
     return new Builder<>(UIOInstances.monad(), response -> {
       UIO<HttpResponse> future = response.fix(UIOOf::narrowK);
