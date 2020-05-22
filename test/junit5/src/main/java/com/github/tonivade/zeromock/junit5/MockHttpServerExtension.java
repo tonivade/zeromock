@@ -6,9 +6,7 @@ package com.github.tonivade.zeromock.junit5;
 
 import static com.github.tonivade.zeromock.junit5.ListenAt.Server.SYNC;
 import static java.util.stream.Collectors.joining;
-
 import java.util.Optional;
-
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -17,7 +15,11 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
-
+import com.github.tonivade.zeromock.client.AsyncHttpClient;
+import com.github.tonivade.zeromock.client.HttpClient;
+import com.github.tonivade.zeromock.client.IOHttpClient;
+import com.github.tonivade.zeromock.client.UIOHttpClient;
+import com.github.tonivade.zeromock.client.ZIOHttpClient;
 import com.github.tonivade.zeromock.junit5.ListenAt.Server;
 import com.github.tonivade.zeromock.server.AsyncMockHttpServer;
 import com.github.tonivade.zeromock.server.HttpServer;
@@ -30,12 +32,13 @@ public class MockHttpServerExtension
     implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
   private HttpServer server;
+  private int port;
 
   @Override
   public void beforeAll(ExtensionContext context) throws Exception {
     Optional<ListenAt> listenAt = listenAt(context);
     Server type = listenAt.map(ListenAt::type).orElse(SYNC);
-    Integer port = listenAt.map(ListenAt::value).orElse(8080);
+    port = listenAt.map(ListenAt::value).orElse(8080);
     switch (type) {
     case SYNC:
       server = MockHttpServer.listenAt(port);
@@ -73,20 +76,22 @@ public class MockHttpServerExtension
   }
 
   @Override
-  public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
-      throws ParameterResolutionException {
+  public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
     Class<?> type = parameterContext.getParameter().getType();
-    return type.equals(MockHttpServer.class) 
-        || type.equals(AsyncMockHttpServer.class)
-        || type.equals(IOMockHttpServer.class)
-        || type.equals(UIOMockHttpServer.class)
-        || type.equals(ZIOMockHttpServer.class);
+    return serverInstance(type) || clientInstance(type);
   }
 
   @Override
-  public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
-      throws ParameterResolutionException {
-    return server;
+  public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
+    Class<?> type = parameterContext.getParameter().getType();
+    if (serverInstance(type)) {
+      return server;
+    }
+    if (clientInstance(type)) {
+      // TODO return the instance corresponding to type
+      return HttpClient.connectTo("http://localhost:" + port);
+    }
+    throw new ParameterResolutionException("invalid param");
   }
 
   private String unmatched() {
@@ -96,5 +101,21 @@ public class MockHttpServerExtension
   private Optional<ListenAt> listenAt(ExtensionContext context) {
     return context.getTestClass()
         .map(clazz -> clazz.getDeclaredAnnotation(ListenAt.class));
+  }
+
+  private boolean serverInstance(Class<?> type) {
+    return type.equals(MockHttpServer.class)
+        || type.equals(AsyncMockHttpServer.class)
+        || type.equals(IOMockHttpServer.class)
+        || type.equals(UIOMockHttpServer.class)
+        || type.equals(ZIOMockHttpServer.class);
+  }
+
+  private boolean clientInstance(Class<?> type) {
+    return type.equals(HttpClient.class)
+        || type.equals(AsyncHttpClient.class)
+        || type.equals(IOHttpClient.class)
+        || type.equals(UIOHttpClient.class)
+        || type.equals(ZIOHttpClient.class);
   }
 }
