@@ -4,6 +4,9 @@
  */
 package com.github.tonivade.zeromock.junit5;
 
+import static com.github.tonivade.purefun.Precondition.checkNonEmpty;
+import static com.github.tonivade.purefun.Precondition.checkPositive;
+
 import java.util.Objects;
 
 import com.github.tonivade.purefun.Equal;
@@ -33,12 +36,13 @@ public class BooksService {
   }
 
   public static class Book {
-    private final Integer id;
+
+    private final int id;
     private final String title;
 
-    public Book(Integer id, String title) {
-      this.id = id;
-      this.title = title;
+    public Book(int id, String title) {
+      this.id = checkPositive(id);
+      this.title = checkNonEmpty(title);
     }
 
     @Override
