@@ -18,6 +18,7 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 import com.github.tonivade.zeromock.client.AsyncHttpClient;
 import com.github.tonivade.zeromock.client.HttpClient;
 import com.github.tonivade.zeromock.client.IOHttpClient;
+import com.github.tonivade.zeromock.client.TaskHttpClient;
 import com.github.tonivade.zeromock.client.UIOHttpClient;
 import com.github.tonivade.zeromock.client.ZIOHttpClient;
 import com.github.tonivade.zeromock.junit5.ListenAt.Server;
@@ -87,8 +88,20 @@ public class MockHttpServerExtension
       return server;
     }
     if (clientInstance(type)) {
-      // TODO return the instance corresponding to type
-      return HttpClient.connectTo("http://localhost:" + server.getPort());
+      String baseUrl = "http://localhost:" + server.getPort();
+      if (type.isAssignableFrom(HttpClient.class)) {
+        return HttpClient.connectTo(baseUrl);
+      } else if (type.isAssignableFrom(AsyncHttpClient.class)) {
+        return AsyncHttpClient.connectTo(baseUrl);
+      } else if (type.isAssignableFrom(IOHttpClient.class)) {
+        return IOHttpClient.connectTo(baseUrl);
+      } else if (type.isAssignableFrom(UIOHttpClient.class)) {
+        return UIOHttpClient.connectTo(baseUrl);
+      } else if (type.isAssignableFrom(TaskHttpClient.class)) {
+        return TaskHttpClient.connectTo(baseUrl);
+      } else if (type.isAssignableFrom(ZIOHttpClient.class)) {
+        throw new UnsupportedOperationException("ZIO not supported yet :(");
+      }
     }
     throw new ParameterResolutionException("invalid param");
   }
@@ -115,6 +128,7 @@ public class MockHttpServerExtension
         || type.equals(AsyncHttpClient.class)
         || type.equals(IOHttpClient.class)
         || type.equals(UIOHttpClient.class)
+        || type.equals(TaskHttpClient.class)
         || type.equals(ZIOHttpClient.class);
   }
 }

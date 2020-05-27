@@ -5,12 +5,17 @@
 package com.github.tonivade.zeromock.junit4;
 
 import org.junit.rules.ExternalResource;
+
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpService;
 import com.github.tonivade.zeromock.api.HttpService.MappingBuilder;
 import com.github.tonivade.zeromock.api.RequestHandler;
+import com.github.tonivade.zeromock.client.AsyncHttpClient;
 import com.github.tonivade.zeromock.client.HttpClient;
+import com.github.tonivade.zeromock.client.IOHttpClient;
+import com.github.tonivade.zeromock.client.TaskHttpClient;
+import com.github.tonivade.zeromock.client.UIOHttpClient;
 import com.github.tonivade.zeromock.server.MockHttpServer;
 
 public class MockHttpServerRule extends ExternalResource {
@@ -31,8 +36,28 @@ public class MockHttpServerRule extends ExternalResource {
     server.stop();
   }
 
+  public String getBaseUrl() {
+    return "http://localhost:" + server.getPort();
+  }
+
   public HttpClient client() {
-    return HttpClient.connectTo("http://localhost:" + server.getPort());
+    return HttpClient.connectTo(getBaseUrl());
+  }
+
+  public AsyncHttpClient asyncClient() {
+    return AsyncHttpClient.connectTo(getBaseUrl());
+  }
+
+  public IOHttpClient ioClient() {
+    return IOHttpClient.connectTo(getBaseUrl());
+  }
+
+  public UIOHttpClient uioClient() {
+    return UIOHttpClient.connectTo(getBaseUrl());
+  }
+
+  public TaskHttpClient taskClient() {
+    return TaskHttpClient.connectTo(getBaseUrl());
   }
 
   public MockHttpServerRule verify(Matcher1<HttpRequest> matcher) {
