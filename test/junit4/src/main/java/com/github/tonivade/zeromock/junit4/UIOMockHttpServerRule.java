@@ -10,6 +10,10 @@ import static com.github.tonivade.zeromock.server.UIOMockHttpServer.sync;
 
 public class UIOMockHttpServerRule extends AbstractMockServerRule<UIO_> {
 
+  public UIOMockHttpServerRule() {
+     this(0);
+  }
+
   public UIOMockHttpServerRule(int port) {
     super(sync().port(port).build());
   }

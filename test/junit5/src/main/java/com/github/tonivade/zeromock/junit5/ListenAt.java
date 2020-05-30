@@ -15,5 +15,5 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Target(TYPE)
 public @interface ListenAt {
-  int value() default 8080;
+  int value();
 }

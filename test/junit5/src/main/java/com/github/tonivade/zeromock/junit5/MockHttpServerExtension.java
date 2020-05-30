@@ -41,7 +41,7 @@ public class MockHttpServerExtension
   @Override
   public void beforeAll(ExtensionContext context) throws Exception {
     Optional<ListenAt> listenAt = listenAt(context);
-    int port = listenAt.map(ListenAt::value).orElse(8080);
+    int port = listenAt.map(ListenAt::value).orElse(0);
     this.server = new Builder().port(port).build();
     this.server.start();
   }

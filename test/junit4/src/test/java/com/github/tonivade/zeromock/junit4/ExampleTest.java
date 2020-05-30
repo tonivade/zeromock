@@ -23,15 +23,15 @@ import com.github.tonivade.zeromock.api.Responses;
 
 public class ExampleTest {
   @Rule
-  public MockHttpServerRule server = new MockHttpServerRule(8080);
+  public MockHttpServerRule server = new MockHttpServerRule();
   @Rule
-  public AsyncMockHttpServerRule asyncServer = new AsyncMockHttpServerRule(8082);
+  public AsyncMockHttpServerRule asyncServer = new AsyncMockHttpServerRule();
   @Rule
-  public IOMockHttpServerRule ioServer = new IOMockHttpServerRule(8083);
+  public IOMockHttpServerRule ioServer = new IOMockHttpServerRule();
   @Rule
-  public UIOMockHttpServerRule uioServer = new UIOMockHttpServerRule(8084);
+  public UIOMockHttpServerRule uioServer = new UIOMockHttpServerRule();
   @Rule
-  public ZIOMockHttpServerRule<Nothing> zioServer = new ZIOMockHttpServerRule<>(nothing(), 8085);
+  public ZIOMockHttpServerRule<Nothing> zioServer = new ZIOMockHttpServerRule<>(nothing());
 
   @Test
   public void pingSync() {

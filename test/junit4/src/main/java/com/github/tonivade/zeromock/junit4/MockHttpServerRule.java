@@ -22,6 +22,10 @@ public class MockHttpServerRule extends ExternalResource {
 
   private final MockHttpServer server;
 
+  public MockHttpServerRule() {
+     this(0);
+  }
+
   public MockHttpServerRule(int port) {
     server = MockHttpServer.listenAt(port);
   }

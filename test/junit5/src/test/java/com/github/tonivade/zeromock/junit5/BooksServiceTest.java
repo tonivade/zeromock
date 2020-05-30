@@ -32,7 +32,6 @@ import com.github.tonivade.zeromock.junit5.BooksService.Book;
 import com.github.tonivade.zeromock.server.MockHttpServer;
 import com.google.gson.reflect.TypeToken;
 
-@ListenAt(9001)
 @ExtendWith(MockHttpServerExtension.class)
 public class BooksServiceTest {
 

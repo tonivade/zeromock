@@ -10,6 +10,10 @@ import com.github.tonivade.purefun.concurrent.Future_;
 
 public class AsyncMockHttpServerRule extends AbstractMockServerRule<Future_> {
 
+  public AsyncMockHttpServerRule() {
+     this(0);
+  }
+
   public AsyncMockHttpServerRule(int port) {
     super(builder().port(port).build());
   }

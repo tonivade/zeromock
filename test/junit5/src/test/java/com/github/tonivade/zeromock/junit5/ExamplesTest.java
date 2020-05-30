@@ -26,7 +26,6 @@ import com.github.tonivade.zeromock.client.IOHttpClient;
 import com.github.tonivade.zeromock.client.UIOHttpClient;
 import com.github.tonivade.zeromock.server.MockHttpServer;
 
-@ListenAt(8081)
 @ExtendWith(MockHttpServerExtension.class)
 public class ExamplesTest {
 

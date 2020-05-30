@@ -12,6 +12,10 @@ import com.github.tonivade.purefun.effect.ZIO_;
 
 public class ZIOMockHttpServerRule<R> extends AbstractMockServerRule<Kind<Kind<ZIO_, R>, Nothing>> {
 
+  public ZIOMockHttpServerRule(R env) {
+     this(env, 0);
+  }
+
   public ZIOMockHttpServerRule(R env, int port) {
     super(builder(cons(env)).port(port).build());
   }
