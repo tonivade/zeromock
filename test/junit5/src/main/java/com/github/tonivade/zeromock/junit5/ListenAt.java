@@ -15,9 +15,5 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Target(TYPE)
 public @interface ListenAt {
-  public enum Server {
-    SYNC, ASYNC, IO, UIO, ZIO
-  }
-  int value();
-  Server type() default Server.SYNC;
+  int value() default 8080;
 }

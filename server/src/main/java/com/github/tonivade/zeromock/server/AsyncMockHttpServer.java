@@ -29,6 +29,11 @@ public final class AsyncMockHttpServer implements HttpServer {
 
   private final MockHttpServerK<Future_> serverK;
 
+  @SuppressWarnings("restriction")
+  public AsyncMockHttpServer(com.sun.net.httpserver.HttpServer server) {
+    this(new MockHttpServerK<Future_>(server, monad(), async()));
+  }
+
   private AsyncMockHttpServer(MockHttpServerK<Future_> serverK) {
     this.serverK = requireNonNull(serverK);
   }

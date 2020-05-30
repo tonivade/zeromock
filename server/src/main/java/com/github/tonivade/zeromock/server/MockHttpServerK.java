@@ -60,7 +60,7 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
 
   private HttpServiceK<F> service;
 
-  private MockHttpServerK(HttpServer server, Monad<F> monad, ResponseInterpreterK<F> interpreter) {
+  protected MockHttpServerK(HttpServer server, Monad<F> monad, ResponseInterpreterK<F> interpreter) {
     this.server = requireNonNull(server);
     this.monad = requireNonNull(monad);
     this.interpreter = requireNonNull(interpreter);
@@ -244,8 +244,7 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
     }
 
     public MockHttpServerK<F> build() {
-      HttpServer server = builder.build();
-      return new MockHttpServerK<F>(server, monad, interpreter);
+      return new MockHttpServerK<F>(builder.build(), monad, interpreter);
     }
   }
 

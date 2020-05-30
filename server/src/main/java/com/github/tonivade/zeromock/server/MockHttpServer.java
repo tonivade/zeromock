@@ -26,6 +26,11 @@ public final class MockHttpServer implements HttpServer {
 
   private final MockHttpServerK<Id_> serverK;
 
+  @SuppressWarnings("restriction")
+  public MockHttpServer(com.sun.net.httpserver.HttpServer server) {
+    this(new MockHttpServerK<Id_>(server, monad(), sync()));
+  }
+
   private MockHttpServer(MockHttpServerK<Id_> serverK) {
     this.serverK = requireNonNull(serverK);
   }

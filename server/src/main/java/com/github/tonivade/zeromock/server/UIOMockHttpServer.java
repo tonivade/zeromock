@@ -32,6 +32,11 @@ public final class UIOMockHttpServer implements HttpServer {
 
   private final MockHttpServerK<UIO_> serverK;
 
+  @SuppressWarnings("restriction")
+  public UIOMockHttpServer(com.sun.net.httpserver.HttpServer server) {
+    this(new MockHttpServerK<UIO_>(server, monad(), uioSync()));
+  }
+
   private UIOMockHttpServer(MockHttpServerK<UIO_> serverK) {
     this.serverK = requireNonNull(serverK);
   }
