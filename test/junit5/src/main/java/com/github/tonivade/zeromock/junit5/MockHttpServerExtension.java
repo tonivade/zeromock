@@ -6,7 +6,9 @@ package com.github.tonivade.zeromock.junit5;
 
 import static com.github.tonivade.zeromock.junit5.ListenAt.Server.SYNC;
 import static java.util.stream.Collectors.joining;
+
 import java.util.Optional;
+
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -15,12 +17,12 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
+
 import com.github.tonivade.zeromock.client.AsyncHttpClient;
 import com.github.tonivade.zeromock.client.HttpClient;
 import com.github.tonivade.zeromock.client.IOHttpClient;
 import com.github.tonivade.zeromock.client.TaskHttpClient;
 import com.github.tonivade.zeromock.client.UIOHttpClient;
-import com.github.tonivade.zeromock.client.ZIOHttpClient;
 import com.github.tonivade.zeromock.junit5.ListenAt.Server;
 import com.github.tonivade.zeromock.server.AsyncMockHttpServer;
 import com.github.tonivade.zeromock.server.HttpServer;
@@ -99,8 +101,6 @@ public class MockHttpServerExtension
         return UIOHttpClient.connectTo(baseUrl);
       } else if (type.isAssignableFrom(TaskHttpClient.class)) {
         return TaskHttpClient.connectTo(baseUrl);
-      } else if (type.isAssignableFrom(ZIOHttpClient.class)) {
-        throw new UnsupportedOperationException("ZIO not supported yet :(");
       }
     }
     throw new ParameterResolutionException("invalid param");
@@ -128,7 +128,6 @@ public class MockHttpServerExtension
         || type.equals(AsyncHttpClient.class)
         || type.equals(IOHttpClient.class)
         || type.equals(UIOHttpClient.class)
-        || type.equals(TaskHttpClient.class)
-        || type.equals(ZIOHttpClient.class);
+        || type.equals(TaskHttpClient.class);
   }
 }

@@ -4,23 +4,21 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.purefun.instances.FutureInstances.monadDefer;
+import static com.github.tonivade.purefun.concurrent.Future.DEFAULT_EXECUTOR;
+import static com.github.tonivade.purefun.instances.UIOInstances.monad;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
+import static com.github.tonivade.zeromock.server.ResponseInterpreterK.uioAsync;
+import static com.github.tonivade.zeromock.server.ResponseInterpreterK.uioSync;
 import static java.util.Objects.requireNonNull;
+
 import java.util.List;
 import java.util.concurrent.Executor;
-import com.github.tonivade.purefun.Kind;
+
 import com.github.tonivade.purefun.Matcher1;
-import com.github.tonivade.purefun.concurrent.Future;
-import com.github.tonivade.purefun.concurrent.FutureOf;
-import com.github.tonivade.purefun.concurrent.Future_;
-import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.effect.UIO;
-import com.github.tonivade.purefun.effect.UIOOf;
 import com.github.tonivade.purefun.effect.UIO_;
 import com.github.tonivade.purefun.instances.UIOInstances;
 import com.github.tonivade.zeromock.api.HttpRequest;
-import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpUIOService;
 import com.github.tonivade.zeromock.api.HttpUIOService.MappingBuilder;
 import com.github.tonivade.zeromock.api.PostFilter;
@@ -28,7 +26,7 @@ import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.api.UIOPostFilter;
 import com.github.tonivade.zeromock.api.UIOPreFilter;
 import com.github.tonivade.zeromock.api.UIORequestHandler;
-import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
+import com.github.tonivade.zeromock.server.MockHttpServerK.BuilderK;
 
 public final class UIOMockHttpServer implements HttpServer {
 
@@ -42,24 +40,22 @@ public final class UIOMockHttpServer implements HttpServer {
   public int getPort() {
     return serverK.getPort();
   }
-
-  public static Builder<UIO_> sync() {
-    return new Builder<>(UIOInstances.monad(), response -> {
-      UIO<HttpResponse> future = response.fix(UIOOf::narrowK);
-      return Promise.<HttpResponse>make().succeeded(future.unsafeRunSync());
-    });
+  
+  @Override
+  public String getPath() {
+    return serverK.getPath();
   }
 
-  public static Builder<UIO_> async() {
-    return async(Future.DEFAULT_EXECUTOR);
+  public static BuilderK<UIO_> sync() {
+    return new BuilderK<>(monad(), uioSync());
   }
 
-  public static Builder<UIO_> async(Executor executor) {
-    return new Builder<>(UIOInstances.monad(), response -> {
-      UIO<HttpResponse> effect = response.fix(UIOOf::narrowK);
-      Kind<Future_, HttpResponse> future = effect.foldMap(monadDefer(executor));
-      return future.fix(FutureOf::narrowK).toPromise();
-    });
+  public static BuilderK<UIO_> async() {
+    return async(DEFAULT_EXECUTOR);
+  }
+
+  public static BuilderK<UIO_> async(Executor executor) {
+    return new BuilderK<>(monad(), uioAsync(executor));
   }
 
   public static UIOMockHttpServer listenAt(int port) {

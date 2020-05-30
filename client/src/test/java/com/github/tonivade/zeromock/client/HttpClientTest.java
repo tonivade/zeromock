@@ -4,11 +4,18 @@
  */
 package com.github.tonivade.zeromock.client;
 
-import com.github.tonivade.purefun.Nothing;
+import static com.github.tonivade.zeromock.api.Handlers.ok;
+import static com.github.tonivade.zeromock.api.Matchers.get;
+import static com.github.tonivade.zeromock.server.MockHttpServer.listenAt;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.effect.Task;
 import com.github.tonivade.purefun.effect.UIO;
-import com.github.tonivade.purefun.effect.ZIO;
 import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.zeromock.api.Bytes;
 import com.github.tonivade.zeromock.api.HttpRequest;
@@ -16,15 +23,6 @@ import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpStatus;
 import com.github.tonivade.zeromock.api.Requests;
 import com.github.tonivade.zeromock.server.MockHttpServer;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
-import static com.github.tonivade.purefun.Nothing.nothing;
-import static com.github.tonivade.zeromock.api.Handlers.ok;
-import static com.github.tonivade.zeromock.api.Matchers.get;
-import static com.github.tonivade.zeromock.server.MockHttpServer.listenAt;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HttpClientTest {
 
@@ -73,13 +71,6 @@ class HttpClientTest {
     Task<HttpResponse> response = TaskHttpClient.connectTo(BASE_URL).request(ping);
 
     assertResponse(response.safeRunSync().get());
-  }
-
-  @Test
-  void zio() {
-    ZIO<Nothing, Throwable, HttpResponse> response = ZIOHttpClient.<Nothing>connectTo(BASE_URL).request(ping);
-
-    assertResponse(response.provide(nothing()).get());
   }
 
   @AfterAll

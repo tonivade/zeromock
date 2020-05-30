@@ -4,12 +4,15 @@
  */
 package com.github.tonivade.zeromock.server;
 
+import static com.github.tonivade.purefun.instances.FutureInstances.monad;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
+import static com.github.tonivade.zeromock.server.ResponseInterpreterK.async;
 import static java.util.Objects.requireNonNull;
+
 import java.util.List;
+
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
-import com.github.tonivade.purefun.concurrent.FutureOf;
 import com.github.tonivade.purefun.concurrent.Future_;
 import com.github.tonivade.purefun.instances.FutureInstances;
 import com.github.tonivade.zeromock.api.AsyncHttpService;
@@ -18,10 +21,9 @@ import com.github.tonivade.zeromock.api.AsyncPostFilter;
 import com.github.tonivade.zeromock.api.AsyncPreFilter;
 import com.github.tonivade.zeromock.api.AsyncRequestHandler;
 import com.github.tonivade.zeromock.api.HttpRequest;
-import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.PostFilter;
 import com.github.tonivade.zeromock.api.PreFilter;
-import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
+import com.github.tonivade.zeromock.server.MockHttpServerK.BuilderK;
 
 public final class AsyncMockHttpServer implements HttpServer {
 
@@ -35,12 +37,14 @@ public final class AsyncMockHttpServer implements HttpServer {
   public int getPort() {
     return serverK.getPort();
   }
+  
+  @Override
+  public String getPath() {
+    return serverK.getPath();
+  }
 
-  public static Builder<Future_> builder() {
-    return new Builder<>(FutureInstances.monad(), response -> {
-      Future<HttpResponse> future = response.fix(FutureOf::narrowK);
-      return future.toPromise();
-    });
+  public static BuilderK<Future_> builder() {
+    return new BuilderK<>(monad(), async());
   }
 
   public static AsyncMockHttpServer listenAt(int port) {

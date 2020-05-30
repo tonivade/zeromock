@@ -8,6 +8,7 @@ import static com.github.tonivade.zeromock.api.Bytes.asBytes;
 import static com.github.tonivade.zeromock.api.Responses.error;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.requireNonNull;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
@@ -19,11 +20,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
-import com.github.tonivade.purefun.Function1;
+
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Witness;
-import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.typeclasses.Monad;
 import com.github.tonivade.zeromock.api.Bytes;
@@ -39,42 +39,42 @@ import com.github.tonivade.zeromock.api.PostFilterK;
 import com.github.tonivade.zeromock.api.PreFilterK;
 import com.github.tonivade.zeromock.api.RequestHandlerK;
 import com.github.tonivade.zeromock.api.Responses;
+import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
 @SuppressWarnings("restriction")
-public abstract class MockHttpServerK<F extends Witness> implements com.github.tonivade.zeromock.server.HttpServer {
+public class MockHttpServerK<F extends Witness> implements com.github.tonivade.zeromock.server.HttpServer {
 
   private static final Logger LOG = Logger.getLogger(MockHttpServerK.class.getName());
 
   private static final String ROOT = "/";
 
   private final HttpServer server;
+  private final HttpContext context;
   private final Monad<F> monad;
+  private final ResponseInterpreterK<F> interpreter;
 
   private final Map<Instant, HttpRequest> matched = new LimitedSizeMap<>(100);
   private final Map<Instant, HttpRequest> unmatched = new LimitedSizeMap<>(100);
 
-  private final int port;
-
   private HttpServiceK<F> service;
 
-  private MockHttpServerK(String host, int port, int threads, int backlog, Monad<F> monad) {
-    try {
-      this.port = port;
-      this.service = new HttpServiceK<>("root", monad);
-      this.server = HttpServer.create(new InetSocketAddress(host, port), backlog);
-      this.server.setExecutor(Executors.newFixedThreadPool(threads));
-      this.server.createContext(ROOT, this::handle);
-      this.monad = requireNonNull(monad);
-    } catch (IOException e) {
-      throw new UncheckedIOException("unable to start server at " + host + ":" + port, e);
-    }
+  private MockHttpServerK(HttpServer server, Monad<F> monad, ResponseInterpreterK<F> interpreter) {
+    this.server = requireNonNull(server);
+    this.monad = requireNonNull(monad);
+    this.interpreter = requireNonNull(interpreter);
+    this.service = new HttpServiceK<>("root", monad);
+    this.context = server.createContext(ROOT, this::handle);
   }
 
   @Override
   public int getPort() {
-    return port;
+    return server.getAddress().getPort();
+  }
+  
+  public String getPath() {
+    return context.getPath();
   }
 
   public MockHttpServerK<F> mount(String path, HttpServiceK<F> other) {
@@ -146,8 +146,6 @@ public abstract class MockHttpServerK<F extends Witness> implements com.github.t
     unmatched.clear();
   }
 
-  protected abstract Promise<HttpResponse> run(Kind<F, HttpResponse> response);
-
   protected MockHttpServerK<F> addMapping(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
     service = service.addMapping(matcher, handler);
     return this;
@@ -160,7 +158,7 @@ public abstract class MockHttpServerK<F extends Witness> implements com.github.t
 
   private void handle(HttpExchange exchange) throws IOException {
     HttpRequest request = createRequest(exchange);
-    run(monad.map(execute(request), option -> fold(request, option)))
+    interpreter.run(monad.map(execute(request), option -> fold(request, option)))
         .onSuccess(response -> processResponse(exchange, response))
         .onFailure(error -> processResponse(exchange, error(error)));
   }
@@ -213,47 +211,78 @@ public abstract class MockHttpServerK<F extends Witness> implements com.github.t
     }
   }
 
-  public static final class Builder<F extends Witness> {
-    private String host = "localhost";
-    private int port = 8080;
-    private int threads = Runtime.getRuntime().availableProcessors();
-    private int backlog = 0;
+  public static final class BuilderK<F extends Witness> {
+    
     private final Monad<F> monad;
-    private final Function1<Kind<F, HttpResponse>, Promise<HttpResponse>> run;
-
-    public Builder(Monad<F> monad, Function1<Kind<F, HttpResponse>, Promise<HttpResponse>> run) {
+    private final ResponseInterpreterK<F> interpreter;
+    private final Builder builder;
+    
+    public BuilderK(Monad<F> monad, ResponseInterpreterK<F> interpreter) {
+      this.builder = new Builder();
       this.monad = requireNonNull(monad);
-      this.run = requireNonNull(run);
+      this.interpreter = requireNonNull(interpreter);
     }
 
-    public Builder<F> host(String host) {
-      this.host = requireNonNull(host);
+    public BuilderK<F> host(String host) {
+      builder.host(host);
       return this;
     }
 
-    public Builder<F> port(int port) {
-      this.port = port;
+    public BuilderK<F> port(int port) {
+      builder.port(port);
       return this;
     }
 
-    public Builder<F> threads(int threads) {
-      this.threads = threads;
+    public BuilderK<F> threads(int threads) {
+      builder.threads(threads);
       return this;
     }
 
-    public Builder<F> backlog(int backlog) {
-      this.backlog = backlog;
+    public BuilderK<F> backlog(int backlog) {
+      builder.backlog(backlog);
       return this;
     }
 
     public MockHttpServerK<F> build() {
-      return new MockHttpServerK<F>(host, port, threads, backlog, monad) {
+      HttpServer server = builder.build();
+      return new MockHttpServerK<F>(server, monad, interpreter);
+    }
+  }
 
-        @Override
-        protected Promise<HttpResponse> run(Kind<F, HttpResponse> response) {
-          return run.apply(response);
-        }
-      };
+  public static final class Builder {
+    private String host = "localhost";
+    private int port = 8080;
+    private int threads = Runtime.getRuntime().availableProcessors();
+    private int backlog = 0;
+
+    public Builder host(String host) {
+      this.host = requireNonNull(host);
+      return this;
+    }
+
+    public Builder port(int port) {
+      this.port = port;
+      return this;
+    }
+
+    public Builder threads(int threads) {
+      this.threads = threads;
+      return this;
+    }
+
+    public Builder backlog(int backlog) {
+      this.backlog = backlog;
+      return this;
+    }
+
+    public HttpServer build() {
+      try {
+        HttpServer server = HttpServer.create(new InetSocketAddress(host, port), backlog);
+        server.setExecutor(Executors.newFixedThreadPool(threads));
+        return server;
+      } catch (IOException e) {
+        throw new UncheckedIOException("unable to create server at " + host + ":" + port, e);
+      }
     }
   }
 

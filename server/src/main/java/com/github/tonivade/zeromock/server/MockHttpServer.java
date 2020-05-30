@@ -4,23 +4,23 @@
  */
 package com.github.tonivade.zeromock.server;
 
+import static com.github.tonivade.purefun.instances.IdInstances.monad;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
+import static com.github.tonivade.zeromock.server.ResponseInterpreterK.sync;
 import static java.util.Objects.requireNonNull;
+
 import java.util.List;
+
 import com.github.tonivade.purefun.Matcher1;
-import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.instances.IdInstances;
-import com.github.tonivade.purefun.type.Id;
-import com.github.tonivade.purefun.type.IdOf;
 import com.github.tonivade.purefun.type.Id_;
 import com.github.tonivade.zeromock.api.HttpRequest;
-import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpService;
 import com.github.tonivade.zeromock.api.HttpService.MappingBuilder;
 import com.github.tonivade.zeromock.api.PostFilter;
 import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.api.RequestHandler;
-import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
+import com.github.tonivade.zeromock.server.MockHttpServerK.BuilderK;
 
 public final class MockHttpServer implements HttpServer {
 
@@ -34,14 +34,14 @@ public final class MockHttpServer implements HttpServer {
   public int getPort() {
     return serverK.getPort();
   }
+  
+  @Override
+  public String getPath() {
+    return serverK.getPath();
+  }
 
-  public static Builder<Id_> builder() {
-    return new Builder<>(IdInstances.monad(), response -> {
-      Promise<HttpResponse> promise = Promise.make();
-      Id<HttpResponse> id = response.fix(IdOf::narrowK);
-      promise.succeeded(id.get());
-      return promise;
-    });
+  public static BuilderK<Id_> builder() {
+    return new BuilderK<>(monad(), sync());
   }
 
   public static MockHttpServer listenAt(int port) {

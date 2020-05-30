@@ -4,21 +4,21 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.purefun.instances.FutureInstances.monadDefer;
+import static com.github.tonivade.purefun.concurrent.Future.DEFAULT_EXECUTOR;
+import static com.github.tonivade.purefun.instances.ZIOInstances.monad;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
+import static com.github.tonivade.zeromock.server.ResponseInterpreterK.zioAsync;
+import static com.github.tonivade.zeromock.server.ResponseInterpreterK.zioSync;
 import static java.util.Objects.requireNonNull;
+
 import java.util.List;
 import java.util.concurrent.Executor;
+
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Nothing;
 import com.github.tonivade.purefun.Producer;
-import com.github.tonivade.purefun.concurrent.Future;
-import com.github.tonivade.purefun.concurrent.FutureOf;
-import com.github.tonivade.purefun.concurrent.Future_;
-import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.effect.ZIO;
-import com.github.tonivade.purefun.effect.ZIOOf;
 import com.github.tonivade.purefun.effect.ZIO_;
 import com.github.tonivade.purefun.instances.ZIOInstances;
 import com.github.tonivade.purefun.type.Either;
@@ -31,7 +31,7 @@ import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.api.ZIOPostFilter;
 import com.github.tonivade.zeromock.api.ZIOPreFilter;
 import com.github.tonivade.zeromock.api.ZIORequestHandler;
-import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
+import com.github.tonivade.zeromock.server.MockHttpServerK.BuilderK;
 
 public final class ZIOMockHttpServer<R> implements HttpServer {
 
@@ -45,24 +45,22 @@ public final class ZIOMockHttpServer<R> implements HttpServer {
   public int getPort() {
     return serverK.getPort();
   }
-
-  public static <R> Builder<Kind<Kind<ZIO_, R>, Nothing>> builder(Producer<R> factory) {
-    return new Builder<>(ZIOInstances.monad(), response -> {
-      ZIO<R, Nothing, HttpResponse> future = response.fix(ZIOOf::narrowK);
-      return Promise.<HttpResponse>make().succeeded(future.provide(factory.get()).get());
-    });
+  
+  @Override
+  public String getPath() {
+    return serverK.getPath();
   }
 
-  public static <R> Builder<Kind<Kind<ZIO_, R>, Nothing>> async(Producer<R> factory) {
-    return async(Future.DEFAULT_EXECUTOR, factory);
+  public static <R> BuilderK<Kind<Kind<ZIO_, R>, Nothing>> builder(Producer<R> factory) {
+    return new BuilderK<>(monad(), zioSync(factory));
   }
 
-  public static <R> Builder<Kind<Kind<ZIO_, R>, Nothing>> async(Executor executor, Producer<R> factory) {
-    return new Builder<>(ZIOInstances.monad(), response -> {
-      ZIO<R, Nothing, HttpResponse> effect = response.fix(ZIOOf::narrowK);
-      Kind<Future_, Either<Nothing, HttpResponse>> future = effect.foldMap(factory.get(), monadDefer(executor));
-      return future.fix(FutureOf::narrowK).map(Either::get).toPromise();
-    });
+  public static <R> BuilderK<Kind<Kind<ZIO_, R>, Nothing>> async(Producer<R> factory) {
+    return async(DEFAULT_EXECUTOR, factory);
+  }
+
+  public static <R> BuilderK<Kind<Kind<ZIO_, R>, Nothing>> async(Executor executor, Producer<R> factory) {
+    return new BuilderK<>(monad(), zioAsync(factory, executor));
   }
 
   public static <R> ZIOMockHttpServer<R> listenAt(R env, int port) {

@@ -11,12 +11,12 @@ import com.github.tonivade.zeromock.api.HttpRequest;
 public interface HttpServer {
 
   HttpServer start();
-
   void stop();
 
   void reset();
 
   int getPort();
+  String getPath();
 
   HttpServer verify(Matcher1<HttpRequest> matcher);
   HttpServer verifyNot(Matcher1<HttpRequest> matcher);
