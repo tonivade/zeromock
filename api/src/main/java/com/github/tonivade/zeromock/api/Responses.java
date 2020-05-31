@@ -15,6 +15,7 @@ import static com.github.tonivade.zeromock.api.HttpStatus.NO_CONTENT;
 import static com.github.tonivade.zeromock.api.HttpStatus.OK;
 import static com.github.tonivade.zeromock.api.HttpStatus.SERVICE_UNAVAILABLE;
 import static com.github.tonivade.zeromock.api.HttpStatus.UNAUTHORIZED;
+import static com.github.tonivade.zeromock.api.Serializers.throwableToJson;
 import static java.util.Objects.requireNonNull;
 
 public final class Responses {
@@ -94,7 +95,7 @@ public final class Responses {
   }
 
   public static HttpResponse error(Throwable error) {
-    return error(error.getMessage());
+    return error(throwableToJson().apply(error));
   }
 
   public static HttpResponse error(Bytes body) {

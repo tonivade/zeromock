@@ -158,9 +158,14 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
 
   private void handle(HttpExchange exchange) throws IOException {
     HttpRequest request = createRequest(exchange);
-    interpreter.run(monad.map(execute(request), option -> fold(request, option)))
-        .onSuccess(response -> processResponse(exchange, response))
-        .onFailure(error -> processResponse(exchange, error(error)));
+    try {
+      Kind<F, HttpResponse> response = monad.map(execute(request), option -> fold(request, option));
+      interpreter.run(response)
+        .onSuccess(res -> processResponse(exchange, res))
+        .onFailure(err -> processResponse(exchange, error(err)));
+    } catch (Exception e) {
+      processResponse(exchange, error(e));
+    }
   }
 
   private HttpResponse fold(HttpRequest request, Option<HttpResponse> option) {

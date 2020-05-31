@@ -5,6 +5,7 @@
 package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.zeromock.api.Bytes.asBytes;
+import static com.github.tonivade.zeromock.api.Bytes.asString;
 import static com.github.tonivade.zeromock.api.Bytes.empty;
 import static com.github.tonivade.zeromock.api.Responses.badRequest;
 import static com.github.tonivade.zeromock.api.Responses.created;
@@ -17,6 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+
+import com.jayway.jsonpath.JsonPath;
 
 public class ResponsesTest {
 
@@ -49,7 +52,7 @@ public class ResponsesTest {
         () -> assertEquals(empty(), forbidden().body()),
         () -> assertEquals(empty(), ok().body()),
         () -> assertEquals(asBytes("body"), error("body").body()),
-        () -> assertEquals(asBytes("error"), error(new Exception("error")).body()),
+        () -> assertEquals("error", JsonPath.read(asString(error(new Exception("error")).body()), "$.message")),
         () -> assertEquals(asBytes("body"), created("body").body()),
         () -> assertEquals(asBytes("body"), error("body").body()),
         () -> assertEquals(asBytes("body"), badRequest("body").body()),

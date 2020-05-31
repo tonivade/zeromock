@@ -4,13 +4,19 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import com.github.tonivade.purefun.Function1;
-import com.jayway.jsonpath.JsonPath;
+import static com.jayway.jsonpath.Configuration.defaultConfiguration;
+import static com.jayway.jsonpath.Option.SUPPRESS_EXCEPTIONS;
 
 import java.lang.reflect.Type;
 
+import com.github.tonivade.purefun.Function1;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.JsonPath;
+
 public final class Extractors {
   
+  private static final Configuration CONFIGURATION = defaultConfiguration().addOptions(SUPPRESS_EXCEPTIONS);
+
   private Extractors() {}
 
   public static Function1<HttpRequest, Bytes> body() {
@@ -46,6 +52,6 @@ public final class Extractors {
   }
 
   private static <T> Function1<String, T> jsonPath(String jsonPath) {
-    return json -> JsonPath.read(json, jsonPath);
+    return json -> JsonPath.parse(json, CONFIGURATION).read(jsonPath);
   }
 }
