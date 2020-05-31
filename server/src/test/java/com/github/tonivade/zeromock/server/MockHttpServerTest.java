@@ -40,7 +40,7 @@ import com.github.tonivade.zeromock.api.Responses;
 
 public class MockHttpServerTest {
 
-  private static final String BASE_URL = "http://localhost:8080/path";
+  private static final String BASE_URL = "http://localhost:%s/path";
 
   private final HttpService service1 = new HttpService("hello")
       .when(get("/hello").and(param("name"))).then(ok(plain().compose(this::helloWorld)))
@@ -62,7 +62,7 @@ public class MockHttpServerTest {
   public void hello() {
     server.mount("/path", service1.combine(service2));
 
-    HttpResponse response = connectTo(BASE_URL).request(Requests.get("/hello").withParam("name", "World"));
+    HttpResponse response = connectTo(baseUrl()).request(Requests.get("/hello").withParam("name", "World"));
 
     assertAll(
         () -> assertEquals(HttpStatus.OK, response.status()),
@@ -76,7 +76,7 @@ public class MockHttpServerTest {
   public void helloMissingParam() {
     server.mount("/path", service1.combine(service2));
 
-    HttpResponse response = connectTo(BASE_URL).request(Requests.get("/hello"));
+    HttpResponse response = connectTo(baseUrl()).request(Requests.get("/hello"));
 
     assertAll(
         () -> assertEquals(HttpStatus.BAD_REQUEST, response.status()),
@@ -88,7 +88,7 @@ public class MockHttpServerTest {
   public void jsonTest() {
     server.mount("/path", service1.combine(service2));
 
-    HttpResponse response = connectTo(BASE_URL).request(Requests.get("/test").withHeader("Accept", "application/json"));
+    HttpResponse response = connectTo(baseUrl()).request(Requests.get("/test").withHeader("Accept", "application/json"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals(sayHello(), Deserializers.jsonToObject(Say.class).apply(response.body())),
@@ -99,7 +99,7 @@ public class MockHttpServerTest {
   public void xmlTest() {
     server.mount("/path", service1.combine(service2));
 
-    HttpResponse response = connectTo(BASE_URL).request(Requests.get("/test").withHeader("Accept", "text/xml"));
+    HttpResponse response = connectTo(baseUrl()).request(Requests.get("/test").withHeader("Accept", "text/xml"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals(sayHello(), Deserializers.xmlToObject(Say.class).apply(response.body())),
@@ -110,7 +110,7 @@ public class MockHttpServerTest {
   public void noContentTest() {
     server.mount("/path", service1.combine(service2));
 
-    HttpResponse response = connectTo(BASE_URL).request(Requests.get("/empty"));
+    HttpResponse response = connectTo(baseUrl()).request(Requests.get("/empty"));
 
     assertAll(() -> assertEquals(HttpStatus.NO_CONTENT, response.status()),
               () -> assertEquals("", asString(response.body())));
@@ -120,7 +120,7 @@ public class MockHttpServerTest {
   public void ping() {
     server.mount("/path", service3);
 
-    HttpResponse response = connectTo(BASE_URL).request(Requests.get("/ping"));
+    HttpResponse response = connectTo(baseUrl()).request(Requests.get("/ping"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals("pong", asString(response.body())));
@@ -128,9 +128,9 @@ public class MockHttpServerTest {
 
   @Test
   public void exec() {
-    MockHttpServer server = listenAt(8082).exec(request -> Responses.ok(request.body())).start();
+    MockHttpServer server = listenAt(0).exec(request -> Responses.ok(request.body())).start();
 
-    HttpResponse response = connectTo("http://localhost:8082").request(Requests.get("/").withBody("echo"));
+    HttpResponse response = connectTo("http://localhost:" + server.getPort()).request(Requests.get("/").withBody("echo"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals("echo", asString(response.body())));
@@ -163,5 +163,9 @@ public class MockHttpServerTest {
 
   private static <T> Function1<HttpRequest, T> adapt(Producer<T> supplier) {
     return supplier.asFunction();
+  }
+
+  private String baseUrl() {
+    return String.format(BASE_URL, server.getPort());
   }
 }

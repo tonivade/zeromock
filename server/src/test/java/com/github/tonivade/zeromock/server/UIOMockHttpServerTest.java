@@ -41,7 +41,7 @@ import com.github.tonivade.zeromock.api.UIORequestHandler;
 
 public class UIOMockHttpServerTest {
 
-  private static final String BASE_URL = "http://localhost:8080/path";
+  private static final String BASE_URL = "http://localhost:%s/path";
 
   private final HttpUIOService service1 = new HttpUIOService("hello")
       .when(get().and(path("/hello")).and(param("name")))
@@ -65,7 +65,7 @@ public class UIOMockHttpServerTest {
   public void hello() {
     server.mount("/path", service1.combine(service2));
 
-    HttpResponse response = connectTo(BASE_URL).request(Requests.get("/hello").withParam("name", "World"));
+    HttpResponse response = connectTo(baseUrl()).request(Requests.get("/hello").withParam("name", "World"));
 
     assertAll(
         () -> assertEquals(HttpStatus.OK, response.status()),
@@ -77,7 +77,7 @@ public class UIOMockHttpServerTest {
   public void helloMissingParam() {
     server.mount("/path", service1.combine(service2));
 
-    HttpResponse response = connectTo(BASE_URL).request(Requests.get("/hello"));
+    HttpResponse response = connectTo(baseUrl()).request(Requests.get("/hello"));
 
     assertEquals(HttpStatus.BAD_REQUEST, response.status());
   }
@@ -86,7 +86,7 @@ public class UIOMockHttpServerTest {
   public void jsonTest() {
     server.mount("/path", service1.combine(service2));
 
-    HttpResponse response = connectTo(BASE_URL).request(Requests.get("/test").withHeader("Accept", "application/json"));
+    HttpResponse response = connectTo(baseUrl()).request(Requests.get("/test").withHeader("Accept", "application/json"));
 
     assertAll(
         () -> assertEquals(HttpStatus.OK, response.status()),
@@ -99,7 +99,7 @@ public class UIOMockHttpServerTest {
   public void xmlTest() {
     server.mount("/path", service1.combine(service2));
 
-    HttpResponse response = connectTo(BASE_URL).request(Requests.get("/test").withHeader("Accept", "text/xml"));
+    HttpResponse response = connectTo(baseUrl()).request(Requests.get("/test").withHeader("Accept", "text/xml"));
 
     assertAll(
         () -> assertEquals(HttpStatus.OK, response.status()),
@@ -112,7 +112,7 @@ public class UIOMockHttpServerTest {
   public void noContentTest() {
     server.mount("/path", service1.combine(service2));
 
-    HttpResponse response = connectTo(BASE_URL).request(Requests.get("/empty"));
+    HttpResponse response = connectTo(baseUrl()).request(Requests.get("/empty"));
 
     assertAll(
         () -> assertEquals(HttpStatus.NO_CONTENT, response.status()),
@@ -124,7 +124,7 @@ public class UIOMockHttpServerTest {
   public void ping() {
     server.mount("/path", service3.postFilter(contentJson()));
 
-    HttpResponse response = connectTo(BASE_URL).request(Requests.get("/ping"));
+    HttpResponse response = connectTo(baseUrl()).request(Requests.get("/ping"));
 
     assertAll(
         () -> assertEquals(HttpStatus.OK, response.status()),
@@ -136,9 +136,9 @@ public class UIOMockHttpServerTest {
   @Test
   public void exec() {
     UIORequestHandler echo = request -> UIO.pure(ok(request.body()));
-    UIOMockHttpServer server = listenAt(8082).exec(echo).start();
+    UIOMockHttpServer server = listenAt(0).exec(echo).start();
 
-    HttpResponse response = connectTo("http://localhost:8082").request(Requests.get("/").withBody("echo"));
+    HttpResponse response = connectTo("http://localhost:" + server.getPort()).request(Requests.get("/").withBody("echo"));
 
     assertAll(
         () -> assertEquals(HttpStatus.OK, response.status()),
@@ -169,5 +169,9 @@ public class UIOMockHttpServerTest {
 
   private Say sayHello() {
     return new Say("hello");
+  }
+
+  private String baseUrl() {
+    return String.format(BASE_URL, server.getPort());
   }
 }

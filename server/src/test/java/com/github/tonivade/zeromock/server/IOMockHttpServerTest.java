@@ -40,7 +40,7 @@ import com.github.tonivade.zeromock.api.Responses;
 
 public class IOMockHttpServerTest {
 
-  private static final String BASE_URL = "http://localhost:8080/path";
+  private static final String BASE_URL = "http://localhost:%s/path";
 
   private HttpIOService service1 = new HttpIOService("hello")
       .when(get().and(path("/hello")).and(param("name")))
@@ -58,13 +58,13 @@ public class IOMockHttpServerTest {
 
   private HttpIOService service3 = new HttpIOService("other").when(get("/ping")).then(request -> IO.pure(ok("pong")));
 
-  private static IOMockHttpServer server = listenAt(8080);
+  private static IOMockHttpServer server = listenAt(0);
 
   @Test
   public void hello() {
     server.mount("/path", service1.combine(service2));
 
-    HttpResponse response = connectTo(BASE_URL).request(Requests.get("/hello").withParam("name", "World"));
+    HttpResponse response = connectTo(baseUrl()).request(Requests.get("/hello").withParam("name", "World"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals("Hello World!", asString(response.body())));
@@ -74,7 +74,7 @@ public class IOMockHttpServerTest {
   public void helloMissingParam() {
     server.mount("/path", service1.combine(service2));
 
-    HttpResponse response = connectTo(BASE_URL).request(Requests.get("/hello"));
+    HttpResponse response = connectTo(baseUrl()).request(Requests.get("/hello"));
 
     assertEquals(HttpStatus.BAD_REQUEST, response.status());
   }
@@ -83,7 +83,7 @@ public class IOMockHttpServerTest {
   public void jsonTest() {
     server.mount("/path", service1.combine(service2));
 
-    HttpResponse response = connectTo(BASE_URL).request(Requests.get("/test").withHeader("Accept", "application/json"));
+    HttpResponse response = connectTo(baseUrl()).request(Requests.get("/test").withHeader("Accept", "application/json"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals(sayHello(), Deserializers.jsonToObject(Say.class).apply(response.body())),
@@ -94,7 +94,7 @@ public class IOMockHttpServerTest {
   public void xmlTest() {
     server.mount("/path", service1.combine(service2));
 
-    HttpResponse response = connectTo(BASE_URL).request(Requests.get("/test").withHeader("Accept", "text/xml"));
+    HttpResponse response = connectTo(baseUrl()).request(Requests.get("/test").withHeader("Accept", "text/xml"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals(sayHello(), Deserializers.xmlToObject(Say.class).apply(response.body())),
@@ -105,7 +105,7 @@ public class IOMockHttpServerTest {
   public void noContentTest() {
     server.mount("/path", service1.combine(service2));
 
-    HttpResponse response = connectTo(BASE_URL).request(Requests.get("/empty"));
+    HttpResponse response = connectTo(baseUrl()).request(Requests.get("/empty"));
 
     assertAll(() -> assertEquals(HttpStatus.NO_CONTENT, response.status()),
               () -> assertEquals("", asString(response.body())));
@@ -115,7 +115,7 @@ public class IOMockHttpServerTest {
   public void ping() {
     server.mount("/path", service3);
 
-    HttpResponse response = connectTo(BASE_URL).request(Requests.get("/ping"));
+    HttpResponse response = connectTo(baseUrl()).request(Requests.get("/ping"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals("pong", asString(response.body())));
@@ -124,9 +124,9 @@ public class IOMockHttpServerTest {
   @Test
   public void exec() {
     IORequestHandler echo = request -> IO.pure(ok(request.body()));
-    IOMockHttpServer server = listenAt(8082).exec(echo).start();
+    IOMockHttpServer server = listenAt(0).exec(echo).start();
 
-    HttpResponse response = connectTo("http://localhost:8082").request(Requests.get("/").withBody("echo"));
+    HttpResponse response = connectTo("http://localhost:" + server.getPort()).request(Requests.get("/").withBody("echo"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals("echo", asString(response.body())));
@@ -155,5 +155,9 @@ public class IOMockHttpServerTest {
 
   private Say sayHello() {
     return new Say("hello");
+  }
+
+  private String baseUrl() {
+    return String.format(BASE_URL, server.getPort());
   }
 }
