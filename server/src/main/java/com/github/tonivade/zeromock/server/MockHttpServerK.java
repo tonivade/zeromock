@@ -216,7 +216,7 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
     }
   }
 
-  public static final class BuilderK<F extends Witness> {
+  public static abstract class BuilderK<F extends Witness, T> {
     
     private final Monad<F> monad;
     private final ResponseInterpreterK<F> interpreter;
@@ -228,32 +228,35 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
       this.interpreter = requireNonNull(interpreter);
     }
 
-    public BuilderK<F> host(String host) {
+    public BuilderK<F, T> host(String host) {
       builder.host(host);
       return this;
     }
 
-    public BuilderK<F> port(int port) {
+    public BuilderK<F, T> port(int port) {
       builder.port(port);
       return this;
     }
 
-    public BuilderK<F> threads(int threads) {
+    public BuilderK<F, T> threads(int threads) {
       builder.threads(threads);
       return this;
     }
 
-    public BuilderK<F> backlog(int backlog) {
+    public BuilderK<F, T> backlog(int backlog) {
       builder.backlog(backlog);
       return this;
     }
 
-    public MockHttpServerK<F> build() {
+    public MockHttpServerK<F> buildK() {
       return new MockHttpServerK<F>(builder.build(), monad, interpreter);
     }
+    
+    public abstract T build();
   }
 
   public static final class Builder {
+
     private String host = "localhost";
     private int port = 8080;
     private int threads = Runtime.getRuntime().availableProcessors();

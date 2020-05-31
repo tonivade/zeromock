@@ -51,20 +51,20 @@ public final class ZIOMockHttpServer<R> implements HttpServer {
     return serverK.getPath();
   }
 
-  public static <R> BuilderK<Kind<Kind<ZIO_, R>, Nothing>> builder(Producer<R> factory) {
-    return new BuilderK<>(monad(), zioSync(factory));
+  public static <R> BuilderK<Kind<Kind<ZIO_, R>, Nothing>, ZIOMockHttpServer<R>> sync(Producer<R> factory) {
+    return _builder(zioSync(factory));
   }
 
-  public static <R> BuilderK<Kind<Kind<ZIO_, R>, Nothing>> async(Producer<R> factory) {
+  public static <R> BuilderK<Kind<Kind<ZIO_, R>, Nothing>, ZIOMockHttpServer<R>> async(Producer<R> factory) {
     return async(DEFAULT_EXECUTOR, factory);
   }
 
-  public static <R> BuilderK<Kind<Kind<ZIO_, R>, Nothing>> async(Executor executor, Producer<R> factory) {
-    return new BuilderK<>(monad(), zioAsync(factory, executor));
+  public static <R> BuilderK<Kind<Kind<ZIO_, R>, Nothing>, ZIOMockHttpServer<R>> async(Executor executor, Producer<R> factory) {
+    return _builder(zioAsync(factory, executor));
   }
 
   public static <R> ZIOMockHttpServer<R> listenAt(R env, int port) {
-    return new ZIOMockHttpServer<>(builder(Producer.cons(env)).port(port).build());
+    return sync(Producer.cons(env)).port(port).build();
   }
 
   public ZIOMockHttpServer<R> mount(String path, HttpZIOService<R> other) {
@@ -144,5 +144,15 @@ public final class ZIOMockHttpServer<R> implements HttpServer {
   @Override
   public void reset() {
     serverK.reset();
+  }
+
+  private static <R> BuilderK<Kind<Kind<ZIO_, R>, Nothing>, ZIOMockHttpServer<R>> _builder(
+      ResponseInterpreterK<Kind<Kind<ZIO_, R>, Nothing>> zioAsync) {
+    return new BuilderK<Kind<Kind<ZIO_, R>, Nothing>, ZIOMockHttpServer<R>>(monad(), zioAsync) {
+      @Override
+      public ZIOMockHttpServer<R> build() {
+        return new ZIOMockHttpServer<>(buildK());
+      }
+    };
   }
 }

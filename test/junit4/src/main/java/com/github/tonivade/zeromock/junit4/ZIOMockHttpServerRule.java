@@ -5,7 +5,7 @@
 package com.github.tonivade.zeromock.junit4;
 
 import static com.github.tonivade.purefun.Producer.cons;
-import static com.github.tonivade.zeromock.server.ZIOMockHttpServer.builder;
+import static com.github.tonivade.zeromock.server.ZIOMockHttpServer.sync;
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Nothing;
 import com.github.tonivade.purefun.effect.ZIO_;
@@ -17,6 +17,6 @@ public class ZIOMockHttpServerRule<R> extends AbstractMockServerRule<Kind<Kind<Z
   }
 
   public ZIOMockHttpServerRule(R env, int port) {
-    super(builder(cons(env)).port(port).build());
+    super(sync(cons(env)).port(port).buildK());
   }
 }

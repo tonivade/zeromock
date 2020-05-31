@@ -48,12 +48,17 @@ public final class AsyncMockHttpServer implements HttpServer {
     return serverK.getPath();
   }
 
-  public static BuilderK<Future_> builder() {
-    return new BuilderK<>(monad(), async());
+  public static BuilderK<Future_, AsyncMockHttpServer> builder() {
+    return new BuilderK<Future_, AsyncMockHttpServer>(monad(), async()) {
+      @Override
+      public AsyncMockHttpServer build() {
+        return new AsyncMockHttpServer(buildK());
+      }
+    };
   }
 
   public static AsyncMockHttpServer listenAt(int port) {
-    return new AsyncMockHttpServer(builder().port(port).build());
+    return builder().port(port).build();
   }
 
   public AsyncMockHttpServer mount(String path, AsyncHttpService other) {

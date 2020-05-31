@@ -15,6 +15,6 @@ public class AsyncMockHttpServerRule extends AbstractMockServerRule<Future_> {
   }
 
   public AsyncMockHttpServerRule(int port) {
-    super(builder().port(port).build());
+    super(builder().port(port).buildK());
   }
 }

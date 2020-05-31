@@ -45,12 +45,17 @@ public final class MockHttpServer implements HttpServer {
     return serverK.getPath();
   }
 
-  public static BuilderK<Id_> builder() {
-    return new BuilderK<>(monad(), sync());
+  public static BuilderK<Id_, MockHttpServer> builder() {
+    return new BuilderK<Id_, MockHttpServer>(monad(), sync()) {
+      @Override
+      public MockHttpServer build() {
+        return new MockHttpServer(buildK());
+      }
+    };
   }
 
   public static MockHttpServer listenAt(int port) {
-    return new MockHttpServer(builder().port(port).build());
+    return builder().port(port).build();
   }
 
   public MockHttpServer mount(String path, HttpService other) {

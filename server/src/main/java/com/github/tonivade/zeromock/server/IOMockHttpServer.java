@@ -51,20 +51,20 @@ public final class IOMockHttpServer implements HttpServer {
     return serverK.getPath();
   }
 
-  public static BuilderK<IO_> sync() {
-    return new BuilderK<>(monad(), ioSync());
+  public static BuilderK<IO_, IOMockHttpServer> sync() {
+    return _builder(ioSync());
   }
 
-  public static BuilderK<IO_> async() {
+  public static BuilderK<IO_, IOMockHttpServer> async() {
     return async(DEFAULT_EXECUTOR);
   }
 
-  public static BuilderK<IO_> async(Executor executor) {
-    return new BuilderK<>(monad(), ioAsync(executor));
+  public static BuilderK<IO_, IOMockHttpServer> async(Executor executor) {
+    return _builder(ioAsync(executor));
   }
 
   public static IOMockHttpServer listenAt(int port) {
-    return new IOMockHttpServer(sync().port(port).build());
+    return sync().port(port).build();
   }
 
   public IOMockHttpServer mount(String path, HttpIOService other) {
@@ -144,5 +144,14 @@ public final class IOMockHttpServer implements HttpServer {
   @Override
   public void reset() {
     serverK.reset();
+  }
+
+  private static BuilderK<IO_, IOMockHttpServer> _builder(ResponseInterpreterK<IO_> interpreter) {
+    return new BuilderK<IO_, IOMockHttpServer>(monad(), interpreter) {
+      @Override
+      public IOMockHttpServer build() {
+        return new IOMockHttpServer(buildK());
+      }
+    };
   }
 }

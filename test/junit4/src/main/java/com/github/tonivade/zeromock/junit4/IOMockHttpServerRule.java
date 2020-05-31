@@ -15,6 +15,6 @@ public class IOMockHttpServerRule extends AbstractMockServerRule<IO_> {
   }
 
   public IOMockHttpServerRule(int port) {
-    super(sync().port(port).build());
+    super(sync().port(port).buildK());
   }
 }

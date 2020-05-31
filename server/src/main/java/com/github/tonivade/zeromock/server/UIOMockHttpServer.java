@@ -51,20 +51,20 @@ public final class UIOMockHttpServer implements HttpServer {
     return serverK.getPath();
   }
 
-  public static BuilderK<UIO_> sync() {
-    return new BuilderK<>(monad(), uioSync());
+  public static BuilderK<UIO_, UIOMockHttpServer> sync() {
+    return _builder(uioSync());
   }
 
-  public static BuilderK<UIO_> async() {
+  public static BuilderK<UIO_, UIOMockHttpServer> async() {
     return async(DEFAULT_EXECUTOR);
   }
 
-  public static BuilderK<UIO_> async(Executor executor) {
-    return new BuilderK<>(monad(), uioAsync(executor));
+  public static BuilderK<UIO_, UIOMockHttpServer> async(Executor executor) {
+    return _builder(uioAsync(executor));
   }
 
   public static UIOMockHttpServer listenAt(int port) {
-    return new UIOMockHttpServer(sync().port(port).build());
+    return sync().port(port).build();
   }
 
   public UIOMockHttpServer mount(String path, HttpUIOService other) {
@@ -144,5 +144,14 @@ public final class UIOMockHttpServer implements HttpServer {
   @Override
   public void reset() {
     serverK.reset();
+  }
+
+  private static BuilderK<UIO_, UIOMockHttpServer> _builder(ResponseInterpreterK<UIO_> interpreter) {
+    return new BuilderK<UIO_, UIOMockHttpServer>(monad(), interpreter) {
+      @Override
+      public UIOMockHttpServer build() {
+        return new UIOMockHttpServer(buildK());
+      }
+    };
   }
 }
