@@ -61,7 +61,7 @@ public class ZIOMockHttpServerTest {
   private HttpZIOService<Nothing> service3 = new HttpZIOService<Nothing>("other")
       .when(get("/ping")).then(request -> ZIO.pure(ok("pong")));
 
-  private static ZIOMockHttpServer<Nothing> server = listenAt(nothing(), 8080);
+  private static ZIOMockHttpServer<Nothing> server = listenAt(nothing(), 0);
 
   @Test
   public void hello() {

@@ -59,7 +59,7 @@ public class UIOMockHttpServerTest {
 
   private final HttpUIOService service3 = new HttpUIOService("other").when(get("/ping")).then(request -> UIO.pure(ok("pong")));
 
-  private static UIOMockHttpServer server = listenAt(8080);
+  private static UIOMockHttpServer server = listenAt(0);
 
   @Test
   public void hello() {
