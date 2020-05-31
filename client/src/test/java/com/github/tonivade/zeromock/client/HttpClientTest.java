@@ -26,10 +26,8 @@ import com.github.tonivade.zeromock.server.MockHttpServer;
 
 class HttpClientTest {
 
-  public static final String BASE_URL = "http://localhost:8080";
-
   private static final MockHttpServer server =
-      listenAt(8080).when(get("/ping")).then(ok("pong"));
+      listenAt(0).when(get("/ping")).then(ok("pong"));
 
   private final HttpRequest ping = Requests.get("/ping");
 
@@ -40,35 +38,35 @@ class HttpClientTest {
 
   @Test
   void test() {
-    HttpResponse response = HttpClient.connectTo(BASE_URL).request(ping);
+    HttpResponse response = HttpClient.connectTo(baseUrl()).request(ping);
 
     assertResponse(response);
   }
 
   @Test
   void async() {
-    Future<HttpResponse> response = AsyncHttpClient.connectTo(BASE_URL).request(ping);
+    Future<HttpResponse> response = AsyncHttpClient.connectTo(baseUrl()).request(ping);
 
     assertResponse(response.get());
   }
 
   @Test
   void io() {
-    IO<HttpResponse> response = IOHttpClient.connectTo(BASE_URL).request(ping);
+    IO<HttpResponse> response = IOHttpClient.connectTo(baseUrl()).request(ping);
 
     assertResponse(response.unsafeRunSync());
   }
 
   @Test
   void uio() {
-    UIO<HttpResponse> response = UIOHttpClient.connectTo(BASE_URL).request(ping);
+    UIO<HttpResponse> response = UIOHttpClient.connectTo(baseUrl()).request(ping);
 
     assertResponse(response.unsafeRunSync());
   }
 
   @Test
   void task() {
-    Task<HttpResponse> response = TaskHttpClient.connectTo(BASE_URL).request(ping);
+    Task<HttpResponse> response = TaskHttpClient.connectTo(baseUrl()).request(ping);
 
     assertResponse(response.safeRunSync().get());
   }
@@ -81,5 +79,9 @@ class HttpClientTest {
   private void assertResponse(HttpResponse response) {
     assertEquals(HttpStatus.OK, response.status());
     assertEquals(Bytes.asBytes("pong"), response.body());
+  }
+
+  private String baseUrl() {
+    return "http://localhost:" + server.getPort();
   }
 }
