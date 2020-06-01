@@ -221,7 +221,7 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
     private final ResponseInterpreterK<F> interpreter;
     private final Builder builder;
 
-    public BuilderK(Monad<F> monad, ResponseInterpreterK<F> interpreter) {
+    protected BuilderK(Monad<F> monad, ResponseInterpreterK<F> interpreter) {
       this.builder = new Builder();
       this.monad = requireNonNull(monad);
       this.interpreter = requireNonNull(interpreter);
