@@ -8,7 +8,6 @@ import static com.github.tonivade.zeromock.api.Bytes.asBytes;
 import static com.github.tonivade.zeromock.api.Responses.error;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.requireNonNull;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
@@ -20,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
-
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Witness;
@@ -72,7 +70,8 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
   public int getPort() {
     return server.getAddress().getPort();
   }
-  
+
+  @Override
   public String getPath() {
     return context.getPath();
   }
@@ -216,12 +215,12 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
     }
   }
 
-  public static abstract class BuilderK<F extends Witness, T> {
-    
+  public abstract static class BuilderK<F extends Witness, T extends com.github.tonivade.zeromock.server.HttpServer> {
+
     private final Monad<F> monad;
     private final ResponseInterpreterK<F> interpreter;
     private final Builder builder;
-    
+
     public BuilderK(Monad<F> monad, ResponseInterpreterK<F> interpreter) {
       this.builder = new Builder();
       this.monad = requireNonNull(monad);
@@ -249,9 +248,9 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
     }
 
     public MockHttpServerK<F> buildK() {
-      return new MockHttpServerK<F>(builder.build(), monad, interpreter);
+      return new MockHttpServerK<>(builder.build(), monad, interpreter);
     }
-    
+
     public abstract T build();
   }
 
