@@ -125,7 +125,7 @@ It's pretty simple, using jbang
 ```java
 //usr/bin/env jbang "$0" "$@" ; exit $?
 
-//DEPS com.github.tonivade:zeromock-server:0.12.0
+//DEPS com.github.tonivade:zeromock-server:0.13.0
 
 import static com.github.tonivade.zeromock.api.Handlers.ok;
 import static com.github.tonivade.zeromock.api.Matchers.get;
@@ -146,7 +146,7 @@ and with kscript:
 ```kotlin
 #!/usr/bin/env kscript
 
-//DEPS com.github.tonivade:zeromock-server:0.12.0
+//DEPS com.github.tonivade:zeromock-server:0.13.0
 
 import com.github.tonivade.zeromock.api.Matchers.get
 import com.github.tonivade.zeromock.api.Handlers.ok
