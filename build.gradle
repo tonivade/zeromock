@@ -50,6 +50,14 @@ allprojects {
       destinationFile = file("${buildDir}/jacoco/test.exec")
     }
   }
+  
+  compileJava {
+    options.release = 8
+  }
+  
+  compileTestJava {
+    options.release = 8
+  }
 
   jacoco {
     toolVersion = '0.8.5'
