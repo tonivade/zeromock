@@ -20,7 +20,6 @@ import com.github.tonivade.purefun.effect.UIO_;
 import com.github.tonivade.purefun.instances.UIOInstances;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpUIOService;
-import com.github.tonivade.zeromock.api.HttpUIOService.MappingBuilder;
 import com.github.tonivade.zeromock.api.PostFilter;
 import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.api.UIOPostFilter;
@@ -34,7 +33,7 @@ public final class UIOMockHttpServer implements HttpServer {
 
   @SuppressWarnings("restriction")
   public UIOMockHttpServer(com.sun.net.httpserver.HttpServer server) {
-    this(new MockHttpServerK<UIO_>(server, monad(), uioSync()));
+    this(new MockHttpServerK<>(server, monad(), uioSync()));
   }
 
   private UIOMockHttpServer(MockHttpServerK<UIO_> serverK) {
@@ -77,8 +76,8 @@ public final class UIOMockHttpServer implements HttpServer {
     return this;
   }
 
-  public MappingBuilder<UIOMockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::addPreFilter).when(matcher);
+  public HttpUIOService.ThenStep<UIOMockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
+    return handler -> addPreFilter(matcher, handler);
   }
 
   public UIOMockHttpServer preFilter(PreFilter filter) {
@@ -109,8 +108,8 @@ public final class UIOMockHttpServer implements HttpServer {
     return this;
   }
 
-  public MappingBuilder<UIOMockHttpServer> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::addMapping).when(matcher);
+  public HttpUIOService.ThenStep<UIOMockHttpServer> when(Matcher1<HttpRequest> matcher) {
+    return handler -> addMapping(matcher, handler);
   }
 
   @Override

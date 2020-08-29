@@ -6,7 +6,7 @@ package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.zeromock.api.PreFilter.filter;
 import static java.util.Objects.requireNonNull;
-import com.github.tonivade.purefun.Function2;
+
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.instances.IdInstances;
 import com.github.tonivade.purefun.type.IdOf;
@@ -41,8 +41,8 @@ public final class HttpService {
     return new HttpService(serviceK.exec(handler.liftId()::apply));
   }
 
-  public MappingBuilder<HttpService> preFilter(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::addPreFilter).when(requireNonNull(matcher));
+  public ThenStep<HttpService> preFilter(Matcher1<HttpRequest> matcher) {
+    return handler -> addPreFilter(matcher, handler);
   }
 
   public HttpService preFilter(PreFilter filter) {
@@ -53,8 +53,8 @@ public final class HttpService {
     return new HttpService(serviceK.postFilter(filter.liftId()::apply));
   }
 
-  public MappingBuilder<HttpService> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::addMapping).when(matcher);
+  public ThenStep<HttpService> when(Matcher1<HttpRequest> matcher) {
+    return handler -> addMapping(matcher, handler);
   }
 
   public Option<HttpResponse> execute(HttpRequest request) {
@@ -77,22 +77,9 @@ public final class HttpService {
   public String toString() {
     return "HttpService(" + serviceK.name() + ")";
   }
-
-  public static final class MappingBuilder<T> {
-    private final Function2<Matcher1<HttpRequest>, RequestHandler, T> finisher;
-    private Matcher1<HttpRequest> matcher;
-
-    public MappingBuilder(Function2<Matcher1<HttpRequest>, RequestHandler, T> finisher) {
-      this.finisher = requireNonNull(finisher);
-    }
-
-    public MappingBuilder<T> when(Matcher1<HttpRequest> matcher) {
-      this.matcher = matcher;
-      return this;
-    }
-
-    public T then(RequestHandler handler) {
-      return finisher.apply(matcher, handler);
-    }
+  
+  @FunctionalInterface
+  public interface ThenStep<T> {
+    T then(RequestHandler handler);
   }
 }

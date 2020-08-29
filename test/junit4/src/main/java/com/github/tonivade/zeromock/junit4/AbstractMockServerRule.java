@@ -5,12 +5,13 @@
 package com.github.tonivade.zeromock.junit4;
 
 import static java.util.Objects.requireNonNull;
+
 import org.junit.rules.ExternalResource;
+
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Witness;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpServiceK;
-import com.github.tonivade.zeromock.api.HttpServiceK.MappingBuilderK;
 import com.github.tonivade.zeromock.api.RequestHandlerK;
 import com.github.tonivade.zeromock.client.HttpClient;
 import com.github.tonivade.zeromock.server.MockHttpServerK;
@@ -52,8 +53,8 @@ public abstract class AbstractMockServerRule<F extends Witness> extends External
     return this;
   }
 
-  public MappingBuilderK<F, AbstractMockServerRule<F>> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilderK<>(this::addMapping).when(matcher);
+  public HttpServiceK.ThenStep<F, AbstractMockServerRule<F>> when(Matcher1<HttpRequest> matcher) {
+    return handler -> addMapping(matcher, handler);
   }
 
   public AbstractMockServerRule<F> mount(String path, HttpServiceK<F> service) {

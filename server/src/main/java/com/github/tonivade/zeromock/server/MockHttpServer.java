@@ -16,7 +16,6 @@ import com.github.tonivade.purefun.instances.IdInstances;
 import com.github.tonivade.purefun.type.Id_;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpService;
-import com.github.tonivade.zeromock.api.HttpService.MappingBuilder;
 import com.github.tonivade.zeromock.api.PostFilter;
 import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.api.RequestHandler;
@@ -28,7 +27,7 @@ public final class MockHttpServer implements HttpServer {
 
   @SuppressWarnings("restriction")
   public MockHttpServer(com.sun.net.httpserver.HttpServer server) {
-    this(new MockHttpServerK<Id_>(server, monad(), sync()));
+    this(new MockHttpServerK<>(server, monad(), sync()));
   }
 
   private MockHttpServer(MockHttpServerK<Id_> serverK) {
@@ -68,8 +67,8 @@ public final class MockHttpServer implements HttpServer {
     return this;
   }
 
-  public MappingBuilder<MockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::addPreFilter).when(matcher);
+  public HttpService.ThenStep<MockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
+    return handler -> addPreFilter(matcher, handler);
   }
 
   public MockHttpServer preFilter(PreFilter filter) {
@@ -92,8 +91,8 @@ public final class MockHttpServer implements HttpServer {
     return this;
   }
 
-  public MappingBuilder<MockHttpServer> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::addMapping).when(matcher);
+  public HttpService.ThenStep<MockHttpServer> when(Matcher1<HttpRequest> matcher) {
+    return handler -> addMapping(matcher, handler);
   }
 
   @Override

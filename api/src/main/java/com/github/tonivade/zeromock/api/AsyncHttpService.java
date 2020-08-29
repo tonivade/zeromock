@@ -6,7 +6,6 @@ package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
-import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.concurrent.FutureOf;
@@ -43,8 +42,8 @@ public final class AsyncHttpService {
     return new AsyncHttpService(serviceK.exec(handler));
   }
 
-  public MappingBuilder<AsyncHttpService> preFilter(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::addPreFilter).when(requireNonNull(matcher));
+  public ThenStep<AsyncHttpService> preFilter(Matcher1<HttpRequest> matcher) {
+    return handler -> addPreFilter(matcher, handler);
   }
 
   public AsyncHttpService preFilter(PreFilter filter) {
@@ -63,8 +62,8 @@ public final class AsyncHttpService {
     return new AsyncHttpService(serviceK.postFilter(filter));
   }
 
-  public MappingBuilder<AsyncHttpService> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::addMapping).when(matcher);
+  public ThenStep<AsyncHttpService> when(Matcher1<HttpRequest> matcher) {
+    return handler -> addMapping(matcher, handler);
   }
 
   public Promise<Option<HttpResponse>> execute(HttpRequest request) {
@@ -87,22 +86,9 @@ public final class AsyncHttpService {
   public String toString() {
     return "AsyncHttpService(" + serviceK.name() + ")";
   }
-
-  public static final class MappingBuilder<T> {
-    private final Function2<Matcher1<HttpRequest>, AsyncRequestHandler, T> finisher;
-    private Matcher1<HttpRequest> matcher;
-
-    public MappingBuilder(Function2<Matcher1<HttpRequest>, AsyncRequestHandler, T> finisher) {
-      this.finisher = requireNonNull(finisher);
-    }
-
-    public MappingBuilder<T> when(Matcher1<HttpRequest> matcher) {
-      this.matcher = matcher;
-      return this;
-    }
-
-    public T then(AsyncRequestHandler handler) {
-      return finisher.apply(matcher, handler);
-    }
+  
+  @FunctionalInterface
+  public interface ThenStep<T> {
+    T then(AsyncRequestHandler handler);
   }
 }

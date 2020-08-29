@@ -8,6 +8,7 @@ import static com.github.tonivade.zeromock.api.Bytes.asBytes;
 import static com.github.tonivade.zeromock.api.Responses.error;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.requireNonNull;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
+
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Witness;
@@ -32,7 +34,6 @@ import com.github.tonivade.zeromock.api.HttpPath;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpServiceK;
-import com.github.tonivade.zeromock.api.HttpServiceK.MappingBuilderK;
 import com.github.tonivade.zeromock.api.PostFilterK;
 import com.github.tonivade.zeromock.api.PreFilterK;
 import com.github.tonivade.zeromock.api.RequestHandlerK;
@@ -86,12 +87,12 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
     return this;
   }
 
-  public MappingBuilderK<F, MockHttpServerK<F>> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilderK<>(this::addMapping).when(requireNonNull(matcher));
+  public HttpServiceK.ThenStep<F, MockHttpServerK<F>> when(Matcher1<HttpRequest> matcher) {
+    return handler -> addMapping(matcher, handler);
   }
 
-  public MappingBuilderK<F, MockHttpServerK<F>> preFilter(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilderK<>(this::addPreFilter).when(requireNonNull(matcher));
+  public HttpServiceK.ThenStep<F, MockHttpServerK<F>> preFilter(Matcher1<HttpRequest> matcher) {
+    return handler -> addPreFilter(matcher, handler);
   }
 
   public MockHttpServerK<F> preFilter(PreFilterK<F> filter) {

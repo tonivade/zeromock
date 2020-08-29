@@ -16,7 +16,6 @@ import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.concurrent.Future_;
 import com.github.tonivade.purefun.instances.FutureInstances;
 import com.github.tonivade.zeromock.api.AsyncHttpService;
-import com.github.tonivade.zeromock.api.AsyncHttpService.MappingBuilder;
 import com.github.tonivade.zeromock.api.AsyncPostFilter;
 import com.github.tonivade.zeromock.api.AsyncPreFilter;
 import com.github.tonivade.zeromock.api.AsyncRequestHandler;
@@ -31,7 +30,7 @@ public final class AsyncMockHttpServer implements HttpServer {
 
   @SuppressWarnings("restriction")
   public AsyncMockHttpServer(com.sun.net.httpserver.HttpServer server) {
-    this(new MockHttpServerK<Future_>(server, monad(), async()));
+    this(new MockHttpServerK<>(server, monad(), async()));
   }
 
   private AsyncMockHttpServer(MockHttpServerK<Future_> serverK) {
@@ -71,8 +70,8 @@ public final class AsyncMockHttpServer implements HttpServer {
     return this;
   }
 
-  public MappingBuilder<AsyncMockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::addPreFilter).when(requireNonNull(matcher));
+  public AsyncHttpService.ThenStep<AsyncMockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
+    return handler -> addPreFilter(matcher, handler);
   }
 
   public AsyncMockHttpServer preFilter(PreFilter filter) {
@@ -103,8 +102,8 @@ public final class AsyncMockHttpServer implements HttpServer {
     return this;
   }
 
-  public MappingBuilder<AsyncMockHttpServer> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::addMapping).when(matcher);
+  public AsyncHttpService.ThenStep<AsyncMockHttpServer> when(Matcher1<HttpRequest> matcher) {
+    return handler -> addMapping(matcher, handler);
   }
 
   @Override

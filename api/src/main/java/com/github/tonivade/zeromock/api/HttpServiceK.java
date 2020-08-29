@@ -11,8 +11,8 @@ import static com.github.tonivade.zeromock.api.Matchers.startsWith;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static com.github.tonivade.zeromock.api.Responses.notFound;
 import static java.util.Objects.requireNonNull;
+
 import com.github.tonivade.purefun.Function1;
-import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.PartialFunction1;
@@ -66,12 +66,12 @@ public final class HttpServiceK<F extends Witness> {
     return _addMapping(all(), handler);
   }
 
-  public MappingBuilderK<F, HttpServiceK<F>> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilderK<>(this::addMapping).when(requireNonNull(matcher));
+  public ThenStep<F, HttpServiceK<F>> when(Matcher1<HttpRequest> matcher) {
+    return handler -> addMapping(matcher, handler);
   }
 
-  public MappingBuilderK<F, HttpServiceK<F>> preFilter(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilderK<>(this::addPreFilter).when(requireNonNull(matcher));
+  public ThenStep<F, HttpServiceK<F>> preFilter(Matcher1<HttpRequest> matcher) {
+    return handler -> addPreFilter(matcher, handler);
   }
 
   public HttpServiceK<F> preFilter(PreFilterK<F> filter) {
@@ -153,22 +153,9 @@ public final class HttpServiceK<F extends Witness> {
         this.postFilters.andThen(value -> monad.flatMap(value, filter))::apply
     );
   }
-
-  public static final class MappingBuilderK<F extends Witness, T> {
-    private final Function2<Matcher1<HttpRequest>, RequestHandlerK<F>, T> finisher;
-    private Matcher1<HttpRequest> matcher;
-
-    public MappingBuilderK(Function2<Matcher1<HttpRequest>, RequestHandlerK<F>, T> finisher) {
-      this.finisher = requireNonNull(finisher);
-    }
-
-    public MappingBuilderK<F, T> when(Matcher1<HttpRequest> matcher) {
-      this.matcher = requireNonNull(matcher);
-      return this;
-    }
-
-    public T then(RequestHandlerK<F> handler) {
-      return finisher.apply(matcher, handler);
-    }
+  
+  @FunctionalInterface
+  public interface ThenStep<F extends Witness, T> {
+    T then(RequestHandlerK<F> handler);
   }
 }

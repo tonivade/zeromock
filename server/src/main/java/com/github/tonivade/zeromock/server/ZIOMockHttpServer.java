@@ -25,7 +25,6 @@ import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpZIOService;
-import com.github.tonivade.zeromock.api.HttpZIOService.MappingBuilder;
 import com.github.tonivade.zeromock.api.PostFilter;
 import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.api.ZIOPostFilter;
@@ -77,8 +76,8 @@ public final class ZIOMockHttpServer<R> implements HttpServer {
     return this;
   }
 
-  public MappingBuilder<R, ZIOMockHttpServer<R>> preFilter(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::addMapping).when(matcher);
+  public HttpZIOService.ThenStep<R, ZIOMockHttpServer<R>> preFilter(Matcher1<HttpRequest> matcher) {
+    return handler -> addPreFilter(matcher, handler);
   }
 
   public ZIOMockHttpServer<R> preFilter(PreFilter filter) {
@@ -109,8 +108,8 @@ public final class ZIOMockHttpServer<R> implements HttpServer {
     return this;
   }
 
-  public MappingBuilder<R, ZIOMockHttpServer<R>> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::addMapping).when(matcher);
+  public HttpZIOService.ThenStep<R, ZIOMockHttpServer<R>> when(Matcher1<HttpRequest> matcher) {
+    return handler -> addMapping(matcher, handler);
   }
 
   @Override

@@ -7,7 +7,7 @@ package com.github.tonivade.zeromock.api;
 import static com.github.tonivade.purefun.Function1.cons;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
-import com.github.tonivade.purefun.Function2;
+
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Nothing;
@@ -42,8 +42,8 @@ public final class HttpZIOService<R> {
     return new HttpZIOService<>(serviceK.exec(cons(method)::apply));
   }
 
-  public MappingBuilder<R, HttpZIOService<R>> preFilter(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::addPreFilter).when(requireNonNull(matcher));
+  public ThenStep<R, HttpZIOService<R>> preFilter(Matcher1<HttpRequest> matcher) {
+    return handler -> addPreFilter(matcher, handler);
   }
 
   public HttpZIOService<R> preFilter(PreFilter filter) {
@@ -62,8 +62,8 @@ public final class HttpZIOService<R> {
     return new HttpZIOService<>(serviceK.postFilter(filter));
   }
 
-  public MappingBuilder<R, HttpZIOService<R>> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::addMapping).when(matcher);
+  public ThenStep<R, HttpZIOService<R>> when(Matcher1<HttpRequest> matcher) {
+    return handler -> addMapping(matcher, handler);
   }
 
   public ZIO<R, Nothing, Option<HttpResponse>> execute(HttpRequest request) {
@@ -90,22 +90,9 @@ public final class HttpZIOService<R> {
   public String toString() {
     return "HttpZIOService(" + serviceK.name() + ")";
   }
-
-  public static final class MappingBuilder<R, T> {
-    private final Function2<Matcher1<HttpRequest>, ZIORequestHandler<R>, T> finisher;
-    private Matcher1<HttpRequest> matcher;
-
-    public MappingBuilder(Function2<Matcher1<HttpRequest>, ZIORequestHandler<R>, T> finisher) {
-      this.finisher = requireNonNull(finisher);
-    }
-
-    public MappingBuilder<R, T> when(Matcher1<HttpRequest> matcher) {
-      this.matcher = matcher;
-      return this;
-    }
-
-    public T then(ZIORequestHandler<R> handler) {
-      return finisher.apply(matcher, handler);
-    }
+  
+  @FunctionalInterface
+  public interface ThenStep<R, T> {
+    T then(ZIORequestHandler<R> handler);
   }
 }

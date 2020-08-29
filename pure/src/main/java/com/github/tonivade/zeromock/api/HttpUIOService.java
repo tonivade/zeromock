@@ -6,7 +6,7 @@ package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
-import com.github.tonivade.purefun.Function2;
+
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purefun.effect.UIOOf;
@@ -38,8 +38,8 @@ public final class HttpUIOService {
     return new HttpUIOService(serviceK.exec(handler));
   }
 
-  public MappingBuilder<HttpUIOService> preFilter(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::addPreFilter).when(requireNonNull(matcher));
+  public ThenStep<HttpUIOService> preFilter(Matcher1<HttpRequest> matcher) {
+    return handler -> addPreFilter(matcher, handler);
   }
 
   public HttpUIOService preFilter(PreFilter filter) {
@@ -58,8 +58,8 @@ public final class HttpUIOService {
     return new HttpUIOService(serviceK.postFilter(filter));
   }
 
-  public MappingBuilder<HttpUIOService> when(Matcher1<HttpRequest> matcher) {
-    return new MappingBuilder<>(this::addMapping).when(matcher);
+  public ThenStep<HttpUIOService> when(Matcher1<HttpRequest> matcher) {
+    return handler -> addMapping(matcher, handler);
   }
 
   public UIO<Option<HttpResponse>> execute(HttpRequest request) {
@@ -86,22 +86,9 @@ public final class HttpUIOService {
   public String toString() {
     return "HttpUIOService(" + serviceK.name() + ")";
   }
-
-  public static final class MappingBuilder<T> {
-    private final Function2<Matcher1<HttpRequest>, UIORequestHandler, T> finisher;
-    private Matcher1<HttpRequest> matcher;
-
-    public MappingBuilder(Function2<Matcher1<HttpRequest>, UIORequestHandler, T> finisher) {
-      this.finisher = requireNonNull(finisher);
-    }
-
-    public MappingBuilder<T> when(Matcher1<HttpRequest> matcher) {
-      this.matcher = matcher;
-      return this;
-    }
-
-    public T then(UIORequestHandler handler) {
-      return finisher.apply(matcher, handler);
-    }
+  
+  @FunctionalInterface
+  public interface ThenStep<T> {
+    T then(UIORequestHandler handler);
   }
 }
