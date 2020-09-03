@@ -90,9 +90,8 @@ public interface ResponseInterpreterK<F extends Witness> {
       Producer<R> factory, Executor executor) {
     return response -> {
       ZIO<R, Nothing, HttpResponse> effect = response.fix(ZIOOf::narrowK);
-      Kind<Future_, Either<Nothing, HttpResponse>> future = 
-          effect.foldMap(factory.get(), FutureInstances.monadDefer(executor));
-      return future.fix(FutureOf::narrowK).map(Either::get).toPromise();
+      Kind<Future_, HttpResponse> future = effect.foldMap(factory.get(), FutureInstances.monadDefer(executor));
+      return future.fix(FutureOf::narrowK).toPromise();
     };
   }
 }
