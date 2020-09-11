@@ -8,10 +8,11 @@ import static com.github.tonivade.purefun.monad.IOOf.toIO;
 import static java.util.Objects.requireNonNull;
 import com.github.tonivade.purefun.instances.IOInstances;
 import com.github.tonivade.purefun.monad.IO_;
+import com.github.tonivade.purefun.type.Id_;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 
-public class HttpClient {
+public class HttpClient implements HttpClientOf<Id_> {
 
   // using IO here because there's no instance for MonadDefer for Id
   private final HttpClientK<IO_> client;

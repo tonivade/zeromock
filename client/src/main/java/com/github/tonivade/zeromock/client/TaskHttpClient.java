@@ -12,7 +12,7 @@ import com.github.tonivade.purefun.instances.TaskInstances;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 
-public class TaskHttpClient {
+public class TaskHttpClient implements HttpClientOf<Task_> {
 
   private final HttpClientK<Task_> client;
 

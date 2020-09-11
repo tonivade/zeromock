@@ -12,7 +12,7 @@ import com.github.tonivade.purefun.instances.UIOInstances;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 
-public class UIOHttpClient {
+public class UIOHttpClient implements HttpClientOf<UIO_> {
 
   private final HttpClientK<UIO_> client;
 

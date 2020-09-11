@@ -12,7 +12,7 @@ import com.github.tonivade.purefun.instances.FutureInstances;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 
-public class AsyncHttpClient {
+public class AsyncHttpClient implements HttpClientOf<Future_> {
 
   private final HttpClientK<Future_> client;
 
