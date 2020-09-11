@@ -4,6 +4,7 @@
  */
 package com.github.tonivade.zeromock.api;
 
+import static com.github.tonivade.purefun.concurrent.FutureOf.toFuture;
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.concurrent.FutureOf;
 import com.github.tonivade.purefun.concurrent.Future_;
@@ -14,7 +15,7 @@ public interface AsyncRequestHandler extends RequestHandlerK<Future_> {
 
   @Override
   default Future<HttpResponse> apply(HttpRequest value) {
-    return RequestHandlerK.super.apply(value).fix(FutureOf::narrowK);
+    return RequestHandlerK.super.apply(value).fix(toFuture());
   }
 
   default AsyncRequestHandler preHandle(AsyncPreFilter before) {

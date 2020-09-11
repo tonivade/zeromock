@@ -25,6 +25,6 @@ public class IOHttpClient {
   }
 
   public IO<HttpResponse> request(HttpRequest request) {
-    return client.request(request).fix(IOOf::narrowK);
+    return client.request(request).fix(IOOf.toIO());
   }
 }

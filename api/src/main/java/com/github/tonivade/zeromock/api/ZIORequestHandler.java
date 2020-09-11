@@ -15,7 +15,7 @@ public interface ZIORequestHandler<R> extends RequestHandlerK<Kind<Kind<ZIO_, R>
 
   @Override
   default ZIO<R, Nothing, HttpResponse> apply(HttpRequest value) {
-    return RequestHandlerK.super.apply(value).fix(ZIOOf::narrowK);
+    return RequestHandlerK.super.apply(value).fix(ZIOOf.toZIO());
   }
 
   default ZIORequestHandler<R> preHandle(ZIOPreFilter<R> before) {

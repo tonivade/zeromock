@@ -4,6 +4,7 @@
  */
 package com.github.tonivade.zeromock.api;
 
+import static com.github.tonivade.purefun.monad.IOOf.toIO;
 import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.purefun.monad.IOOf;
 import com.github.tonivade.purefun.monad.IO_;
@@ -13,6 +14,6 @@ public interface IOPreFilter extends PreFilterK<IO_> {
 
   @Override
   default IO<Either<HttpResponse, HttpRequest>> apply(HttpRequest value) {
-    return PreFilterK.super.apply(value).fix(IOOf::narrowK);
+    return PreFilterK.super.apply(value).fix(toIO());
   }
 }

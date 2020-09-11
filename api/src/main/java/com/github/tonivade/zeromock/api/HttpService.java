@@ -4,12 +4,11 @@
  */
 package com.github.tonivade.zeromock.api;
 
+import static com.github.tonivade.purefun.type.IdOf.toId;
 import static com.github.tonivade.zeromock.api.PreFilter.filter;
 import static java.util.Objects.requireNonNull;
-
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.instances.IdInstances;
-import com.github.tonivade.purefun.type.IdOf;
 import com.github.tonivade.purefun.type.Id_;
 import com.github.tonivade.purefun.type.Option;
 
@@ -58,7 +57,7 @@ public final class HttpService {
   }
 
   public Option<HttpResponse> execute(HttpRequest request) {
-    return serviceK.execute(request).fix(IdOf::narrowK).get();
+    return serviceK.execute(request).fix(toId()).get();
   }
 
   public HttpService combine(HttpService other) {

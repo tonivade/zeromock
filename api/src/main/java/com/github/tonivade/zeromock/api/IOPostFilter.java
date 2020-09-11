@@ -4,15 +4,15 @@
  */
 package com.github.tonivade.zeromock.api;
 
+import static com.github.tonivade.purefun.monad.IOOf.toIO;
 import com.github.tonivade.purefun.monad.IO;
-import com.github.tonivade.purefun.monad.IOOf;
 import com.github.tonivade.purefun.monad.IO_;
 
 public interface IOPostFilter extends PostFilterK<IO_> {
 
   @Override
   default IO<HttpResponse> apply(HttpResponse value) {
-    return PostFilterK.super.apply(value).fix(IOOf::narrowK);
+    return PostFilterK.super.apply(value).fix(toIO());
   }
 }
 

@@ -15,6 +15,6 @@ public interface ZIOPreFilter<R> extends PreFilterK<Kind<Kind<ZIO_, R>, Nothing>
 
   @Override
   default ZIO<R, Nothing, Either<HttpResponse, HttpRequest>> apply(HttpRequest value) {
-    return PreFilterK.super.apply(value).fix(ZIOOf::narrowK);
+    return PreFilterK.super.apply(value).fix(ZIOOf.toZIO());
   }
 }

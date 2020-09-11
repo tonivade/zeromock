@@ -5,6 +5,7 @@
 package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.purefun.Function1.cons;
+import static com.github.tonivade.purefun.effect.ZIOOf.toZIO;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
 
@@ -67,7 +68,7 @@ public final class HttpZIOService<R> {
   }
 
   public ZIO<R, Nothing, Option<HttpResponse>> execute(HttpRequest request) {
-    return serviceK.execute(request).fix(ZIOOf::narrowK);
+    return serviceK.execute(request).fix(toZIO());
   }
 
   public HttpZIOService<R> combine(HttpZIOService<R> other) {

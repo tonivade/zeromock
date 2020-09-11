@@ -4,6 +4,7 @@
  */
 package com.github.tonivade.zeromock.api;
 
+import static com.github.tonivade.purefun.effect.ZIOOf.toZIO;
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Nothing;
 import com.github.tonivade.purefun.effect.ZIO;
@@ -14,7 +15,7 @@ public interface ZIOPostFilter<R> extends PostFilterK<Kind<Kind<ZIO_, R>, Nothin
 
   @Override
   default ZIO<R, Nothing, HttpResponse> apply(HttpResponse value) {
-    return PostFilterK.super.apply(value).fix(ZIOOf::narrowK);
+    return PostFilterK.super.apply(value).fix(toZIO());
   }
 }
 

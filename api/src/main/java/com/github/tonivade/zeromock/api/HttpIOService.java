@@ -4,6 +4,7 @@
  */
 package com.github.tonivade.zeromock.api;
 
+import static com.github.tonivade.purefun.monad.IOOf.toIO;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
 
@@ -63,7 +64,7 @@ public final class HttpIOService {
   }
 
   public IO<Option<HttpResponse>> execute(HttpRequest request) {
-    return serviceK.execute(request).fix(IOOf::narrowK);
+    return serviceK.execute(request).fix(toIO());
   }
 
   public HttpIOService combine(HttpIOService other) {

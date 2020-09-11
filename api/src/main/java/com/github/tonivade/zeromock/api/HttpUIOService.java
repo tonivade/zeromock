@@ -4,6 +4,7 @@
  */
 package com.github.tonivade.zeromock.api;
 
+import static com.github.tonivade.purefun.effect.UIOOf.toUIO;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
 
@@ -63,7 +64,7 @@ public final class HttpUIOService {
   }
 
   public UIO<Option<HttpResponse>> execute(HttpRequest request) {
-    return serviceK.execute(request).fix(UIOOf::narrowK);
+    return serviceK.execute(request).fix(toUIO());
   }
 
   public HttpUIOService combine(HttpUIOService other) {
