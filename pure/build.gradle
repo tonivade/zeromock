@@ -1,9 +1,0 @@
-archivesBaseName = 'zeromock-pure'
-
-dependencies {
-  api project(':api')
-  implementation libs.purefunMonad
-  implementation libs.purefunEffect
-  implementation libs.purefunInstances
-}
-
