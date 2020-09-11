@@ -6,7 +6,6 @@ package com.github.tonivade.zeromock.server;
 
 import static com.github.tonivade.zeromock.api.Bytes.asBytes;
 import static com.github.tonivade.zeromock.api.Responses.error;
-import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
@@ -14,9 +13,7 @@ import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
@@ -24,6 +21,8 @@ import java.util.logging.Logger;
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Witness;
+import com.github.tonivade.purefun.data.ImmutableList;
+import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.typeclasses.Monad;
 import com.github.tonivade.zeromock.api.Bytes;
@@ -135,8 +134,8 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
   }
 
   @Override
-  public List<HttpRequest> getUnmatched() {
-    return unmodifiableList(new ArrayList<>(unmatched.values()));
+  public Sequence<HttpRequest> getUnmatched() {
+    return ImmutableList.from(unmatched.values());
   }
 
   @Override

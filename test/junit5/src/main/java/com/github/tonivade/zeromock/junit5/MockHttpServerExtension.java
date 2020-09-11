@@ -87,6 +87,7 @@ public class MockHttpServerExtension
   }
 
   private Object buildServer(Class<?> type) {
+    // TODO: please remove all this if-else-if chain
     if (type.isAssignableFrom(MockHttpServer.class)) {
       this.serverK = new MockHttpServer(server);
     } else if (type.isAssignableFrom(AsyncMockHttpServer.class)) {
@@ -98,12 +99,13 @@ public class MockHttpServerExtension
     } else if (type.isAssignableFrom(ZIOMockHttpServer.class)) {
       throw new UnsupportedOperationException("zio is not supported yet!");
     } else {
-      throw new ParameterResolutionException("invalid param");
+      throw new ParameterResolutionException("invalid server param");
     }
     return serverK;
   }
 
   private Object buildClient(Class<?> type) {
+    // TODO: please remove all this if-else-if chain
     String baseUrl = "http://localhost:" + server.getAddress().getPort();
     if (type.isAssignableFrom(HttpClient.class)) {
       return HttpClient.connectTo(baseUrl);
@@ -116,7 +118,7 @@ public class MockHttpServerExtension
     } else if (type.isAssignableFrom(TaskHttpClient.class)) {
       return TaskHttpClient.connectTo(baseUrl);
     } else {
-      throw new ParameterResolutionException("invalid param");
+      throw new ParameterResolutionException("invalid client param");
     }
   }
 

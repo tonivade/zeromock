@@ -4,8 +4,8 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import java.util.List;
 import com.github.tonivade.purefun.Matcher1;
+import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.zeromock.api.HttpRequest;
 
 public interface HttpServer {
@@ -21,5 +21,5 @@ public interface HttpServer {
   HttpServer verify(Matcher1<HttpRequest> matcher);
   HttpServer verifyNot(Matcher1<HttpRequest> matcher);
 
-  List<HttpRequest> getUnmatched();
+  Sequence<HttpRequest> getUnmatched();
 }

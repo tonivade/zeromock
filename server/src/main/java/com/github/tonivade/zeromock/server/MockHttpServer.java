@@ -8,10 +8,8 @@ import static com.github.tonivade.purefun.instances.IdInstances.monad;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static com.github.tonivade.zeromock.server.ResponseInterpreterK.sync;
 import static java.util.Objects.requireNonNull;
-
-import java.util.List;
-
 import com.github.tonivade.purefun.Matcher1;
+import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.instances.IdInstances;
 import com.github.tonivade.purefun.type.Id_;
 import com.github.tonivade.zeromock.api.HttpRequest;
@@ -119,7 +117,7 @@ public final class MockHttpServer implements HttpServer {
   }
 
   @Override
-  public List<HttpRequest> getUnmatched() {
+  public Sequence<HttpRequest> getUnmatched() {
     return serverK.getUnmatched();
   }
 

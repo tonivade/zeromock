@@ -10,11 +10,10 @@ import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static com.github.tonivade.zeromock.server.ResponseInterpreterK.uioAsync;
 import static com.github.tonivade.zeromock.server.ResponseInterpreterK.uioSync;
 import static java.util.Objects.requireNonNull;
-
-import java.util.List;
 import java.util.concurrent.Executor;
 
 import com.github.tonivade.purefun.Matcher1;
+import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purefun.effect.UIO_;
 import com.github.tonivade.purefun.instances.UIOInstances;
@@ -136,7 +135,7 @@ public final class UIOMockHttpServer implements HttpServer {
   }
 
   @Override
-  public List<HttpRequest> getUnmatched() {
+  public Sequence<HttpRequest> getUnmatched() {
     return serverK.getUnmatched();
   }
 

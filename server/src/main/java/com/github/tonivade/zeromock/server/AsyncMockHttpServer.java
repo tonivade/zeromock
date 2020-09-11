@@ -8,12 +8,10 @@ import static com.github.tonivade.purefun.instances.FutureInstances.monad;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static com.github.tonivade.zeromock.server.ResponseInterpreterK.async;
 import static java.util.Objects.requireNonNull;
-
-import java.util.List;
-
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.concurrent.Future_;
+import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.instances.FutureInstances;
 import com.github.tonivade.zeromock.api.AsyncHttpService;
 import com.github.tonivade.zeromock.api.AsyncPostFilter;
@@ -130,7 +128,7 @@ public final class AsyncMockHttpServer implements HttpServer {
   }
 
   @Override
-  public List<HttpRequest> getUnmatched() {
+  public Sequence<HttpRequest> getUnmatched() {
     return serverK.getUnmatched();
   }
 

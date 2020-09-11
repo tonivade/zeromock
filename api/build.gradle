@@ -3,6 +3,8 @@ archivesBaseName = 'zeromock-api'
 dependencies {
   api libs.purefunCore
   implementation libs.purefunTypeclasses
+  implementation libs.purefunMonad
+  implementation libs.purefunEffect
   implementation libs.purefunInstances
   implementation libs.gson
   implementation libs.jaxb
