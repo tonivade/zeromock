@@ -8,12 +8,10 @@ import static com.github.tonivade.purefun.Function1.cons;
 import static com.github.tonivade.purefun.effect.ZIOOf.toZIO;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
-
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Nothing;
 import com.github.tonivade.purefun.effect.ZIO;
-import com.github.tonivade.purefun.effect.ZIOOf;
 import com.github.tonivade.purefun.effect.ZIO_;
 import com.github.tonivade.purefun.instances.ZIOInstances;
 import com.github.tonivade.purefun.type.Either;

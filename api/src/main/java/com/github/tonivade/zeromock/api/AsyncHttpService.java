@@ -9,7 +9,6 @@ import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
-import com.github.tonivade.purefun.concurrent.FutureOf;
 import com.github.tonivade.purefun.concurrent.Future_;
 import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.instances.FutureInstances;

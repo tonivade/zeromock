@@ -7,10 +7,8 @@ package com.github.tonivade.zeromock.api;
 import static com.github.tonivade.purefun.effect.UIOOf.toUIO;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
-
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.effect.UIO;
-import com.github.tonivade.purefun.effect.UIOOf;
 import com.github.tonivade.purefun.effect.UIO_;
 import com.github.tonivade.purefun.instances.UIOInstances;
 import com.github.tonivade.purefun.type.Option;

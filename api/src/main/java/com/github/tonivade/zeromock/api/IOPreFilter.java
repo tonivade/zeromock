@@ -6,7 +6,6 @@ package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.purefun.monad.IOOf.toIO;
 import com.github.tonivade.purefun.monad.IO;
-import com.github.tonivade.purefun.monad.IOOf;
 import com.github.tonivade.purefun.monad.IO_;
 import com.github.tonivade.purefun.type.Either;
 

@@ -7,11 +7,9 @@ package com.github.tonivade.zeromock.api;
 import static com.github.tonivade.purefun.monad.IOOf.toIO;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
-
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.instances.IOInstances;
 import com.github.tonivade.purefun.monad.IO;
-import com.github.tonivade.purefun.monad.IOOf;
 import com.github.tonivade.purefun.monad.IO_;
 import com.github.tonivade.purefun.type.Option;
 

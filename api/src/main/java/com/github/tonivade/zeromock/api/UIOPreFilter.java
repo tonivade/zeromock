@@ -6,7 +6,6 @@ package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.purefun.effect.UIOOf.toUIO;
 import com.github.tonivade.purefun.effect.UIO;
-import com.github.tonivade.purefun.effect.UIOOf;
 import com.github.tonivade.purefun.effect.UIO_;
 import com.github.tonivade.purefun.type.Either;
 
