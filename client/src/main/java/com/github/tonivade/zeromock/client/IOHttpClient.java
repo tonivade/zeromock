@@ -16,7 +16,7 @@ public class IOHttpClient {
 
   private final HttpClientK<IO_> client;
 
-  public IOHttpClient(HttpClientK<IO_> client) {
+  private IOHttpClient(HttpClientK<IO_> client) {
     this.client = requireNonNull(client);
   }
 

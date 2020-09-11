@@ -4,10 +4,7 @@
  */
 package com.github.tonivade.zeromock.junit5;
 
-import static java.util.stream.Collectors.joining;
-
 import java.util.Optional;
-
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -16,9 +13,9 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
-
 import com.github.tonivade.zeromock.client.AsyncHttpClient;
 import com.github.tonivade.zeromock.client.HttpClient;
+import com.github.tonivade.zeromock.client.HttpClientBuilder;
 import com.github.tonivade.zeromock.client.IOHttpClient;
 import com.github.tonivade.zeromock.client.TaskHttpClient;
 import com.github.tonivade.zeromock.client.UIOHttpClient;
@@ -51,6 +48,7 @@ public class MockHttpServerExtension
     try {
       server.removeContext("/");
     } catch (IllegalArgumentException e) {
+      // not important
     } finally {
       serverK = null;
     }
@@ -81,12 +79,13 @@ public class MockHttpServerExtension
       return buildServer(type);
     }
     if (clientInstance(type)) {
-      return buildClient(type);
+      String baseUrl = "http://localhost:" + server.getAddress().getPort();
+      return buildClient(type).connectTo(baseUrl);
     }
     throw new ParameterResolutionException("invalid param");
   }
 
-  private Object buildServer(Class<?> type) {
+  private HttpServer buildServer(Class<?> type) {
     // TODO: please remove all this if-else-if chain
     if (type.isAssignableFrom(MockHttpServer.class)) {
       this.serverK = new MockHttpServer(server);
@@ -104,26 +103,25 @@ public class MockHttpServerExtension
     return serverK;
   }
 
-  private Object buildClient(Class<?> type) {
+  private HttpClientBuilder<?> buildClient(Class<?> type) {
     // TODO: please remove all this if-else-if chain
-    String baseUrl = "http://localhost:" + server.getAddress().getPort();
     if (type.isAssignableFrom(HttpClient.class)) {
-      return HttpClient.connectTo(baseUrl);
+      return HttpClientBuilder.client();
     } else if (type.isAssignableFrom(AsyncHttpClient.class)) {
-      return AsyncHttpClient.connectTo(baseUrl);
+      return HttpClientBuilder.asyncClient();
     } else if (type.isAssignableFrom(IOHttpClient.class)) {
-      return IOHttpClient.connectTo(baseUrl);
+      return HttpClientBuilder.ioClient();
     } else if (type.isAssignableFrom(UIOHttpClient.class)) {
-      return UIOHttpClient.connectTo(baseUrl);
+      return HttpClientBuilder.uioClient();
     } else if (type.isAssignableFrom(TaskHttpClient.class)) {
-      return TaskHttpClient.connectTo(baseUrl);
+      return HttpClientBuilder.taskClient();
     } else {
       throw new ParameterResolutionException("invalid client param");
     }
   }
 
   private String unmatched() {
-    return serverK.getUnmatched().stream().map(Object::toString).collect(joining(",", "[", "]"));
+    return serverK.getUnmatched().join(",", "[", "]");
   }
 
   private Optional<ListenAt> listenAt(ExtensionContext context) {

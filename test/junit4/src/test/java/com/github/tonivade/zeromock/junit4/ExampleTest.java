@@ -53,7 +53,7 @@ public class ExampleTest {
 
   @Test
   public void pingIO() {
-    ioServer.when(get("/ping")).then(request -> IO.pure(Responses.ok("pong")));
+    ioServer.when(get("/ping")).then(request -> IO.pure(pong()));
 
     HttpResponse response = ioServer.client().request(ping());
 
@@ -62,7 +62,7 @@ public class ExampleTest {
 
   @Test
   public void pingUIO() {
-    uioServer.when(get("/ping")).then(request -> UIO.pure(Responses.ok("pong")));
+    uioServer.when(get("/ping")).then(request -> UIO.pure(pong()));
 
     HttpResponse response = uioServer.client().request(ping());
 
@@ -71,7 +71,7 @@ public class ExampleTest {
 
   @Test
   public void pingZIO() {
-    zioServer.when(get("/ping")).then(request -> ZIO.pure(Responses.ok("pong")));
+    zioServer.when(get("/ping")).then(request -> ZIO.pure(pong()));
 
     HttpResponse response = zioServer.client().request(ping());
 
@@ -80,6 +80,10 @@ public class ExampleTest {
 
   private HttpRequest ping() {
     return Requests.get("/ping");
+  }
+
+  private HttpResponse pong() {
+    return Responses.ok("pong");
   }
 
   private void assertPong(HttpResponse response) {

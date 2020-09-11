@@ -16,7 +16,7 @@ public class TaskHttpClient {
 
   private final HttpClientK<Task_> client;
 
-  public TaskHttpClient(HttpClientK<Task_> client) {
+  private TaskHttpClient(HttpClientK<Task_> client) {
     this.client = requireNonNull(client);
   }
 

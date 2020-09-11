@@ -6,6 +6,11 @@ package com.github.tonivade.zeromock.client;
 
 import static com.github.tonivade.zeromock.api.Handlers.ok;
 import static com.github.tonivade.zeromock.api.Matchers.get;
+import static com.github.tonivade.zeromock.client.HttpClientBuilder.asyncClient;
+import static com.github.tonivade.zeromock.client.HttpClientBuilder.client;
+import static com.github.tonivade.zeromock.client.HttpClientBuilder.ioClient;
+import static com.github.tonivade.zeromock.client.HttpClientBuilder.taskClient;
+import static com.github.tonivade.zeromock.client.HttpClientBuilder.uioClient;
 import static com.github.tonivade.zeromock.server.MockHttpServer.listenAt;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -26,8 +31,7 @@ import com.github.tonivade.zeromock.server.MockHttpServer;
 
 class HttpClientTest {
 
-  private static final MockHttpServer server =
-      listenAt(0).when(get("/ping")).then(ok("pong"));
+  private static final MockHttpServer server = listenAt(0).when(get("/ping")).then(ok("pong"));
 
   private final HttpRequest ping = Requests.get("/ping");
 
@@ -38,35 +42,35 @@ class HttpClientTest {
 
   @Test
   void test() {
-    HttpResponse response = HttpClient.connectTo(baseUrl()).request(ping);
+    HttpResponse response = client().connectTo(baseUrl()).request(ping);
 
     assertResponse(response);
   }
 
   @Test
   void async() {
-    Future<HttpResponse> response = AsyncHttpClient.connectTo(baseUrl()).request(ping);
+    Future<HttpResponse> response = asyncClient().connectTo(baseUrl()).request(ping);
 
     assertResponse(response.get());
   }
 
   @Test
   void io() {
-    IO<HttpResponse> response = IOHttpClient.connectTo(baseUrl()).request(ping);
+    IO<HttpResponse> response = ioClient().connectTo(baseUrl()).request(ping);
 
     assertResponse(response.unsafeRunSync());
   }
 
   @Test
   void uio() {
-    UIO<HttpResponse> response = UIOHttpClient.connectTo(baseUrl()).request(ping);
+    UIO<HttpResponse> response = uioClient().connectTo(baseUrl()).request(ping);
 
     assertResponse(response.unsafeRunSync());
   }
 
   @Test
   void task() {
-    Task<HttpResponse> response = TaskHttpClient.connectTo(baseUrl()).request(ping);
+    Task<HttpResponse> response = taskClient().connectTo(baseUrl()).request(ping);
 
     assertResponse(response.safeRunSync().get());
   }

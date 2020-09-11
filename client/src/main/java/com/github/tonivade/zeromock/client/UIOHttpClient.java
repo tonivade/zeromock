@@ -16,7 +16,7 @@ public class UIOHttpClient {
 
   private final HttpClientK<UIO_> client;
 
-  public UIOHttpClient(HttpClientK<UIO_> client) {
+  private UIOHttpClient(HttpClientK<UIO_> client) {
     this.client = requireNonNull(client);
   }
 

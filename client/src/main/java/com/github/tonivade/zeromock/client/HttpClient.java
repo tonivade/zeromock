@@ -16,7 +16,7 @@ public class HttpClient {
   // using IO here because there's no instance for MonadDefer for Id
   private final HttpClientK<IO_> client;
 
-  public HttpClient(HttpClientK<IO_> client) {
+  private HttpClient(HttpClientK<IO_> client) {
     this.client = requireNonNull(client);
   }
 

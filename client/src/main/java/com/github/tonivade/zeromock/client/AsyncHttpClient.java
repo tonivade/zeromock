@@ -16,7 +16,7 @@ public class AsyncHttpClient {
 
   private final HttpClientK<Future_> client;
 
-  public AsyncHttpClient(HttpClientK<Future_> client) {
+  private AsyncHttpClient(HttpClientK<Future_> client) {
     this.client = requireNonNull(client);
   }
 

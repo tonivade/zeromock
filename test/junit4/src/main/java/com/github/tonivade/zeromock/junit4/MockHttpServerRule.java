@@ -12,6 +12,7 @@ import com.github.tonivade.zeromock.api.HttpService;
 import com.github.tonivade.zeromock.api.RequestHandler;
 import com.github.tonivade.zeromock.client.AsyncHttpClient;
 import com.github.tonivade.zeromock.client.HttpClient;
+import com.github.tonivade.zeromock.client.HttpClientBuilder;
 import com.github.tonivade.zeromock.client.IOHttpClient;
 import com.github.tonivade.zeromock.client.TaskHttpClient;
 import com.github.tonivade.zeromock.client.UIOHttpClient;
@@ -44,23 +45,23 @@ public class MockHttpServerRule extends ExternalResource {
   }
 
   public HttpClient client() {
-    return HttpClient.connectTo(getBaseUrl());
+    return HttpClientBuilder.client().connectTo(getBaseUrl());
   }
 
   public AsyncHttpClient asyncClient() {
-    return AsyncHttpClient.connectTo(getBaseUrl());
+    return HttpClientBuilder.asyncClient().connectTo(getBaseUrl());
   }
 
   public IOHttpClient ioClient() {
-    return IOHttpClient.connectTo(getBaseUrl());
+    return HttpClientBuilder.ioClient().connectTo(getBaseUrl());
   }
 
   public UIOHttpClient uioClient() {
-    return UIOHttpClient.connectTo(getBaseUrl());
+    return HttpClientBuilder.uioClient().connectTo(getBaseUrl());
   }
 
   public TaskHttpClient taskClient() {
-    return TaskHttpClient.connectTo(getBaseUrl());
+    return HttpClientBuilder.taskClient().connectTo(getBaseUrl());
   }
 
   public MockHttpServerRule verify(Matcher1<HttpRequest> matcher) {
