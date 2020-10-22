@@ -7,7 +7,6 @@ package com.github.tonivade.zeromock.api;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UncheckedIOException;
-import java.lang.reflect.Type;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -24,13 +23,13 @@ import com.github.tonivade.purefun.data.ImmutableSet;
 import com.github.tonivade.purefun.data.ImmutableSet.JavaBasedImmutableSet;
 import com.github.tonivade.purefun.data.ImmutableTree;
 import com.github.tonivade.purefun.data.ImmutableTree.JavaBasedImmutableTree;
+import com.github.tonivade.purefun.data.ImmutableTreeMap;
 import com.github.tonivade.purefun.data.ImmutableTreeMap.JavaBasedImmutableTreeMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 public final class Serializers {
@@ -95,52 +94,33 @@ public final class Serializers {
 
   private static Gson buildGson() {
     return new GsonBuilder()
-        .registerTypeAdapter(JavaBasedImmutableList.class, new ImmutableListSerializerAdapter())
-        .registerTypeAdapter(JavaBasedImmutableArray.class, new ImmutableArraySerializerAdapter())
-        .registerTypeAdapter(JavaBasedImmutableSet.class, new ImmutableSetSerializerAdapter())
-        .registerTypeAdapter(JavaBasedImmutableTree.class, new ImmutableTreeSerializerAdapter())
-        .registerTypeAdapter(JavaBasedImmutableMap.class, new ImmutableMapSerializerAdapter())
-        .registerTypeAdapter(JavaBasedImmutableTreeMap.class, new ImmutableMapSerializerAdapter())
+        .registerTypeAdapter(JavaBasedImmutableList.class, SerializerAdapters.IMMUTABLE_LIST)
+        .registerTypeAdapter(JavaBasedImmutableArray.class, SerializerAdapters.IMMUTABLE_ARRAY)
+        .registerTypeAdapter(JavaBasedImmutableSet.class, SerializerAdapters.IMMUTABLE_SET)
+        .registerTypeAdapter(JavaBasedImmutableTree.class, SerializerAdapters.IMMUTABLE_TREE)
+        .registerTypeAdapter(JavaBasedImmutableMap.class, SerializerAdapters.IMMUTABLE_MAP)
+        .registerTypeAdapter(JavaBasedImmutableTreeMap.class, SerializerAdapters.IMMUTABLE_TREEMAP)
         .create();
   }
 }
 
-class ImmutableListSerializerAdapter implements JsonSerializer<ImmutableList<?>> {
+class SerializerAdapters {
 
-  @Override
-  public JsonElement serialize(ImmutableList<?> src, Type typeOfSrc, JsonSerializationContext context) {
-    return context.serialize(src.toList());
-  }
-}
+  static final JsonSerializer<ImmutableList<?>> IMMUTABLE_LIST = 
+      (src, type, context) -> context.serialize(src.toList());
 
-class ImmutableSetSerializerAdapter implements JsonSerializer<ImmutableSet<?>> {
+  static final JsonSerializer<ImmutableSet<?>> IMMUTABLE_SET = 
+      (src, type, context) -> context.serialize(src.toSet());
 
-  @Override
-  public JsonElement serialize(ImmutableSet<?> src, Type typeOfSrc, JsonSerializationContext context) {
-    return context.serialize(src.toSet());
-  }
-}
+  static final JsonSerializer<ImmutableArray<?>> IMMUTABLE_ARRAY = 
+      (src, type, context) -> context.serialize(src.toList());
 
-class ImmutableArraySerializerAdapter implements JsonSerializer<ImmutableArray<?>> {
+  static final JsonSerializer<ImmutableTree<?>> IMMUTABLE_TREE = 
+      (src, type, context) -> context.serialize(src.toNavigableSet());
 
-  @Override
-  public JsonElement serialize(ImmutableArray<?> src, Type typeOfSrc, JsonSerializationContext context) {
-    return context.serialize(src.toList());
-  }
-}
+  static final JsonSerializer<ImmutableMap<?, ?>> IMMUTABLE_MAP = 
+      (src, type, context) -> context.serialize(src.toMap());
 
-class ImmutableTreeSerializerAdapter implements JsonSerializer<ImmutableTree<?>> {
-
-  @Override
-  public JsonElement serialize(ImmutableTree<?> src, Type typeOfSrc, JsonSerializationContext context) {
-    return context.serialize(src.toNavigableSet());
-  }
-}
-
-class ImmutableMapSerializerAdapter implements JsonSerializer<ImmutableMap<?, ?>> {
-
-  @Override
-  public JsonElement serialize(ImmutableMap<?, ?> src, Type typeOfSrc, JsonSerializationContext context) {
-    return context.serialize(src.toMap());
-  }
+  static final JsonSerializer<ImmutableTreeMap<?, ?>> IMMUTABLE_TREEMAP = 
+      (src, type, context) -> context.serialize(src.toNavigableMap());
 }

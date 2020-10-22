@@ -29,10 +29,8 @@ import com.github.tonivade.purefun.data.ImmutableTree;
 import com.github.tonivade.purefun.data.ImmutableTreeMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
@@ -70,12 +68,12 @@ public final class Deserializers {
 
   private static Gson buildGson() {
     return new GsonBuilder()
-        .registerTypeAdapter(ImmutableList.class, new ImmutableListDeserializerAdapter())
-        .registerTypeAdapter(ImmutableArray.class, new ImmutableArrayDeserializerAdapter())
-        .registerTypeAdapter(ImmutableSet.class, new ImmutableSetDeserializerAdapter())
-        .registerTypeAdapter(ImmutableTree.class, new ImmutableTreeDeserializerAdapter())
-        .registerTypeAdapter(ImmutableMap.class, new ImmutableMapDeserializerAdapter())
-        .registerTypeAdapter(ImmutableTreeMap.class, new ImmutableTreeMapDeserializerAdapter())
+        .registerTypeAdapter(ImmutableList.class, DeserializerAdapters.IMMUTABLE_LIST)
+        .registerTypeAdapter(ImmutableArray.class, DeserializerAdapters.IMMUTABLE_ARRAY)
+        .registerTypeAdapter(ImmutableSet.class, DeserializerAdapters.IMMUTABLE_SET)
+        .registerTypeAdapter(ImmutableTree.class, DeserializerAdapters.IMMUTABLE_TREE)
+        .registerTypeAdapter(ImmutableMap.class, DeserializerAdapters.IMMUTABLE_MAP)
+        .registerTypeAdapter(ImmutableTreeMap.class, DeserializerAdapters.IMMUTABLE_TREEMAP)
         .create();
   }
   
@@ -100,62 +98,23 @@ public final class Deserializers {
   }
 }
 
-class ImmutableSetDeserializerAdapter implements JsonDeserializer<ImmutableSet<?>> {
+class DeserializerAdapters {
 
-  @Override
-  public ImmutableSet<?> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-      throws JsonParseException {
-    List<?> list = context.deserialize(json, List.class);
-    return ImmutableSet.from(list);
-  }
-}
+  static final JsonDeserializer<ImmutableList<?>> IMMUTABLE_LIST = 
+      (json, typeOfT, context) -> ImmutableList.from(context.<List<?>>deserialize(json, List.class));
 
-class ImmutableArrayDeserializerAdapter implements JsonDeserializer<ImmutableArray<?>> {
+  static final JsonDeserializer<ImmutableSet<?>> IMMUTABLE_SET = 
+      (json, typeOfT, context) -> ImmutableSet.from(context.<List<?>>deserialize(json, List.class));
 
-  @Override
-  public ImmutableArray<?> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-      throws JsonParseException {
-    List<?> list = context.deserialize(json, List.class);
-    return ImmutableArray.from(list);
-  }
-}
+  static final JsonDeserializer<ImmutableArray<?>> IMMUTABLE_ARRAY = 
+      (json, typeOfT, context) -> ImmutableArray.from(context.<List<?>>deserialize(json, List.class));
 
-class ImmutableTreeDeserializerAdapter implements JsonDeserializer<ImmutableTree<?>> {
+  static final JsonDeserializer<ImmutableTree<?>> IMMUTABLE_TREE = 
+      (json, typeOfT, context) -> ImmutableTree.from(context.<List<?>>deserialize(json, List.class));
 
-  @Override
-  public ImmutableTree<?> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-      throws JsonParseException {
-    List<?> list = context.deserialize(json, List.class);
-    return ImmutableTree.from(list);
-  }
-}
+  static final JsonDeserializer<ImmutableMap<?, ?>> IMMUTABLE_MAP = 
+      (json, typeOfT, context) -> ImmutableMap.from(context.<Map<?, ?>>deserialize(json, Map.class));
 
-class ImmutableListDeserializerAdapter implements JsonDeserializer<ImmutableList<?>> {
-
-  @Override
-  public ImmutableList<?> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-      throws JsonParseException {
-    List<?> list = context.deserialize(json, List.class);
-    return ImmutableList.from(list);
-  }
-}
-
-class ImmutableMapDeserializerAdapter implements JsonDeserializer<ImmutableMap<?, ?>> {
-
-  @Override
-  public ImmutableMap<?, ?> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-      throws JsonParseException {
-    Map<?, ?> map = context.deserialize(json, Map.class);
-    return ImmutableMap.from(map);
-  }
-}
-
-class ImmutableTreeMapDeserializerAdapter implements JsonDeserializer<ImmutableTreeMap<?, ?>> {
-
-  @Override
-  public ImmutableTreeMap<?, ?> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-      throws JsonParseException {
-    NavigableMap<?, ?> map = context.deserialize(json, NavigableMap.class);
-    return ImmutableTreeMap.from(map);
-  }
+  static final JsonDeserializer<ImmutableTreeMap<?, ?>> IMMUTABLE_TREEMAP = 
+      (json, typeOfT, context) -> ImmutableTreeMap.from(context.<NavigableMap<?, ?>>deserialize(json, NavigableMap.class));
 }
