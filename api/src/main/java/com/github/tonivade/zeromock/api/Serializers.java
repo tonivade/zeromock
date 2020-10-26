@@ -41,15 +41,27 @@ public final class Serializers {
   }
 
   public static Function1<Throwable, Bytes> throwableToJson() {
-    return Function1.<Throwable, String>of(Serializers::toJson).andThen(Bytes::asBytes);
+    return throwableToJson(Serializers::toJson);
+  }
+
+  public static Function1<Throwable, Bytes> throwableToJson(Function1<Throwable, String> serializer) {
+    return serializer.andThen(Bytes::asBytes);
   }
 
   public static <T> Function1<T, Bytes> objectToJson() {
-    return Function1.<T, String>of(Serializers::toJson).andThen(Bytes::asBytes);
+    return objectToJson(Serializers::toJson);
+  }
+
+  public static <T> Function1<T, Bytes> objectToJson(Function1<T, String> serializer) {
+    return serializer.andThen(Bytes::asBytes);
   }
 
   public static <T> Function1<T, Bytes> objectToXml() {
-    return Function1.<T, String>of(Serializers::toXml).andThen(Bytes::asBytes);
+    return objectToXml(Serializers::toXml);
+  }
+
+  public static <T> Function1<T, Bytes> objectToXml(Function1<T, String> serializer) {
+    return serializer.andThen(Bytes::asBytes);
   }
 
   public static <T> Function1<T, Bytes> plain() {

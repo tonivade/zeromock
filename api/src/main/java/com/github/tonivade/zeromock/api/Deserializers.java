@@ -46,12 +46,16 @@ public final class Deserializers {
     return bytes -> Deserializers.fromXml(bytes, clazz);
   }
   
+  public static <T> Function1<Bytes, T> jsonToObject(Function1<String, T> deserializer) {
+    return plain().andThen(deserializer);
+  }
+  
   public static <T> Function1<Bytes, T> jsonToObject(Class<T> clazz) {
-    return plain().andThen(fromJson(clazz));
+    return jsonToObject(fromJson(clazz));
   }
   
   public static <T> Function1<Bytes, T> jsonTo(Type type) {
-    return plain().andThen(fromJson(type));
+    return jsonToObject(fromJson(type));
   }
   
   public static Function1<Bytes, String> plain() {
