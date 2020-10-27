@@ -25,7 +25,7 @@ public class AsyncHttpServiceTest {
     
     assertAll(
         () -> assertEquals("service", service.name()),
-        () -> assertEquals(none(), service.execute(Requests.get("/ping")).get().get())
+        () -> assertEquals(none(), service.execute(Requests.get("/ping")).await().getOrElseThrow())
     );
   }
 
@@ -34,7 +34,7 @@ public class AsyncHttpServiceTest {
     AsyncHttpService service = new AsyncHttpService("service")
         .when(get("/ping")).then(ok("pong").andThen(Future::success)::apply);
     
-    assertEquals(some(Responses.ok("pong")), service.execute(Requests.get("/ping")).get().get());
+    assertEquals(some(Responses.ok("pong")), service.execute(Requests.get("/ping")).await().getOrElseThrow());
   }
 
   @Test
@@ -42,7 +42,7 @@ public class AsyncHttpServiceTest {
     AsyncHttpService service = new AsyncHttpService("service")
         .exec(ok("pong").andThen(Future::success)::apply);
     
-    assertEquals(some(Responses.ok("pong")), service.execute(Requests.get("/ping")).get().get());
+    assertEquals(some(Responses.ok("pong")), service.execute(Requests.get("/ping")).await().getOrElseThrow());
   }
   
   @Test
@@ -53,9 +53,9 @@ public class AsyncHttpServiceTest {
         .mount("/path", service1);
     
     assertAll(
-        () -> assertEquals(some(Responses.ok("pong")), service2.execute(Requests.get("/path/ping")).get().get()),
-        () -> assertEquals(none(), service2.execute(Requests.get("/path/notfound")).get().get()),
-        () -> assertEquals(none(), service2.execute(Requests.get("/ping")).get().get())
+        () -> assertEquals(some(Responses.ok("pong")), service2.execute(Requests.get("/path/ping")).await().getOrElseThrow()),
+        () -> assertEquals(none(), service2.execute(Requests.get("/path/notfound")).await().getOrElseThrow()),
+        () -> assertEquals(none(), service2.execute(Requests.get("/ping")).await().getOrElseThrow())
     );
   }
 
@@ -65,7 +65,7 @@ public class AsyncHttpServiceTest {
         .when(get("/ping")).then(ok("pong").andThen(Future::success)::apply);
     AsyncHttpService service2 = new AsyncHttpService("service2");
 
-    assertEquals(some(Responses.ok("pong")), service1.combine(service2).execute(Requests.get("/ping")).get().get());
+    assertEquals(some(Responses.ok("pong")), service1.combine(service2).execute(Requests.get("/ping")).await().getOrElseThrow());
   }
 
   @Test
@@ -76,10 +76,10 @@ public class AsyncHttpServiceTest {
         .postFilter(contentPlain());
 
     assertAll(
-        () -> assertEquals(some(Responses.forbidden()), service1.execute(Requests.put("/ping")).get().get()),
+        () -> assertEquals(some(Responses.forbidden()), service1.execute(Requests.put("/ping")).await().getOrElseThrow()),
         () -> assertEquals(
             some(Responses.ok("pong").withHeader("Content-type", "text/plain")),
-            service1.execute(Requests.get("/ping")).get().get())
+            service1.execute(Requests.get("/ping")).await().getOrElseThrow())
     );
   }
 }
