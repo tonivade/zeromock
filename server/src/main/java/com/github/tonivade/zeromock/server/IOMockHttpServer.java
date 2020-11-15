@@ -6,9 +6,8 @@ package com.github.tonivade.zeromock.server;
 
 import static com.github.tonivade.purefun.concurrent.Future.DEFAULT_EXECUTOR;
 import static com.github.tonivade.purefun.typeclasses.Instance.monad;
+import static com.github.tonivade.purefun.typeclasses.Instance.runtime;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
-import static com.github.tonivade.zeromock.server.ResponseInterpreterK.ioAsync;
-import static com.github.tonivade.zeromock.server.ResponseInterpreterK.ioSync;
 import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.Executor;
@@ -32,7 +31,7 @@ public final class IOMockHttpServer implements HttpServer {
 
   @SuppressWarnings("restriction")
   public IOMockHttpServer(com.sun.net.httpserver.HttpServer server) {
-    this(new MockHttpServerK<>(server, monad(IO_.class), ioSync()));
+    this(new MockHttpServerK<>(server, monad(IO_.class), ResponseInterpreterK.sync(runtime(IO_.class))));
   }
 
   private IOMockHttpServer(MockHttpServerK<IO_> serverK) {
@@ -50,7 +49,7 @@ public final class IOMockHttpServer implements HttpServer {
   }
 
   public static BuilderK<IO_, IOMockHttpServer> sync() {
-    return _builder(ioSync());
+    return _builder(ResponseInterpreterK.sync(runtime(IO_.class)));
   }
 
   public static BuilderK<IO_, IOMockHttpServer> async() {
@@ -58,7 +57,7 @@ public final class IOMockHttpServer implements HttpServer {
   }
 
   public static BuilderK<IO_, IOMockHttpServer> async(Executor executor) {
-    return _builder(ioAsync(executor));
+    return _builder(ResponseInterpreterK.async(runtime(IO_.class), executor));
   }
 
   public static IOMockHttpServer listenAt(int port) {

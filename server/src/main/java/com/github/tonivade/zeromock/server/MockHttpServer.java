@@ -4,10 +4,11 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.purefun.instances.IdInstances.monad;
+import static com.github.tonivade.purefun.typeclasses.Instance.monad;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static com.github.tonivade.zeromock.server.ResponseInterpreterK.sync;
 import static java.util.Objects.requireNonNull;
+
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.instances.IdInstances;
@@ -25,7 +26,7 @@ public final class MockHttpServer implements HttpServer {
 
   @SuppressWarnings("restriction")
   public MockHttpServer(com.sun.net.httpserver.HttpServer server) {
-    this(new MockHttpServerK<>(server, monad(), sync()));
+    this(new MockHttpServerK<>(server, monad(Id_.class), sync()));
   }
 
   private MockHttpServer(MockHttpServerK<Id_> serverK) {
@@ -43,7 +44,7 @@ public final class MockHttpServer implements HttpServer {
   }
 
   public static BuilderK<Id_, MockHttpServer> builder() {
-    return new BuilderK<Id_, MockHttpServer>(monad(), sync()) {
+    return new BuilderK<Id_, MockHttpServer>(monad(Id_.class), sync()) {
       @Override
       public MockHttpServer build() {
         return new MockHttpServer(buildK());

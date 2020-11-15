@@ -6,9 +6,8 @@ package com.github.tonivade.zeromock.server;
 
 import static com.github.tonivade.purefun.concurrent.Future.DEFAULT_EXECUTOR;
 import static com.github.tonivade.purefun.instances.URIOInstances.monad;
+import static com.github.tonivade.purefun.instances.URIOInstances.runtime;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
-import static com.github.tonivade.zeromock.server.ResponseInterpreterK.urioAsync;
-import static com.github.tonivade.zeromock.server.ResponseInterpreterK.urioSync;
 import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.Executor;
@@ -50,7 +49,7 @@ public final class URIOMockHttpServer<R> implements HttpServer {
   }
 
   public static <R> BuilderK<Kind<URIO_, R>, URIOMockHttpServer<R>> sync(Producer<R> factory) {
-    return _builder(urioSync(factory));
+    return _builder(ResponseInterpreterK.sync(runtime(factory.get())));
   }
 
   public static <R> BuilderK<Kind<URIO_, R>, URIOMockHttpServer<R>> async(Producer<R> factory) {
@@ -58,7 +57,7 @@ public final class URIOMockHttpServer<R> implements HttpServer {
   }
 
   public static <R> BuilderK<Kind<URIO_, R>, URIOMockHttpServer<R>> async(Executor executor, Producer<R> factory) {
-    return _builder(urioAsync(factory, executor));
+    return _builder(ResponseInterpreterK.async(runtime(factory.get()), executor));
   }
 
   public static <R> URIOMockHttpServer<R> listenAt(R env, int port) {

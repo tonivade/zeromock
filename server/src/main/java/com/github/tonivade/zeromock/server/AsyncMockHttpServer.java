@@ -4,10 +4,11 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.purefun.instances.FutureInstances.monad;
+import static com.github.tonivade.purefun.typeclasses.Instance.monad;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static com.github.tonivade.zeromock.server.ResponseInterpreterK.async;
 import static java.util.Objects.requireNonNull;
+
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.concurrent.Future_;
@@ -28,7 +29,7 @@ public final class AsyncMockHttpServer implements HttpServer {
 
   @SuppressWarnings("restriction")
   public AsyncMockHttpServer(com.sun.net.httpserver.HttpServer server) {
-    this(new MockHttpServerK<>(server, monad(), async()));
+    this(new MockHttpServerK<>(server, monad(Future_.class), async()));
   }
 
   private AsyncMockHttpServer(MockHttpServerK<Future_> serverK) {
@@ -46,7 +47,7 @@ public final class AsyncMockHttpServer implements HttpServer {
   }
 
   public static BuilderK<Future_, AsyncMockHttpServer> builder() {
-    return new BuilderK<Future_, AsyncMockHttpServer>(monad(), async()) {
+    return new BuilderK<Future_, AsyncMockHttpServer>(monad(Future_.class), async()) {
       @Override
       public AsyncMockHttpServer build() {
         return new AsyncMockHttpServer(buildK());
