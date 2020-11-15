@@ -19,7 +19,7 @@ import static com.github.tonivade.zeromock.api.Responses.ok;
 import static com.github.tonivade.zeromock.api.Serializers.objectToJson;
 import static com.github.tonivade.zeromock.api.Serializers.objectToXml;
 import static com.github.tonivade.zeromock.client.HttpClient.connectTo;
-import static com.github.tonivade.zeromock.server.ZIOMockHttpServer.listenAt;
+import static com.github.tonivade.zeromock.server.URIOMockHttpServer.listenAt;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -30,38 +30,39 @@ import org.junit.jupiter.api.Test;
 
 import com.github.tonivade.purefun.Nothing;
 import com.github.tonivade.purefun.data.ImmutableSet;
+import com.github.tonivade.purefun.effect.URIO;
 import com.github.tonivade.purefun.effect.ZIO;
 import com.github.tonivade.zeromock.api.Deserializers;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpStatus;
-import com.github.tonivade.zeromock.api.HttpZIOService;
+import com.github.tonivade.zeromock.api.HttpURIOService;
 import com.github.tonivade.zeromock.api.Requests;
 import com.github.tonivade.zeromock.api.Responses;
-import com.github.tonivade.zeromock.api.ZIORequestHandler;
+import com.github.tonivade.zeromock.api.URIORequestHandler;
 
-public class ZIOMockHttpServerTest {
+public class URIOMockHttpServerTest {
 
   private static final String BASE_URL = "http://localhost:%s/path";
 
-  private HttpZIOService<Nothing> service1 = new HttpZIOService<Nothing>("hello")
+  private HttpURIOService<Nothing> service1 = new HttpURIOService<Nothing>("hello")
       .when(get().and(path("/hello")).and(param("name")))
-        .then(request -> ZIO.<Nothing, String>task(() -> helloWorld(request)).fold(Responses::error, Responses::ok))
+        .then(request -> ZIO.<Nothing, String>task(() -> helloWorld(request)).fold(Responses::error, Responses::ok).toURIO())
       .when(get().and(path("/hello")).and(param("name").negate()))
-        .then(request -> ZIO.pure(badRequest("missing parameter name")));
+        .then(request -> URIO.pure(badRequest("missing parameter name")));
 
-  private HttpZIOService<Nothing> service2 = new HttpZIOService<Nothing>("test")
+  private HttpURIOService<Nothing> service2 = new HttpURIOService<Nothing>("test")
       .when(get().and(path("/test")).and(acceptsXml()))
-        .then(request -> ZIO.<Nothing, Say>task(this::sayHello).map(objectToXml()).fold(Responses::error, Responses::ok).map(contentXml()))
+        .then(request -> ZIO.<Nothing, Say>task(this::sayHello).map(objectToXml()).fold(Responses::error, Responses::ok).map(contentXml()).toURIO())
       .when(get().and(path("/test")).and(acceptsJson()))
-        .then(request -> ZIO.<Nothing, Say>task(this::sayHello).map(objectToJson()).fold(Responses::error, Responses::ok).map(contentJson()))
+        .then(request -> ZIO.<Nothing, Say>task(this::sayHello).map(objectToJson()).fold(Responses::error, Responses::ok).map(contentJson()).toURIO())
       .when(get().and(path("/empty")))
-        .then(request -> ZIO.pure(noContent()));
+        .then(request -> URIO.pure(noContent()));
 
-  private HttpZIOService<Nothing> service3 = new HttpZIOService<Nothing>("other")
-      .when(get("/ping")).then(request -> ZIO.pure(ok("pong")));
+  private HttpURIOService<Nothing> service3 = new HttpURIOService<Nothing>("other")
+      .when(get("/ping")).then(request -> URIO.pure(ok("pong")));
 
-  private static ZIOMockHttpServer<Nothing> server = listenAt(nothing(), 0);
+  private static URIOMockHttpServer<Nothing> server = listenAt(nothing(), 0);
 
   @Test
   public void hello() {
@@ -126,8 +127,8 @@ public class ZIOMockHttpServerTest {
 
   @Test
   public void exec() {
-    ZIORequestHandler<Nothing> echo = request -> ZIO.pure(ok(request.body()));
-    ZIOMockHttpServer<Nothing> server = listenAt(nothing(), 0).exec(echo).start();
+    URIORequestHandler<Nothing> echo = request -> URIO.pure(ok(request.body()));
+    URIOMockHttpServer<Nothing> server = listenAt(nothing(), 0).exec(echo).start();
 
     HttpResponse response = connectTo("http://localhost:" + server.getPort()).request(Requests.get("/").withBody("echo"));
 

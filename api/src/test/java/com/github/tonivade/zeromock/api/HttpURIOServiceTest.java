@@ -15,30 +15,30 @@ import org.junit.jupiter.api.Test;
 
 import com.github.tonivade.purefun.Nothing;
 import com.github.tonivade.purefun.effect.Task;
-import com.github.tonivade.purefun.effect.ZIO;
+import com.github.tonivade.purefun.effect.URIO;
 import com.github.tonivade.purefun.type.Option;
 
-public class HttpZIOServiceTest {
+public class HttpURIOServiceTest {
 
   @Test
   public void ping() {
-    HttpZIOService<Nothing> service = new HttpZIOService<Nothing>("test")
-        .when(get("/ping")).then(request -> ZIO.pure(ok("pong")));
+    HttpURIOService<Nothing> service = new HttpURIOService<Nothing>("test")
+        .when(get("/ping")).then(request -> URIO.pure(ok("pong")));
     
-    ZIO<Nothing, Nothing, Option<HttpResponse>> execute = service.execute(Requests.get("/ping"));
+    URIO<Nothing, Option<HttpResponse>> execute = service.execute(Requests.get("/ping"));
     
-    assertEquals(Option.some(ok("pong")), execute.provide(nothing()).get());
+    assertEquals(Option.some(ok("pong")), execute.unsafeRunSync(nothing()));
   }
   
   @Test
   public void echo() {
-    HttpZIOService<Nothing> service = new HttpZIOService<Nothing>("test")
+    HttpURIOService<Nothing> service = new HttpURIOService<Nothing>("test")
         .when(get("/echo"))
-        .then(request -> Task.task(request::body).fold(Responses::error, Responses::ok).toZIO())
+        .then(request -> Task.task(request::body).fold(Responses::error, Responses::ok).toURIO())
         .postFilter(contentPlain());
 
-    ZIO<Nothing, Nothing, Option<HttpResponse>> execute = service.execute(Requests.get("/echo").withBody(asBytes("hello")));
+    URIO<Nothing, Option<HttpResponse>> execute = service.execute(Requests.get("/echo").withBody(asBytes("hello")));
 
-    assertEquals(ok("hello").withHeader("Content-type", "text/plain"), execute.provide(nothing()).get().get());
+    assertEquals(ok("hello").withHeader("Content-type", "text/plain"), execute.unsafeRunSync(nothing()).get());
   }
 }

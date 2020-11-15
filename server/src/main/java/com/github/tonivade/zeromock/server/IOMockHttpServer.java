@@ -5,16 +5,16 @@
 package com.github.tonivade.zeromock.server;
 
 import static com.github.tonivade.purefun.concurrent.Future.DEFAULT_EXECUTOR;
-import static com.github.tonivade.purefun.instances.IOInstances.monad;
+import static com.github.tonivade.purefun.typeclasses.Instance.monad;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static com.github.tonivade.zeromock.server.ResponseInterpreterK.ioAsync;
 import static com.github.tonivade.zeromock.server.ResponseInterpreterK.ioSync;
 import static java.util.Objects.requireNonNull;
+
 import java.util.concurrent.Executor;
 
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.data.Sequence;
-import com.github.tonivade.purefun.instances.IOInstances;
 import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.purefun.monad.IO_;
 import com.github.tonivade.zeromock.api.HttpIOService;
@@ -32,7 +32,7 @@ public final class IOMockHttpServer implements HttpServer {
 
   @SuppressWarnings("restriction")
   public IOMockHttpServer(com.sun.net.httpserver.HttpServer server) {
-    this(new MockHttpServerK<>(server, monad(), ioSync()));
+    this(new MockHttpServerK<>(server, monad(IO_.class), ioSync()));
   }
 
   private IOMockHttpServer(MockHttpServerK<IO_> serverK) {
@@ -103,7 +103,7 @@ public final class IOMockHttpServer implements HttpServer {
   }
 
   public IOMockHttpServer addPreFilter(Matcher1<HttpRequest> matcher, IORequestHandler handler) {
-    serverK.preFilter(filter(IOInstances.monad(), matcher, handler));
+    serverK.preFilter(filter(monad(IO_.class), matcher, handler));
     return this;
   }
 
@@ -145,7 +145,7 @@ public final class IOMockHttpServer implements HttpServer {
   }
 
   private static BuilderK<IO_, IOMockHttpServer> _builder(ResponseInterpreterK<IO_> interpreter) {
-    return new BuilderK<IO_, IOMockHttpServer>(monad(), interpreter) {
+    return new BuilderK<IO_, IOMockHttpServer>(monad(IO_.class), interpreter) {
       @Override
       public IOMockHttpServer build() {
         return new IOMockHttpServer(buildK());

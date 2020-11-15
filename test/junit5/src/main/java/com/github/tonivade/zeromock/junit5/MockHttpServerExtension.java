@@ -25,7 +25,7 @@ import com.github.tonivade.zeromock.server.IOMockHttpServer;
 import com.github.tonivade.zeromock.server.MockHttpServer;
 import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
 import com.github.tonivade.zeromock.server.UIOMockHttpServer;
-import com.github.tonivade.zeromock.server.ZIOMockHttpServer;
+import com.github.tonivade.zeromock.server.URIOMockHttpServer;
 
 @SuppressWarnings("restriction")
 public class MockHttpServerExtension
@@ -95,8 +95,8 @@ public class MockHttpServerExtension
       this.serverK = new IOMockHttpServer(server);
     } else if (type.isAssignableFrom(UIOMockHttpServer.class)) {
       this.serverK = new UIOMockHttpServer(server);
-    } else if (type.isAssignableFrom(ZIOMockHttpServer.class)) {
-      throw new UnsupportedOperationException("zio is not supported yet!");
+    } else if (type.isAssignableFrom(URIOMockHttpServer.class)) {
+      throw new UnsupportedOperationException("urio is not supported yet!");
     } else {
       throw new ParameterResolutionException("invalid server param");
     }
@@ -134,7 +134,7 @@ public class MockHttpServerExtension
         || type.equals(AsyncMockHttpServer.class)
         || type.equals(IOMockHttpServer.class)
         || type.equals(UIOMockHttpServer.class)
-        || type.equals(ZIOMockHttpServer.class);
+        || type.equals(URIOMockHttpServer.class);
   }
 
   private boolean clientInstance(Class<?> type) {

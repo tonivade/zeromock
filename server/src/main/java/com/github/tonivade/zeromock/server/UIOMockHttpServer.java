@@ -5,18 +5,18 @@
 package com.github.tonivade.zeromock.server;
 
 import static com.github.tonivade.purefun.concurrent.Future.DEFAULT_EXECUTOR;
-import static com.github.tonivade.purefun.instances.UIOInstances.monad;
+import static com.github.tonivade.purefun.typeclasses.Instance.monad;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static com.github.tonivade.zeromock.server.ResponseInterpreterK.uioAsync;
 import static com.github.tonivade.zeromock.server.ResponseInterpreterK.uioSync;
 import static java.util.Objects.requireNonNull;
+
 import java.util.concurrent.Executor;
 
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purefun.effect.UIO_;
-import com.github.tonivade.purefun.instances.UIOInstances;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpUIOService;
 import com.github.tonivade.zeromock.api.PostFilter;
@@ -32,7 +32,7 @@ public final class UIOMockHttpServer implements HttpServer {
 
   @SuppressWarnings("restriction")
   public UIOMockHttpServer(com.sun.net.httpserver.HttpServer server) {
-    this(new MockHttpServerK<>(server, monad(), uioSync()));
+    this(new MockHttpServerK<>(server, monad(UIO_.class), uioSync()));
   }
 
   private UIOMockHttpServer(MockHttpServerK<UIO_> serverK) {
@@ -103,7 +103,7 @@ public final class UIOMockHttpServer implements HttpServer {
   }
 
   public UIOMockHttpServer addPreFilter(Matcher1<HttpRequest> matcher, UIORequestHandler handler) {
-    serverK.preFilter(filter(UIOInstances.monad(), matcher, handler));
+    serverK.preFilter(filter(monad(UIO_.class), matcher, handler));
     return this;
   }
 
@@ -145,7 +145,7 @@ public final class UIOMockHttpServer implements HttpServer {
   }
 
   private static BuilderK<UIO_, UIOMockHttpServer> _builder(ResponseInterpreterK<UIO_> interpreter) {
-    return new BuilderK<UIO_, UIOMockHttpServer>(monad(), interpreter) {
+    return new BuilderK<UIO_, UIOMockHttpServer>(monad(UIO_.class), interpreter) {
       @Override
       public UIOMockHttpServer build() {
         return new UIOMockHttpServer(buildK());

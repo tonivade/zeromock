@@ -5,18 +5,18 @@
 package com.github.tonivade.zeromock.junit4;
 
 import static com.github.tonivade.purefun.Producer.cons;
-import static com.github.tonivade.zeromock.server.ZIOMockHttpServer.sync;
+import static com.github.tonivade.zeromock.server.URIOMockHttpServer.sync;
+
 import com.github.tonivade.purefun.Kind;
-import com.github.tonivade.purefun.Nothing;
-import com.github.tonivade.purefun.effect.ZIO_;
+import com.github.tonivade.purefun.effect.URIO_;
 
-public class ZIOMockHttpServerRule<R> extends AbstractMockServerRule<Kind<Kind<ZIO_, R>, Nothing>> {
+public class URIOMockHttpServerRule<R> extends AbstractMockServerRule<Kind<URIO_, R>> {
 
-  public ZIOMockHttpServerRule(R env) {
+  public URIOMockHttpServerRule(R env) {
      this(env, 0);
   }
 
-  public ZIOMockHttpServerRule(R env, int port) {
+  public URIOMockHttpServerRule(R env, int port) {
     super(sync(cons(env)).port(port).buildK());
   }
 }

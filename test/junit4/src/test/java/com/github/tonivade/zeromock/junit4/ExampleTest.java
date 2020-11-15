@@ -9,11 +9,13 @@ import static com.github.tonivade.zeromock.api.Bytes.asString;
 import static com.github.tonivade.zeromock.api.Handlers.ok;
 import static com.github.tonivade.zeromock.api.Matchers.get;
 import static org.junit.Assert.assertEquals;
+
 import org.junit.Rule;
 import org.junit.Test;
+
 import com.github.tonivade.purefun.Nothing;
 import com.github.tonivade.purefun.effect.UIO;
-import com.github.tonivade.purefun.effect.ZIO;
+import com.github.tonivade.purefun.effect.URIO;
 import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
@@ -31,7 +33,7 @@ public class ExampleTest {
   @Rule
   public UIOMockHttpServerRule uioServer = new UIOMockHttpServerRule();
   @Rule
-  public ZIOMockHttpServerRule<Nothing> zioServer = new ZIOMockHttpServerRule<>(nothing());
+  public URIOMockHttpServerRule<Nothing> urioServer = new URIOMockHttpServerRule<>(nothing());
 
   @Test
   public void pingSync() {
@@ -70,10 +72,10 @@ public class ExampleTest {
   }
 
   @Test
-  public void pingZIO() {
-    zioServer.when(get("/ping")).then(request -> ZIO.pure(pong()));
+  public void pingURIO() {
+    urioServer.when(get("/ping")).then(request -> URIO.pure(pong()));
 
-    HttpResponse response = zioServer.client().request(ping());
+    HttpResponse response = urioServer.client().request(ping());
 
     assertPong(response);
   }
