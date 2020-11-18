@@ -5,10 +5,11 @@
 package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.purefun.monad.IOOf.toIO;
+import static com.github.tonivade.purefun.typeclasses.Instance.monad;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
+
 import com.github.tonivade.purefun.Matcher1;
-import com.github.tonivade.purefun.instances.IOInstances;
 import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.purefun.monad.IO_;
 import com.github.tonivade.purefun.type.Option;
@@ -18,7 +19,7 @@ public final class HttpIOService {
   private final HttpServiceK<IO_> serviceK;
 
   public HttpIOService(String name) {
-    this(new HttpServiceK<>(name, IOInstances.monad()));
+    this(new HttpServiceK<>(name, monad(IO_.class)));
   }
 
   private HttpIOService(HttpServiceK<IO_> serviceK) {
@@ -78,7 +79,7 @@ public final class HttpIOService {
   }
 
   protected HttpIOService addPreFilter(Matcher1<HttpRequest> matcher, IORequestHandler handler) {
-    return preFilter(filter(IOInstances.monad(), matcher, handler)::apply);
+    return preFilter(filter(monad(IO_.class), matcher, handler)::apply);
   }
 
   @Override

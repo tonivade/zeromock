@@ -13,16 +13,16 @@ import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.effect.URIO;
 import com.github.tonivade.purefun.effect.URIO_;
-import com.github.tonivade.purefun.instances.URIOInstances;
 import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.purefun.type.Option;
+import com.github.tonivade.purefun.typeclasses.Instance;
 
 public final class HttpURIOService<R> {
 
   private final HttpServiceK<Kind<URIO_, R>> serviceK;
 
   public HttpURIOService(String name) {
-    this(new HttpServiceK<>(name, URIOInstances.monad()));
+    this(new HttpServiceK<>(name, new Instance<Kind<URIO_, R>>() {}.monad()));
   }
 
   private HttpURIOService(HttpServiceK<Kind<URIO_, R>> serviceK) {
@@ -82,7 +82,7 @@ public final class HttpURIOService<R> {
   }
 
   protected HttpURIOService<R> addPreFilter(Matcher1<HttpRequest> matcher, URIORequestHandler<R> handler) {
-    return preFilter(filter(URIOInstances.monad(), matcher, handler)::apply);
+    return preFilter(filter(new Instance<Kind<URIO_, R>>() {}.monad(), matcher, handler)::apply);
   }
 
   @Override

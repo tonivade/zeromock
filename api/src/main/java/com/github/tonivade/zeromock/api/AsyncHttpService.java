@@ -7,6 +7,9 @@ package com.github.tonivade.zeromock.api;
 import static com.github.tonivade.purefun.concurrent.FutureOf.toFuture;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
+
+import java.util.concurrent.Executor;
+
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.concurrent.Future_;
@@ -19,7 +22,11 @@ public final class AsyncHttpService {
   private final HttpServiceK<Future_> serviceK;
 
   public AsyncHttpService(String name) {
-    this(new HttpServiceK<>(name, FutureInstances.monad()));
+    this(name, Future.DEFAULT_EXECUTOR);
+  }
+
+  public AsyncHttpService(String name, Executor executor) {
+    this(new HttpServiceK<>(name, FutureInstances.monad(executor)));
   }
 
   private AsyncHttpService(HttpServiceK<Future_> serviceK) {
