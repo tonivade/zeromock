@@ -6,8 +6,8 @@ ext {
     junitPlatform   : '1.7.0',
     equalsverifier  : '3.1.12',
     purefun         : '2.2',
-    jaxb            : '2.4.0-b180830.0438',
-    jsonPath        : '2.4.0'
+    jaxb            : '3.0.0',
+    jsonPath        : '2.5.0'
   ]
   libs = [
     purefunCore        : "com.github.tonivade:purefun-core:$versions.purefun",

@@ -15,11 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 
-import javax.xml.bind.DataBindingException;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
 import com.github.tonivade.purefun.Function1;
 import com.github.tonivade.purefun.data.ImmutableArray;
 import com.github.tonivade.purefun.data.ImmutableList;
@@ -33,6 +28,11 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+
+import jakarta.xml.bind.DataBindingException;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 
 public final class Deserializers {
   

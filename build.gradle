@@ -32,8 +32,8 @@ allprojects {
   group = 'com.github.tonivade'
   version = '0.15.0-SNAPSHOT'
 
-  sourceCompatibility = '1.8'
-  targetCompatibility = '1.8'
+  sourceCompatibility = 11
+  targetCompatibility = 11
 
   repositories {
     mavenLocal()
@@ -49,14 +49,6 @@ allprojects {
     jacoco {
       destinationFile = file("${buildDir}/jacoco/test.exec")
     }
-  }
-  
-  compileJava {
-    options.release = 8
-  }
-  
-  compileTestJava {
-    options.release = 8
   }
 
   jacoco {

@@ -8,10 +8,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UncheckedIOException;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-
 import com.github.tonivade.purefun.Function1;
 import com.github.tonivade.purefun.data.ImmutableArray;
 import com.github.tonivade.purefun.data.ImmutableArray.JavaBasedImmutableArray;
@@ -31,6 +27,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializer;
+
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 
 public final class Serializers {
 
