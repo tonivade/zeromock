@@ -10,6 +10,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 
 import jakarta.xml.bind.DataBindingException;
 import jakarta.xml.bind.JAXBContext;
@@ -105,20 +107,24 @@ public final class Deserializers {
 class DeserializerAdapters {
 
   static final JsonDeserializer<ImmutableList<?>> IMMUTABLE_LIST = 
-      (json, typeOfT, context) -> ImmutableList.from(context.<List<?>>deserialize(json, List.class));
+      (json, typeOfT, context) -> ImmutableList.from(context.<List<?>>deserialize(json, as(List.class, typeOfT)));
 
   static final JsonDeserializer<ImmutableSet<?>> IMMUTABLE_SET = 
-      (json, typeOfT, context) -> ImmutableSet.from(context.<List<?>>deserialize(json, List.class));
+      (json, typeOfT, context) -> ImmutableSet.from(context.<List<?>>deserialize(json, as(List.class, typeOfT)));
 
   static final JsonDeserializer<ImmutableArray<?>> IMMUTABLE_ARRAY = 
-      (json, typeOfT, context) -> ImmutableArray.from(context.<List<?>>deserialize(json, List.class));
+      (json, typeOfT, context) -> ImmutableArray.from(context.<List<?>>deserialize(json, as(List.class, typeOfT)));
 
   static final JsonDeserializer<ImmutableTree<?>> IMMUTABLE_TREE = 
-      (json, typeOfT, context) -> ImmutableTree.from(context.<List<?>>deserialize(json, List.class));
+      (json, typeOfT, context) -> ImmutableTree.from(context.<List<?>>deserialize(json, as(List.class, typeOfT)));
 
   static final JsonDeserializer<ImmutableMap<?, ?>> IMMUTABLE_MAP = 
-      (json, typeOfT, context) -> ImmutableMap.from(context.<Map<?, ?>>deserialize(json, Map.class));
+      (json, typeOfT, context) -> ImmutableMap.from(context.<Map<?, ?>>deserialize(json, as(Map.class, typeOfT)));
 
   static final JsonDeserializer<ImmutableTreeMap<?, ?>> IMMUTABLE_TREEMAP = 
-      (json, typeOfT, context) -> ImmutableTreeMap.from(context.<NavigableMap<?, ?>>deserialize(json, NavigableMap.class));
+      (json, typeOfT, context) -> ImmutableTreeMap.from(context.<NavigableMap<?, ?>>deserialize(json, as(NavigableMap.class, typeOfT)));
+
+  private static Type as(Class<?> rawType, Type typeOfT) {
+    return TypeToken.getParameterized(rawType, ((ParameterizedType) typeOfT).getActualTypeArguments()).getType();
+  }
 }
