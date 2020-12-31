@@ -41,7 +41,6 @@ import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
-@SuppressWarnings("restriction")
 public class MockHttpServerK<F extends Witness> implements com.github.tonivade.zeromock.server.HttpServer {
 
   private static final Logger LOG = Logger.getLogger(MockHttpServerK.class.getName());

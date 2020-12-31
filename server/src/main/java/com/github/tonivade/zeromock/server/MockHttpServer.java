@@ -24,7 +24,6 @@ public final class MockHttpServer implements HttpServer {
 
   private final MockHttpServerK<Id_> serverK;
 
-  @SuppressWarnings("restriction")
   public MockHttpServer(com.sun.net.httpserver.HttpServer server) {
     this(new MockHttpServerK<>(server, monad(Id_.class), sync()));
   }
@@ -44,7 +43,7 @@ public final class MockHttpServer implements HttpServer {
   }
 
   public static BuilderK<Id_, MockHttpServer> builder() {
-    return new BuilderK<Id_, MockHttpServer>(monad(Id_.class), sync()) {
+    return new BuilderK<>(monad(Id_.class), sync()) {
       @Override
       public MockHttpServer build() {
         return new MockHttpServer(buildK());

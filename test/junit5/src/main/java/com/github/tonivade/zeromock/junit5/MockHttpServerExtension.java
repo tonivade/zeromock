@@ -27,7 +27,6 @@ import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
 import com.github.tonivade.zeromock.server.UIOMockHttpServer;
 import com.github.tonivade.zeromock.server.URIOMockHttpServer;
 
-@SuppressWarnings("restriction")
 public class MockHttpServerExtension
     implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
@@ -124,12 +123,12 @@ public class MockHttpServerExtension
     return serverK.getUnmatched().join(",", "[", "]");
   }
 
-  private Optional<ListenAt> listenAt(ExtensionContext context) {
+  private static Optional<ListenAt> listenAt(ExtensionContext context) {
     return context.getTestClass()
         .map(clazz -> clazz.getDeclaredAnnotation(ListenAt.class));
   }
 
-  private boolean serverInstance(Class<?> type) {
+  private static boolean serverInstance(Class<?> type) {
     return type.equals(MockHttpServer.class)
         || type.equals(AsyncMockHttpServer.class)
         || type.equals(IOMockHttpServer.class)
@@ -137,7 +136,7 @@ public class MockHttpServerExtension
         || type.equals(URIOMockHttpServer.class);
   }
 
-  private boolean clientInstance(Class<?> type) {
+  private static boolean clientInstance(Class<?> type) {
     return type.equals(HttpClient.class)
         || type.equals(AsyncHttpClient.class)
         || type.equals(IOHttpClient.class)

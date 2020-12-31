@@ -27,7 +27,6 @@ public final class AsyncMockHttpServer implements HttpServer {
 
   private final MockHttpServerK<Future_> serverK;
 
-  @SuppressWarnings("restriction")
   public AsyncMockHttpServer(com.sun.net.httpserver.HttpServer server) {
     this(new MockHttpServerK<>(server, monad(Future_.class), async()));
   }
@@ -47,7 +46,7 @@ public final class AsyncMockHttpServer implements HttpServer {
   }
 
   public static BuilderK<Future_, AsyncMockHttpServer> builder() {
-    return new BuilderK<Future_, AsyncMockHttpServer>(monad(Future_.class), async()) {
+    return new BuilderK<>(monad(Future_.class), async()) {
       @Override
       public AsyncMockHttpServer build() {
         return new AsyncMockHttpServer(buildK());

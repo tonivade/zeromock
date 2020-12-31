@@ -145,7 +145,7 @@ public final class URIOMockHttpServer<R> implements HttpServer {
 
   private static <R> BuilderK<Kind<URIO_, R>, URIOMockHttpServer<R>> _builder(
       ResponseInterpreterK<Kind<URIO_, R>> urioAsync) {
-    return new BuilderK<Kind<URIO_, R>, URIOMockHttpServer<R>>(monad(), urioAsync) {
+    return new BuilderK<>(monad(), urioAsync) {
       @Override
       public URIOMockHttpServer<R> build() {
         return new URIOMockHttpServer<>(buildK());

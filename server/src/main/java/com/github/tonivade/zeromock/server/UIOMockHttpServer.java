@@ -29,7 +29,6 @@ public final class UIOMockHttpServer implements HttpServer {
 
   private final MockHttpServerK<UIO_> serverK;
 
-  @SuppressWarnings("restriction")
   public UIOMockHttpServer(com.sun.net.httpserver.HttpServer server) {
     this(new MockHttpServerK<>(server, monad(UIO_.class), ResponseInterpreterK.sync(runtime(UIO_.class))));
   }
@@ -144,7 +143,7 @@ public final class UIOMockHttpServer implements HttpServer {
   }
 
   private static BuilderK<UIO_, UIOMockHttpServer> _builder(ResponseInterpreterK<UIO_> interpreter) {
-    return new BuilderK<UIO_, UIOMockHttpServer>(monad(UIO_.class), interpreter) {
+    return new BuilderK<>(monad(UIO_.class), interpreter) {
       @Override
       public UIOMockHttpServer build() {
         return new UIOMockHttpServer(buildK());
