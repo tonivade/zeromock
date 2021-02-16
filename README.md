@@ -4,7 +4,7 @@ Http Mock Server with (mostly) zero dependencies.
 
 Right now the unique dependency is gson (json object serialization), and gson doesn't have any additional dependency.
 
-![Build Status](https://github.com/tonivade/claudb/workflows/Java%20CI%20with%20Gradle/badge.svg)
+![Build Status](https://github.com/tonivade/zeromock/workflows/Java%20CI%20with%20Gradle/badge.svg)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/a3718bd59d674b8592065ac84abdf82c)](https://www.codacy.com/app/tonivade/zeromock?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tonivade/zeromock&amp;utm_campaign=Badge_Grade)
 [![Sonarcloud Badge](https://sonarcloud.io/api/project_badges/measure?project=com.github.tonivade%3Azeromock-parent&amp;metric=alert_status)](https://sonarcloud.io/dashboard?id=com.github.tonivade%3Azeromock-parent)
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/a3718bd59d674b8592065ac84abdf82c)](https://www.codacy.com/app/tonivade/zeromock?utm_source=github.com&utm_medium=referral&utm_content=tonivade/zeromock&utm_campaign=Badge_Coverage)
