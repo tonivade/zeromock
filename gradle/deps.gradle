@@ -1,11 +1,11 @@
 ext {
   versions = [ 
-    gson            : '2.8.6',
     junit           : '4.13.1',
     junitEngine     : '5.7.1',
     junitPlatform   : '1.7.1',
     equalsverifier  : '3.1.12',
     purefun         : '2.3-SNAPSHOT',
+    purejson        : '0.2-SNAPSHOT',
     jaxb            : '3.0.0',
     jsonPath        : '2.5.0'
   ]
@@ -15,7 +15,7 @@ ext {
     purefunEffect      : "com.github.tonivade:purefun-effect:$versions.purefun",
     purefunTypeclasses : "com.github.tonivade:purefun-typeclasses:$versions.purefun",
     purefunInstances   : "com.github.tonivade:purefun-instances:$versions.purefun",
-    gson               : "com.google.code.gson:gson:$versions.gson",
+    purejson           : "com.github.tonivade:purejson:$versions.purejson",
     junitJupiter       : "org.junit.jupiter:junit-jupiter-engine:$versions.junitEngine",
     junitVintage       : "org.junit.vintage:junit-vintage-engine:$versions.junitEngine",
     junitRunner        : "org.junit.platform:junit-platform-runner:$versions.junitPlatform",

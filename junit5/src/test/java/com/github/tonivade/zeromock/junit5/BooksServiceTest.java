@@ -21,6 +21,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import com.github.tonivade.purejson.TypeToken;
 import com.github.tonivade.zeromock.api.Bytes;
 import com.github.tonivade.zeromock.api.Deserializers;
 import com.github.tonivade.zeromock.api.HttpResponse;
@@ -30,7 +31,6 @@ import com.github.tonivade.zeromock.api.Requests;
 import com.github.tonivade.zeromock.client.HttpClient;
 import com.github.tonivade.zeromock.junit5.BooksService.Book;
 import com.github.tonivade.zeromock.server.MockHttpServer;
-import com.google.gson.reflect.TypeToken;
 
 @ExtendWith(MockHttpServerExtension.class)
 public class BooksServiceTest {

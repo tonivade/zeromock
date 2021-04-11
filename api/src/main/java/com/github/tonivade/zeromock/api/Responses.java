@@ -4,6 +4,7 @@
  */
 package com.github.tonivade.zeromock.api;
 
+import static com.github.tonivade.purefun.Precondition.checkNonNull;
 import static com.github.tonivade.zeromock.api.Bytes.asBytes;
 import static com.github.tonivade.zeromock.api.Bytes.empty;
 import static com.github.tonivade.zeromock.api.HttpStatus.BAD_REQUEST;
@@ -16,7 +17,6 @@ import static com.github.tonivade.zeromock.api.HttpStatus.OK;
 import static com.github.tonivade.zeromock.api.HttpStatus.SERVICE_UNAVAILABLE;
 import static com.github.tonivade.zeromock.api.HttpStatus.UNAUTHORIZED;
 import static com.github.tonivade.zeromock.api.Serializers.throwableToJson;
-import static java.util.Objects.requireNonNull;
 
 public final class Responses {
   
@@ -91,11 +91,11 @@ public final class Responses {
   }
 
   public static HttpResponse error(String body) {
-    return error(asBytes(requireNonNull(body)));
+    return error(asBytes(checkNonNull(body)));
   }
 
   public static HttpResponse error(Throwable error) {
-    return error(throwableToJson().apply(error));
+    return error(throwableToJson().apply(error).getOrElseThrow());
   }
 
   public static HttpResponse error(Bytes body) {

@@ -9,7 +9,8 @@ import org.junit.jupiter.api.Test;
 
 import com.github.tonivade.purefun.data.ImmutableList;
 import com.github.tonivade.purefun.data.Sequence;
-import com.google.gson.reflect.TypeToken;
+import com.github.tonivade.purefun.type.Try;
+import com.github.tonivade.purejson.TypeToken;
 
 class JsonTest {
 
@@ -19,9 +20,9 @@ class JsonTest {
   void serializeDeserialize() {
     ImmutableList<Data> listOf = Sequence.listOf(new Data(1, "toni"));
 
-    Bytes bytes = Serializers.objectToJson().apply(listOf);
+    Try<Bytes> bytes = Serializers.objectToJson(type).apply(listOf);
     
-    assertEquals(listOf, Deserializers.jsonTo(type).apply(bytes));
+    assertEquals(listOf, Deserializers.jsonTo(type).apply(bytes.getOrElseThrow()));
   }
 }
 

@@ -58,7 +58,7 @@ public class ExamplesTest {
 
   @Test
   public void pojoSerialization(MockHttpServer server, UIOHttpClient client) {
-    server.when(get("/echo").and(param("say"))).then(ok(queryParam("say").andThen(Say::new).andThen(objectToJson())));
+    server.when(get("/echo").and(param("say"))).then(ok(queryParam("say").andThen(Say::new).andThen(objectToJson(Say.class))));
 
     HttpResponse response = client.request(Requests.get("/echo").withParam("say", "Hello World!")).unsafeRunSync();
 
@@ -73,6 +73,6 @@ public class ExamplesTest {
   }
 
   private Say asObject(Bytes body) {
-    return Deserializers.jsonToObject(Say.class).apply(body);
+    return Deserializers.jsonToObject(Say.class).apply(body).getOrElseThrow().getOrElseNull();
   }
 }
