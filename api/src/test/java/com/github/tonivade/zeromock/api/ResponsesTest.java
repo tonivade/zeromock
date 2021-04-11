@@ -35,7 +35,6 @@ public class ResponsesTest {
         () -> assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, error("body").status()),
         () -> assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, error(new Exception("error")).status()),
         () -> assertEquals(HttpStatus.CREATED, created("body").status()),
-        () -> assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, error("body").status()),
         () -> assertEquals(HttpStatus.BAD_REQUEST, badRequest("body").status()),
         () -> assertEquals(HttpStatus.NOT_FOUND, notFound("body").status()),
         () -> assertEquals(HttpStatus.OK, ok("body").status())
@@ -54,7 +53,6 @@ public class ResponsesTest {
         () -> assertEquals(asBytes("body"), error("body").body()),
         () -> assertEquals("error", JsonPath.read(asString(error(new Exception("error")).body()), "$.message")),
         () -> assertEquals(asBytes("body"), created("body").body()),
-        () -> assertEquals(asBytes("body"), error("body").body()),
         () -> assertEquals(asBytes("body"), badRequest("body").body()),
         () -> assertEquals(asBytes("body"), notFound("body").body()),
         () -> assertEquals(asBytes("body"), ok("body").body())

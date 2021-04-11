@@ -58,7 +58,7 @@ public final class Serializers {
   }
 
   private static Try<String> toJson(Throwable error) {
-    return toJson(throwableToJson(error), Throwable.class);
+    return PureJson.serialize(throwableToJson(error));
   }
 
   private static <T> Try<String> toJson(T value, Type type) {
