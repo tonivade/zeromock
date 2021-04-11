@@ -12,6 +12,8 @@ import java.util.Objects;
 import com.github.tonivade.purefun.Equal;
 import com.github.tonivade.purefun.data.ImmutableList;
 import com.github.tonivade.purefun.type.Option;
+import com.github.tonivade.purejson.JsonCreator;
+import com.github.tonivade.purejson.JsonProperty;
 
 public class BooksService {
 
@@ -40,7 +42,8 @@ public class BooksService {
     private final int id;
     private final String title;
 
-    public Book(int id, String title) {
+    @JsonCreator
+    public Book(@JsonProperty("id") int id, @JsonProperty("title") String title) {
       this.id = checkPositive(id);
       this.title = checkNonEmpty(title);
     }

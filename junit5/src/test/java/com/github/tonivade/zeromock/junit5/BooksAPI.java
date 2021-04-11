@@ -49,7 +49,7 @@ public class BooksAPI {
     return Function2.of(service::update)
         .compose(getBookId(), getBookTitle())
         .liftTry()
-        .andThen(map(objectToJson(Book.class)))
+        .andThen(flatMap(objectToJson(Book.class)))
         .andThen(map(Responses::ok))
         .andThen(getOrElse(Responses::error))
         .andThen(contentJson())::apply;
@@ -59,6 +59,7 @@ public class BooksAPI {
     return Function1.of(service::find)
         .compose(getBookId())
         .andThen(x -> x.map(objectToJson(Book.class)))
+        .andThen(x -> x.map(Responses::fromTry))
         .andThen(x -> x.getOrElse(Responses::noContent))
         .andThen(contentJson())::apply;
   }
@@ -67,7 +68,7 @@ public class BooksAPI {
     return getBookTitle()
         .andThen(service::create)
         .liftTry()
-        .andThen(map(objectToJson(Book.class)))
+        .andThen(flatMap(objectToJson(Book.class)))
         .andThen(map(Responses::created))
         .andThen(getOrElse(Responses::error))
         .andThen(contentJson())::apply;
@@ -77,9 +78,8 @@ public class BooksAPI {
     return getBookId()
         .andThen(Consumer1.of(service::delete).asFunction())
         .liftTry()
-        .andThen(map(empty()))
-        .andThen(map(Responses::ok))
-        .andThen(getOrElse(Responses::error))
+        .andThen(flatMap(empty()))
+        .andThen(Responses::fromTry)
         .andThen(contentJson())::apply;
   }
 
@@ -97,5 +97,9 @@ public class BooksAPI {
 
   private <T, R> Function1<Try<T>, Try<R>> map(Function1<T, R> mapper) {
     return x -> x.map(mapper);
+  }
+
+  private <T, R> Function1<Try<T>, Try<R>> flatMap(Function1<T, Try<R>> mapper) {
+    return x -> x.flatMap(mapper);
   }
 }

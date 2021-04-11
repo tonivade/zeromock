@@ -4,6 +4,8 @@
  */
 package com.github.tonivade.zeromock.junit5;
 
+import static com.github.tonivade.purefun.type.Option.some;
+import static com.github.tonivade.purefun.type.Try.success;
 import static com.github.tonivade.zeromock.api.Bytes.empty;
 import static com.github.tonivade.zeromock.api.Deserializers.jsonToObject;
 import static com.github.tonivade.zeromock.api.Matchers.body;
@@ -53,7 +55,7 @@ public class BooksServiceTest {
     HttpResponse response = client.request(Requests.get("/store/books"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals(singletonList(new Book(1, "title")), asBooks(response.body())));
+              () -> assertEquals(success(some(singletonList(new Book(1, "title")))), asBooks(response.body())));
   }
 
   @Test
@@ -63,7 +65,7 @@ public class BooksServiceTest {
     HttpResponse response = client.request(Requests.get("/store/books/1"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals(new Book(1, "title"), asBook(response.body())));
+              () -> assertEquals(success(some(new Book(1, "title"))), asBook(response.body())));
   }
 
   @Test
@@ -73,7 +75,7 @@ public class BooksServiceTest {
     HttpResponse response = client.request(Requests.post("/store/books").withBody("create"));
 
     assertAll(() -> assertEquals(HttpStatus.CREATED, response.status()),
-              () -> assertEquals(new Book(1, "create"), asBook(response.body())),
+              () -> assertEquals(success(some(new Book(1, "create"))), asBook(response.body())),
               () -> server.verify(post("/store/books").and(body("create"))));
   }
 
@@ -94,7 +96,7 @@ public class BooksServiceTest {
     HttpResponse response = client.request(Requests.put("/store/books/1").withBody("update"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals(new Book(1, "update"), asBook(response.body())));
+              () -> assertEquals(success(some(new Book(1, "update"))), asBook(response.body())));
   }
 
   private Try<Option<Book>> asBook(Bytes body) {
