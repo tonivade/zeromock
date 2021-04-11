@@ -4,6 +4,8 @@
  */
 package com.github.tonivade.zeromock.server;
 
+import static com.github.tonivade.purefun.type.Option.some;
+import static com.github.tonivade.purefun.type.Try.success;
 import static com.github.tonivade.zeromock.api.Bytes.asString;
 import static com.github.tonivade.zeromock.api.Headers.contentJson;
 import static com.github.tonivade.zeromock.api.Headers.contentXml;
@@ -50,9 +52,9 @@ public class IOMockHttpServerTest {
 
   private HttpIOService service2 = new HttpIOService("test")
       .when(get().and(path("/test")).and(acceptsXml()))
-        .then(request -> IO.task(this::sayHello).map(objectToXml()).map(Responses::ok).map(contentXml()))
+        .then(request -> IO.task(this::sayHello).flatMap(objectToXml().andThen(IO::fromTry)).map(Responses::ok).map(contentXml()))
       .when(get().and(path("/test")).and(acceptsJson()))
-        .then(request -> IO.task(this::sayHello).map(objectToJson()).map(Responses::ok).map(contentJson()))
+        .then(request -> IO.task(this::sayHello).flatMap(objectToJson(Say.class).andThen(IO::fromTry)).map(Responses::ok).map(contentJson()))
       .when(get().and(path("/empty")))
         .then(request -> IO.pure(noContent()));
 
@@ -86,7 +88,7 @@ public class IOMockHttpServerTest {
     HttpResponse response = connectTo(baseUrl()).request(Requests.get("/test").withHeader("Accept", "application/json"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals(sayHello(), Deserializers.jsonToObject(Say.class).apply(response.body())),
+              () -> assertEquals(success(some(sayHello())), Deserializers.jsonToObject(Say.class).apply(response.body())),
               () -> assertEquals(ImmutableSet.of("application/json"), response.headers().get("Content-type")));
   }
 
@@ -97,7 +99,7 @@ public class IOMockHttpServerTest {
     HttpResponse response = connectTo(baseUrl()).request(Requests.get("/test").withHeader("Accept", "text/xml"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals(sayHello(), Deserializers.xmlToObject(Say.class).apply(response.body())),
+              () -> assertEquals(success(sayHello()), Deserializers.xmlToObject(Say.class).apply(response.body())),
               () -> assertEquals(ImmutableSet.of("text/xml"), response.headers().get("Content-type")));
   }
 

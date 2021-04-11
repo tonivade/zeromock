@@ -10,6 +10,8 @@ import static com.jayway.jsonpath.Option.SUPPRESS_EXCEPTIONS;
 import java.lang.reflect.Type;
 
 import com.github.tonivade.purefun.Function1;
+import com.github.tonivade.purefun.type.Option;
+import com.github.tonivade.purefun.type.Try;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 
@@ -35,7 +37,7 @@ public final class Extractors {
     return request -> request.pathParam(position);
   }
 
-  public static <T> Function1<HttpRequest, T> jsonTo(Type type) {
+  public static <T> Function1<HttpRequest, Try<Option<T>>> jsonTo(Type type) {
     return body().andThen(Deserializers.jsonTo(type));
   }
 

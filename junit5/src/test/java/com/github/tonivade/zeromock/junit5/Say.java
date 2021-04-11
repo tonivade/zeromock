@@ -7,11 +7,15 @@ package com.github.tonivade.zeromock.junit5;
 import java.util.Objects;
 
 import com.github.tonivade.purefun.Equal;
+import com.github.tonivade.purejson.JsonCreator;
+import com.github.tonivade.purejson.JsonProperty;
 
 public final class Say {
+
   private String message;
 
-  public Say(String message) {
+  @JsonCreator
+  public Say(@JsonProperty("message") String message) {
     this.message = message;
   }
 

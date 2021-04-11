@@ -1,5 +1,6 @@
 package com.github.tonivade.zeromock.api;
 
+import static com.github.tonivade.purefun.type.Option.some;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.Type;
@@ -9,25 +10,28 @@ import org.junit.jupiter.api.Test;
 
 import com.github.tonivade.purefun.data.ImmutableList;
 import com.github.tonivade.purefun.data.Sequence;
-import com.google.gson.reflect.TypeToken;
+import com.github.tonivade.purefun.type.Try;
+import com.github.tonivade.purejson.TypeToken;
 
 class JsonTest {
 
-  final Type type = new TypeToken<ImmutableList<Data>>() {}.getType();
+  private final Type type = new TypeToken<ImmutableList<Data>>() {}.getType();
   
   @Test
   void serializeDeserialize() {
     ImmutableList<Data> listOf = Sequence.listOf(new Data(1, "toni"));
 
-    Bytes bytes = Serializers.objectToJson().apply(listOf);
+    Try<Bytes> bytes = Serializers.objectToJson(type).apply(listOf);
     
-    assertEquals(listOf, Deserializers.jsonTo(type).apply(bytes));
+    assertEquals(some(listOf), Deserializers.jsonTo(type).apply(bytes.getOrElseThrow()).getOrElseThrow());
   }
 }
 
 class Data {
-  private final int id;
-  private final String name;
+  private int id;
+  private String name;
+  
+  public Data() { }
 
   public Data(int id, String name) {
     this.id = id;

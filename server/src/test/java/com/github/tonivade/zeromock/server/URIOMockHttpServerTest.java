@@ -5,6 +5,8 @@
 package com.github.tonivade.zeromock.server;
 
 import static com.github.tonivade.purefun.Nothing.nothing;
+import static com.github.tonivade.purefun.type.Option.some;
+import static com.github.tonivade.purefun.type.Try.success;
 import static com.github.tonivade.zeromock.api.Bytes.asString;
 import static com.github.tonivade.zeromock.api.Headers.contentJson;
 import static com.github.tonivade.zeromock.api.Headers.contentXml;
@@ -53,9 +55,9 @@ public class URIOMockHttpServerTest {
 
   private HttpURIOService<Nothing> service2 = new HttpURIOService<Nothing>("test")
       .when(get().and(path("/test")).and(acceptsXml()))
-        .then(request -> ZIO.<Nothing, Say>task(this::sayHello).map(objectToXml()).fold(Responses::error, Responses::ok).map(contentXml()).toURIO())
+        .then(request -> ZIO.<Nothing, Say>task(this::sayHello).flatMap(objectToXml().andThen(ZIO::fromTry)).fold(Responses::error, Responses::ok).map(contentXml()).toURIO())
       .when(get().and(path("/test")).and(acceptsJson()))
-        .then(request -> ZIO.<Nothing, Say>task(this::sayHello).map(objectToJson()).fold(Responses::error, Responses::ok).map(contentJson()).toURIO())
+        .then(request -> ZIO.<Nothing, Say>task(this::sayHello).flatMap(objectToJson(Say.class).andThen(ZIO::fromTry)).fold(Responses::error, Responses::ok).map(contentJson()).toURIO())
       .when(get().and(path("/empty")))
         .then(request -> URIO.pure(noContent()));
 
@@ -90,7 +92,7 @@ public class URIOMockHttpServerTest {
     HttpResponse response = connectTo(baseUrl()).request(Requests.get("/test").withHeader("Accept", "application/json"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals(sayHello(), Deserializers.jsonToObject(Say.class).apply(response.body())),
+              () -> assertEquals(success(some(sayHello())), Deserializers.jsonToObject(Say.class).apply(response.body())),
               () -> assertEquals(ImmutableSet.of("application/json"), response.headers().get("Content-type")));
   }
 
@@ -101,7 +103,7 @@ public class URIOMockHttpServerTest {
     HttpResponse response = connectTo(baseUrl()).request(Requests.get("/test").withHeader("Accept", "text/xml"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
-              () -> assertEquals(sayHello(), Deserializers.xmlToObject(Say.class).apply(response.body())),
+              () -> assertEquals(success(sayHello()), Deserializers.xmlToObject(Say.class).apply(response.body())),
               () -> assertEquals(ImmutableSet.of("text/xml"), response.headers().get("Content-type")));
   }
 

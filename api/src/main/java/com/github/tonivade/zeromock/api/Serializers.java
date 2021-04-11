@@ -4,29 +4,22 @@
  */
 package com.github.tonivade.zeromock.api;
 
+import static com.github.tonivade.purejson.JsonDSL.array;
+import static com.github.tonivade.purejson.JsonDSL.entry;
+import static com.github.tonivade.purejson.JsonDSL.object;
+import static com.github.tonivade.purejson.JsonDSL.string;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UncheckedIOException;
+import java.lang.reflect.Type;
+import java.util.stream.Stream;
 
 import com.github.tonivade.purefun.Function1;
-import com.github.tonivade.purefun.data.ImmutableArray;
-import com.github.tonivade.purefun.data.ImmutableArray.JavaBasedImmutableArray;
-import com.github.tonivade.purefun.data.ImmutableList;
-import com.github.tonivade.purefun.data.ImmutableList.JavaBasedImmutableList;
-import com.github.tonivade.purefun.data.ImmutableMap;
-import com.github.tonivade.purefun.data.ImmutableMap.JavaBasedImmutableMap;
-import com.github.tonivade.purefun.data.ImmutableSet;
-import com.github.tonivade.purefun.data.ImmutableSet.JavaBasedImmutableSet;
-import com.github.tonivade.purefun.data.ImmutableTree;
-import com.github.tonivade.purefun.data.ImmutableTree.JavaBasedImmutableTree;
-import com.github.tonivade.purefun.data.ImmutableTreeMap;
-import com.github.tonivade.purefun.data.ImmutableTreeMap.JavaBasedImmutableTreeMap;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializer;
+import com.github.tonivade.purefun.type.Try;
+import com.github.tonivade.purejson.JsonDSL;
+import com.github.tonivade.purejson.JsonNode;
+import com.github.tonivade.purejson.PureJson;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -36,52 +29,48 @@ public final class Serializers {
 
   private Serializers() {}
 
-  public static <T> Function1<T, Bytes> empty() {
-    return Function1.cons(Bytes.empty());
+  public static <T> Function1<T, Try<Bytes>> empty() {
+    return value -> Try.success(Bytes.empty());
   }
 
-  public static Function1<Throwable, Bytes> throwableToJson() {
-    return throwableToJson(Serializers::toJson);
+  public static Function1<Throwable, Try<Bytes>> throwableToJson() {
+    return _objectToJson(Serializers::toJson);
   }
 
-  public static Function1<Throwable, Bytes> throwableToJson(Function1<Throwable, String> serializer) {
-    return serializer.andThen(Bytes::asBytes);
+  public static <T> Function1<T, Try<Bytes>> objectToJson(Type type) {
+    return _objectToJson(x -> Serializers.toJson(x, type));
   }
 
-  public static <T> Function1<T, Bytes> objectToJson() {
-    return objectToJson(Serializers::toJson);
+  public static <T> Function1<T, Try<Bytes>> objectToJson(Function1<T, String> serializer) {
+    return _objectToJson(serializer.liftTry());
   }
 
-  public static <T> Function1<T, Bytes> objectToJson(Function1<T, String> serializer) {
-    return serializer.andThen(Bytes::asBytes);
-  }
-
-  public static <T> Function1<T, Bytes> objectToXml() {
+  public static <T> Function1<T, Try<Bytes>> objectToXml() {
     return objectToXml(Serializers::toXml);
   }
 
-  public static <T> Function1<T, Bytes> objectToXml(Function1<T, String> serializer) {
-    return serializer.andThen(Bytes::asBytes);
+  public static <T> Function1<T, Try<Bytes>> objectToXml(Function1<T, String> serializer) {
+    return _objectToXml(serializer.liftTry());
   }
 
   public static <T> Function1<T, Bytes> plain() {
-    return Function1.<T, String>of(Object::toString).andThen(Bytes::asBytes);
+    return obj -> Bytes.asBytes(obj.toString());
   }
 
-  private static <T> String toJson(T value) {
-    return buildGson().toJson(value);
+  private static Try<String> toJson(Throwable error) {
+    return PureJson.serialize(throwableToJson(error));
   }
 
-  private static String toJson(Throwable error) {
-    return toJson(throwableToJson(error));
+  private static <T> Try<String> toJson(T value, Type type) {
+    return new PureJson<>(type).toString(value);
   }
 
-  private static JsonObject throwableToJson(Throwable error) {
-    JsonObject json = new JsonObject();
-    json.addProperty("type", error.getClass().getName());
-    json.addProperty("message", error.getMessage());
-    json.add("trace", stacktrace(error.getStackTrace()));
-    return json;
+  private static <T> Function1<T, Try<Bytes>> _objectToJson(Function1<T, Try<String>> serializer) {
+    return serializer.andThen(x -> x.map(Bytes::asBytes));
+  }
+
+  private static <T> Function1<T, Try<Bytes>> _objectToXml(Function1<T, Try<String>> serializer) {
+    return serializer.andThen(x -> x.map(Bytes::asBytes));
   }
 
   private static <T> String toXml(T value) {
@@ -96,43 +85,15 @@ public final class Serializers {
     }
   }
 
-  private static JsonElement stacktrace(StackTraceElement[] stackTrace) {
-    JsonArray array = new JsonArray();
-    for (StackTraceElement stackTraceElement : stackTrace) {
-      array.add(stackTraceElement.toString());
-    }
-    return array;
+  private static JsonNode throwableToJson(Throwable error) {
+    return object(
+        entry("type", string(error.getClass().getName())),
+        entry("message", string(error.getMessage())),
+        entry("trace", stacktrace(error.getStackTrace()))
+    );
   }
 
-  private static Gson buildGson() {
-    return new GsonBuilder()
-        .registerTypeAdapter(JavaBasedImmutableList.class, SerializerAdapters.IMMUTABLE_LIST)
-        .registerTypeAdapter(JavaBasedImmutableArray.class, SerializerAdapters.IMMUTABLE_ARRAY)
-        .registerTypeAdapter(JavaBasedImmutableSet.class, SerializerAdapters.IMMUTABLE_SET)
-        .registerTypeAdapter(JavaBasedImmutableTree.class, SerializerAdapters.IMMUTABLE_TREE)
-        .registerTypeAdapter(JavaBasedImmutableMap.class, SerializerAdapters.IMMUTABLE_MAP)
-        .registerTypeAdapter(JavaBasedImmutableTreeMap.class, SerializerAdapters.IMMUTABLE_TREEMAP)
-        .create();
+  private static JsonNode stacktrace(StackTraceElement[] stackTrace) {
+    return array(Stream.of(stackTrace).map(Object::toString).map(JsonDSL::string).toArray(JsonNode[]::new));
   }
-}
-
-class SerializerAdapters {
-
-  static final JsonSerializer<ImmutableList<?>> IMMUTABLE_LIST = 
-      (src, type, context) -> context.serialize(src.toList());
-
-  static final JsonSerializer<ImmutableSet<?>> IMMUTABLE_SET = 
-      (src, type, context) -> context.serialize(src.toSet());
-
-  static final JsonSerializer<ImmutableArray<?>> IMMUTABLE_ARRAY = 
-      (src, type, context) -> context.serialize(src.toList());
-
-  static final JsonSerializer<ImmutableTree<?>> IMMUTABLE_TREE = 
-      (src, type, context) -> context.serialize(src.toNavigableSet());
-
-  static final JsonSerializer<ImmutableMap<?, ?>> IMMUTABLE_MAP = 
-      (src, type, context) -> context.serialize(src.toMap());
-
-  static final JsonSerializer<ImmutableTreeMap<?, ?>> IMMUTABLE_TREEMAP = 
-      (src, type, context) -> context.serialize(src.toNavigableMap());
 }
