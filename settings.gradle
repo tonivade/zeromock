@@ -1,3 +1,5 @@
 rootProject.name = 'zeromock-parent'
 
-include "api", "server", "test:junit4", "test:junit5", "client"
+include "api", "server", "junit4", "junit5", "client"
+
+rootProject.children.each { it.name = "zeromock-" + it.name }
