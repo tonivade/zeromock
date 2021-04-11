@@ -28,6 +28,7 @@ public class SerializersTest {
   private final String expectedObject = "{\"a\":\"b\"}";
 
   private final Type sequenceOfStrings = new TypeToken<ImmutableList<String>>() {}.getType();
+  private final Type mapOfStrings = new TypeToken<ImmutableMap<String, String>>() {}.getType();
 
   @Test
   public void testList() {
@@ -69,7 +70,7 @@ public class SerializersTest {
   public void testMap() {
     ImmutableMap<String, String> map = ImmutableMap.<String, String>builder().put("a", "b").build();
     
-    Try<Bytes> bytes = objectToJson(sequenceOfStrings).apply(map);
+    Try<Bytes> bytes = objectToJson(mapOfStrings).apply(map);
 
     assertEquals(expectedObject, asString(bytes.getOrElseThrow()));
   }
@@ -78,7 +79,7 @@ public class SerializersTest {
   public void testTreeMap() {
     ImmutableTreeMap<String, String> map = ImmutableTreeMap.<String, String>builder().put("a", "b").build();
     
-    Try<Bytes> bytes = objectToJson(sequenceOfStrings).apply(map);
+    Try<Bytes> bytes = objectToJson(mapOfStrings).apply(map);
 
     assertEquals(expectedObject, asString(bytes.getOrElseThrow()));
   }

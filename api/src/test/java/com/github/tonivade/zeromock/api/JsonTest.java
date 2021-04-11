@@ -1,5 +1,6 @@
 package com.github.tonivade.zeromock.api;
 
+import static com.github.tonivade.purefun.type.Option.some;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.Type;
@@ -22,13 +23,15 @@ class JsonTest {
 
     Try<Bytes> bytes = Serializers.objectToJson(type).apply(listOf);
     
-    assertEquals(listOf, Deserializers.jsonTo(type).apply(bytes.getOrElseThrow()));
+    assertEquals(some(listOf), Deserializers.jsonTo(type).apply(bytes.getOrElseThrow()).getOrElseThrow());
   }
 }
 
 class Data {
-  private final int id;
-  private final String name;
+  private int id;
+  private String name;
+  
+  public Data() { }
 
   public Data(int id, String name) {
     this.id = id;
