@@ -6,6 +6,7 @@ package com.github.tonivade.zeromock.server;
 
 import static com.github.tonivade.zeromock.api.Bytes.asString;
 import static com.github.tonivade.zeromock.api.Handlers.badRequest;
+import static com.github.tonivade.zeromock.api.Handlers.fromTry;
 import static com.github.tonivade.zeromock.api.Handlers.noContent;
 import static com.github.tonivade.zeromock.api.Handlers.ok;
 import static com.github.tonivade.zeromock.api.Headers.contentJson;
@@ -15,8 +16,8 @@ import static com.github.tonivade.zeromock.api.Matchers.acceptsXml;
 import static com.github.tonivade.zeromock.api.Matchers.get;
 import static com.github.tonivade.zeromock.api.Matchers.param;
 import static com.github.tonivade.zeromock.api.Serializers.objectToJson;
-import static com.github.tonivade.zeromock.api.Serializers.plain;
 import static com.github.tonivade.zeromock.api.Serializers.objectToXml;
+import static com.github.tonivade.zeromock.api.Serializers.plain;
 import static com.github.tonivade.zeromock.client.HttpClient.connectTo;
 import static com.github.tonivade.zeromock.server.MockHttpServer.listenAt;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -48,9 +49,9 @@ public class MockHttpServerTest {
 
   private final HttpService service2 = new HttpService("test")
       .when(get("/test").and(acceptsXml()))
-            .then(ok(adapt(this::sayHello).andThen(objectToXml())).postHandle(contentXml()))
+            .then(fromTry(adapt(this::sayHello).andThen(objectToXml())).postHandle(contentXml()))
       .when(get("/test").and(acceptsJson()))
-            .then(ok(adapt(this::sayHello).andThen(objectToJson())).postHandle(contentJson()))
+            .then(fromTry(adapt(this::sayHello).andThen(objectToJson(Say.class))).postHandle(contentJson()))
       .when(get("/empty"))
             .then(noContent()::apply);
 

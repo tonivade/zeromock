@@ -51,9 +51,9 @@ public class UIOMockHttpServerTest {
 
   private final HttpUIOService service2 = new HttpUIOService("test")
       .when(get().and(path("/test")).and(acceptsXml()))
-        .then(request -> UIO.task(this::sayHello).map(objectToXml()).map(Responses::ok).map(contentXml()))
+        .then(request -> UIO.task(this::sayHello).flatMap(objectToXml().andThen(UIO::fromTry)).map(Responses::ok).map(contentXml()))
       .when(get().and(path("/test")).and(acceptsJson()))
-        .then(request -> UIO.task(this::sayHello).map(objectToJson()).map(Responses::ok).map(contentJson()))
+        .then(request -> UIO.task(this::sayHello).flatMap(objectToJson(Say.class).andThen(UIO::fromTry)).map(Responses::ok).map(contentJson()))
       .when(get().and(path("/empty")))
         .then(request -> UIO.pure(noContent()));
 

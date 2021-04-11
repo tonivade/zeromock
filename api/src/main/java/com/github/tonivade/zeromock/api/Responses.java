@@ -18,9 +18,20 @@ import static com.github.tonivade.zeromock.api.HttpStatus.SERVICE_UNAVAILABLE;
 import static com.github.tonivade.zeromock.api.HttpStatus.UNAUTHORIZED;
 import static com.github.tonivade.zeromock.api.Serializers.throwableToJson;
 
+import com.github.tonivade.purefun.type.Option;
+import com.github.tonivade.purefun.type.Try;
+
 public final class Responses {
   
   private Responses() {}
+  
+  public static HttpResponse fromOption(Option<Bytes> body) {
+    return body.fold(Responses::notFound, Responses::ok);
+  }
+  
+  public static HttpResponse fromTry(Try<Bytes> body) {
+    return body.fold(Responses::error, Responses::ok);
+  }
   
   public static HttpResponse ok() {
     return ok(empty());

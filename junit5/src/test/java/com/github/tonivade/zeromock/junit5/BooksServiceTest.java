@@ -21,6 +21,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import com.github.tonivade.purefun.type.Option;
+import com.github.tonivade.purefun.type.Try;
 import com.github.tonivade.purejson.TypeToken;
 import com.github.tonivade.zeromock.api.Bytes;
 import com.github.tonivade.zeromock.api.Deserializers;
@@ -95,11 +97,11 @@ public class BooksServiceTest {
               () -> assertEquals(new Book(1, "update"), asBook(response.body())));
   }
 
-  private Book asBook(Bytes body) {
+  private Try<Option<Book>> asBook(Bytes body) {
     return jsonToObject(Book.class).apply(body);
   }
 
-  private List<Book> asBooks(Bytes body) {
+  private Try<Option<List<Book>>> asBooks(Bytes body) {
     return Deserializers.<List<Book>>jsonTo(listOfBooks()).apply(body);
   }
 

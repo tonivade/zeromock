@@ -50,9 +50,9 @@ public class IOMockHttpServerTest {
 
   private HttpIOService service2 = new HttpIOService("test")
       .when(get().and(path("/test")).and(acceptsXml()))
-        .then(request -> IO.task(this::sayHello).map(objectToXml()).map(Responses::ok).map(contentXml()))
+        .then(request -> IO.task(this::sayHello).flatMap(objectToXml().andThen(IO::fromTry)).map(Responses::ok).map(contentXml()))
       .when(get().and(path("/test")).and(acceptsJson()))
-        .then(request -> IO.task(this::sayHello).map(objectToJson()).map(Responses::ok).map(contentJson()))
+        .then(request -> IO.task(this::sayHello).flatMap(objectToJson(Say.class).andThen(IO::fromTry)).map(Responses::ok).map(contentJson()))
       .when(get().and(path("/empty")))
         .then(request -> IO.pure(noContent()));
 

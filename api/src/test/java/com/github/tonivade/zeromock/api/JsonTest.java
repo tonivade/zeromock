@@ -14,7 +14,7 @@ import com.github.tonivade.purejson.TypeToken;
 
 class JsonTest {
 
-  final Type type = new TypeToken<ImmutableList<Data>>() {}.getType();
+  private final Type type = new TypeToken<ImmutableList<Data>>() {}.getType();
   
   @Test
   void serializeDeserialize() {

@@ -53,9 +53,9 @@ public class URIOMockHttpServerTest {
 
   private HttpURIOService<Nothing> service2 = new HttpURIOService<Nothing>("test")
       .when(get().and(path("/test")).and(acceptsXml()))
-        .then(request -> ZIO.<Nothing, Say>task(this::sayHello).map(objectToXml()).fold(Responses::error, Responses::ok).map(contentXml()).toURIO())
+        .then(request -> ZIO.<Nothing, Say>task(this::sayHello).flatMap(objectToXml().andThen(ZIO::fromTry)).fold(Responses::error, Responses::ok).map(contentXml()).toURIO())
       .when(get().and(path("/test")).and(acceptsJson()))
-        .then(request -> ZIO.<Nothing, Say>task(this::sayHello).map(objectToJson()).fold(Responses::error, Responses::ok).map(contentJson()).toURIO())
+        .then(request -> ZIO.<Nothing, Say>task(this::sayHello).flatMap(objectToJson(Say.class).andThen(ZIO::fromTry)).fold(Responses::error, Responses::ok).map(contentJson()).toURIO())
       .when(get().and(path("/empty")))
         .then(request -> URIO.pure(noContent()));
 

@@ -38,7 +38,7 @@ public final class Serializers {
   }
 
   public static <T> Function1<T, Try<Bytes>> objectToJson(Type type) {
-    return _objectToJson(x -> Serializers.toJson(x, x.getClass()));
+    return _objectToJson(x -> Serializers.toJson(x, type));
   }
 
   public static <T> Function1<T, Try<Bytes>> objectToJson(Function1<T, String> serializer) {

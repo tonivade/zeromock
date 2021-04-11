@@ -27,7 +27,7 @@ public class SerializersTest {
   private final String expectedArray = "[\"a\",\"b\"]";
   private final String expectedObject = "{\"a\":\"b\"}";
 
-  private final Type sequenceOfStrings = new TypeToken<Sequence<String>>() {}.getType();
+  private final Type sequenceOfStrings = new TypeToken<ImmutableList<String>>() {}.getType();
 
   @Test
   public void testList() {
