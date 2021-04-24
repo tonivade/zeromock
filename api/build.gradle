@@ -1,4 +1,3 @@
-archivesBaseName = 'zeromock-api'
 
 dependencies {
   api libs.purefunCore

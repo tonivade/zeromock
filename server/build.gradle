@@ -1,4 +1,3 @@
-archivesBaseName = 'zeromock-server'
 
 dependencies {
   api project(':zeromock-api')
@@ -7,4 +6,3 @@ dependencies {
   implementation libs.purefunInstances
   testImplementation project(':zeromock-client')
 }
-

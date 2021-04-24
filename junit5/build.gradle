@@ -1,4 +1,3 @@
-archivesBaseName = 'zeromock-junit5'
 
 dependencies {
   api project(':zeromock-server')
