@@ -1,38 +1,15 @@
+/*
+ * Copyright (c) 2018-2021, Antonio Gabriel Muñoz Conejo <antoniogmc at gmail dot com>
+ * Distributed under the terms of the MIT License
+ */
 package com.github.tonivade.zeromock.api;
 
 import com.github.tonivade.purefun.Matcher1;
 
-public interface HttpRouteBuilder<T extends HttpRouteBuilder<T>> {
+public interface HttpRouteBuilder<T extends HttpRouteBuilder<T>> extends RouteBuilder<HttpRouteBuilder.ThenStep<T>> {
 
+  @Override
   ThenStep<T> when(Matcher1<HttpRequest> matcher);
-
-  default ThenStep<T> get(String path) {
-    return when(Matchers.get(path));
-  }
-
-  default ThenStep<T> post(String path) {
-    return when(Matchers.post(path));
-  }
-
-  default ThenStep<T> put(String path) {
-    return when(Matchers.put(path));
-  }
-
-  default ThenStep<T> delete(String path) {
-    return when(Matchers.delete(path));
-  }
-
-  default ThenStep<T> patch(String path) {
-    return when(Matchers.patch(path));
-  }
-
-  default ThenStep<T> head(String path) {
-    return when(Matchers.head(path));
-  }
-
-  default ThenStep<T> options(String path) {
-    return when(Matchers.options(path));
-  }
   
   @FunctionalInterface
   interface ThenStep<T> {
