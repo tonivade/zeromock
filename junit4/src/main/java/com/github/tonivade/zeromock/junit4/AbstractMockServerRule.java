@@ -5,19 +5,17 @@
 package com.github.tonivade.zeromock.junit4;
 
 import static java.util.Objects.requireNonNull;
-
 import org.junit.rules.ExternalResource;
-
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Witness;
 import com.github.tonivade.zeromock.api.HttpRequest;
+import com.github.tonivade.zeromock.api.HttpRouteBuilderK;
 import com.github.tonivade.zeromock.api.HttpServiceK;
-import com.github.tonivade.zeromock.api.Matchers;
 import com.github.tonivade.zeromock.api.RequestHandlerK;
 import com.github.tonivade.zeromock.client.HttpClient;
 import com.github.tonivade.zeromock.server.MockHttpServerK;
 
-public abstract class AbstractMockServerRule<F extends Witness> extends ExternalResource {
+public abstract class AbstractMockServerRule<F extends Witness> extends ExternalResource implements HttpRouteBuilderK<F, AbstractMockServerRule<F>, RequestHandlerK<F>> {
 
   private final MockHttpServerK<F> server;
 
@@ -54,36 +52,8 @@ public abstract class AbstractMockServerRule<F extends Witness> extends External
     return this;
   }
 
-  public HttpServiceK.ThenStep<F, AbstractMockServerRule<F>> when(Matcher1<HttpRequest> matcher) {
+  public ThenStep<AbstractMockServerRule<F>, RequestHandlerK<F>> when(Matcher1<HttpRequest> matcher) {
     return handler -> addMapping(matcher, handler);
-  }
-
-  public HttpServiceK.ThenStep<F, AbstractMockServerRule<F>> get(String path) {
-    return when(Matchers.get(path));
-  }
-
-  public HttpServiceK.ThenStep<F, AbstractMockServerRule<F>> post(String path) {
-    return when(Matchers.post(path));
-  }
-
-  public HttpServiceK.ThenStep<F, AbstractMockServerRule<F>> put(String path) {
-    return when(Matchers.put(path));
-  }
-
-  public HttpServiceK.ThenStep<F, AbstractMockServerRule<F>> delete(String path) {
-    return when(Matchers.delete(path));
-  }
-
-  public HttpServiceK.ThenStep<F, AbstractMockServerRule<F>> patch(String path) {
-    return when(Matchers.patch(path));
-  }
-
-  public HttpServiceK.ThenStep<F, AbstractMockServerRule<F>> options(String path) {
-    return when(Matchers.options(path));
-  }
-
-  public HttpServiceK.ThenStep<F, AbstractMockServerRule<F>> head(String path) {
-    return when(Matchers.head(path));
   }
 
   public AbstractMockServerRule<F> mount(String path, HttpServiceK<F> service) {

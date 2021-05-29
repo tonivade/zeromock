@@ -24,7 +24,7 @@ import com.github.tonivade.purefun.type.OptionOf;
 import com.github.tonivade.purefun.typeclasses.For;
 import com.github.tonivade.purefun.typeclasses.Monad;
 
-public final class HttpServiceK<F extends Witness> {
+public final class HttpServiceK<F extends Witness> implements HttpRouteBuilderK<F, HttpServiceK<F>, RequestHandlerK<F>> {
 
   private final String name;
   private final Monad<F> monad;
@@ -66,39 +66,12 @@ public final class HttpServiceK<F extends Witness> {
     return _addMapping(all(), handler);
   }
 
-  public ThenStep<F, HttpServiceK<F>> when(Matcher1<HttpRequest> matcher) {
+  @Override
+  public ThenStep<HttpServiceK<F>, RequestHandlerK<F>> when(Matcher1<HttpRequest> matcher) {
     return handler -> addMapping(matcher, handler);
   }
 
-  public HttpServiceK.ThenStep<F, HttpServiceK<F>> get(String path) {
-    return when(Matchers.get(path));
-  }
-
-  public HttpServiceK.ThenStep<F, HttpServiceK<F>> post(String path) {
-    return when(Matchers.post(path));
-  }
-
-  public HttpServiceK.ThenStep<F, HttpServiceK<F>> put(String path) {
-    return when(Matchers.put(path));
-  }
-
-  public HttpServiceK.ThenStep<F, HttpServiceK<F>> delete(String path) {
-    return when(Matchers.delete(path));
-  }
-
-  public HttpServiceK.ThenStep<F, HttpServiceK<F>> patch(String path) {
-    return when(Matchers.patch(path));
-  }
-
-  public HttpServiceK.ThenStep<F, HttpServiceK<F>> head(String path) {
-    return when(Matchers.head(path));
-  }
-
-  public HttpServiceK.ThenStep<F, HttpServiceK<F>> options(String path) {
-    return when(Matchers.options(path));
-  }
-
-  public ThenStep<F, HttpServiceK<F>> preFilter(Matcher1<HttpRequest> matcher) {
+  public ThenStep<HttpServiceK<F>, RequestHandlerK<F>> preFilter(Matcher1<HttpRequest> matcher) {
     return handler -> addPreFilter(matcher, handler);
   }
 
@@ -180,11 +153,5 @@ public final class HttpServiceK<F extends Witness> {
         this.preFilters,
         this.postFilters.andThen(value -> monad.flatMap(value, filter))::apply
     );
-  }
-  
-  @FunctionalInterface
-  public interface ThenStep<F extends Witness, T> {
-
-    T then(RequestHandlerK<F> handler);
   }
 }

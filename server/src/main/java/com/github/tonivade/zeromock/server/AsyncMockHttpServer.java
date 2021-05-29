@@ -8,23 +8,22 @@ import static com.github.tonivade.purefun.typeclasses.Instance.monad;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static com.github.tonivade.zeromock.server.ResponseInterpreterK.async;
 import static java.util.Objects.requireNonNull;
-
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.concurrent.Future_;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.instances.FutureInstances;
+import com.github.tonivade.zeromock.api.HttpRouteBuilderK;
 import com.github.tonivade.zeromock.api.AsyncHttpService;
 import com.github.tonivade.zeromock.api.AsyncPostFilter;
 import com.github.tonivade.zeromock.api.AsyncPreFilter;
 import com.github.tonivade.zeromock.api.AsyncRequestHandler;
 import com.github.tonivade.zeromock.api.HttpRequest;
-import com.github.tonivade.zeromock.api.Matchers;
 import com.github.tonivade.zeromock.api.PostFilter;
 import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.server.MockHttpServerK.BuilderK;
 
-public final class AsyncMockHttpServer implements HttpServer {
+public final class AsyncMockHttpServer implements HttpServer, HttpRouteBuilderK<Future_, AsyncMockHttpServer, AsyncRequestHandler> {
 
   private final MockHttpServerK<Future_> serverK;
 
@@ -69,7 +68,7 @@ public final class AsyncMockHttpServer implements HttpServer {
     return this;
   }
 
-  public AsyncHttpService.ThenStep<AsyncMockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
+  public ThenStep<AsyncMockHttpServer, AsyncRequestHandler> preFilter(Matcher1<HttpRequest> matcher) {
     return handler -> addPreFilter(matcher, handler);
   }
 
@@ -101,36 +100,9 @@ public final class AsyncMockHttpServer implements HttpServer {
     return this;
   }
 
-  public AsyncHttpService.ThenStep<AsyncMockHttpServer> when(Matcher1<HttpRequest> matcher) {
+  @Override
+  public ThenStep<AsyncMockHttpServer, AsyncRequestHandler> when(Matcher1<HttpRequest> matcher) {
     return handler -> addMapping(matcher, handler);
-  }
-
-  public AsyncHttpService.ThenStep<AsyncMockHttpServer> get(String path) {
-    return when(Matchers.get(path));
-  }
-
-  public AsyncHttpService.ThenStep<AsyncMockHttpServer> post(String path) {
-    return when(Matchers.post(path));
-  }
-
-  public AsyncHttpService.ThenStep<AsyncMockHttpServer> put(String path) {
-    return when(Matchers.put(path));
-  }
-
-  public AsyncHttpService.ThenStep<AsyncMockHttpServer> delete(String path) {
-    return when(Matchers.delete(path));
-  }
-
-  public AsyncHttpService.ThenStep<AsyncMockHttpServer> patch(String path) {
-    return when(Matchers.patch(path));
-  }
-
-  public AsyncHttpService.ThenStep<AsyncMockHttpServer> head(String path) {
-    return when(Matchers.head(path));
-  }
-
-  public AsyncHttpService.ThenStep<AsyncMockHttpServer> options(String path) {
-    return when(Matchers.options(path));
   }
 
   @Override

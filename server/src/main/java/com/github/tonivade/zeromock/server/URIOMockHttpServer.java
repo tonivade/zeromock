@@ -22,6 +22,7 @@ import com.github.tonivade.purefun.instances.URIOInstances;
 import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
+import com.github.tonivade.zeromock.api.HttpRouteBuilderK;
 import com.github.tonivade.zeromock.api.HttpURIOService;
 import com.github.tonivade.zeromock.api.PostFilter;
 import com.github.tonivade.zeromock.api.PreFilter;
@@ -30,7 +31,7 @@ import com.github.tonivade.zeromock.api.URIOPreFilter;
 import com.github.tonivade.zeromock.api.URIORequestHandler;
 import com.github.tonivade.zeromock.server.MockHttpServerK.BuilderK;
 
-public final class URIOMockHttpServer<R> implements HttpServer {
+public final class URIOMockHttpServer<R> implements HttpServer, HttpRouteBuilderK<Kind<URIO_, R>, URIOMockHttpServer<R>, URIORequestHandler<R>> {
 
   private final MockHttpServerK<Kind<URIO_, R>> serverK;
 
@@ -74,7 +75,7 @@ public final class URIOMockHttpServer<R> implements HttpServer {
     return this;
   }
 
-  public HttpURIOService.ThenStep<R, URIOMockHttpServer<R>> preFilter(Matcher1<HttpRequest> matcher) {
+  public ThenStep<URIOMockHttpServer<R>, URIORequestHandler<R>> preFilter(Matcher1<HttpRequest> matcher) {
     return handler -> addPreFilter(matcher, handler);
   }
 
@@ -106,7 +107,7 @@ public final class URIOMockHttpServer<R> implements HttpServer {
     return this;
   }
 
-  public HttpURIOService.ThenStep<R, URIOMockHttpServer<R>> when(Matcher1<HttpRequest> matcher) {
+  public ThenStep<URIOMockHttpServer<R>, URIORequestHandler<R>> when(Matcher1<HttpRequest> matcher) {
     return handler -> addMapping(matcher, handler);
   }
 

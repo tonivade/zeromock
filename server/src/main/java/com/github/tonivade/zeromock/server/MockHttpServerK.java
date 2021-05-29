@@ -23,15 +23,14 @@ import com.github.tonivade.purefun.data.ImmutableList;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.typeclasses.Monad;
-import com.github.tonivade.zeromock.api.Bytes;
 import com.github.tonivade.zeromock.api.HttpHeaders;
 import com.github.tonivade.zeromock.api.HttpMethod;
 import com.github.tonivade.zeromock.api.HttpParams;
 import com.github.tonivade.zeromock.api.HttpPath;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
+import com.github.tonivade.zeromock.api.HttpRouteBuilderK;
 import com.github.tonivade.zeromock.api.HttpServiceK;
-import com.github.tonivade.zeromock.api.Matchers;
 import com.github.tonivade.zeromock.api.PostFilterK;
 import com.github.tonivade.zeromock.api.PreFilterK;
 import com.github.tonivade.zeromock.api.RequestHandlerK;
@@ -40,7 +39,7 @@ import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
-public class MockHttpServerK<F extends Witness> implements com.github.tonivade.zeromock.server.HttpServer {
+public class MockHttpServerK<F extends Witness> implements com.github.tonivade.zeromock.server.HttpServer, HttpRouteBuilderK<F, MockHttpServerK<F>, RequestHandlerK<F>> {
 
   private static final Logger LOG = Logger.getLogger(MockHttpServerK.class.getName());
 
@@ -84,39 +83,12 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
     return this;
   }
 
-  public HttpServiceK.ThenStep<F, MockHttpServerK<F>> when(Matcher1<HttpRequest> matcher) {
+  @Override
+  public ThenStep<MockHttpServerK<F>, RequestHandlerK<F>> when(Matcher1<HttpRequest> matcher) {
     return handler -> addMapping(matcher, handler);
   }
 
-  public HttpServiceK.ThenStep<F, MockHttpServerK<F>> get(String path) {
-    return when(Matchers.get(path));
-  }
-
-  public HttpServiceK.ThenStep<F, MockHttpServerK<F>> post(String path) {
-    return when(Matchers.post(path));
-  }
-
-  public HttpServiceK.ThenStep<F, MockHttpServerK<F>> put(String path) {
-    return when(Matchers.put(path));
-  }
-
-  public HttpServiceK.ThenStep<F, MockHttpServerK<F>> delete(String path) {
-    return when(Matchers.delete(path));
-  }
-
-  public HttpServiceK.ThenStep<F, MockHttpServerK<F>> patch(String path) {
-    return when(Matchers.patch(path));
-  }
-
-  public HttpServiceK.ThenStep<F, MockHttpServerK<F>> head(String path) {
-    return when(Matchers.head(path));
-  }
-
-  public HttpServiceK.ThenStep<F, MockHttpServerK<F>> options(String path) {
-    return when(Matchers.options(path));
-  }
-
-  public HttpServiceK.ThenStep<F, MockHttpServerK<F>> preFilter(Matcher1<HttpRequest> matcher) {
+  public ThenStep<MockHttpServerK<F>, RequestHandlerK<F>> preFilter(Matcher1<HttpRequest> matcher) {
     return handler -> addPreFilter(matcher, handler);
   }
 
@@ -218,17 +190,17 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
   }
 
   private HttpRequest createRequest(HttpExchange exchange) throws IOException {
-    HttpMethod method = HttpMethod.valueOf(exchange.getRequestMethod());
-    HttpHeaders headers = HttpHeaders.from(exchange.getRequestHeaders());
-    HttpParams params = new HttpParams(exchange.getRequestURI().getQuery());
-    HttpPath path = HttpPath.from(exchange.getRequestURI().getPath());
-    Bytes body = asBytes(exchange.getRequestBody());
+    var method = HttpMethod.valueOf(exchange.getRequestMethod());
+    var headers = HttpHeaders.from(exchange.getRequestHeaders());
+    var params = new HttpParams(exchange.getRequestURI().getQuery());
+    var path = HttpPath.from(exchange.getRequestURI().getPath());
+    var body = asBytes(exchange.getRequestBody());
     return new HttpRequest(method, path, body, headers, params);
   }
 
   private void processResponse(HttpExchange exchange, HttpResponse response) {
     try {
-      Bytes bytes = response.body();
+      var bytes = response.body();
       response.headers().forEach((key, value) -> exchange.getResponseHeaders().add(key, value));
       exchange.sendResponseHeaders(response.status().code(), bytes.size());
       try (OutputStream output = exchange.getResponseBody()) {
@@ -309,7 +281,7 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
 
     public HttpServer build() {
       try {
-        HttpServer server = HttpServer.create(new InetSocketAddress(host, port), backlog);
+        var server = HttpServer.create(new InetSocketAddress(host, port), backlog);
         server.setExecutor(Executors.newFixedThreadPool(threads));
         return server;
       } catch (IOException e) {

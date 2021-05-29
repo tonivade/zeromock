@@ -17,7 +17,7 @@ import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.typeclasses.Instance;
 
-public final class HttpURIOService<R> {
+public final class HttpURIOService<R> implements HttpRouteBuilderK<Kind<URIO_, R>, HttpURIOService<R>, URIORequestHandler<R>> {
 
   private final HttpServiceK<Kind<URIO_, R>> serviceK;
 
@@ -41,7 +41,7 @@ public final class HttpURIOService<R> {
     return new HttpURIOService<>(serviceK.exec(cons(method)::apply));
   }
 
-  public ThenStep<R, HttpURIOService<R>> preFilter(Matcher1<HttpRequest> matcher) {
+  public ThenStep<HttpURIOService<R>, URIORequestHandler<R>> preFilter(Matcher1<HttpRequest> matcher) {
     return handler -> addPreFilter(matcher, handler);
   }
 
@@ -61,7 +61,7 @@ public final class HttpURIOService<R> {
     return new HttpURIOService<>(serviceK.postFilter(filter));
   }
 
-  public ThenStep<R, HttpURIOService<R>> when(Matcher1<HttpRequest> matcher) {
+  public ThenStep<HttpURIOService<R>, URIORequestHandler<R>> when(Matcher1<HttpRequest> matcher) {
     return handler -> addMapping(matcher, handler);
   }
 
@@ -88,10 +88,5 @@ public final class HttpURIOService<R> {
   @Override
   public String toString() {
     return "HttpURIOService(" + serviceK.name() + ")";
-  }
-  
-  @FunctionalInterface
-  public interface ThenStep<R, T> {
-    T then(URIORequestHandler<R> handler);
   }
 }

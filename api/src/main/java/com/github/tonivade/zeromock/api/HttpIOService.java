@@ -14,7 +14,7 @@ import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.purefun.monad.IO_;
 import com.github.tonivade.purefun.type.Option;
 
-public final class HttpIOService {
+public final class HttpIOService implements HttpRouteBuilderK<IO_, HttpIOService, IORequestHandler> {
 
   private final HttpServiceK<IO_> serviceK;
 
@@ -38,7 +38,7 @@ public final class HttpIOService {
     return new HttpIOService(serviceK.exec(handler));
   }
 
-  public ThenStep<HttpIOService> preFilter(Matcher1<HttpRequest> matcher) {
+  public ThenStep<HttpIOService, IORequestHandler> preFilter(Matcher1<HttpRequest> matcher) {
     return handler -> addPreFilter(matcher, handler);
   }
 
@@ -58,7 +58,7 @@ public final class HttpIOService {
     return new HttpIOService(serviceK.postFilter(filter));
   }
 
-  public ThenStep<HttpIOService> when(Matcher1<HttpRequest> matcher) {
+  public ThenStep<HttpIOService, IORequestHandler> when(Matcher1<HttpRequest> matcher) {
     return handler -> addMapping(matcher, handler);
   }
 
@@ -85,10 +85,5 @@ public final class HttpIOService {
   @Override
   public String toString() {
     return "HttpIOService(" + serviceK.name() + ")";
-  }
-  
-  @FunctionalInterface
-  public interface ThenStep<T> {
-    public T then(IORequestHandler handler);
   }
 }

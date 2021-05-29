@@ -14,7 +14,7 @@ import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purefun.effect.UIO_;
 import com.github.tonivade.purefun.type.Option;
 
-public final class HttpUIOService {
+public final class HttpUIOService implements HttpRouteBuilderK<UIO_, HttpUIOService, UIORequestHandler> {
 
   private final HttpServiceK<UIO_> serviceK;
 
@@ -38,7 +38,7 @@ public final class HttpUIOService {
     return new HttpUIOService(serviceK.exec(handler));
   }
 
-  public ThenStep<HttpUIOService> preFilter(Matcher1<HttpRequest> matcher) {
+  public ThenStep<HttpUIOService, UIORequestHandler> preFilter(Matcher1<HttpRequest> matcher) {
     return handler -> addPreFilter(matcher, handler);
   }
 
@@ -58,7 +58,7 @@ public final class HttpUIOService {
     return new HttpUIOService(serviceK.postFilter(filter));
   }
 
-  public ThenStep<HttpUIOService> when(Matcher1<HttpRequest> matcher) {
+  public ThenStep<HttpUIOService, UIORequestHandler> when(Matcher1<HttpRequest> matcher) {
     return handler -> addMapping(matcher, handler);
   }
 
@@ -85,10 +85,5 @@ public final class HttpUIOService {
   @Override
   public String toString() {
     return "HttpUIOService(" + serviceK.name() + ")";
-  }
-  
-  @FunctionalInterface
-  public interface ThenStep<T> {
-    T then(UIORequestHandler handler);
   }
 }

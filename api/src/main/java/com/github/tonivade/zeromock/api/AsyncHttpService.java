@@ -17,7 +17,7 @@ import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.instances.FutureInstances;
 import com.github.tonivade.purefun.type.Option;
 
-public final class AsyncHttpService {
+public final class AsyncHttpService implements HttpRouteBuilderK<Future_, AsyncHttpService, AsyncRequestHandler> {
 
   private final HttpServiceK<Future_> serviceK;
 
@@ -49,7 +49,7 @@ public final class AsyncHttpService {
     return new AsyncHttpService(serviceK.exec(handler));
   }
 
-  public ThenStep<AsyncHttpService> preFilter(Matcher1<HttpRequest> matcher) {
+  public ThenStep<AsyncHttpService, AsyncRequestHandler> preFilter(Matcher1<HttpRequest> matcher) {
     return handler -> addPreFilter(matcher, handler);
   }
 
@@ -69,36 +69,9 @@ public final class AsyncHttpService {
     return new AsyncHttpService(serviceK.postFilter(filter));
   }
 
-  public ThenStep<AsyncHttpService> when(Matcher1<HttpRequest> matcher) {
+  @Override
+  public ThenStep<AsyncHttpService, AsyncRequestHandler> when(Matcher1<HttpRequest> matcher) {
     return handler -> addMapping(matcher, handler);
-  }
-
-  public AsyncHttpService.ThenStep<AsyncHttpService> get(String path) {
-    return when(Matchers.get(path));
-  }
-
-  public AsyncHttpService.ThenStep<AsyncHttpService> post(String path) {
-    return when(Matchers.post(path));
-  }
-
-  public AsyncHttpService.ThenStep<AsyncHttpService> put(String path) {
-    return when(Matchers.put(path));
-  }
-
-  public AsyncHttpService.ThenStep<AsyncHttpService> delete(String path) {
-    return when(Matchers.delete(path));
-  }
-
-  public AsyncHttpService.ThenStep<AsyncHttpService> patch(String path) {
-    return when(Matchers.patch(path));
-  }
-
-  public AsyncHttpService.ThenStep<AsyncHttpService> head(String path) {
-    return when(Matchers.head(path));
-  }
-
-  public AsyncHttpService.ThenStep<AsyncHttpService> options(String path) {
-    return when(Matchers.options(path));
   }
 
   public Promise<Option<HttpResponse>> execute(HttpRequest request) {
@@ -120,51 +93,5 @@ public final class AsyncHttpService {
   @Override
   public String toString() {
     return "AsyncHttpService(" + serviceK.name() + ")";
-  }
-  
-  @FunctionalInterface
-  public interface ThenStep<T> {
-
-    T then(AsyncRequestHandler handler);
-
-    default T ok(String body) {
-      return then(Handlers.ok(body).async());
-    }
-    
-    default T created(String body) {
-      return then(Handlers.created(body).async());
-    }
-    
-    default T error(String body) {
-      return then(Handlers.error(body).async());
-    }
-    
-    default T noContent() {
-      return then(Handlers.noContent().async());
-    }
-    
-    default T notFound() {
-      return then(Handlers.notFound().async());
-    }
-    
-    default T forbidden() {
-      return then(Handlers.forbidden().async());
-    }
-    
-    default T badRequest() {
-      return then(Handlers.badRequest().async());
-    }
-    
-    default T unauthorized() {
-      return then(Handlers.unauthorized().async());
-    }
-    
-    default T unavailable() {
-      return then(Handlers.unavailable().async());
-    }
-    
-    default T error() {
-      return then(Handlers.error().async());
-    }
   }
 }

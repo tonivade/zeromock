@@ -8,20 +8,19 @@ import static com.github.tonivade.purefun.typeclasses.Instance.monad;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static com.github.tonivade.zeromock.server.ResponseInterpreterK.sync;
 import static java.util.Objects.requireNonNull;
-
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.instances.IdInstances;
 import com.github.tonivade.purefun.type.Id_;
+import com.github.tonivade.zeromock.api.HttpRouteBuilder;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpService;
-import com.github.tonivade.zeromock.api.Matchers;
 import com.github.tonivade.zeromock.api.PostFilter;
 import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.api.RequestHandler;
 import com.github.tonivade.zeromock.server.MockHttpServerK.BuilderK;
 
-public final class MockHttpServer implements HttpServer {
+public final class MockHttpServer implements HttpServer, HttpRouteBuilder<MockHttpServer> {
 
   private final MockHttpServerK<Id_> serverK;
 
@@ -66,7 +65,7 @@ public final class MockHttpServer implements HttpServer {
     return this;
   }
 
-  public HttpService.ThenStep<MockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
+  public ThenStep<MockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
     return handler -> addPreFilter(matcher, handler);
   }
 
@@ -90,36 +89,8 @@ public final class MockHttpServer implements HttpServer {
     return this;
   }
 
-  public HttpService.ThenStep<MockHttpServer> when(Matcher1<HttpRequest> matcher) {
+  public ThenStep<MockHttpServer> when(Matcher1<HttpRequest> matcher) {
     return handler -> addMapping(matcher, handler);
-  }
-
-  public HttpService.ThenStep<MockHttpServer> get(String path) {
-    return when(Matchers.get(path));
-  }
-
-  public HttpService.ThenStep<MockHttpServer> post(String path) {
-    return when(Matchers.post(path));
-  }
-
-  public HttpService.ThenStep<MockHttpServer> put(String path) {
-    return when(Matchers.put(path));
-  }
-
-  public HttpService.ThenStep<MockHttpServer> delete(String path) {
-    return when(Matchers.delete(path));
-  }
-
-  public HttpService.ThenStep<MockHttpServer> patch(String path) {
-    return when(Matchers.patch(path));
-  }
-
-  public HttpService.ThenStep<MockHttpServer> head(String path) {
-    return when(Matchers.head(path));
-  }
-
-  public HttpService.ThenStep<MockHttpServer> options(String path) {
-    return when(Matchers.options(path));
   }
 
   @Override

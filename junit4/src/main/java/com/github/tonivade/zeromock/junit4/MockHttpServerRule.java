@@ -7,8 +7,8 @@ package com.github.tonivade.zeromock.junit4;
 import org.junit.rules.ExternalResource;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.zeromock.api.HttpRequest;
+import com.github.tonivade.zeromock.api.HttpRouteBuilder;
 import com.github.tonivade.zeromock.api.HttpService;
-import com.github.tonivade.zeromock.api.Matchers;
 import com.github.tonivade.zeromock.api.RequestHandler;
 import com.github.tonivade.zeromock.client.AsyncHttpClient;
 import com.github.tonivade.zeromock.client.HttpClient;
@@ -18,7 +18,7 @@ import com.github.tonivade.zeromock.client.TaskHttpClient;
 import com.github.tonivade.zeromock.client.UIOHttpClient;
 import com.github.tonivade.zeromock.server.MockHttpServer;
 
-public class MockHttpServerRule extends ExternalResource {
+public class MockHttpServerRule extends ExternalResource implements HttpRouteBuilder<MockHttpServerRule> {
 
   private final MockHttpServer server;
 
@@ -79,36 +79,8 @@ public class MockHttpServerRule extends ExternalResource {
     return this;
   }
 
-  public HttpService.ThenStep<MockHttpServerRule> when(Matcher1<HttpRequest> matcher) {
+  public ThenStep<MockHttpServerRule> when(Matcher1<HttpRequest> matcher) {
     return handler -> addMapping(matcher, handler);
-  }
-
-  public HttpService.ThenStep<MockHttpServerRule> get(String path) {
-    return when(Matchers.get(path));
-  }
-
-  public HttpService.ThenStep<MockHttpServerRule> post(String path) {
-    return when(Matchers.post(path));
-  }
-
-  public HttpService.ThenStep<MockHttpServerRule> put(String path) {
-    return when(Matchers.put(path));
-  }
-
-  public HttpService.ThenStep<MockHttpServerRule> delete(String path) {
-    return when(Matchers.delete(path));
-  }
-
-  public HttpService.ThenStep<MockHttpServerRule> patch(String path) {
-    return when(Matchers.patch(path));
-  }
-
-  public HttpService.ThenStep<MockHttpServerRule> head(String path) {
-    return when(Matchers.head(path));
-  }
-
-  public HttpService.ThenStep<MockHttpServerRule> options(String path) {
-    return when(Matchers.options(path));
   }
 
   public MockHttpServerRule mount(String path, HttpService service) {

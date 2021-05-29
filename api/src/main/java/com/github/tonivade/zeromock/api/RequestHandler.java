@@ -17,8 +17,4 @@ public interface RequestHandler extends Function1<HttpRequest, HttpResponse> {
   default RequestHandler postHandle(PostFilter after) {
     return andThen(after)::apply;
   }
-  
-  default AsyncRequestHandler async() {
-    return liftFuture()::apply;
-  }
 }
