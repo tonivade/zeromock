@@ -15,6 +15,7 @@ import com.github.tonivade.purefun.instances.IdInstances;
 import com.github.tonivade.purefun.type.Id_;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpService;
+import com.github.tonivade.zeromock.api.Matchers;
 import com.github.tonivade.zeromock.api.PostFilter;
 import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.api.RequestHandler;
@@ -91,6 +92,34 @@ public final class MockHttpServer implements HttpServer {
 
   public HttpService.ThenStep<MockHttpServer> when(Matcher1<HttpRequest> matcher) {
     return handler -> addMapping(matcher, handler);
+  }
+
+  public HttpService.ThenStep<MockHttpServer> get(String path) {
+    return when(Matchers.get(path));
+  }
+
+  public HttpService.ThenStep<MockHttpServer> post(String path) {
+    return when(Matchers.post(path));
+  }
+
+  public HttpService.ThenStep<MockHttpServer> put(String path) {
+    return when(Matchers.put(path));
+  }
+
+  public HttpService.ThenStep<MockHttpServer> delete(String path) {
+    return when(Matchers.delete(path));
+  }
+
+  public HttpService.ThenStep<MockHttpServer> patch(String path) {
+    return when(Matchers.patch(path));
+  }
+
+  public HttpService.ThenStep<MockHttpServer> head(String path) {
+    return when(Matchers.head(path));
+  }
+
+  public HttpService.ThenStep<MockHttpServer> options(String path) {
+    return when(Matchers.options(path));
   }
 
   @Override

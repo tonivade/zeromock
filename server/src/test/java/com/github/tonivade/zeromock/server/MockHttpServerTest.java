@@ -9,7 +9,6 @@ import static com.github.tonivade.purefun.type.Try.success;
 import static com.github.tonivade.zeromock.api.Bytes.asString;
 import static com.github.tonivade.zeromock.api.Handlers.badRequest;
 import static com.github.tonivade.zeromock.api.Handlers.fromTry;
-import static com.github.tonivade.zeromock.api.Handlers.noContent;
 import static com.github.tonivade.zeromock.api.Handlers.ok;
 import static com.github.tonivade.zeromock.api.Headers.contentJson;
 import static com.github.tonivade.zeromock.api.Headers.contentXml;
@@ -54,8 +53,7 @@ public class MockHttpServerTest {
             .then(fromTry(adapt(this::sayHello).andThen(objectToXml())).postHandle(contentXml()))
       .when(get("/test").and(acceptsJson()))
             .then(fromTry(adapt(this::sayHello).andThen(objectToJson(Say.class))).postHandle(contentJson()))
-      .when(get("/empty"))
-            .then(noContent()::apply);
+      .get("/empty").noContent();
 
   private final HttpService service3 = new HttpService("other").when(get("/ping")).then(ok("pong"));
 

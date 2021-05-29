@@ -73,6 +73,34 @@ public final class AsyncHttpService {
     return handler -> addMapping(matcher, handler);
   }
 
+  public AsyncHttpService.ThenStep<AsyncHttpService> get(String path) {
+    return when(Matchers.get(path));
+  }
+
+  public AsyncHttpService.ThenStep<AsyncHttpService> post(String path) {
+    return when(Matchers.post(path));
+  }
+
+  public AsyncHttpService.ThenStep<AsyncHttpService> put(String path) {
+    return when(Matchers.put(path));
+  }
+
+  public AsyncHttpService.ThenStep<AsyncHttpService> delete(String path) {
+    return when(Matchers.delete(path));
+  }
+
+  public AsyncHttpService.ThenStep<AsyncHttpService> patch(String path) {
+    return when(Matchers.patch(path));
+  }
+
+  public AsyncHttpService.ThenStep<AsyncHttpService> head(String path) {
+    return when(Matchers.head(path));
+  }
+
+  public AsyncHttpService.ThenStep<AsyncHttpService> options(String path) {
+    return when(Matchers.options(path));
+  }
+
   public Promise<Option<HttpResponse>> execute(HttpRequest request) {
     return serviceK.execute(request).fix(toFuture()).toPromise();
   }
@@ -96,6 +124,47 @@ public final class AsyncHttpService {
   
   @FunctionalInterface
   public interface ThenStep<T> {
+
     T then(AsyncRequestHandler handler);
+
+    default T ok(String body) {
+      return then(Handlers.ok(body).async());
+    }
+    
+    default T created(String body) {
+      return then(Handlers.created(body).async());
+    }
+    
+    default T error(String body) {
+      return then(Handlers.error(body).async());
+    }
+    
+    default T noContent() {
+      return then(Handlers.noContent().async());
+    }
+    
+    default T notFound() {
+      return then(Handlers.notFound().async());
+    }
+    
+    default T forbidden() {
+      return then(Handlers.forbidden().async());
+    }
+    
+    default T badRequest() {
+      return then(Handlers.badRequest().async());
+    }
+    
+    default T unauthorized() {
+      return then(Handlers.unauthorized().async());
+    }
+    
+    default T unavailable() {
+      return then(Handlers.unavailable().async());
+    }
+    
+    default T error() {
+      return then(Handlers.error().async());
+    }
   }
 }

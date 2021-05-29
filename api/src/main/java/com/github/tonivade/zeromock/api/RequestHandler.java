@@ -4,9 +4,8 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import com.github.tonivade.purefun.Function1;
-
 import static com.github.tonivade.purefun.Function1.identity;
+import com.github.tonivade.purefun.Function1;
 
 @FunctionalInterface
 public interface RequestHandler extends Function1<HttpRequest, HttpResponse> {
@@ -17,5 +16,9 @@ public interface RequestHandler extends Function1<HttpRequest, HttpResponse> {
 
   default RequestHandler postHandle(PostFilter after) {
     return andThen(after)::apply;
+  }
+  
+  default AsyncRequestHandler async() {
+    return liftFuture()::apply;
   }
 }

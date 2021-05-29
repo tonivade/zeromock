@@ -70,6 +70,34 @@ public final class HttpServiceK<F extends Witness> {
     return handler -> addMapping(matcher, handler);
   }
 
+  public HttpServiceK.ThenStep<F, HttpServiceK<F>> get(String path) {
+    return when(Matchers.get(path));
+  }
+
+  public HttpServiceK.ThenStep<F, HttpServiceK<F>> post(String path) {
+    return when(Matchers.post(path));
+  }
+
+  public HttpServiceK.ThenStep<F, HttpServiceK<F>> put(String path) {
+    return when(Matchers.put(path));
+  }
+
+  public HttpServiceK.ThenStep<F, HttpServiceK<F>> delete(String path) {
+    return when(Matchers.delete(path));
+  }
+
+  public HttpServiceK.ThenStep<F, HttpServiceK<F>> patch(String path) {
+    return when(Matchers.patch(path));
+  }
+
+  public HttpServiceK.ThenStep<F, HttpServiceK<F>> head(String path) {
+    return when(Matchers.head(path));
+  }
+
+  public HttpServiceK.ThenStep<F, HttpServiceK<F>> options(String path) {
+    return when(Matchers.options(path));
+  }
+
   public ThenStep<F, HttpServiceK<F>> preFilter(Matcher1<HttpRequest> matcher) {
     return handler -> addPreFilter(matcher, handler);
   }
@@ -156,6 +184,7 @@ public final class HttpServiceK<F extends Witness> {
   
   @FunctionalInterface
   public interface ThenStep<F extends Witness, T> {
+
     T then(RequestHandlerK<F> handler);
   }
 }

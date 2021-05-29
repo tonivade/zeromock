@@ -7,7 +7,6 @@ package com.github.tonivade.zeromock.server;
 import static com.github.tonivade.zeromock.api.Bytes.asBytes;
 import static com.github.tonivade.zeromock.api.Responses.error;
 import static java.util.Objects.requireNonNull;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
@@ -17,7 +16,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
-
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Witness;
@@ -33,6 +31,7 @@ import com.github.tonivade.zeromock.api.HttpPath;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpServiceK;
+import com.github.tonivade.zeromock.api.Matchers;
 import com.github.tonivade.zeromock.api.PostFilterK;
 import com.github.tonivade.zeromock.api.PreFilterK;
 import com.github.tonivade.zeromock.api.RequestHandlerK;
@@ -87,6 +86,34 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
 
   public HttpServiceK.ThenStep<F, MockHttpServerK<F>> when(Matcher1<HttpRequest> matcher) {
     return handler -> addMapping(matcher, handler);
+  }
+
+  public HttpServiceK.ThenStep<F, MockHttpServerK<F>> get(String path) {
+    return when(Matchers.get(path));
+  }
+
+  public HttpServiceK.ThenStep<F, MockHttpServerK<F>> post(String path) {
+    return when(Matchers.post(path));
+  }
+
+  public HttpServiceK.ThenStep<F, MockHttpServerK<F>> put(String path) {
+    return when(Matchers.put(path));
+  }
+
+  public HttpServiceK.ThenStep<F, MockHttpServerK<F>> delete(String path) {
+    return when(Matchers.delete(path));
+  }
+
+  public HttpServiceK.ThenStep<F, MockHttpServerK<F>> patch(String path) {
+    return when(Matchers.patch(path));
+  }
+
+  public HttpServiceK.ThenStep<F, MockHttpServerK<F>> head(String path) {
+    return when(Matchers.head(path));
+  }
+
+  public HttpServiceK.ThenStep<F, MockHttpServerK<F>> options(String path) {
+    return when(Matchers.options(path));
   }
 
   public HttpServiceK.ThenStep<F, MockHttpServerK<F>> preFilter(Matcher1<HttpRequest> matcher) {

@@ -19,6 +19,7 @@ import com.github.tonivade.zeromock.api.AsyncPostFilter;
 import com.github.tonivade.zeromock.api.AsyncPreFilter;
 import com.github.tonivade.zeromock.api.AsyncRequestHandler;
 import com.github.tonivade.zeromock.api.HttpRequest;
+import com.github.tonivade.zeromock.api.Matchers;
 import com.github.tonivade.zeromock.api.PostFilter;
 import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.server.MockHttpServerK.BuilderK;
@@ -102,6 +103,34 @@ public final class AsyncMockHttpServer implements HttpServer {
 
   public AsyncHttpService.ThenStep<AsyncMockHttpServer> when(Matcher1<HttpRequest> matcher) {
     return handler -> addMapping(matcher, handler);
+  }
+
+  public AsyncHttpService.ThenStep<AsyncMockHttpServer> get(String path) {
+    return when(Matchers.get(path));
+  }
+
+  public AsyncHttpService.ThenStep<AsyncMockHttpServer> post(String path) {
+    return when(Matchers.post(path));
+  }
+
+  public AsyncHttpService.ThenStep<AsyncMockHttpServer> put(String path) {
+    return when(Matchers.put(path));
+  }
+
+  public AsyncHttpService.ThenStep<AsyncMockHttpServer> delete(String path) {
+    return when(Matchers.delete(path));
+  }
+
+  public AsyncHttpService.ThenStep<AsyncMockHttpServer> patch(String path) {
+    return when(Matchers.patch(path));
+  }
+
+  public AsyncHttpService.ThenStep<AsyncMockHttpServer> head(String path) {
+    return when(Matchers.head(path));
+  }
+
+  public AsyncHttpService.ThenStep<AsyncMockHttpServer> options(String path) {
+    return when(Matchers.options(path));
   }
 
   @Override

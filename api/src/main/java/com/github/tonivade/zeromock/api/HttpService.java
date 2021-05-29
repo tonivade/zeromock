@@ -56,6 +56,34 @@ public final class HttpService {
     return handler -> addMapping(matcher, handler);
   }
 
+  public HttpService.ThenStep<HttpService> get(String path) {
+    return when(Matchers.get(path));
+  }
+
+  public HttpService.ThenStep<HttpService> post(String path) {
+    return when(Matchers.post(path));
+  }
+
+  public HttpService.ThenStep<HttpService> put(String path) {
+    return when(Matchers.put(path));
+  }
+
+  public HttpService.ThenStep<HttpService> delete(String path) {
+    return when(Matchers.delete(path));
+  }
+
+  public HttpService.ThenStep<HttpService> patch(String path) {
+    return when(Matchers.patch(path));
+  }
+
+  public HttpService.ThenStep<HttpService> head(String path) {
+    return when(Matchers.head(path));
+  }
+
+  public HttpService.ThenStep<HttpService> options(String path) {
+    return when(Matchers.options(path));
+  }
+
   public Option<HttpResponse> execute(HttpRequest request) {
     return serviceK.execute(request).fix(toId()).get();
   }
@@ -79,6 +107,47 @@ public final class HttpService {
   
   @FunctionalInterface
   public interface ThenStep<T> {
+    
     T then(RequestHandler handler);
+    
+    default T ok(String body) {
+      return then(Handlers.ok(body));
+    }
+    
+    default T created(String body) {
+      return then(Handlers.created(body));
+    }
+    
+    default T error(String body) {
+      return then(Handlers.error(body));
+    }
+    
+    default T noContent() {
+      return then(Handlers.noContent());
+    }
+    
+    default T notFound() {
+      return then(Handlers.notFound());
+    }
+    
+    default T forbidden() {
+      return then(Handlers.forbidden());
+    }
+    
+    default T badRequest() {
+      return then(Handlers.badRequest());
+    }
+    
+    default T unauthorized() {
+      return then(Handlers.unauthorized());
+    }
+    
+    default T unavailable() {
+      return then(Handlers.unavailable());
+    }
+    
+    default T error() {
+      return then(Handlers.error());
+    }
   }
 }
