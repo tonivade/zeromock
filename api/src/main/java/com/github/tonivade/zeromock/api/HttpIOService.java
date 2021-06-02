@@ -13,8 +13,9 @@ import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.purefun.monad.IO_;
 import com.github.tonivade.purefun.type.Option;
+import com.github.tonivade.purefun.typeclasses.Instance;
 
-public final class HttpIOService implements HttpRouteBuilderK<IO_, HttpIOService, IORequestHandler> {
+public final class HttpIOService implements HttpRouteBuilderK<IO_, HttpIOService> {
 
   private final HttpServiceK<IO_> serviceK;
 
@@ -38,8 +39,8 @@ public final class HttpIOService implements HttpRouteBuilderK<IO_, HttpIOService
     return new HttpIOService(serviceK.exec(handler));
   }
 
-  public ThenStep<HttpIOService, IORequestHandler> preFilter(Matcher1<HttpRequest> matcher) {
-    return handler -> addPreFilter(matcher, handler);
+  public ThenStepK<IO_, HttpIOService> preFilter(Matcher1<HttpRequest> matcher) {
+    return new ThenStepK<>(Instance.monad(IO_.class), handler -> addPreFilter(matcher, handler::apply));
   }
 
   public HttpIOService preFilter(PreFilter filter) {
@@ -58,8 +59,8 @@ public final class HttpIOService implements HttpRouteBuilderK<IO_, HttpIOService
     return new HttpIOService(serviceK.postFilter(filter));
   }
 
-  public ThenStep<HttpIOService, IORequestHandler> when(Matcher1<HttpRequest> matcher) {
-    return handler -> addMapping(matcher, handler);
+  public ThenStepK<IO_, HttpIOService> when(Matcher1<HttpRequest> matcher) {
+    return new ThenStepK<>(Instance.monad(IO_.class), handler -> addMapping(matcher, handler::apply));
   }
 
   public IO<Option<HttpResponse>> execute(HttpRequest request) {

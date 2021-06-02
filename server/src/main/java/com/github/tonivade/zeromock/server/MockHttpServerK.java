@@ -39,7 +39,7 @@ import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
-public class MockHttpServerK<F extends Witness> implements com.github.tonivade.zeromock.server.HttpServer, HttpRouteBuilderK<F, MockHttpServerK<F>, RequestHandlerK<F>> {
+public class MockHttpServerK<F extends Witness> implements com.github.tonivade.zeromock.server.HttpServer, HttpRouteBuilderK<F, MockHttpServerK<F>> {
 
   private static final Logger LOG = Logger.getLogger(MockHttpServerK.class.getName());
 
@@ -84,12 +84,12 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
   }
 
   @Override
-  public ThenStep<MockHttpServerK<F>, RequestHandlerK<F>> when(Matcher1<HttpRequest> matcher) {
-    return handler -> addMapping(matcher, handler);
+  public ThenStepK<F, MockHttpServerK<F>> when(Matcher1<HttpRequest> matcher) {
+    return new ThenStepK<>(monad, handler -> addMapping(matcher, handler));
   }
 
-  public ThenStep<MockHttpServerK<F>, RequestHandlerK<F>> preFilter(Matcher1<HttpRequest> matcher) {
-    return handler -> addPreFilter(matcher, handler);
+  public ThenStepK<F, MockHttpServerK<F>> preFilter(Matcher1<HttpRequest> matcher) {
+    return new ThenStepK<>(monad, handler -> addPreFilter(matcher, handler));
   }
 
   public MockHttpServerK<F> preFilter(PreFilterK<F> filter) {

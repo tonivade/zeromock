@@ -16,6 +16,7 @@ import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.purefun.monad.IO_;
+import com.github.tonivade.purefun.typeclasses.Instance;
 import com.github.tonivade.zeromock.api.HttpIOService;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpRouteBuilderK;
@@ -26,7 +27,7 @@ import com.github.tonivade.zeromock.api.PostFilter;
 import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.server.MockHttpServerK.BuilderK;
 
-public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO_, IOMockHttpServer, IORequestHandler> {
+public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO_, IOMockHttpServer> {
 
   private final MockHttpServerK<IO_> serverK;
 
@@ -74,8 +75,8 @@ public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO_
     return this;
   }
 
-  public ThenStep<IOMockHttpServer, IORequestHandler> preFilter(Matcher1<HttpRequest> matcher) {
-    return handler -> addPreFilter(matcher, handler);
+  public ThenStepK<IO_, IOMockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
+    return new ThenStepK<>(Instance.monad(IO_.class), handler -> addPreFilter(matcher, handler::apply));
   }
 
   public IOMockHttpServer preFilter(PreFilter filter) {
@@ -106,8 +107,8 @@ public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO_
     return this;
   }
 
-  public ThenStep<IOMockHttpServer, IORequestHandler> when(Matcher1<HttpRequest> matcher) {
-    return handler -> addMapping(matcher, handler);
+  public ThenStepK<IO_, IOMockHttpServer> when(Matcher1<HttpRequest> matcher) {
+    return new ThenStepK<>(Instance.monad(IO_.class), handler -> addMapping(matcher, handler::apply));
   }
 
   @Override

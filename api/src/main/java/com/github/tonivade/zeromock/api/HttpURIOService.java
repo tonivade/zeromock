@@ -17,7 +17,7 @@ import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.typeclasses.Instance;
 
-public final class HttpURIOService<R> implements HttpRouteBuilderK<Kind<URIO_, R>, HttpURIOService<R>, URIORequestHandler<R>> {
+public final class HttpURIOService<R> implements HttpRouteBuilderK<Kind<URIO_, R>, HttpURIOService<R>> {
 
   private final HttpServiceK<Kind<URIO_, R>> serviceK;
 
@@ -41,8 +41,8 @@ public final class HttpURIOService<R> implements HttpRouteBuilderK<Kind<URIO_, R
     return new HttpURIOService<>(serviceK.exec(cons(method)::apply));
   }
 
-  public ThenStep<HttpURIOService<R>, URIORequestHandler<R>> preFilter(Matcher1<HttpRequest> matcher) {
-    return handler -> addPreFilter(matcher, handler);
+  public ThenStepK<Kind<URIO_, R>, HttpURIOService<R>> preFilter(Matcher1<HttpRequest> matcher) {
+    return new ThenStepK<>(new Instance<Kind<URIO_, R>>() {}.monad(), handler -> addPreFilter(matcher, handler::apply));
   }
 
   public HttpURIOService<R> preFilter(PreFilter filter) {
@@ -61,8 +61,8 @@ public final class HttpURIOService<R> implements HttpRouteBuilderK<Kind<URIO_, R
     return new HttpURIOService<>(serviceK.postFilter(filter));
   }
 
-  public ThenStep<HttpURIOService<R>, URIORequestHandler<R>> when(Matcher1<HttpRequest> matcher) {
-    return handler -> addMapping(matcher, handler);
+  public ThenStepK<Kind<URIO_, R>, HttpURIOService<R>> when(Matcher1<HttpRequest> matcher) {
+    return new ThenStepK<>(new Instance<Kind<URIO_, R>>() {}.monad(), handler -> addMapping(matcher, handler::apply));
   }
 
   public URIO<R, Option<HttpResponse>> execute(HttpRequest request) {

@@ -24,7 +24,7 @@ import com.github.tonivade.purefun.type.OptionOf;
 import com.github.tonivade.purefun.typeclasses.For;
 import com.github.tonivade.purefun.typeclasses.Monad;
 
-public final class HttpServiceK<F extends Witness> implements HttpRouteBuilderK<F, HttpServiceK<F>, RequestHandlerK<F>> {
+public final class HttpServiceK<F extends Witness> implements HttpRouteBuilderK<F, HttpServiceK<F>> {
 
   private final String name;
   private final Monad<F> monad;
@@ -67,12 +67,12 @@ public final class HttpServiceK<F extends Witness> implements HttpRouteBuilderK<
   }
 
   @Override
-  public ThenStep<HttpServiceK<F>, RequestHandlerK<F>> when(Matcher1<HttpRequest> matcher) {
-    return handler -> addMapping(matcher, handler);
+  public ThenStepK<F, HttpServiceK<F>> when(Matcher1<HttpRequest> matcher) {
+    return new ThenStepK<>(monad, handler -> addMapping(matcher, handler));
   }
 
-  public ThenStep<HttpServiceK<F>, RequestHandlerK<F>> preFilter(Matcher1<HttpRequest> matcher) {
-    return handler -> addPreFilter(matcher, handler);
+  public ThenStepK<F, HttpServiceK<F>> preFilter(Matcher1<HttpRequest> matcher) {
+    return new ThenStepK<>(monad, handler -> addPreFilter(matcher, handler));
   }
 
   public HttpServiceK<F> preFilter(PreFilterK<F> filter) {

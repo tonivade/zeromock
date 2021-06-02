@@ -16,8 +16,9 @@ import com.github.tonivade.purefun.concurrent.Future_;
 import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.instances.FutureInstances;
 import com.github.tonivade.purefun.type.Option;
+import com.github.tonivade.purefun.typeclasses.Instance;
 
-public final class AsyncHttpService implements HttpRouteBuilderK<Future_, AsyncHttpService, AsyncRequestHandler> {
+public final class AsyncHttpService implements HttpRouteBuilderK<Future_, AsyncHttpService> {
 
   private final HttpServiceK<Future_> serviceK;
 
@@ -49,8 +50,8 @@ public final class AsyncHttpService implements HttpRouteBuilderK<Future_, AsyncH
     return new AsyncHttpService(serviceK.exec(handler));
   }
 
-  public ThenStep<AsyncHttpService, AsyncRequestHandler> preFilter(Matcher1<HttpRequest> matcher) {
-    return handler -> addPreFilter(matcher, handler);
+  public ThenStepK<Future_, AsyncHttpService> preFilter(Matcher1<HttpRequest> matcher) {
+    return new ThenStepK<>(Instance.monad(Future_.class), handler -> addPreFilter(matcher, handler::apply));
   }
 
   public AsyncHttpService preFilter(PreFilter filter) {
@@ -70,8 +71,8 @@ public final class AsyncHttpService implements HttpRouteBuilderK<Future_, AsyncH
   }
 
   @Override
-  public ThenStep<AsyncHttpService, AsyncRequestHandler> when(Matcher1<HttpRequest> matcher) {
-    return handler -> addMapping(matcher, handler);
+  public ThenStepK<Future_, AsyncHttpService> when(Matcher1<HttpRequest> matcher) {
+    return new ThenStepK<>(Instance.monad(Future_.class), handler -> addMapping(matcher, handler::apply));
   }
 
   public Promise<Option<HttpResponse>> execute(HttpRequest request) {

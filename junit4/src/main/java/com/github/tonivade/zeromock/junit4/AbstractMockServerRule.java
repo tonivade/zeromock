@@ -4,10 +4,13 @@
  */
 package com.github.tonivade.zeromock.junit4;
 
-import static java.util.Objects.requireNonNull;
+import static com.github.tonivade.purefun.Precondition.checkNonNull;
+
 import org.junit.rules.ExternalResource;
+
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Witness;
+import com.github.tonivade.purefun.typeclasses.Monad;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpRouteBuilderK;
 import com.github.tonivade.zeromock.api.HttpServiceK;
@@ -15,12 +18,14 @@ import com.github.tonivade.zeromock.api.RequestHandlerK;
 import com.github.tonivade.zeromock.client.HttpClient;
 import com.github.tonivade.zeromock.server.MockHttpServerK;
 
-public abstract class AbstractMockServerRule<F extends Witness> extends ExternalResource implements HttpRouteBuilderK<F, AbstractMockServerRule<F>, RequestHandlerK<F>> {
+public abstract class AbstractMockServerRule<F extends Witness> extends ExternalResource implements HttpRouteBuilderK<F, AbstractMockServerRule<F>> {
 
+  private final Monad<F> monad;
   private final MockHttpServerK<F> server;
 
-  protected AbstractMockServerRule(MockHttpServerK<F> server) {
-    this.server = requireNonNull(server);
+  protected AbstractMockServerRule(Monad<F> monad, MockHttpServerK<F> server) {
+    this.monad = checkNonNull(monad);
+    this.server = checkNonNull(server);
   }
 
   @Override
@@ -52,8 +57,8 @@ public abstract class AbstractMockServerRule<F extends Witness> extends External
     return this;
   }
 
-  public ThenStep<AbstractMockServerRule<F>, RequestHandlerK<F>> when(Matcher1<HttpRequest> matcher) {
-    return handler -> addMapping(matcher, handler);
+  public ThenStepK<F, AbstractMockServerRule<F>> when(Matcher1<HttpRequest> matcher) {
+    return new ThenStepK<>(monad, handler -> addMapping(matcher, handler));
   }
 
   public AbstractMockServerRule<F> mount(String path, HttpServiceK<F> service) {
