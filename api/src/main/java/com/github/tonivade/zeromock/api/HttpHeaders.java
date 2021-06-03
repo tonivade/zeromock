@@ -7,6 +7,7 @@ package com.github.tonivade.zeromock.api;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -18,7 +19,7 @@ import com.github.tonivade.purefun.Tuple2;
 import com.github.tonivade.purefun.data.ImmutableMap;
 import com.github.tonivade.purefun.data.ImmutableSet;
 
-public final class HttpHeaders {
+public final class HttpHeaders implements Iterable<Tuple2<String, String>> {
 
   private static final Equal<HttpHeaders> EQUAL = Equal.<HttpHeaders>of()
       .comparing(h -> h.headers);
@@ -27,6 +28,12 @@ public final class HttpHeaders {
 
   public HttpHeaders(ImmutableMap<String, ImmutableSet<String>> headers) {
     this.headers = requireNonNull(headers);
+  }
+  
+  @Override
+  public Iterator<Tuple2<String, String>> iterator() {
+    return headers.entries()
+        .flatMap(t -> t.applyTo((keys, values) -> values.map(v -> Tuple2.of(keys, v)))).iterator();
   }
 
   public HttpHeaders withHeader(String key, String value) {
