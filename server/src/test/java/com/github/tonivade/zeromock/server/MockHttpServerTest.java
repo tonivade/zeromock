@@ -131,7 +131,7 @@ public class MockHttpServerTest {
   public void exec() {
     MockHttpServer server = listenAt(0).exec(request -> Responses.ok(request.body())).start();
 
-    HttpResponse response = connectTo("http://localhost:" + server.getPort()).request(Requests.get("/").withBody("echo"));
+    HttpResponse response = connectTo("http://localhost:" + server.getPort()).request(Requests.post("/").withBody("echo"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals("echo", asString(response.body())));

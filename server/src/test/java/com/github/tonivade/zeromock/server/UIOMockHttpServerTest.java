@@ -140,7 +140,7 @@ public class UIOMockHttpServerTest {
     UIORequestHandler echo = request -> UIO.pure(ok(request.body()));
     UIOMockHttpServer server = listenAt(0).exec(echo).start();
 
-    HttpResponse response = connectTo("http://localhost:" + server.getPort()).request(Requests.get("/").withBody("echo"));
+    HttpResponse response = connectTo("http://localhost:" + server.getPort()).request(Requests.post("/").withBody("echo"));
 
     assertAll(
         () -> assertEquals(HttpStatus.OK, response.status()),

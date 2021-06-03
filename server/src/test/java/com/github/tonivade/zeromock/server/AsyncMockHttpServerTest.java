@@ -129,7 +129,7 @@ public class AsyncMockHttpServerTest {
     RequestHandler echo = request -> Responses.ok(request.body());
     AsyncMockHttpServer server = listenAt(0).exec(echo.liftFuture()::apply).start();
 
-    HttpResponse response = connectTo("http://localhost:" + server.getPort()).request(Requests.get("/").withBody("echo"));
+    HttpResponse response = connectTo("http://localhost:" + server.getPort()).request(Requests.post("/").withBody("echo"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals("echo", asString(response.body())));

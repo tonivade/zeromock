@@ -6,6 +6,9 @@ package com.github.tonivade.zeromock.client;
 
 import static com.github.tonivade.purefun.Precondition.check;
 import static com.github.tonivade.purefun.Precondition.checkNonNull;
+import static com.github.tonivade.zeromock.api.HttpMethod.HEAD;
+import static com.github.tonivade.zeromock.api.HttpMethod.OPTIONS;
+import static com.github.tonivade.zeromock.api.HttpMethod.PATCH;
 
 import java.net.URI;
 import java.net.http.HttpRequest.BodyPublishers;
@@ -46,11 +49,14 @@ public class HttpClientK<F extends Witness> {
 
   private Kind<F, java.net.http.HttpRequest> createRequest(HttpRequest request) {
     return monad.later(() -> {
-        var builder = java.net.http.HttpRequest.newBuilder().uri(baseUri.resolve(request.toUrl()));
+        var builder = java.net.http.HttpRequest.newBuilder().uri(URI.create(baseUri.toString() + request.toUrl()));
         
         switch (request.method()) {
         case GET:
           builder = builder.GET();
+          break;
+        case DELETE:
+          builder = builder.DELETE();
           break;
         case POST:
           builder = builder.POST(BodyPublishers.ofByteArray(request.body().toArray()));
@@ -58,17 +64,14 @@ public class HttpClientK<F extends Witness> {
         case PUT:
           builder = builder.PUT(BodyPublishers.ofByteArray(request.body().toArray()));
           break;
-        case DELETE:
-          builder = builder.DELETE();
-          break;
         case PATCH:
-          builder = builder.method("PATCH", BodyPublishers.ofByteArray(request.body().toArray()));
+          builder = builder.method(PATCH.name(), BodyPublishers.ofByteArray(request.body().toArray()));
           break;
         case HEAD:
-          builder = builder.method("HEAD", BodyPublishers.noBody());
+          builder = builder.method(HEAD.name(), BodyPublishers.noBody());
           break;
         case OPTIONS:
-          builder = builder.method("OPTIONS", BodyPublishers.noBody());
+          builder = builder.method(OPTIONS.name(), BodyPublishers.noBody());
           break;
         }
         

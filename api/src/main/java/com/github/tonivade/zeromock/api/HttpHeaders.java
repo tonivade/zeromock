@@ -27,17 +27,17 @@ public final class HttpHeaders implements Iterable<Tuple2<String, String>> {
   private final ImmutableMap<String, ImmutableSet<String>> headers;
 
   public HttpHeaders(ImmutableMap<String, ImmutableSet<String>> headers) {
-    this.headers = requireNonNull(headers);
+    this.headers = requireNonNull(headers).mapKeys(String::toLowerCase);
   }
   
   @Override
   public Iterator<Tuple2<String, String>> iterator() {
     return headers.entries()
-        .flatMap(t -> t.applyTo((keys, values) -> values.map(v -> Tuple2.of(keys, v)))).iterator();
+        .flatMap(t -> t.applyTo((key, values) -> values.map(v -> Tuple2.of(key, v)))).iterator();
   }
 
   public HttpHeaders withHeader(String key, String value) {
-    return new HttpHeaders(headers.merge(key, ImmutableSet.of(value), (a, b) -> a.union(b)));
+    return new HttpHeaders(headers.merge(key.toLowerCase(), ImmutableSet.of(value), ImmutableSet<String>::union));
   }
 
   public boolean isEmpty() {
@@ -45,11 +45,11 @@ public final class HttpHeaders implements Iterable<Tuple2<String, String>> {
   }
 
   public boolean contains(String key) {
-    return headers.containsKey(key);
+    return headers.containsKey(key.toLowerCase());
   }
 
   public ImmutableSet<String> get(String key) {
-    return headers.getOrDefault(key, ImmutableSet::empty);
+    return headers.getOrDefault(key.toLowerCase(), ImmutableSet::empty);
   }
 
   public void forEach(Consumer2<String, String> consumer) {

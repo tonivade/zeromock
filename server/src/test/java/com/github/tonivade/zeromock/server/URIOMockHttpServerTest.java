@@ -132,7 +132,7 @@ public class URIOMockHttpServerTest {
     URIORequestHandler<Nothing> echo = request -> URIO.pure(ok(request.body()));
     URIOMockHttpServer<Nothing> server = listenAt(nothing(), 0).exec(echo).start();
 
-    HttpResponse response = connectTo("http://localhost:" + server.getPort()).request(Requests.get("/").withBody("echo"));
+    HttpResponse response = connectTo("http://localhost:" + server.getPort()).request(Requests.post("/").withBody("echo"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
               () -> assertEquals("echo", asString(response.body())));
