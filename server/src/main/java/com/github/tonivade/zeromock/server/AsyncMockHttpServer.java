@@ -13,7 +13,6 @@ import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.concurrent.Future_;
 import com.github.tonivade.purefun.data.Sequence;
-import com.github.tonivade.purefun.instances.FutureInstances;
 import com.github.tonivade.purefun.typeclasses.Instance;
 import com.github.tonivade.zeromock.api.AsyncHttpService;
 import com.github.tonivade.zeromock.api.AsyncPostFilter;
@@ -98,7 +97,7 @@ public final class AsyncMockHttpServer implements HttpServer, HttpRouteBuilderK<
   }
 
   public AsyncMockHttpServer addPreFilter(Matcher1<HttpRequest> matcher, AsyncRequestHandler handler) {
-    serverK.preFilter(filter(FutureInstances.monad(), matcher, handler));
+    serverK.preFilter(filter(monad(Future_.class), matcher, handler));
     return this;
   }
 

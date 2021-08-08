@@ -6,9 +6,10 @@ package com.github.tonivade.zeromock.client;
 
 import static com.github.tonivade.purefun.effect.UIOOf.toUIO;
 import static java.util.Objects.requireNonNull;
+
 import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purefun.effect.UIO_;
-import com.github.tonivade.purefun.instances.UIOInstances;
+import com.github.tonivade.purefun.typeclasses.Instance;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 
@@ -21,7 +22,7 @@ public class UIOHttpClient implements HttpClientOf<UIO_> {
   }
 
   public static UIOHttpClient connectTo(String baseUrl) {
-    return new UIOHttpClient(new HttpClientK<>(baseUrl, UIOInstances.monadDefer()));
+    return new UIOHttpClient(new HttpClientK<>(baseUrl, Instance.monadDefer(UIO_.class)));
   }
 
   public UIO<HttpResponse> request(HttpRequest request) {

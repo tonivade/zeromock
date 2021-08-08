@@ -5,8 +5,9 @@
 package com.github.tonivade.zeromock.client;
 
 import static com.github.tonivade.purefun.monad.IOOf.toIO;
+import static com.github.tonivade.purefun.typeclasses.Instance.monadDefer;
 import static java.util.Objects.requireNonNull;
-import com.github.tonivade.purefun.instances.IOInstances;
+
 import com.github.tonivade.purefun.monad.IO_;
 import com.github.tonivade.purefun.type.Id_;
 import com.github.tonivade.zeromock.api.HttpRequest;
@@ -22,7 +23,7 @@ public class HttpClient implements HttpClientOf<Id_> {
   }
 
   public static HttpClient connectTo(String baseUrl) {
-    return new HttpClient(new HttpClientK<>(baseUrl, IOInstances.monadDefer()));
+    return new HttpClient(new HttpClientK<>(baseUrl, monadDefer(IO_.class)));
   }
 
   public HttpResponse request(HttpRequest request) {

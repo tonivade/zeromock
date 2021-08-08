@@ -4,6 +4,7 @@
  */
 package com.github.tonivade.zeromock.client;
 
+import static com.github.tonivade.purefun.typeclasses.Instance.monadDefer;
 import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.Executor;
@@ -11,7 +12,6 @@ import java.util.concurrent.Executor;
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.concurrent.ParOf;
 import com.github.tonivade.purefun.concurrent.Par_;
-import com.github.tonivade.purefun.instances.ParInstances;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 
@@ -24,7 +24,7 @@ public class AsyncHttpClient implements HttpClientOf<Par_> {
   }
 
   public static AsyncHttpClient connectTo(String baseUrl) {
-    return new AsyncHttpClient(new HttpClientK<>(baseUrl, ParInstances.monadDefer()));
+    return new AsyncHttpClient(new HttpClientK<>(baseUrl, monadDefer(Par_.class)));
   }
 
   public Future<HttpResponse> request(HttpRequest request) {
