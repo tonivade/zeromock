@@ -4,27 +4,34 @@
  */
 package com.github.tonivade.zeromock.client;
 
-import static com.github.tonivade.purefun.concurrent.FutureOf.toFuture;
 import static java.util.Objects.requireNonNull;
+
+import java.util.concurrent.Executor;
+
 import com.github.tonivade.purefun.concurrent.Future;
-import com.github.tonivade.purefun.concurrent.Future_;
-import com.github.tonivade.purefun.instances.FutureInstances;
+import com.github.tonivade.purefun.concurrent.ParOf;
+import com.github.tonivade.purefun.concurrent.Par_;
+import com.github.tonivade.purefun.instances.ParInstances;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 
-public class AsyncHttpClient implements HttpClientOf<Future_> {
+public class AsyncHttpClient implements HttpClientOf<Par_> {
 
-  private final HttpClientK<Future_> client;
+  private final HttpClientK<Par_> client;
 
-  private AsyncHttpClient(HttpClientK<Future_> client) {
+  private AsyncHttpClient(HttpClientK<Par_> client) {
     this.client = requireNonNull(client);
   }
 
   public static AsyncHttpClient connectTo(String baseUrl) {
-    return new AsyncHttpClient(new HttpClientK<>(baseUrl, FutureInstances.monadDefer()));
+    return new AsyncHttpClient(new HttpClientK<>(baseUrl, ParInstances.monadDefer()));
   }
 
   public Future<HttpResponse> request(HttpRequest request) {
-    return client.request(request).fix(toFuture());
+    return request(request, Future.DEFAULT_EXECUTOR);
+  }
+
+  public Future<HttpResponse> request(HttpRequest request, Executor executor) {
+    return client.request(request).fix(ParOf.toPar()).apply(executor);
   }
 }

@@ -49,7 +49,7 @@ class HttpClientTest {
 
   @Test
   void async() {
-    Future<HttpResponse> response = asyncClient().connectTo(baseUrl()).request(ping);
+    Future<HttpResponse> response = asyncClient().connectTo(baseUrl()).request(ping, Future.DEFAULT_EXECUTOR);
 
     assertResponse(response.get());
   }
