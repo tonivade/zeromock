@@ -3,11 +3,11 @@ ext {
     junit           : '4.13.2',
     junitEngine     : '5.7.2',
     junitPlatform   : '1.7.2',
-    equalsverifier  : '3.6.1',
+    equalsverifier  : '3.7.1',
     purefun         : '2.3-SNAPSHOT',
     purejson        : '0.2-SNAPSHOT',
-    jaxb            : '3.0.1',
-    jsonPath        : '2.5.0'
+    jaxb            : '3.0.2',
+    jsonPath        : '2.6.0'
   ]
   libs = [
     purefunCore        : "com.github.tonivade:purefun-core:$versions.purefun",
