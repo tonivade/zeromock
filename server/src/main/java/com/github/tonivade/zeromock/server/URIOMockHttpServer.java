@@ -4,13 +4,10 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.purefun.concurrent.Future.DEFAULT_EXECUTOR;
 import static com.github.tonivade.purefun.instances.URIOInstances.monad;
-import static com.github.tonivade.purefun.instances.URIOInstances.runtime;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
+import static com.github.tonivade.zeromock.server.ResponseInterpreterK.urio;
 import static java.util.Objects.requireNonNull;
-
-import java.util.concurrent.Executor;
 
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
@@ -51,11 +48,7 @@ public final class URIOMockHttpServer<R> implements HttpServer, HttpRouteBuilder
   }
 
   public static <R> BuilderK<Kind<URIO_, R>, URIOMockHttpServer<R>> builder(Producer<R> factory) {
-    return builder(DEFAULT_EXECUTOR, factory);
-  }
-
-  public static <R> BuilderK<Kind<URIO_, R>, URIOMockHttpServer<R>> builder(Executor executor, Producer<R> factory) {
-    return builder(ResponseInterpreterK.async(runtime(factory.get()), executor));
+    return builder(urio(factory));
   }
 
   public static <R> URIOMockHttpServer<R> listenAt(R env, int port) {

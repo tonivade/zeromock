@@ -4,14 +4,10 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.purefun.concurrent.Future.DEFAULT_EXECUTOR;
 import static com.github.tonivade.purefun.typeclasses.Instance.monad;
-import static com.github.tonivade.purefun.typeclasses.Instance.runtime;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
-import static com.github.tonivade.zeromock.server.ResponseInterpreterK.async;
+import static com.github.tonivade.zeromock.server.ResponseInterpreterK.io;
 import static java.util.Objects.requireNonNull;
-
-import java.util.concurrent.Executor;
 
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.data.Sequence;
@@ -33,7 +29,7 @@ public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO_
   private final MockHttpServerK<IO_> serverK;
 
   public IOMockHttpServer(com.sun.net.httpserver.HttpServer server) {
-    this(new MockHttpServerK<>(server, monad(IO_.class), async(runtime(IO_.class))));
+    this(new MockHttpServerK<>(server, monad(IO_.class), io()));
   }
 
   private IOMockHttpServer(MockHttpServerK<IO_> serverK) {
@@ -51,11 +47,7 @@ public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO_
   }
 
   public static BuilderK<IO_, IOMockHttpServer> builder() {
-    return builder(DEFAULT_EXECUTOR);
-  }
-
-  public static BuilderK<IO_, IOMockHttpServer> builder(Executor executor) {
-    return builder(ResponseInterpreterK.async(runtime(IO_.class), executor));
+    return builder(io());
   }
 
   public static IOMockHttpServer listenAt(int port) {
