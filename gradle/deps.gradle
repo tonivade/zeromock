@@ -4,7 +4,7 @@ ext {
     junitEngine     : '5.7.2',
     junitPlatform   : '1.7.2',
     equalsverifier  : '3.7.1',
-    purefun         : '2.3-SNAPSHOT',
+    purefun         : '3.0-SNAPSHOT',
     purejson        : '0.2-SNAPSHOT',
     jaxb            : '3.0.2',
     jsonPath        : '2.6.0'

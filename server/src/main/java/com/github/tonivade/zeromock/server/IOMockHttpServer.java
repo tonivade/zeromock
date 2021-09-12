@@ -8,6 +8,7 @@ import static com.github.tonivade.purefun.concurrent.Future.DEFAULT_EXECUTOR;
 import static com.github.tonivade.purefun.typeclasses.Instance.monad;
 import static com.github.tonivade.purefun.typeclasses.Instance.runtime;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
+import static com.github.tonivade.zeromock.server.ResponseInterpreterK.async;
 import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.Executor;
@@ -32,7 +33,7 @@ public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO_
   private final MockHttpServerK<IO_> serverK;
 
   public IOMockHttpServer(com.sun.net.httpserver.HttpServer server) {
-    this(new MockHttpServerK<>(server, monad(IO_.class), ResponseInterpreterK.sync(runtime(IO_.class))));
+    this(new MockHttpServerK<>(server, monad(IO_.class), async(runtime(IO_.class))));
   }
 
   private IOMockHttpServer(MockHttpServerK<IO_> serverK) {
@@ -49,20 +50,16 @@ public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO_
     return serverK.getPath();
   }
 
-  public static BuilderK<IO_, IOMockHttpServer> sync() {
-    return _builder(ResponseInterpreterK.sync(runtime(IO_.class)));
+  public static BuilderK<IO_, IOMockHttpServer> builder() {
+    return builder(DEFAULT_EXECUTOR);
   }
 
-  public static BuilderK<IO_, IOMockHttpServer> async() {
-    return async(DEFAULT_EXECUTOR);
-  }
-
-  public static BuilderK<IO_, IOMockHttpServer> async(Executor executor) {
-    return _builder(ResponseInterpreterK.async(runtime(IO_.class), executor));
+  public static BuilderK<IO_, IOMockHttpServer> builder(Executor executor) {
+    return builder(ResponseInterpreterK.async(runtime(IO_.class), executor));
   }
 
   public static IOMockHttpServer listenAt(int port) {
-    return sync().port(port).build();
+    return builder().port(port).build();
   }
 
   public IOMockHttpServer mount(String path, HttpIOService other) {
@@ -144,7 +141,7 @@ public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO_
     serverK.reset();
   }
 
-  private static BuilderK<IO_, IOMockHttpServer> _builder(ResponseInterpreterK<IO_> interpreter) {
+  private static BuilderK<IO_, IOMockHttpServer> builder(ResponseInterpreterK<IO_> interpreter) {
     return new BuilderK<>(monad(IO_.class), interpreter) {
       @Override
       public IOMockHttpServer build() {

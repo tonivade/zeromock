@@ -5,7 +5,7 @@
 package com.github.tonivade.zeromock.junit4;
 
 import static com.github.tonivade.purefun.Producer.cons;
-import static com.github.tonivade.zeromock.server.URIOMockHttpServer.sync;
+import static com.github.tonivade.zeromock.server.URIOMockHttpServer.builder;
 
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.effect.URIO_;
@@ -18,6 +18,6 @@ public class URIOMockHttpServerRule<R> extends AbstractMockServerRule<Kind<URIO_
   }
 
   public URIOMockHttpServerRule(R env, int port) {
-    super(new Instance<Kind<URIO_, R>>() {}.monad(), sync(cons(env)).port(port).buildK());
+    super(new Instance<Kind<URIO_, R>>() {}.monad(), builder(cons(env)).port(port).buildK());
   }
 }

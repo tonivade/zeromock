@@ -11,6 +11,7 @@ import java.util.concurrent.Executor;
 
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Witness;
+import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.concurrent.Future_;
 import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.type.Id_;
@@ -22,12 +23,12 @@ public interface ResponseInterpreterK<F extends Witness> {
   
   Promise<HttpResponse> run(Kind<F, HttpResponse> response);
   
+  static <F extends Witness> ResponseInterpreterK<F> async(Runtime<F> runtime) {
+    return async(runtime, Future.DEFAULT_EXECUTOR);
+  }
+
   static <F extends Witness> ResponseInterpreterK<F> async(Runtime<F> runtime, Executor executor) {
     return response -> runtime.parRun(response, executor).toPromise();
-  }
-  
-  static <F extends Witness> ResponseInterpreterK<F> sync(Runtime<F> runtime) {
-    return response -> Promise.<HttpResponse>make().succeeded(runtime.run(response));
   }
 
   static ResponseInterpreterK<Id_> sync() {

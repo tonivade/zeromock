@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
 import com.github.tonivade.purefun.Nothing;
 import com.github.tonivade.purefun.data.ImmutableSet;
 import com.github.tonivade.purefun.effect.URIO;
-import com.github.tonivade.purefun.effect.ZIO;
+import com.github.tonivade.purefun.effect.PureIO;
 import com.github.tonivade.zeromock.api.Deserializers;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
@@ -49,15 +49,15 @@ public class URIOMockHttpServerTest {
 
   private HttpURIOService<Nothing> service1 = new HttpURIOService<Nothing>("hello")
       .when(get().and(path("/hello")).and(param("name")))
-        .then(request -> ZIO.<Nothing, String>task(() -> helloWorld(request)).fold(Responses::error, Responses::ok))
+        .then(request -> PureIO.<Nothing, String>task(() -> helloWorld(request)).fold(Responses::error, Responses::ok))
       .when(get().and(path("/hello")).and(param("name").negate()))
         .then(request -> URIO.pure(badRequest("missing parameter name")));
 
   private HttpURIOService<Nothing> service2 = new HttpURIOService<Nothing>("test")
       .when(get().and(path("/test")).and(acceptsXml()))
-        .then(request -> ZIO.<Nothing, Say>task(this::sayHello).flatMap(objectToXml().andThen(ZIO::fromTry)).fold(Responses::error, Responses::ok).map(contentXml()))
+        .then(request -> PureIO.<Nothing, Say>task(this::sayHello).flatMap(objectToXml().andThen(PureIO::fromTry)).fold(Responses::error, Responses::ok).map(contentXml()))
       .when(get().and(path("/test")).and(acceptsJson()))
-        .then(request -> ZIO.<Nothing, Say>task(this::sayHello).flatMap(objectToJson(Say.class).andThen(ZIO::fromTry)).fold(Responses::error, Responses::ok).map(contentJson()))
+        .then(request -> PureIO.<Nothing, Say>task(this::sayHello).flatMap(objectToJson(Say.class).andThen(PureIO::fromTry)).fold(Responses::error, Responses::ok).map(contentJson()))
       .when(get().and(path("/empty")))
         .then(request -> URIO.pure(noContent()));
 

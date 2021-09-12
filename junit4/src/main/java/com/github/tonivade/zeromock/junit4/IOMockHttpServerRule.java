@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock.junit4;
 
-import static com.github.tonivade.zeromock.server.IOMockHttpServer.sync;
+import static com.github.tonivade.zeromock.server.IOMockHttpServer.builder;
 
 import com.github.tonivade.purefun.monad.IO_;
 import com.github.tonivade.purefun.typeclasses.Instance;
@@ -16,6 +16,6 @@ public class IOMockHttpServerRule extends AbstractMockServerRule<IO_> {
   }
 
   public IOMockHttpServerRule(int port) {
-    super(Instance.monad(IO_.class), sync().port(port).buildK());
+    super(Instance.monad(IO_.class), builder().port(port).buildK());
   }
 }

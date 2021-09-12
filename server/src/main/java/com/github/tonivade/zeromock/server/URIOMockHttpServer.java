@@ -50,20 +50,16 @@ public final class URIOMockHttpServer<R> implements HttpServer, HttpRouteBuilder
     return serverK.getPath();
   }
 
-  public static <R> BuilderK<Kind<URIO_, R>, URIOMockHttpServer<R>> sync(Producer<R> factory) {
-    return _builder(ResponseInterpreterK.sync(runtime(factory.get())));
+  public static <R> BuilderK<Kind<URIO_, R>, URIOMockHttpServer<R>> builder(Producer<R> factory) {
+    return builder(DEFAULT_EXECUTOR, factory);
   }
 
-  public static <R> BuilderK<Kind<URIO_, R>, URIOMockHttpServer<R>> async(Producer<R> factory) {
-    return async(DEFAULT_EXECUTOR, factory);
-  }
-
-  public static <R> BuilderK<Kind<URIO_, R>, URIOMockHttpServer<R>> async(Executor executor, Producer<R> factory) {
-    return _builder(ResponseInterpreterK.async(runtime(factory.get()), executor));
+  public static <R> BuilderK<Kind<URIO_, R>, URIOMockHttpServer<R>> builder(Executor executor, Producer<R> factory) {
+    return builder(ResponseInterpreterK.async(runtime(factory.get()), executor));
   }
 
   public static <R> URIOMockHttpServer<R> listenAt(R env, int port) {
-    return sync(Producer.cons(env)).port(port).build();
+    return builder(Producer.cons(env)).port(port).build();
   }
 
   public URIOMockHttpServer<R> mount(String path, HttpURIOService<R> other) {
@@ -145,7 +141,7 @@ public final class URIOMockHttpServer<R> implements HttpServer, HttpRouteBuilder
     serverK.reset();
   }
 
-  private static <R> BuilderK<Kind<URIO_, R>, URIOMockHttpServer<R>> _builder(
+  private static <R> BuilderK<Kind<URIO_, R>, URIOMockHttpServer<R>> builder(
       ResponseInterpreterK<Kind<URIO_, R>> urioAsync) {
     return new BuilderK<>(monad(), urioAsync) {
       @Override
