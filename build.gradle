@@ -20,7 +20,6 @@ allprojects {
   apply plugin: 'com.diffplug.eclipse.apt'
 
   group = 'com.github.tonivade'
-  version = '0.16.0-SNAPSHOT'
 
   sourceCompatibility = 11
   targetCompatibility = 11

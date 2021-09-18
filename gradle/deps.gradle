@@ -1,27 +1,17 @@
 ext {
-  versions = [ 
-    junit           : '4.13.2',
-    junitEngine     : '5.8.0',
-    junitPlatform   : '1.8.0',
-    equalsverifier  : '3.7.1',
-    purefun         : '3.0',
-    purejson        : '0.2',
-    jaxb            : '3.0.2',
-    jsonPath        : '2.6.0'
-  ]
   libs = [
-    purefunCore        : "com.github.tonivade:purefun-core:$versions.purefun",
-    purefunMonad       : "com.github.tonivade:purefun-monad:$versions.purefun",
-    purefunEffect      : "com.github.tonivade:purefun-effect:$versions.purefun",
-    purefunTypeclasses : "com.github.tonivade:purefun-typeclasses:$versions.purefun",
-    purefunInstances   : "com.github.tonivade:purefun-instances:$versions.purefun",
-    purejson           : "com.github.tonivade:purejson:$versions.purejson",
-    junitJupiter       : "org.junit.jupiter:junit-jupiter-engine:$versions.junitEngine",
-    junitVintage       : "org.junit.vintage:junit-vintage-engine:$versions.junitEngine",
-    junitRunner        : "org.junit.platform:junit-platform-runner:$versions.junitPlatform",
-    junit              : "junit:junit:$versions.junit",
-    equalsverifier     : "nl.jqno.equalsverifier:equalsverifier:$versions.equalsverifier",
-    jaxb               : "org.glassfish.jaxb:jaxb-runtime:$versions.jaxb",
-    jsonPath           : "com.jayway.jsonpath:json-path:$versions.jsonPath"
+    purefunCore        : "com.github.tonivade:purefun-core:${purefunVersion}",
+    purefunMonad       : "com.github.tonivade:purefun-monad:${purefunVersion}",
+    purefunEffect      : "com.github.tonivade:purefun-effect:${purefunVersion}",
+    purefunTypeclasses : "com.github.tonivade:purefun-typeclasses:${purefunVersion}",
+    purefunInstances   : "com.github.tonivade:purefun-instances:${purefunVersion}",
+    purejson           : "com.github.tonivade:purejson:${purejsonVersion}",
+    junitJupiter       : "org.junit.jupiter:junit-jupiter-engine:${junitEngineVersion}",
+    junitVintage       : "org.junit.vintage:junit-vintage-engine:${junitEngineVersion}",
+    junitRunner        : "org.junit.platform:junit-platform-runner:${junitPlatformVersion}",
+    junit              : "junit:junit:${junitVersion}",
+    equalsVerifier     : "nl.jqno.equalsverifier:equalsverifier:${equalsVerifierVersion}",
+    jaxb               : "org.glassfish.jaxb:jaxb-runtime:${jaxbVersion}",
+    jsonPath           : "com.jayway.jsonpath:json-path:${jsonPathVersion}"
   ]
 }

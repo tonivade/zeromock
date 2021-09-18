@@ -8,5 +8,5 @@ dependencies {
   implementation libs.purefunInstances
   implementation libs.purejson
   implementation libs.jsonPath
-  testImplementation libs.equalsverifier
+  testImplementation libs.equalsVerifier
 }
