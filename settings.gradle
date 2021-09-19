@@ -1,5 +1,30 @@
+enableFeaturePreview("VERSION_CATALOGS")
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 rootProject.name = 'zeromock-parent'
 
 include "api", "server", "junit4", "junit5", "client"
 
 rootProject.children.each { it.name = "zeromock-" + it.name }
+
+dependencyResolutionManagement {
+  versionCatalogs {
+    libs {
+      alias('purefunCore').to("com.github.tonivade:purefun-core:$purefunVersion")
+      alias('purefunMonad').to("com.github.tonivade:purefun-monad:$purefunVersion")
+      alias('purefunEffect').to("com.github.tonivade:purefun-effect:$purefunVersion")
+      alias('purefunTypeclasses').to("com.github.tonivade:purefun-typeclasses:$purefunVersion")
+      alias('purefunInstances').to("com.github.tonivade:purefun-instances:$purefunVersion")
+      alias('purejson').to("com.github.tonivade:purejson:${purejsonVersion}")
+
+      alias('junitJupiter').to("org.junit.jupiter:junit-jupiter-engine:$junitEngineVersion")
+      alias('junitVintage').to("org.junit.vintage:junit-vintage-engine:$junitEngineVersion")
+      alias('junitRunner').to("org.junit.platform:junit-platform-runner:$junitPlatformVersion")
+      alias('junit').to("junit:junit:$junitVersion")
+
+      alias('equalsVerifier').to("nl.jqno.equalsverifier:equalsverifier:${equalsVerifierVersion}")
+      alias('jaxb').to("org.glassfish.jaxb:jaxb-runtime:${jaxbVersion}")
+      alias('jsonPath').to("com.jayway.jsonpath:json-path:${jsonPathVersion}")
+    }
+  }
+}
