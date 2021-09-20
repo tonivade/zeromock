@@ -15,16 +15,16 @@ dependencyResolutionManagement {
       alias('purefunEffect').to("com.github.tonivade:purefun-effect:$purefunVersion")
       alias('purefunTypeclasses').to("com.github.tonivade:purefun-typeclasses:$purefunVersion")
       alias('purefunInstances').to("com.github.tonivade:purefun-instances:$purefunVersion")
-      alias('purejson').to("com.github.tonivade:purejson:${purejsonVersion}")
+      alias('purejson').to("com.github.tonivade:purejson:$purejsonVersion")
 
       alias('junitJupiter').to("org.junit.jupiter:junit-jupiter-engine:$junitEngineVersion")
       alias('junitVintage').to("org.junit.vintage:junit-vintage-engine:$junitEngineVersion")
       alias('junitRunner').to("org.junit.platform:junit-platform-runner:$junitPlatformVersion")
       alias('junit').to("junit:junit:$junitVersion")
 
-      alias('equalsVerifier').to("nl.jqno.equalsverifier:equalsverifier:${equalsVerifierVersion}")
-      alias('jaxb').to("org.glassfish.jaxb:jaxb-runtime:${jaxbVersion}")
-      alias('jsonPath').to("com.jayway.jsonpath:json-path:${jsonPathVersion}")
+      alias('equalsVerifier').to("nl.jqno.equalsverifier:equalsverifier:$equalsVerifierVersion")
+      alias('jaxb').to("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
+      alias('jsonPath').to("com.jayway.jsonpath:json-path:$jsonPathVersion")
     }
   }
 }
