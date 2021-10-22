@@ -5,7 +5,7 @@
 package com.github.tonivade.zeromock.client;
 
 import static com.github.tonivade.purefun.effect.TaskOf.toTask;
-import static com.github.tonivade.purefun.typeclasses.Instance.monadDefer;
+import static com.github.tonivade.purefun.typeclasses.Instance.async;
 import static java.util.Objects.requireNonNull;
 
 import com.github.tonivade.purefun.effect.Task;
@@ -22,7 +22,7 @@ public class TaskHttpClient implements HttpClientOf<Task_> {
   }
 
   public static TaskHttpClient connectTo(String baseUrl) {
-    return new TaskHttpClient(new HttpClientK<>(baseUrl, monadDefer(Task_.class)));
+    return new TaskHttpClient(new HttpClientK<>(baseUrl, async(Task_.class)));
   }
 
   public Task<HttpResponse> request(HttpRequest request) {

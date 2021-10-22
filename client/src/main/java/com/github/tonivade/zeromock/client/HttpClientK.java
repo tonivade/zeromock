@@ -13,11 +13,11 @@ import static com.github.tonivade.zeromock.api.HttpMethod.PATCH;
 import java.net.URI;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
-
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Witness;
+import com.github.tonivade.purefun.type.Try;
+import com.github.tonivade.purefun.typeclasses.Async;
 import com.github.tonivade.purefun.typeclasses.For;
-import com.github.tonivade.purefun.typeclasses.MonadDefer;
 import com.github.tonivade.zeromock.api.Bytes;
 import com.github.tonivade.zeromock.api.HttpHeaders;
 import com.github.tonivade.zeromock.api.HttpRequest;
@@ -27,15 +27,15 @@ import com.github.tonivade.zeromock.api.HttpStatus;
 public class HttpClientK<F extends Witness> {
 
   private final URI baseUri;
-  private final MonadDefer<F> monad;
+  private final Async<F> monad;
 
-  protected HttpClientK(String baseUrl, MonadDefer<F> monad) {
+  protected HttpClientK(String baseUrl, Async<F> monad) {
     this.baseUri = URI.create(baseUrl);
     check(() -> baseUri.isAbsolute());
     this.monad = checkNonNull(monad);
   }
 
-  public static <F extends Witness> HttpClientK<F> connectTo(String baseUrl, MonadDefer<F> monad) {
+  public static <F extends Witness> HttpClientK<F> connectTo(String baseUrl, Async<F> monad) {
     return new HttpClientK<>(baseUrl, monad);
   }
 
@@ -84,8 +84,11 @@ public class HttpClientK<F extends Witness> {
   }
 
   private Kind<F, java.net.http.HttpResponse<byte[]>> send(java.net.http.HttpRequest request) {
-    return monad.later(() -> {
-      return java.net.http.HttpClient.newHttpClient().send(request, BodyHandlers.ofByteArray());
+    return monad.async(consumer -> {
+      var client = java.net.http.HttpClient.newHttpClient();
+      var sendAsync = client.sendAsync(request, BodyHandlers.ofByteArray());
+      sendAsync.whenComplete((response, error) -> consumer.accept(
+            response != null ? Try.success(response) : Try.failure(error)));
     });
   }
 
