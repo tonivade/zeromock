@@ -31,7 +31,7 @@ public class HttpClientK<F extends Witness> {
 
   protected HttpClientK(String baseUrl, Async<F> monad) {
     this.baseUri = URI.create(baseUrl);
-    check(() -> baseUri.isAbsolute());
+    check(baseUri::isAbsolute);
     this.monad = checkNonNull(monad);
   }
 
