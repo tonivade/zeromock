@@ -41,6 +41,7 @@ public class BooksServiceTest {
 
   private final BooksAPI books = new BooksAPI(new BooksService());
 
+  @Mount("/store")
   private final HttpService booksService = new HttpService("books")
       .when(get("/books")).then(books.findAll())
       .when(get("/books/:id")).then(books.find())
@@ -50,8 +51,6 @@ public class BooksServiceTest {
 
   @Test
   public void findsBooks(MockHttpServer server, HttpClient client) {
-    server.mount("/store", booksService);
-
     HttpResponse response = client.request(Requests.get("/store/books"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
@@ -60,8 +59,6 @@ public class BooksServiceTest {
 
   @Test
   public void findsBook(MockHttpServer server, HttpClient client) {
-    server.mount("/store", booksService);
-
     HttpResponse response = client.request(Requests.get("/store/books/1"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
@@ -70,8 +67,6 @@ public class BooksServiceTest {
 
   @Test
   public void createsBook(MockHttpServer server, HttpClient client) {
-    server.mount("/store", booksService);
-
     HttpResponse response = client.request(Requests.post("/store/books").withBody("create"));
 
     assertAll(() -> assertEquals(HttpStatus.CREATED, response.status()),
@@ -81,8 +76,6 @@ public class BooksServiceTest {
 
   @Test
   public void deletesBook(MockHttpServer server, HttpClient client) {
-    server.mount("/store", booksService);
-
     HttpResponse response = client.request(Requests.delete("/store/books/1"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
@@ -91,8 +84,6 @@ public class BooksServiceTest {
 
   @Test
   public void updatesBook(MockHttpServer server, HttpClient client) {
-    server.mount("/store", booksService);
-
     HttpResponse response = client.request(Requests.put("/store/books/1").withBody("update"));
 
     assertAll(() -> assertEquals(HttpStatus.OK, response.status()),
