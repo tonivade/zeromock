@@ -1,4 +1,3 @@
-enableFeaturePreview("VERSION_CATALOGS")
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = 'zeromock-parent'
@@ -10,21 +9,21 @@ rootProject.children.each { it.name = "zeromock-" + it.name }
 dependencyResolutionManagement {
   versionCatalogs {
     libs {
-      alias('purefunCore').to("com.github.tonivade:purefun-core:$purefunVersion")
-      alias('purefunMonad').to("com.github.tonivade:purefun-monad:$purefunVersion")
-      alias('purefunEffect').to("com.github.tonivade:purefun-effect:$purefunVersion")
-      alias('purefunTypeclasses').to("com.github.tonivade:purefun-typeclasses:$purefunVersion")
-      alias('purefunInstances').to("com.github.tonivade:purefun-instances:$purefunVersion")
-      alias('purejson').to("com.github.tonivade:purejson:$purejsonVersion")
+      library('purefunCore', "com.github.tonivade:purefun-core:$purefunVersion")
+      library('purefunMonad', "com.github.tonivade:purefun-monad:$purefunVersion")
+      library('purefunEffect', "com.github.tonivade:purefun-effect:$purefunVersion")
+      library('purefunTypeclasses', "com.github.tonivade:purefun-typeclasses:$purefunVersion")
+      library('purefunInstances', "com.github.tonivade:purefun-instances:$purefunVersion")
+      library('purejson', "com.github.tonivade:purejson:$purejsonVersion")
 
-      alias('junitJupiter').to("org.junit.jupiter:junit-jupiter-engine:$junitEngineVersion")
-      alias('junitVintage').to("org.junit.vintage:junit-vintage-engine:$junitEngineVersion")
-      alias('junitRunner').to("org.junit.platform:junit-platform-runner:$junitPlatformVersion")
-      alias('junit').to("junit:junit:$junitVersion")
+      library('junitJupiter', "org.junit.jupiter:junit-jupiter-engine:$junitEngineVersion")
+      library('junitVintage', "org.junit.vintage:junit-vintage-engine:$junitEngineVersion")
+      library('junitRunner', "org.junit.platform:junit-platform-runner:$junitPlatformVersion")
+      library('junit', "junit:junit:$junitVersion")
 
-      alias('equalsVerifier').to("nl.jqno.equalsverifier:equalsverifier:$equalsVerifierVersion")
-      alias('jaxb').to("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
-      alias('jsonPath').to("com.jayway.jsonpath:json-path:$jsonPathVersion")
+      library('equalsVerifier', "nl.jqno.equalsverifier:equalsverifier:$equalsVerifierVersion")
+      library('jaxb', "org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
+      library('jsonPath', "com.jayway.jsonpath:json-path:$jsonPathVersion")
     }
   }
 }
