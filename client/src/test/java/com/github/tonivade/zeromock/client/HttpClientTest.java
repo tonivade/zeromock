@@ -72,7 +72,7 @@ class HttpClientTest {
   void task() {
     Task<HttpResponse> response = taskClient().connectTo(baseUrl()).request(ping);
 
-    assertResponse(response.safeRunSync().get());
+    assertResponse(response.safeRunSync().getOrElseThrow());
   }
 
   @AfterAll

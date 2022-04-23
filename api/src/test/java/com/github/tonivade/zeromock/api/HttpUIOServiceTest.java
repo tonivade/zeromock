@@ -24,7 +24,7 @@ public class HttpUIOServiceTest {
     
     UIO<Option<HttpResponse>> execute = service.execute(Requests.get("/ping"));
     
-    assertEquals(ok("pong"), execute.unsafeRunSync().get());
+    assertEquals(ok("pong"), execute.unsafeRunSync().getOrElseThrow());
   }
   
   @Test
@@ -35,6 +35,6 @@ public class HttpUIOServiceTest {
 
     UIO<Option<HttpResponse>> execute = service.execute(Requests.get("/echo").withBody(asBytes("hello")));
 
-    assertEquals(ok("hello").withHeader("Content-type", "text/plain"), execute.unsafeRunSync().get());
+    assertEquals(ok("hello").withHeader("Content-type", "text/plain"), execute.unsafeRunSync().getOrElseThrow());
   }
 }

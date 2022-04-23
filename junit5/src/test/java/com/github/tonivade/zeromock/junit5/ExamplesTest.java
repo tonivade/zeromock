@@ -45,7 +45,7 @@ public class ExamplesTest {
   public void echoQueryParam(MockHttpServer server, AsyncHttpClient client) {
     server.when(get("/echo").and(param("say"))).then(ok(queryParam("say").andThen(plain())));
 
-    HttpResponse response = client.request(Requests.get("/echo").withParam("say", "Hello World!")).await().get();
+    HttpResponse response = client.request(Requests.get("/echo").withParam("say", "Hello World!")).await().getOrElseThrow();
 
     assertEquals("Hello World!", asString(response.body()));
   }
