@@ -56,6 +56,10 @@ public final class MockHttpServer implements HttpServer, HttpRouteBuilder<MockHt
     return builder().port(port).build();
   }
 
+  public static MockHttpServer listenAt(String host, int port) {
+    return builder().host(host).port(port).build();
+  }
+
   public MockHttpServer mount(String path, HttpService other) {
     serverK.mount(path, other.build());
     return this;

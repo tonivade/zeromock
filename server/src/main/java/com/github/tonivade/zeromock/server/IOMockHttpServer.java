@@ -54,6 +54,10 @@ public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO_
     return builder().port(port).build();
   }
 
+  public static IOMockHttpServer listenAt(String host, int port) {
+    return builder().host(host).port(port).build();
+  }
+
   public IOMockHttpServer mount(String path, HttpIOService other) {
     serverK.mount(path, other.build());
     return this;

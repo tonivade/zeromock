@@ -55,6 +55,10 @@ public final class URIOMockHttpServer<R> implements HttpServer, HttpRouteBuilder
     return builder(Producer.cons(env)).port(port).build();
   }
 
+  public static <R> URIOMockHttpServer<R> listenAt(R env, String host, int port) {
+    return builder(Producer.cons(env)).host(host).port(port).build();
+  }
+
   public URIOMockHttpServer<R> mount(String path, HttpURIOService<R> other) {
     serverK.mount(path, other.build());
     return this;

@@ -54,6 +54,10 @@ public final class UIOMockHttpServer implements HttpServer, HttpRouteBuilderK<UI
     return builder().port(port).build();
   }
 
+  public static UIOMockHttpServer listenAt(String host, int port) {
+    return builder().host(host).port(port).build();
+  }
+
   public UIOMockHttpServer mount(String path, HttpUIOService other) {
     serverK.mount(path, other.build());
     return this;

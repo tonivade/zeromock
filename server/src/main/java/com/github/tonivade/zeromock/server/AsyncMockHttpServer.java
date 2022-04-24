@@ -59,6 +59,10 @@ public final class AsyncMockHttpServer implements HttpServer, HttpRouteBuilderK<
     return builder().port(port).build();
   }
 
+  public static AsyncMockHttpServer listenAt(String host, int port) {
+    return builder().host(host).port(port).build();
+  }
+
   public AsyncMockHttpServer mount(String path, AsyncHttpService other) {
     serverK.mount(path, other.build());
     return this;
