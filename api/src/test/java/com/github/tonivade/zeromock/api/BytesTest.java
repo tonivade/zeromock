@@ -37,7 +37,7 @@ public class BytesTest {
   
   @Test
   public void bytesProperties() {
-    Bytes bytes = asBytes("Ñ");
+    Bytes bytes = asBytes("\u00d1");
     
     assertAll(() -> assertArrayEquals(new byte[] {-61, -111}, bytes.toArray()),
               () -> assertArrayEquals(new byte[] {-61, -111}, bytes.getBuffer().array()),
