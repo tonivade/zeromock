@@ -4,10 +4,10 @@
  */
 package com.github.tonivade.zeromock.junit4;
 
+import static com.github.tonivade.purefun.typeclasses.Instances.monad;
 import static com.github.tonivade.zeromock.server.AsyncMockHttpServer.builder;
 
 import com.github.tonivade.purefun.concurrent.Future_;
-import com.github.tonivade.purefun.typeclasses.Instance;
 
 public class AsyncMockHttpServerRule extends AbstractMockServerRule<Future_> {
 
@@ -16,6 +16,6 @@ public class AsyncMockHttpServerRule extends AbstractMockServerRule<Future_> {
   }
 
   public AsyncMockHttpServerRule(int port) {
-    super(Instance.monad(Future_.class), builder().port(port).buildK());
+    super(monad(Future_.class), builder().port(port).buildK());
   }
 }

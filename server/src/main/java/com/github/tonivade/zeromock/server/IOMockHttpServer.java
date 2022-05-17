@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.purefun.typeclasses.Instance.monad;
+import static com.github.tonivade.purefun.typeclasses.Instances.monad;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static com.github.tonivade.zeromock.server.ResponseInterpreterK.io;
 import static java.util.Objects.requireNonNull;
@@ -13,7 +13,6 @@ import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.purefun.monad.IO_;
-import com.github.tonivade.purefun.typeclasses.Instance;
 import com.github.tonivade.zeromock.api.HttpIOService;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpRouteBuilderK;
@@ -69,7 +68,7 @@ public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO_
   }
 
   public ThenStepK<IO_, IOMockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instance.monad(IO_.class), handler -> addPreFilter(matcher, handler::apply));
+    return new ThenStepK<>(monad(IO_.class), handler -> addPreFilter(matcher, handler::apply));
   }
 
   public IOMockHttpServer preFilter(PreFilter filter) {
@@ -101,7 +100,7 @@ public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO_
   }
 
   public ThenStepK<IO_, IOMockHttpServer> when(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instance.monad(IO_.class), handler -> addMapping(matcher, handler::apply));
+    return new ThenStepK<>(monad(IO_.class), handler -> addMapping(matcher, handler::apply));
   }
 
   @Override

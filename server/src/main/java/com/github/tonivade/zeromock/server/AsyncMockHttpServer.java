@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.purefun.typeclasses.Instance.monad;
+import static com.github.tonivade.purefun.typeclasses.Instances.monad;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static com.github.tonivade.zeromock.server.ResponseInterpreterK.async;
 import static java.util.Objects.requireNonNull;
@@ -13,7 +13,6 @@ import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.concurrent.Future_;
 import com.github.tonivade.purefun.data.Sequence;
-import com.github.tonivade.purefun.typeclasses.Instance;
 import com.github.tonivade.zeromock.api.AsyncHttpService;
 import com.github.tonivade.zeromock.api.AsyncPostFilter;
 import com.github.tonivade.zeromock.api.AsyncPreFilter;
@@ -74,7 +73,7 @@ public final class AsyncMockHttpServer implements HttpServer, HttpRouteBuilderK<
   }
 
   public ThenStepK<Future_, AsyncMockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instance.monad(Future_.class), handler -> addPreFilter(matcher, handler::apply));
+    return new ThenStepK<>(monad(Future_.class), handler -> addPreFilter(matcher, handler::apply));
   }
 
   public AsyncMockHttpServer preFilter(PreFilter filter) {
@@ -107,7 +106,7 @@ public final class AsyncMockHttpServer implements HttpServer, HttpRouteBuilderK<
 
   @Override
   public ThenStepK<Future_, AsyncMockHttpServer> when(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instance.monad(Future_.class), handler -> addMapping(matcher, handler::apply));
+    return new ThenStepK<>(monad(Future_.class), handler -> addMapping(matcher, handler::apply));
   }
 
   @Override

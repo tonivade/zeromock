@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock.client;
 
-import static com.github.tonivade.purefun.typeclasses.Instance.async;
+import static com.github.tonivade.purefun.typeclasses.Instances.async;
 import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.Executor;

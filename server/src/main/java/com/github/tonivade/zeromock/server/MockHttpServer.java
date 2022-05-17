@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.purefun.typeclasses.Instance.monad;
+import static com.github.tonivade.purefun.typeclasses.Instances.monad;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static com.github.tonivade.zeromock.server.ResponseInterpreterK.sync;
 import static java.util.Objects.requireNonNull;
@@ -12,7 +12,6 @@ import static java.util.Objects.requireNonNull;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.type.Id_;
-import com.github.tonivade.purefun.typeclasses.Instance;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpRouteBuilder;
 import com.github.tonivade.zeromock.api.HttpService;
@@ -90,7 +89,7 @@ public final class MockHttpServer implements HttpServer, HttpRouteBuilder<MockHt
   }
 
   protected MockHttpServer addPreFilter(Matcher1<HttpRequest> matcher, RequestHandler handler) {
-    serverK.preFilter(filter(Instance.monad(Id_.class), matcher, handler.liftId()::apply)::apply);
+    serverK.preFilter(filter(monad(Id_.class), matcher, handler.liftId()::apply)::apply);
     return this;
   }
 

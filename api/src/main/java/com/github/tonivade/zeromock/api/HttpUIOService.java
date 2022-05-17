@@ -5,7 +5,7 @@
 package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.purefun.effect.UIOOf.toUIO;
-import static com.github.tonivade.purefun.typeclasses.Instance.monad;
+import static com.github.tonivade.purefun.typeclasses.Instances.monad;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
 
@@ -13,7 +13,6 @@ import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purefun.effect.UIO_;
 import com.github.tonivade.purefun.type.Option;
-import com.github.tonivade.purefun.typeclasses.Instance;
 
 public final class HttpUIOService implements HttpRouteBuilderK<UIO_, HttpUIOService> {
 
@@ -40,7 +39,7 @@ public final class HttpUIOService implements HttpRouteBuilderK<UIO_, HttpUIOServ
   }
 
   public ThenStepK<UIO_, HttpUIOService> preFilter(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instance.monad(UIO_.class), handler -> addPreFilter(matcher, handler::apply));
+    return new ThenStepK<>(monad(UIO_.class), handler -> addPreFilter(matcher, handler::apply));
   }
 
   public HttpUIOService preFilter(PreFilter filter) {
@@ -60,7 +59,7 @@ public final class HttpUIOService implements HttpRouteBuilderK<UIO_, HttpUIOServ
   }
 
   public ThenStepK<UIO_, HttpUIOService> when(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instance.monad(UIO_.class), handler -> addMapping(matcher, handler::apply));
+    return new ThenStepK<>(monad(UIO_.class), handler -> addMapping(matcher, handler::apply));
   }
 
   public UIO<Option<HttpResponse>> execute(HttpRequest request) {
