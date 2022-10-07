@@ -2,7 +2,7 @@
 
 Http Mock Server with (mostly) zero dependencies.
 
-Right now the unique dependency is gson (json object serialization), and gson doesn't have any additional dependency.
+Right now the unique dependencies are minimal-json parser and jaxb, used for object serialization. But this project doesn't depends on any java servlet container or something like that. It uses the [simple http server](https://openjdk.org/jeps/408) implementation that comes on every jdk.
 
 ![Build Status](https://github.com/tonivade/zeromock/workflows/Java%20CI%20with%20Gradle/badge.svg)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/a3718bd59d674b8592065ac84abdf82c)](https://www.codacy.com/app/tonivade/zeromock?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tonivade/zeromock&amp;utm_campaign=Badge_Grade)
@@ -125,17 +125,15 @@ It's pretty simple, using jbang
 ```java
 //usr/bin/env jbang "$0" "$@" ; exit $?
 
-//DEPS com.github.tonivade:zeromock-server:0.14.0
+//DEPS com.github.tonivade:zeromock-server:0.16.0
 
-import static com.github.tonivade.zeromock.api.Handlers.ok;
-import static com.github.tonivade.zeromock.api.Matchers.get;
 import static com.github.tonivade.zeromock.server.MockHttpServer.listenAt;
 
 public class OneLineApplication {
 
   public static void main(String[] args) {
     listenAt(8080)
-        .when(get("/ping")).then(ok("pong"))
+        .get("/ping")ok("pong")
         .start();
   }
 }
@@ -146,14 +144,12 @@ and with kscript:
 ```kotlin
 #!/usr/bin/env kscript
 
-//DEPS com.github.tonivade:zeromock-server:0.14.0
+//DEPS com.github.tonivade:zeromock-server:0.16.0
 
-import com.github.tonivade.zeromock.api.Matchers.get
-import com.github.tonivade.zeromock.api.Handlers.ok
 import com.github.tonivade.zeromock.server.MockHttpServer.listenAt
 
 listenAt(8101)
-  .`when`(get("/ping")).then(ok("pong"))
+  .get("/ping").ok("pong")
   .start()
 ```
 
