@@ -133,7 +133,7 @@ public class OneLineApplication {
 
   public static void main(String[] args) {
     listenAt(8080)
-        .get("/ping")ok("pong")
+        .get("/ping").ok("pong")
         .start();
   }
 }
