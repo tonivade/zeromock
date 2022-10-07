@@ -36,7 +36,7 @@ public final class MockHttpServer implements HttpServer, HttpRouteBuilder<MockHt
   public int getPort() {
     return serverK.getPort();
   }
-  
+
   @Override
   public String getPath() {
     return serverK.getPath();
@@ -83,16 +83,17 @@ public final class MockHttpServer implements HttpServer, HttpRouteBuilder<MockHt
     return this;
   }
 
-  protected MockHttpServer addMapping(Matcher1<HttpRequest> matcher, RequestHandler handler) {
+  private MockHttpServer addMapping(Matcher1<HttpRequest> matcher, RequestHandler handler) {
     serverK.addMapping(matcher, handler.liftId()::apply);
     return this;
   }
 
-  protected MockHttpServer addPreFilter(Matcher1<HttpRequest> matcher, RequestHandler handler) {
+  private MockHttpServer addPreFilter(Matcher1<HttpRequest> matcher, RequestHandler handler) {
     serverK.preFilter(filter(monad(Id_.class), matcher, handler.liftId()::apply)::apply);
     return this;
   }
 
+  @Override
   public ThenStep<MockHttpServer> when(Matcher1<HttpRequest> matcher) {
     return handler -> addMapping(matcher, handler);
   }

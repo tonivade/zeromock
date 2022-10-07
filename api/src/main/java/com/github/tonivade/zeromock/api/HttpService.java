@@ -65,11 +65,11 @@ public final class HttpService implements HttpRouteBuilder<HttpService> {
     return new HttpService(serviceK.combine(other.serviceK));
   }
 
-  protected HttpService addMapping(Matcher1<HttpRequest> matcher, RequestHandler handler) {
+  private HttpService addMapping(Matcher1<HttpRequest> matcher, RequestHandler handler) {
     return new HttpService(serviceK.addMapping(matcher, handler.liftId()::apply));
   }
 
-  protected HttpService addPreFilter(Matcher1<HttpRequest> matcher, RequestHandler handler) {
+  private HttpService addPreFilter(Matcher1<HttpRequest> matcher, RequestHandler handler) {
     return preFilter(filter(matcher, handler));
   }
 

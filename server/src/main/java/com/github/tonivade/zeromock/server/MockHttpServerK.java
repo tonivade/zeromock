@@ -14,6 +14,7 @@ import java.net.InetSocketAddress;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import com.github.tonivade.purefun.Kind;
@@ -235,8 +236,17 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
       return this;
     }
 
+    /**
+     * @deprecated use {@link #executor} instead.
+     */
+    @Deprecated
     public BuilderK<F, T> threads(int threads) {
       builder.threads(threads);
+      return this;
+    }
+
+    public BuilderK<F, T> executor(Executor executor) {
+      builder.executor(executor);
       return this;
     }
 
@@ -258,6 +268,7 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
     private int port = 8080;
     private int threads = Runtime.getRuntime().availableProcessors();
     private int backlog = 0;
+    private Executor executor;
 
     public Builder host(String host) {
       this.host = requireNonNull(host);
@@ -269,6 +280,10 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
       return this;
     }
 
+    /**
+     * @deprecated use {@link #executor} instead.
+     */
+    @Deprecated
     public Builder threads(int threads) {
       this.threads = threads;
       return this;
@@ -279,10 +294,19 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
       return this;
     }
 
+    public Builder executor(Executor executor) {
+      this.executor = executor;
+      return this;
+    }
+
     public HttpServer build() {
       try {
         var server = HttpServer.create(new InetSocketAddress(host, port), backlog);
-        server.setExecutor(Executors.newFixedThreadPool(threads));
+        if (executor != null) {
+          server.setExecutor(executor);
+        } else {
+          server.setExecutor(Executors.newFixedThreadPool(threads));
+        }
         return server;
       } catch (IOException e) {
         throw new UncheckedIOException("unable to create server at " + host + ":" + port, e);

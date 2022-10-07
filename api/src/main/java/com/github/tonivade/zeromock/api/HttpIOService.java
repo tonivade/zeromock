@@ -58,6 +58,7 @@ public final class HttpIOService implements HttpRouteBuilderK<IO_, HttpIOService
     return new HttpIOService(serviceK.postFilter(filter));
   }
 
+  @Override
   public ThenStepK<IO_, HttpIOService> when(Matcher1<HttpRequest> matcher) {
     return new ThenStepK<>(monad(IO_.class), handler -> addMapping(matcher, handler::apply));
   }
@@ -78,7 +79,7 @@ public final class HttpIOService implements HttpRouteBuilderK<IO_, HttpIOService
     return new HttpIOService(serviceK.addMapping(matcher, handler));
   }
 
-  protected HttpIOService addPreFilter(Matcher1<HttpRequest> matcher, IORequestHandler handler) {
+  private HttpIOService addPreFilter(Matcher1<HttpRequest> matcher, IORequestHandler handler) {
     return preFilter(filter(monad(IO_.class), matcher, handler)::apply);
   }
 

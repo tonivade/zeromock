@@ -6,11 +6,11 @@ package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.purefun.Function1.fail;
 import static com.github.tonivade.purefun.Matcher1.never;
+import static com.github.tonivade.purefun.Precondition.checkNonNull;
 import static com.github.tonivade.zeromock.api.Matchers.all;
 import static com.github.tonivade.zeromock.api.Matchers.startsWith;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static com.github.tonivade.zeromock.api.Responses.notFound;
-import static java.util.Objects.requireNonNull;
 
 import com.github.tonivade.purefun.Function1;
 import com.github.tonivade.purefun.Kind;
@@ -43,11 +43,11 @@ public final class HttpServiceK<F extends Witness> implements HttpRouteBuilderK<
                        PartialFunction1<HttpRequest, Kind<F, HttpResponse>> mappings,
                        Function1<HttpRequest, Kind<F, Either<HttpResponse, HttpRequest>>> preFilters,
                        Function1<HttpResponse, Kind<F, HttpResponse>> postFilters) {
-    this.name = requireNonNull(name);
-    this.monad = requireNonNull(monad);
-    this.mappings = requireNonNull(mappings);
-    this.preFilters = requireNonNull(preFilters);
-    this.postFilters = requireNonNull(postFilters);
+    this.name = checkNonNull(name);
+    this.monad = checkNonNull(monad);
+    this.mappings = checkNonNull(mappings);
+    this.preFilters = checkNonNull(preFilters);
+    this.postFilters = checkNonNull(postFilters);
   }
 
   public String name() {
@@ -55,15 +55,15 @@ public final class HttpServiceK<F extends Witness> implements HttpRouteBuilderK<
   }
 
   public HttpServiceK<F> mount(String path, HttpServiceK<F> other) {
-    requireNonNull(path);
-    requireNonNull(other);
-    return _addMapping(
+    checkNonNull(path);
+    checkNonNull(other);
+    return addMapping(
         startsWith(path).and(req -> other.mappings.isDefinedAt(req.dropOneLevel())),
         req -> monad.map(other.execute(req.dropOneLevel()), option -> option.getOrElse(notFound())));
   }
 
   public HttpServiceK<F> exec(RequestHandlerK<F> handler) {
-    return _addMapping(all(), handler);
+    return addMapping(all(), handler);
   }
 
   @Override
@@ -76,11 +76,11 @@ public final class HttpServiceK<F extends Witness> implements HttpRouteBuilderK<
   }
 
   public HttpServiceK<F> preFilter(PreFilterK<F> filter) {
-    return _addPreFilter(requireNonNull(filter));
+    return addPreFilter(checkNonNull(filter));
   }
 
   public HttpServiceK<F> postFilter(PostFilterK<F> filter) {
-    return _addPostFilter(requireNonNull(filter));
+    return addPostFilter(checkNonNull(filter));
   }
 
   public Kind<F, Option<HttpResponse>> execute(HttpRequest request) {
@@ -97,7 +97,7 @@ public final class HttpServiceK<F extends Witness> implements HttpRouteBuilderK<
   }
 
   public HttpServiceK<F> combine(HttpServiceK<F> other) {
-    requireNonNull(other);
+    checkNonNull(other);
     return new HttpServiceK<>(
         this.name + "+" + other.name,
         this.monad,
@@ -111,16 +111,8 @@ public final class HttpServiceK<F extends Witness> implements HttpRouteBuilderK<
   }
 
   public HttpServiceK<F> addMapping(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
-    return _addMapping(matcher, handler);
-  }
-
-  public HttpServiceK<F> addPreFilter(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
-    return _addPreFilter(filter(monad, matcher, handler));
-  }
-
-  private HttpServiceK<F> _addMapping(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
-    requireNonNull(matcher);
-    requireNonNull(handler);
+    checkNonNull(matcher);
+    checkNonNull(handler);
     return new HttpServiceK<>(
         this.name,
         this.monad,
@@ -130,8 +122,12 @@ public final class HttpServiceK<F extends Witness> implements HttpRouteBuilderK<
     );
   }
 
-  private HttpServiceK<F> _addPreFilter(PreFilterK<F> filter) {
-    requireNonNull(filter);
+  public HttpServiceK<F> addPreFilter(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
+    return addPreFilter(filter(monad, matcher, handler));
+  }
+
+  private HttpServiceK<F> addPreFilter(PreFilterK<F> filter) {
+    checkNonNull(filter);
     return new HttpServiceK<>(
         this.name,
         this.monad,
@@ -144,8 +140,8 @@ public final class HttpServiceK<F extends Witness> implements HttpRouteBuilderK<
     );
   }
 
-  private HttpServiceK<F> _addPostFilter(PostFilterK<F> filter) {
-    requireNonNull(filter);
+  private HttpServiceK<F> addPostFilter(PostFilterK<F> filter) {
+    checkNonNull(filter);
     return new HttpServiceK<>(
         this.name,
         this.monad,

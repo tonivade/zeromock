@@ -82,11 +82,11 @@ public final class AsyncHttpService implements HttpRouteBuilderK<Future_, AsyncH
     return new AsyncHttpService(serviceK.combine(other.serviceK));
   }
 
-  protected AsyncHttpService addMapping(Matcher1<HttpRequest> matcher, AsyncRequestHandler handler) {
+  private AsyncHttpService addMapping(Matcher1<HttpRequest> matcher, AsyncRequestHandler handler) {
     return new AsyncHttpService(serviceK.addMapping(matcher, handler));
   }
 
-  protected AsyncHttpService addPreFilter(Matcher1<HttpRequest> matcher, AsyncRequestHandler handler) {
+  private AsyncHttpService addPreFilter(Matcher1<HttpRequest> matcher, AsyncRequestHandler handler) {
     return preFilter(filter(monad(Future_.class), matcher, handler)::apply);
   }
 

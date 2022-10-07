@@ -61,6 +61,7 @@ public final class HttpURIOService<R> implements HttpRouteBuilderK<Kind<URIO_, R
     return new HttpURIOService<>(serviceK.postFilter(filter));
   }
 
+  @Override
   public ThenStepK<Kind<URIO_, R>, HttpURIOService<R>> when(Matcher1<HttpRequest> matcher) {
     return new ThenStepK<>(new Instance<Kind<URIO_, R>>() {}.monad(), handler -> addMapping(matcher, handler::apply));
   }
@@ -77,11 +78,11 @@ public final class HttpURIOService<R> implements HttpRouteBuilderK<Kind<URIO_, R
     return serviceK;
   }
 
-  protected HttpURIOService<R> addMapping(Matcher1<HttpRequest> matcher, URIORequestHandler<R> handler) {
+  private HttpURIOService<R> addMapping(Matcher1<HttpRequest> matcher, URIORequestHandler<R> handler) {
     return new HttpURIOService<>(serviceK.addMapping(matcher, handler));
   }
 
-  protected HttpURIOService<R> addPreFilter(Matcher1<HttpRequest> matcher, URIORequestHandler<R> handler) {
+  private HttpURIOService<R> addPreFilter(Matcher1<HttpRequest> matcher, URIORequestHandler<R> handler) {
     return preFilter(filter(new Instance<Kind<URIO_, R>>() {}.monad(), matcher, handler)::apply);
   }
 

@@ -58,6 +58,7 @@ public final class HttpUIOService implements HttpRouteBuilderK<UIO_, HttpUIOServ
     return new HttpUIOService(serviceK.postFilter(filter));
   }
 
+  @Override
   public ThenStepK<UIO_, HttpUIOService> when(Matcher1<HttpRequest> matcher) {
     return new ThenStepK<>(monad(UIO_.class), handler -> addMapping(matcher, handler::apply));
   }
@@ -74,11 +75,11 @@ public final class HttpUIOService implements HttpRouteBuilderK<UIO_, HttpUIOServ
     return serviceK;
   }
 
-  protected HttpUIOService addMapping(Matcher1<HttpRequest> matcher, UIORequestHandler handler) {
+  private HttpUIOService addMapping(Matcher1<HttpRequest> matcher, UIORequestHandler handler) {
     return new HttpUIOService(serviceK.addMapping(matcher, handler));
   }
 
-  protected HttpUIOService addPreFilter(Matcher1<HttpRequest> matcher, UIORequestHandler handler) {
+  private HttpUIOService addPreFilter(Matcher1<HttpRequest> matcher, UIORequestHandler handler) {
     return preFilter(filter(monad(UIO_.class), matcher, handler)::apply);
   }
 
