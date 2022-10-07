@@ -153,7 +153,7 @@ listenAt(8101)
   .start()
 ```
 
-ane with scala-cli:
+and with scala-cli:
 
 ```scala
 #!/usr/bin/env -S scala-cli shebang
