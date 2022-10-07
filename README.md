@@ -153,6 +153,21 @@ listenAt(8101)
   .start()
 ```
 
+ane with scala-cli:
+
+```scala
+#!/usr/bin/env -S scala-cli shebang
+
+//> using lib "com.github.tonivade:zeromock-server:0.16.0"
+
+import com.github.tonivade.zeromock.server.MockHttpServer.listenAt
+
+@main def server() =
+  listenAt(8101)
+    .get("/ping").ok("pong")
+    .start()
+```
+
 ## License
 
 This project is released under MIT License
