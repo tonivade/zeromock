@@ -9,8 +9,11 @@ import static com.github.tonivade.purefun.effect.URIOOf.toURIO;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
 
+import java.util.concurrent.Executor;
+
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
+import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.effect.URIO;
 import com.github.tonivade.purefun.effect.URIO_;
 import com.github.tonivade.purefun.type.Either;
@@ -22,7 +25,11 @@ public final class HttpURIOService<R> implements HttpRouteBuilderK<Kind<URIO_, R
   private final HttpServiceK<Kind<URIO_, R>> serviceK;
 
   public HttpURIOService(String name) {
-    this(new HttpServiceK<>(name, new Instance<Kind<URIO_, R>>() {}.monad()));
+    this(name, Future.DEFAULT_EXECUTOR);
+  }
+
+  public HttpURIOService(String name, Executor executor) {
+    this(new HttpServiceK<>(name, new Instance<Kind<URIO_, R>>() {}.concurrent(executor)));
   }
 
   private HttpURIOService(HttpServiceK<Kind<URIO_, R>> serviceK) {
@@ -42,7 +49,7 @@ public final class HttpURIOService<R> implements HttpRouteBuilderK<Kind<URIO_, R
   }
 
   public ThenStepK<Kind<URIO_, R>, HttpURIOService<R>> preFilter(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(new Instance<Kind<URIO_, R>>() {}.monad(), handler -> addPreFilter(matcher, handler::apply));
+    return new ThenStepK<>(serviceK.monad(), handler -> addPreFilter(matcher, handler::apply));
   }
 
   public HttpURIOService<R> preFilter(PreFilter filter) {
@@ -63,7 +70,7 @@ public final class HttpURIOService<R> implements HttpRouteBuilderK<Kind<URIO_, R
 
   @Override
   public ThenStepK<Kind<URIO_, R>, HttpURIOService<R>> when(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(new Instance<Kind<URIO_, R>>() {}.monad(), handler -> addMapping(matcher, handler::apply));
+    return new ThenStepK<>(serviceK.monad(), handler -> addMapping(matcher, handler::apply));
   }
 
   public URIO<R, Option<HttpResponse>> execute(HttpRequest request) {
@@ -83,7 +90,7 @@ public final class HttpURIOService<R> implements HttpRouteBuilderK<Kind<URIO_, R
   }
 
   private HttpURIOService<R> addPreFilter(Matcher1<HttpRequest> matcher, URIORequestHandler<R> handler) {
-    return preFilter(filter(new Instance<Kind<URIO_, R>>() {}.monad(), matcher, handler)::apply);
+    return preFilter(filter(serviceK.monad(), matcher, handler)::apply);
   }
 
   @Override

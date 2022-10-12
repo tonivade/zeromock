@@ -5,11 +5,14 @@
 package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.purefun.effect.UIOOf.toUIO;
-import static com.github.tonivade.purefun.typeclasses.Instances.monad;
+import static com.github.tonivade.purefun.typeclasses.Instances.concurrent;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
 
+import java.util.concurrent.Executor;
+
 import com.github.tonivade.purefun.Matcher1;
+import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purefun.effect.UIO_;
 import com.github.tonivade.purefun.type.Option;
@@ -19,7 +22,11 @@ public final class HttpUIOService implements HttpRouteBuilderK<UIO_, HttpUIOServ
   private final HttpServiceK<UIO_> serviceK;
 
   public HttpUIOService(String name) {
-    this(new HttpServiceK<>(name, monad(UIO_.class)));
+    this(name, Future.DEFAULT_EXECUTOR);
+  }
+
+  public HttpUIOService(String name, Executor executor) {
+    this(new HttpServiceK<>(name, concurrent(UIO_.class, executor)));
   }
 
   private HttpUIOService(HttpServiceK<UIO_> serviceK) {
@@ -39,7 +46,7 @@ public final class HttpUIOService implements HttpRouteBuilderK<UIO_, HttpUIOServ
   }
 
   public ThenStepK<UIO_, HttpUIOService> preFilter(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(monad(UIO_.class), handler -> addPreFilter(matcher, handler::apply));
+    return new ThenStepK<>(serviceK.monad(), handler -> addPreFilter(matcher, handler::apply));
   }
 
   public HttpUIOService preFilter(PreFilter filter) {
@@ -60,7 +67,7 @@ public final class HttpUIOService implements HttpRouteBuilderK<UIO_, HttpUIOServ
 
   @Override
   public ThenStepK<UIO_, HttpUIOService> when(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(monad(UIO_.class), handler -> addMapping(matcher, handler::apply));
+    return new ThenStepK<>(serviceK.monad(), handler -> addMapping(matcher, handler::apply));
   }
 
   public UIO<Option<HttpResponse>> execute(HttpRequest request) {
@@ -80,7 +87,7 @@ public final class HttpUIOService implements HttpRouteBuilderK<UIO_, HttpUIOServ
   }
 
   private HttpUIOService addPreFilter(Matcher1<HttpRequest> matcher, UIORequestHandler handler) {
-    return preFilter(filter(monad(UIO_.class), matcher, handler)::apply);
+    return preFilter(filter(serviceK.monad(), matcher, handler)::apply);
   }
 
   @Override

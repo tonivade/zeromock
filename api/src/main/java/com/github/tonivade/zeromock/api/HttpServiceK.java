@@ -53,6 +53,10 @@ public final class HttpServiceK<F extends Witness> implements HttpRouteBuilderK<
   public String name() {
     return name;
   }
+  
+  Monad<F> monad() {
+    return monad;
+  }
 
   public HttpServiceK<F> mount(String path, HttpServiceK<F> other) {
     checkNonNull(path);
