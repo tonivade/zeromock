@@ -8,8 +8,13 @@ import static com.github.tonivade.purefun.effect.UIOOf.toUIO;
 import static com.github.tonivade.purefun.typeclasses.Instances.async;
 import static java.util.Objects.requireNonNull;
 
+import java.lang.reflect.Type;
+
+import com.github.tonivade.purefun.Function1;
 import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purefun.effect.UIO_;
+import com.github.tonivade.purejson.PureJson;
+import com.github.tonivade.zeromock.api.Bytes;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 
@@ -27,5 +32,14 @@ public class UIOHttpClient implements HttpClientOf<UIO_> {
 
   public UIO<HttpResponse> request(HttpRequest request) {
     return client.request(request).fix(toUIO());
+  }
+  
+  public static <T> Function1<HttpResponse, UIO<T>> parse(Class<T> type) {
+    return parse((Type) type);
+  }
+
+  public static <T> Function1<HttpResponse, UIO<T>> parse(Type type) {
+    return response -> UIO.fromTry(new PureJson<T>(type).fromJson(Bytes.asString(response.body())))
+        .flatMap(UIO::fromOption);
   }
 }
