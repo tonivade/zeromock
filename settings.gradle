@@ -15,6 +15,7 @@ dependencyResolutionManagement {
       library('purefunTypeclasses', "com.github.tonivade:purefun-typeclasses:$purefunVersion")
       library('purefunInstances', "com.github.tonivade:purefun-instances:$purefunVersion")
       library('purejson', "com.github.tonivade:purejson:$purejsonVersion")
+      library('slf4j', "org.slf4j:slf4j-api:$slf4jVersion")
 
       library('junitJupiter', "org.junit.jupiter:junit-jupiter-engine:$junitEngineVersion")
       library('junitVintage', "org.junit.vintage:junit-vintage-engine:$junitEngineVersion")

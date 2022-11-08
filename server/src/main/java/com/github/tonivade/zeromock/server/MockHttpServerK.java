@@ -7,6 +7,7 @@ package com.github.tonivade.zeromock.server;
 import static com.github.tonivade.zeromock.api.Bytes.asBytes;
 import static com.github.tonivade.zeromock.api.Responses.error;
 import static java.util.Objects.requireNonNull;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
@@ -16,7 +17,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Witness;
@@ -42,7 +46,7 @@ import com.sun.net.httpserver.HttpServer;
 
 public class MockHttpServerK<F extends Witness> implements com.github.tonivade.zeromock.server.HttpServer, HttpRouteBuilderK<F, MockHttpServerK<F>> {
 
-  private static final Logger LOG = Logger.getLogger(MockHttpServerK.class.getName());
+  private static final Logger LOG = LoggerFactory.getLogger(MockHttpServerK.class);
 
   private static final String ROOT = "/";
 
@@ -106,14 +110,14 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
   @Override
   public MockHttpServerK<F> start() {
     server.start();
-    LOG.info(() -> "server listening at " + server.getAddress());
+    LOG.info("server listening at {}", server.getAddress());
     return this;
   }
 
   @Override
   public void stop() {
     server.stop(0);
-    LOG.info(() -> "server stopped");
+    LOG.info("server stopped");
   }
 
   @Override
@@ -174,7 +178,7 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
   }
 
   private void unmatched(HttpRequest request) {
-    LOG.fine(() -> "unmatched request " + request);
+    LOG.debug("unmatched request {}", request);
     unmatched.put(Instant.now(), request);
   }
 
