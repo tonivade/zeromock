@@ -1,8 +1,7 @@
-
 dependencies {
-  api project(':zeromock-server')
+  api projects.zeromockServer
   api libs.junit
-  implementation project(':zeromock-client')
+  implementation projects.zeromockClient
   implementation libs.purefunMonad
   implementation libs.purefunEffect
 }

@@ -1,9 +1,8 @@
-
 dependencies {
-  api project(':zeromock-api')
+  api projects.zeromockApi
   implementation libs.purefunMonad
   implementation libs.purefunEffect
   implementation libs.purejson
   runtimeOnly libs.purefunInstances
-  testImplementation project(':zeromock-server')
+  testImplementation projects.zeromockServer
 }
