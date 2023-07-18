@@ -8,6 +8,7 @@ import static com.github.tonivade.purejson.JsonDSL.array;
 import static com.github.tonivade.purejson.JsonDSL.entry;
 import static com.github.tonivade.purejson.JsonDSL.object;
 import static com.github.tonivade.purejson.JsonDSL.string;
+import static com.github.tonivade.purejson.JsonNode.NULL;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -88,7 +89,7 @@ public final class Serializers {
   private static JsonNode throwableToJson(Throwable error) {
     return object(
         entry("type", string(error.getClass().getName())),
-        entry("message", string(error.getMessage())),
+        entry("message", error.getMessage() != null ? string(error.getMessage()) : NULL),
         entry("trace", stacktrace(error.getStackTrace()))
     );
   }
