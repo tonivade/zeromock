@@ -13,6 +13,7 @@ import static com.github.tonivade.zeromock.api.HttpMethod.PATCH;
 import java.net.URI;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
+
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Witness;
 import com.github.tonivade.purefun.type.Try;
@@ -52,31 +53,17 @@ public class HttpClientK<F extends Witness> {
         var builder = java.net.http.HttpRequest.newBuilder().uri(URI.create(baseUri.toString() + request.toUrl()));
         
         switch (request.method()) {
-        case GET:
-          builder = builder.GET();
-          break;
-        case DELETE:
-          builder = builder.DELETE();
-          break;
-        case POST:
-          builder = builder.POST(BodyPublishers.ofByteArray(request.body().toArray()));
-          break;
-        case PUT:
-          builder = builder.PUT(BodyPublishers.ofByteArray(request.body().toArray()));
-          break;
-        case PATCH:
-          builder = builder.method(PATCH.name(), BodyPublishers.ofByteArray(request.body().toArray()));
-          break;
-        case HEAD:
-          builder = builder.method(HEAD.name(), BodyPublishers.noBody());
-          break;
-        case OPTIONS:
-          builder = builder.method(OPTIONS.name(), BodyPublishers.noBody());
-          break;
+        case GET -> builder.GET();
+        case DELETE -> builder.DELETE();
+        case POST -> builder.POST(BodyPublishers.ofByteArray(request.body().toArray()));
+        case PUT -> builder.PUT(BodyPublishers.ofByteArray(request.body().toArray()));
+        case PATCH -> builder.method(PATCH.name(), BodyPublishers.ofByteArray(request.body().toArray()));
+        case HEAD -> builder.method(HEAD.name(), BodyPublishers.noBody());
+        case OPTIONS -> builder.method(OPTIONS.name(), BodyPublishers.noBody());
         }
         
         for (var header : request.headers()) {
-          builder = builder.header(header.get1(), header.get2());
+          builder.header(header.get1(), header.get2());
         }
         
         return builder.build();
