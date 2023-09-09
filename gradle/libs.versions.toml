@@ -1,0 +1,26 @@
+[versions]
+slf4jVersion = "2.0.9"
+junitVersion = "4.13.2"
+junitEngineVersion = "5.10.0"
+junitPlatformVersion = "1.10.0"
+equalsVerifierVersion = "3.15.1"
+purefunVersion = "4.2-SNAPSHOT"
+purejsonVersion = "0.5-SNAPSHOT"
+jaxbVersion = "4.0.3"
+jsonPathVersion = "2.8.0"
+
+[libraries]
+purefunCore = { group = "com.github.tonivade", name = "purefun-core", version.ref = "purefunVersion" }
+purefunMonad = { group = "com.github.tonivade", name = "purefun-monad", version.ref = "purefunVersion" }
+purefunEffect = { group = "com.github.tonivade", name = "purefun-effect", version.ref = "purefunVersion" }
+purefunTypeclasses = { group = "com.github.tonivade", name = "purefun-typeclasses", version.ref = "purefunVersion" }
+purefunInstances = { group = "com.github.tonivade", name = "purefun-instances", version.ref = "purefunVersion" }
+purejson = { group = "com.github.tonivade", name = "purejson", version.ref = "purejsonVersion" }
+slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4jVersion" }
+junitJupiter = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junitEngineVersion" }
+junitVintage = { group = "org.junit.vintage", name = "junit-vintage-engine", version.ref = "junitEngineVersion" }
+junitRunner = { group = "org.junit.platform", name = "junit-platform-runner", version.ref = "junitPlatformVersion" }
+junit = { group = "junit", name = "junit", version.ref = "junitVersion" }
+equalsVerifier= { group = "nl.jqno.equalsverifier", name = "equalsverifier", version.ref = "equalsVerifierVersion" }
+jaxb= { group = "org.glassfish.jaxb", name = "jaxb-runtime", version.ref = "jaxbVersion" }
+jsonPath= { group = "com.jayway.jsonpath", name = "json-path", version.ref = "jsonPathVersion" }

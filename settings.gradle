@@ -5,26 +5,3 @@ rootProject.name = 'zeromock-parent'
 include "api", "server", "junit4", "junit5", "client"
 
 rootProject.children.each { it.name = "zeromock-" + it.name }
-
-dependencyResolutionManagement {
-  versionCatalogs {
-    libs {
-      library('purefunCore', "com.github.tonivade:purefun-core:$purefunVersion")
-      library('purefunMonad', "com.github.tonivade:purefun-monad:$purefunVersion")
-      library('purefunEffect', "com.github.tonivade:purefun-effect:$purefunVersion")
-      library('purefunTypeclasses', "com.github.tonivade:purefun-typeclasses:$purefunVersion")
-      library('purefunInstances', "com.github.tonivade:purefun-instances:$purefunVersion")
-      library('purejson', "com.github.tonivade:purejson:$purejsonVersion")
-      library('slf4j', "org.slf4j:slf4j-api:$slf4jVersion")
-
-      library('junitJupiter', "org.junit.jupiter:junit-jupiter-engine:$junitEngineVersion")
-      library('junitVintage', "org.junit.vintage:junit-vintage-engine:$junitEngineVersion")
-      library('junitRunner', "org.junit.platform:junit-platform-runner:$junitPlatformVersion")
-      library('junit', "junit:junit:$junitVersion")
-
-      library('equalsVerifier', "nl.jqno.equalsverifier:equalsverifier:$equalsVerifierVersion")
-      library('jaxb', "org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
-      library('jsonPath', "com.jayway.jsonpath:json-path:$jsonPathVersion")
-    }
-  }
-}
