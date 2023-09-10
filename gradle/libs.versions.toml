@@ -8,6 +8,9 @@ purefunVersion = "4.2-SNAPSHOT"
 purejsonVersion = "0.5-SNAPSHOT"
 jaxbVersion = "4.0.3"
 jsonPathVersion = "2.8.0"
+sonarVersion = "4.3.1.3277"
+versionsVersion = "0.48.0"
+nexusVersion = "1.3.0"
 
 [libraries]
 purefunCore = { group = "com.github.tonivade", name = "purefun-core", version.ref = "purefunVersion" }
@@ -24,3 +27,8 @@ junit = { group = "junit", name = "junit", version.ref = "junitVersion" }
 equalsVerifier= { group = "nl.jqno.equalsverifier", name = "equalsverifier", version.ref = "equalsVerifierVersion" }
 jaxb= { group = "org.glassfish.jaxb", name = "jaxb-runtime", version.ref = "jaxbVersion" }
 jsonPath= { group = "com.jayway.jsonpath", name = "json-path", version.ref = "jsonPathVersion" }
+
+[plugins]
+sonar = { id = "org.sonarqube", version.ref = "sonarVersion" }
+versions = { id = "com.github.ben-manes.versions", version.ref = "versionsVersion" }
+nexus = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "nexusVersion" }
