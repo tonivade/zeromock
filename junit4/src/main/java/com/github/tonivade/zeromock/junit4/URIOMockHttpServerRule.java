@@ -7,7 +7,7 @@ package com.github.tonivade.zeromock.junit4;
 import static com.github.tonivade.purefun.Producer.cons;
 import static com.github.tonivade.zeromock.server.URIOMockHttpServer.builder;
 
-import com.github.tonivade.purefun.Kind;
+import com.github.tonivade.purefun.annotation.Kind;
 import com.github.tonivade.purefun.effect.URIO_;
 import com.github.tonivade.purefun.typeclasses.Instance;
 

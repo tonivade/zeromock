@@ -13,10 +13,10 @@ import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static com.github.tonivade.zeromock.api.Responses.notFound;
 
 import com.github.tonivade.purefun.Function1;
-import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.PartialFunction1;
-import com.github.tonivade.purefun.Witness;
+import com.github.tonivade.purefun.annotation.Kind;
+import com.github.tonivade.purefun.annotation.Witness;
 import com.github.tonivade.purefun.instances.OptionInstances;
 import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.purefun.type.Option;

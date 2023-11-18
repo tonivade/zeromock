@@ -11,8 +11,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.Executor;
 
-import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
+import com.github.tonivade.purefun.annotation.Kind;
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.effect.URIO;
 import com.github.tonivade.purefun.effect.URIO_;

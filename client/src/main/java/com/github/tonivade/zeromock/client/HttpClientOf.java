@@ -1,6 +1,6 @@
 package com.github.tonivade.zeromock.client;
 
-import com.github.tonivade.purefun.Witness;
+import com.github.tonivade.purefun.annotation.Witness;
 
 interface HttpClientOf<F extends Witness> {
 

@@ -7,7 +7,7 @@ package com.github.tonivade.zeromock.api;
 import static com.github.tonivade.purefun.Function1.identity;
 
 import com.github.tonivade.purefun.Function1;
-import com.github.tonivade.purefun.Witness;
+import com.github.tonivade.purefun.annotation.Witness;
 import com.github.tonivade.purefun.typeclasses.Monad;
 
 @FunctionalInterface

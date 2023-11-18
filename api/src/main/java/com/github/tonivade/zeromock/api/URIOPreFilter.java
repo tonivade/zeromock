@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import com.github.tonivade.purefun.Kind;
+import com.github.tonivade.purefun.annotation.Kind;
 import com.github.tonivade.purefun.effect.URIO;
 import com.github.tonivade.purefun.effect.URIOOf;
 import com.github.tonivade.purefun.effect.URIO_;

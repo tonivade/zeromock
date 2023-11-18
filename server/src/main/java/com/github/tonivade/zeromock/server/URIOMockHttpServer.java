@@ -9,9 +9,9 @@ import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static com.github.tonivade.zeromock.server.ResponseInterpreterK.urio;
 import static java.util.Objects.requireNonNull;
 
-import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Matcher1;
 import com.github.tonivade.purefun.Producer;
+import com.github.tonivade.purefun.annotation.Kind;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.effect.URIO;
 import com.github.tonivade.purefun.effect.URIO_;
@@ -101,6 +101,7 @@ public final class URIOMockHttpServer<R> implements HttpServer, HttpRouteBuilder
     return this;
   }
 
+  @Override
   public ThenStepK<Kind<URIO_, R>, URIOMockHttpServer<R>> when(Matcher1<HttpRequest> matcher) {
     return new ThenStepK<>(new Instance<Kind<URIO_, R>>() {}.monad(), handler -> addMapping(matcher, handler::apply));
   }
