@@ -10,6 +10,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serial;
 import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.time.Instant;
@@ -204,7 +205,7 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
   }
 
   private void processResponse(HttpExchange exchange, HttpResponse response) {
-    try {
+    try (exchange) {
       var bytes = response.body();
       response.headers().forEach((key, value) -> exchange.getResponseHeaders().add(key, value));
       exchange.sendResponseHeaders(response.status().code(), bytes.size());
@@ -213,8 +214,6 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
       }
     } catch (IOException e) {
       throw new UncheckedIOException(e);
-    } finally {
-      exchange.close();
     }
   }
 
@@ -320,6 +319,7 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
 
   private static final class LimitedSizeMap<K, V> extends LinkedHashMap<K, V> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private final int maxSize;

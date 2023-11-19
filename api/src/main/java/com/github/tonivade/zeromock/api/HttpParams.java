@@ -8,8 +8,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
 
-import java.io.UncheckedIOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -106,18 +104,10 @@ public final class HttpParams {
   }
 
   private static String urlEncode(String value) {
-    try {
-      return URLEncoder.encode(value, UTF_8.toString());
-    } catch (UnsupportedEncodingException e) {
-      throw new UncheckedIOException(e);
-    }
+    return URLEncoder.encode(value, UTF_8);
   }
 
   private static String urlDecode(String value) {
-    try {
-      return URLDecoder.decode(value, UTF_8.toString());
-    } catch (UnsupportedEncodingException e) {
-      throw new UncheckedIOException(e);
-    }
+    return URLDecoder.decode(value, UTF_8);
   }
 }

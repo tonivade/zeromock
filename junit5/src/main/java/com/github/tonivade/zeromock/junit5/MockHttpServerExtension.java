@@ -4,8 +4,6 @@
  */
 package com.github.tonivade.zeromock.junit5;
 
-import static java.util.stream.Collectors.toUnmodifiableList;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -46,7 +44,7 @@ public class MockHttpServerExtension
   private HttpServer serverK;
 
   @Override
-  public void beforeAll(ExtensionContext context) throws Exception {
+  public void beforeAll(ExtensionContext context) {
     Optional<ListenAt> listenAt = listenAt(context);
     int port = listenAt.map(ListenAt::value).orElse(0);
     this.server = new Builder().port(port).build();
@@ -54,7 +52,7 @@ public class MockHttpServerExtension
   }
 
   @Override
-  public void beforeEach(ExtensionContext context) throws Exception {
+  public void beforeEach(ExtensionContext context) {
     try {
       server.removeContext("/");
     } catch (IllegalArgumentException e) {
@@ -65,14 +63,14 @@ public class MockHttpServerExtension
   }
 
   @Override
-  public void afterEach(ExtensionContext context) throws Exception {
+  public void afterEach(ExtensionContext context) {
     if (!serverK.getUnmatched().isEmpty()) {
       context.publishReportEntry("UnmatchedRequests", unmatched());
     }
   }
 
   @Override
-  public void afterAll(ExtensionContext context) throws Exception {
+  public void afterAll(ExtensionContext context) {
     server.stop(0);
   }
 
@@ -100,7 +98,7 @@ public class MockHttpServerExtension
 
   private void mount(ExtensionContext context, HttpServer server, List<Tuple2<Field, Mount>> services) {
     Optional<Method> mountMethod = Stream.of(server.getClass().getDeclaredMethods()).filter(m -> m.getName().equals("mount")).findFirst();
-    services.forEach(t -> {
+    services.forEach(t ->
       mountMethod.ifPresent(m -> {
         Field field = t.get1();
         field.trySetAccessible();
@@ -112,15 +110,15 @@ public class MockHttpServerExtension
         } catch (InvocationTargetException e) {
           throw new ParameterResolutionException("cannot execute method " + m.getName());
         }
-      });
-    });
+      })
+    );
   }
 
   private List<Tuple2<Field, Mount>> findServices(ExtensionContext extensionContext) {
     Optional<Class<?>> testClass = extensionContext.getTestClass();
     return testClass.map(Class::getDeclaredFields).stream().flatMap(Stream::of)
       .map(f -> Tuple.of(f, f.getAnnotation(Mount.class))).filter(t -> t.get2() != null)
-      .collect(toUnmodifiableList());
+      .toList();
   }
 
   private HttpServer buildServer(Class<?> type) {

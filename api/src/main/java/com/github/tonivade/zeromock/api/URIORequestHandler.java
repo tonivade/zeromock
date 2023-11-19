@@ -19,10 +19,10 @@ public interface URIORequestHandler<R> extends RequestHandlerK<Kind<URIO_, R>> {
   }
 
   default URIORequestHandler<R> preHandle(URIOPreFilter<R> before) {
-    return RequestHandlerK.super.preHandle(URIOInstances.<R>monad(), before)::apply;
+    return RequestHandlerK.super.preHandle(URIOInstances.monad(), before)::apply;
   }
 
   default URIORequestHandler<R> postHandle(URIOPostFilter<R> after) {
-    return RequestHandlerK.super.postHandle(URIOInstances.<R>monad(), after)::apply;
+    return RequestHandlerK.super.postHandle(URIOInstances.monad(), after)::apply;
   }
 }

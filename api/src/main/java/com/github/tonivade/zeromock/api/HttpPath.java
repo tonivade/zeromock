@@ -80,7 +80,7 @@ public final class HttpPath {
   }
 
   public static HttpPath from(String path) {
-    if (isNull(path) || path.isEmpty() || !path.startsWith(ROOT)) {
+    if (isNull(path) || !path.startsWith(ROOT)) {
       throw new IllegalArgumentException("invalid path: " + path);
     }
     return new HttpPath(ImmutableList.of(path.split(ROOT)).tail().map(HttpPath::toPathElement));

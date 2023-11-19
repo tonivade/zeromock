@@ -37,7 +37,7 @@ public final class HttpHeaders implements Iterable<Tuple2<String, String>> {
   }
 
   public HttpHeaders withHeader(String key, String value) {
-    return new HttpHeaders(headers.merge(key.toLowerCase(), ImmutableSet.of(value), ImmutableSet<String>::union));
+    return new HttpHeaders(headers.merge(key.toLowerCase(), ImmutableSet.of(value), ImmutableSet::union));
   }
 
   public boolean isEmpty() {
