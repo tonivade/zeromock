@@ -8,7 +8,7 @@ updates:
     open-pull-requests-limit: 10
     ignore:
       - dependency-name: "com.github.tonivade:*"
-        versions: ["1.0-SNAPSHOT"]
+        versions: ["x.x-SNAPSHOT"]
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
