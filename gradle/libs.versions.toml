@@ -1,5 +1,5 @@
 [versions]
-slf4jVersion = "2.0.10"
+slf4jVersion = "2.0.11"
 junitVersion = "4.13.2"
 junitEngineVersion = "5.10.1"
 junitPlatformVersion = "1.10.1"
