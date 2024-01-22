@@ -10,5 +10,5 @@ module com.github.tonivade.zeromock.api {
   requires com.github.tonivade.purejson;
   requires jakarta.xml.bind;
   requires java.xml;
-  requires com.jayway.jsonpath;
+  requires json.path;
 }

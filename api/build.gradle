@@ -1,6 +1,3 @@
-plugins {
-  id("org.gradlex.extra-java-module-info") version "1.6"
-}
 
 dependencies {
   api libs.purefunCore
@@ -12,9 +9,4 @@ dependencies {
   implementation libs.purejson
   implementation libs.jsonPath
   testImplementation libs.equalsVerifier
-}
-
-extraJavaModuleInfo {
-  failOnMissingModuleInfo.set(false)
-  automaticModule("com.jayway.jsonpath:json-path", "com.jayway.jsonpath")
 }
