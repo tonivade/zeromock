@@ -23,7 +23,7 @@ import com.github.tonivade.zeromock.api.HttpResponse;
 
 @FunctionalInterface
 public interface ResponseInterpreterK<F extends Witness> {
-  
+
   Promise<HttpResponse> run(Kind<F, HttpResponse> response);
 
   static ResponseInterpreterK<IO_> io() {
@@ -39,7 +39,7 @@ public interface ResponseInterpreterK<F extends Witness> {
   }
 
   static ResponseInterpreterK<Id_> sync() {
-    return response -> Promise.<HttpResponse>make().succeeded(response.fix(toId()).get());
+    return response -> Promise.<HttpResponse>make().succeeded(response.fix(toId()).value());
   }
 
   static ResponseInterpreterK<Future_> async() {
