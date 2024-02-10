@@ -239,15 +239,6 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
       return this;
     }
 
-    /**
-     * @deprecated use {@link #executor} instead.
-     */
-    @Deprecated
-    public BuilderK<F, T> threads(int threads) {
-      builder.threads(threads);
-      return this;
-    }
-
     public BuilderK<F, T> executor(Executor executor) {
       builder.executor(executor);
       return this;
@@ -269,7 +260,6 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
 
     private String host = "localhost";
     private int port = 8080;
-    private int threads = Runtime.getRuntime().availableProcessors();
     private int backlog = 0;
     private Executor executor;
 
@@ -280,15 +270,6 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
 
     public Builder port(int port) {
       this.port = port;
-      return this;
-    }
-
-    /**
-     * @deprecated use {@link #executor} instead.
-     */
-    @Deprecated
-    public Builder threads(int threads) {
-      this.threads = threads;
       return this;
     }
 
@@ -308,7 +289,7 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
         if (executor != null) {
           server.setExecutor(executor);
         } else {
-          server.setExecutor(Executors.newFixedThreadPool(threads));
+          server.setExecutor(Executors.newVirtualThreadPerTaskExecutor());
         }
         return server;
       } catch (IOException e) {
