@@ -58,7 +58,7 @@ public final class HttpService implements HttpRouteBuilder<HttpService> {
   }
 
   public Option<HttpResponse> execute(HttpRequest request) {
-    return serviceK.execute(request).fix(toId()).get();
+    return serviceK.execute(request).fix(toId()).value();
   }
 
   public HttpService combine(HttpService other) {
