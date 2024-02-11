@@ -2,11 +2,11 @@
 dependencies {
   api libs.purefunCore
   api libs.jaxb
+  api libs.purejson
   implementation libs.purefunTypeclasses
   implementation libs.purefunMonad
   implementation libs.purefunEffect
   runtimeOnly libs.purefunInstances
-  implementation libs.purejson
   implementation libs.jsonPath
   testImplementation libs.equalsVerifier
 }
