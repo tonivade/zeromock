@@ -13,13 +13,13 @@ import static com.github.tonivade.zeromock.api.HttpMethod.PATCH;
 import static com.github.tonivade.zeromock.api.HttpMethod.POST;
 import static com.github.tonivade.zeromock.api.HttpMethod.PUT;
 
-import com.github.tonivade.purefun.Matcher1;
+import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.data.ImmutableSet;
 
 public final class Matchers {
 
   private Matchers() {}
-  
+
   public static Matcher1<HttpRequest> all() {
     return request -> true;
   }
@@ -27,19 +27,19 @@ public final class Matchers {
   public static Matcher1<HttpRequest> method(HttpMethod method) {
     return request -> request.method().equals(method);
   }
-  
+
   public static Matcher1<HttpRequest> path(String url) {
     return request -> request.path().match(HttpPath.from(url));
   }
-  
+
   public static Matcher1<HttpRequest> startsWith(String url) {
     return request -> request.path().startsWith(HttpPath.from(url));
   }
-  
+
   public static Matcher1<HttpRequest> param(String name) {
     return request -> request.params().contains(name);
   }
-  
+
   public static Matcher1<HttpRequest> param(String name, String value) {
     return request -> request.params().get(name).map(value::equals).getOrElse(false);
   }
@@ -95,31 +95,31 @@ public final class Matchers {
   public static Matcher1<HttpRequest> body(String body) {
     return request -> asString(request.body()).equals(body);
   }
-  
+
   public static Matcher1<HttpRequest> accept(String contentType) {
     return header("Accept", contentType);
   }
-  
+
   public static Matcher1<HttpRequest> acceptsXml() {
     return accept("text/xml");
   }
-  
+
   public static Matcher1<HttpRequest> acceptsJson() {
     return accept("application/json");
   }
-  
+
   public static Matcher1<HttpRequest> get(String path) {
     return get().and(path(path));
   }
-  
+
   public static Matcher1<HttpRequest> put(String path) {
     return put().and(path(path));
   }
-  
+
   public static Matcher1<HttpRequest> post(String path) {
     return post().and(path(path));
   }
-  
+
   public static Matcher1<HttpRequest> patch(String path) {
     return patch().and(path(path));
   }

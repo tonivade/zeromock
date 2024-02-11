@@ -31,8 +31,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.github.tonivade.purefun.Function1;
-import com.github.tonivade.purefun.Producer;
+import com.github.tonivade.purefun.core.Function1;
+import com.github.tonivade.purefun.core.Producer;
 import com.github.tonivade.purefun.data.ImmutableSet;
 import com.github.tonivade.zeromock.api.AsyncHttpService;
 import com.github.tonivade.zeromock.api.Deserializers;

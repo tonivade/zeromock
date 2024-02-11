@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import static com.github.tonivade.purefun.Precondition.checkNonNull;
+import static com.github.tonivade.purefun.core.Precondition.checkNonNull;
 import static com.github.tonivade.zeromock.api.Bytes.asBytes;
 import static com.github.tonivade.zeromock.api.Bytes.empty;
 import static com.github.tonivade.zeromock.api.HttpStatus.BAD_REQUEST;
@@ -22,29 +22,29 @@ import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.type.Try;
 
 public final class Responses {
-  
+
   private Responses() {}
-  
+
   public static HttpResponse fromOption(Option<Bytes> body) {
     return body.fold(Responses::notFound, Responses::ok);
   }
-  
+
   public static HttpResponse fromTry(Try<Bytes> body) {
     return body.fold(Responses::error, Responses::ok);
   }
-  
+
   public static HttpResponse ok() {
     return ok(empty());
   }
-  
+
   public static HttpResponse ok(String body) {
     return ok(asBytes(body));
   }
-  
+
   public static HttpResponse ok(Bytes body) {
     return new HttpResponse(OK, body);
   }
-  
+
   public static HttpResponse created(String body) {
     return created(asBytes(body));
   }
@@ -52,11 +52,11 @@ public final class Responses {
   public static HttpResponse created(Bytes body) {
     return new HttpResponse(CREATED, body);
   }
-  
+
   public static HttpResponse noContent() {
     return new HttpResponse(NO_CONTENT, empty());
   }
-  
+
   public static HttpResponse forbidden() {
     return new HttpResponse(FORBIDDEN, empty());
   }

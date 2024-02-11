@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock.junit4;
 
-import static com.github.tonivade.purefun.Producer.cons;
+import static com.github.tonivade.purefun.core.Producer.cons;
 import static com.github.tonivade.zeromock.server.URIOMockHttpServer.builder;
 
 import com.github.tonivade.purefun.Kind;

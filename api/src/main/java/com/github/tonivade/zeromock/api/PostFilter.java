@@ -11,10 +11,10 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Date;
 
-import com.github.tonivade.purefun.Operator1;
+import com.github.tonivade.purefun.core.Operator1;
 
 public interface PostFilter extends Operator1<HttpResponse> {
-  
+
   static PostFilter print(PrintStream output) {
     return print(new PrintWriter(new OutputStreamWriter(output, UTF_8), true));
   }

@@ -16,7 +16,7 @@ import java.io.UncheckedIOException;
 import java.lang.reflect.Type;
 import java.util.stream.Stream;
 
-import com.github.tonivade.purefun.Function1;
+import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.type.Try;
 import com.github.tonivade.purejson.JsonDSL;
 import com.github.tonivade.purejson.JsonNode;

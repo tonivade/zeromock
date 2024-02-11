@@ -6,7 +6,7 @@ package com.github.tonivade.zeromock.server;
 
 import java.util.Objects;
 
-import com.github.tonivade.purefun.Equal;
+import com.github.tonivade.purefun.core.Equal;
 
 import jakarta.xml.bind.annotation.XmlRootElement;
 

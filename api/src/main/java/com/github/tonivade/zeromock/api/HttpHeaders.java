@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import com.github.tonivade.purefun.Consumer2;
-import com.github.tonivade.purefun.Equal;
-import com.github.tonivade.purefun.Tuple;
-import com.github.tonivade.purefun.Tuple2;
+import com.github.tonivade.purefun.core.Consumer2;
+import com.github.tonivade.purefun.core.Equal;
+import com.github.tonivade.purefun.core.Tuple;
+import com.github.tonivade.purefun.core.Tuple2;
 import com.github.tonivade.purefun.data.ImmutableMap;
 import com.github.tonivade.purefun.data.ImmutableSet;
 
@@ -29,7 +29,7 @@ public final class HttpHeaders implements Iterable<Tuple2<String, String>> {
   public HttpHeaders(ImmutableMap<String, ImmutableSet<String>> headers) {
     this.headers = requireNonNull(headers).mapKeys(String::toLowerCase);
   }
-  
+
   @Override
   public Iterator<Tuple2<String, String>> iterator() {
     return headers.entries()

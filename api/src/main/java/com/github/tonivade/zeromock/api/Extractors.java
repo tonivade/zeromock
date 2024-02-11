@@ -9,14 +9,14 @@ import static com.jayway.jsonpath.Option.SUPPRESS_EXCEPTIONS;
 
 import java.lang.reflect.Type;
 
-import com.github.tonivade.purefun.Function1;
+import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.type.Try;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 
 public final class Extractors {
-  
+
   private static final Configuration CONFIGURATION = defaultConfiguration().addOptions(SUPPRESS_EXCEPTIONS);
 
   private Extractors() {}
@@ -44,11 +44,11 @@ public final class Extractors {
   public static Function1<Bytes, String> asString() {
     return Bytes::asString;
   }
-  
+
   public static Function1<String, Integer> asInteger() {
     return Integer::parseInt;
   }
-  
+
   public static Function1<String, Long> asLong() {
     return Long::parseLong;
   }

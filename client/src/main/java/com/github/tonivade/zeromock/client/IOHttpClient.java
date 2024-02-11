@@ -9,7 +9,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.reflect.Type;
 
-import com.github.tonivade.purefun.Function1;
+import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.purefun.monad.IOOf;
 import com.github.tonivade.purefun.monad.IO_;
@@ -33,7 +33,7 @@ public class IOHttpClient implements HttpClientOf<IO_> {
   public IO<HttpResponse> request(HttpRequest request) {
     return client.request(request).fix(IOOf.toIO());
   }
-  
+
   public static <T> Function1<HttpResponse, IO<T>> parse(Class<T> type) {
     return parse((Type) type);
   }

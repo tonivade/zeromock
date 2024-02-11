@@ -6,7 +6,7 @@ package com.github.tonivade.zeromock.junit5;
 
 import java.util.Objects;
 
-import com.github.tonivade.purefun.Equal;
+import com.github.tonivade.purefun.core.Equal;
 import com.github.tonivade.purejson.JsonCreator;
 import com.github.tonivade.purejson.JsonProperty;
 

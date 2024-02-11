@@ -10,7 +10,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.reflect.Type;
 import java.util.concurrent.Executor;
 
-import com.github.tonivade.purefun.Function1;
+import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.effect.Task;
 import com.github.tonivade.purefun.monad.IOOf;
@@ -40,7 +40,7 @@ public class AsyncHttpClient implements HttpClientOf<IO_> {
   public Future<HttpResponse> request(HttpRequest request, Executor executor) {
     return client.request(request).fix(IOOf.toIO()).runAsync(executor);
   }
-  
+
   public static <T> Function1<HttpResponse, Future<T>> parse(Class<T> type) {
     return parse((Type) type);
   }

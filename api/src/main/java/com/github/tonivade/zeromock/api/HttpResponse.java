@@ -9,7 +9,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Objects;
 
-import com.github.tonivade.purefun.Equal;
+import com.github.tonivade.purefun.core.Equal;
 
 public final class HttpResponse {
 

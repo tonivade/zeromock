@@ -11,7 +11,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.Executor;
 
-import com.github.tonivade.purefun.Matcher1;
+import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purefun.effect.UIO_;

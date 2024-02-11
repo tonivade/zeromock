@@ -4,18 +4,18 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import static com.github.tonivade.purefun.Function1.fail;
-import static com.github.tonivade.purefun.Matcher1.never;
-import static com.github.tonivade.purefun.Precondition.checkNonNull;
+import static com.github.tonivade.purefun.core.Function1.fail;
+import static com.github.tonivade.purefun.core.Matcher1.never;
+import static com.github.tonivade.purefun.core.Precondition.checkNonNull;
 import static com.github.tonivade.zeromock.api.Matchers.all;
 import static com.github.tonivade.zeromock.api.Matchers.startsWith;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static com.github.tonivade.zeromock.api.Responses.notFound;
 
-import com.github.tonivade.purefun.Function1;
+import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.Kind;
-import com.github.tonivade.purefun.Matcher1;
-import com.github.tonivade.purefun.PartialFunction1;
+import com.github.tonivade.purefun.core.Matcher1;
+import com.github.tonivade.purefun.core.PartialFunction1;
 import com.github.tonivade.purefun.Witness;
 import com.github.tonivade.purefun.instances.OptionInstances;
 import com.github.tonivade.purefun.type.Either;
@@ -53,7 +53,7 @@ public final class HttpServiceK<F extends Witness> implements HttpRouteBuilderK<
   public String name() {
     return name;
   }
-  
+
   Monad<F> monad() {
     return monad;
   }

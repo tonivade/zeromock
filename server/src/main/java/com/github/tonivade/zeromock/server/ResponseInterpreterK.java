@@ -11,7 +11,7 @@ import static com.github.tonivade.purefun.monad.IOOf.toIO;
 import static com.github.tonivade.purefun.type.IdOf.toId;
 
 import com.github.tonivade.purefun.Kind;
-import com.github.tonivade.purefun.Producer;
+import com.github.tonivade.purefun.core.Producer;
 import com.github.tonivade.purefun.Witness;
 import com.github.tonivade.purefun.concurrent.Future_;
 import com.github.tonivade.purefun.concurrent.Promise;

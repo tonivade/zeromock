@@ -4,12 +4,12 @@
  */
 package com.github.tonivade.zeromock.junit5;
 
-import static com.github.tonivade.purefun.Precondition.checkNonEmpty;
-import static com.github.tonivade.purefun.Precondition.checkPositive;
+import static com.github.tonivade.purefun.core.Precondition.checkNonEmpty;
+import static com.github.tonivade.purefun.core.Precondition.checkPositive;
 
 import java.util.Objects;
 
-import com.github.tonivade.purefun.Equal;
+import com.github.tonivade.purefun.core.Equal;
 import com.github.tonivade.purefun.data.ImmutableList;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purejson.JsonCreator;

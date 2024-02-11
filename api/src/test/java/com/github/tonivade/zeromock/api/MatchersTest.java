@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import static com.github.tonivade.purefun.Matcher1.is;
+import static com.github.tonivade.purefun.core.Matcher1.is;
 import static com.github.tonivade.zeromock.api.Matchers.body;
 import static com.github.tonivade.zeromock.api.Matchers.delete;
 import static com.github.tonivade.zeromock.api.Matchers.get;

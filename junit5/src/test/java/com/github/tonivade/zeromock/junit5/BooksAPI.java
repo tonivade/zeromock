@@ -14,10 +14,10 @@ import static com.github.tonivade.zeromock.api.Serializers.objectToJson;
 
 import java.lang.reflect.Type;
 
-import com.github.tonivade.purefun.Consumer1;
-import com.github.tonivade.purefun.Function1;
-import com.github.tonivade.purefun.Function2;
-import com.github.tonivade.purefun.Producer;
+import com.github.tonivade.purefun.core.Consumer1;
+import com.github.tonivade.purefun.core.Function1;
+import com.github.tonivade.purefun.core.Function2;
+import com.github.tonivade.purefun.core.Producer;
 import com.github.tonivade.purefun.data.ImmutableList;
 import com.github.tonivade.purefun.type.Try;
 import com.github.tonivade.purejson.TypeToken;
@@ -27,7 +27,7 @@ import com.github.tonivade.zeromock.api.Responses;
 import com.github.tonivade.zeromock.junit5.BooksService.Book;
 
 public class BooksAPI {
-  
+
   private final BooksService service;
 
   private final Type listOfBooks = new TypeToken<ImmutableList<Book>>() {}.getType();

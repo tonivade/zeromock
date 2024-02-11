@@ -14,13 +14,13 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import com.github.tonivade.purefun.Equal;
+import com.github.tonivade.purefun.core.Equal;
 
 public final class Bytes {
 
   private static final Equal<Bytes> EQUAL = Equal.<Bytes>of()
       .append((a, b) -> Arrays.equals(a.buffer, b.buffer));
-  
+
   private static final int BUFFER_SIZE = 1024;
   private static final Bytes EMPTY = new Bytes(new byte[]{});
 

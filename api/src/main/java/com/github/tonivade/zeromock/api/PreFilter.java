@@ -11,8 +11,8 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Date;
 
-import com.github.tonivade.purefun.Function1;
-import com.github.tonivade.purefun.Matcher1;
+import com.github.tonivade.purefun.core.Function1;
+import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.type.Either;
 
 public interface PreFilter extends Function1<HttpRequest, Either<HttpResponse, HttpRequest>> {
@@ -21,7 +21,7 @@ public interface PreFilter extends Function1<HttpRequest, Either<HttpResponse, H
     return request -> matcher.match(request) ?
         Either.left(handler.apply(request)) : Either.right(request);
   }
-  
+
   static PreFilter print(PrintStream output) {
     return print(new PrintWriter(new OutputStreamWriter(output, UTF_8), true));
   }

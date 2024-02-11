@@ -9,7 +9,7 @@ import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static com.github.tonivade.zeromock.server.ResponseInterpreterK.async;
 import static java.util.Objects.requireNonNull;
 
-import com.github.tonivade.purefun.Matcher1;
+import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.concurrent.Future_;
 import com.github.tonivade.purefun.data.Sequence;
@@ -39,7 +39,7 @@ public final class AsyncMockHttpServer implements HttpServer, HttpRouteBuilderK<
   public int getPort() {
     return serverK.getPort();
   }
-  
+
   @Override
   public String getPath() {
     return serverK.getPath();

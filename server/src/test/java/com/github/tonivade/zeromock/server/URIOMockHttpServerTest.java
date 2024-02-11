@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.purefun.Nothing.nothing;
+import static com.github.tonivade.purefun.core.Nothing.nothing;
 import static com.github.tonivade.purefun.type.Option.some;
 import static com.github.tonivade.purefun.type.Try.success;
 import static com.github.tonivade.zeromock.api.Bytes.asString;
@@ -30,7 +30,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.github.tonivade.purefun.Nothing;
+import com.github.tonivade.purefun.core.Nothing;
 import com.github.tonivade.purefun.data.ImmutableSet;
 import com.github.tonivade.purefun.effect.URIO;
 import com.github.tonivade.purefun.effect.PureIO;

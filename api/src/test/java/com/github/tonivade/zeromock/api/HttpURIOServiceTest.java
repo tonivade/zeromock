@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import static com.github.tonivade.purefun.Nothing.nothing;
+import static com.github.tonivade.purefun.core.Nothing.nothing;
 import static com.github.tonivade.zeromock.api.Bytes.asBytes;
 import static com.github.tonivade.zeromock.api.Headers.contentPlain;
 import static com.github.tonivade.zeromock.api.Matchers.get;
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.tonivade.purefun.Nothing;
+import com.github.tonivade.purefun.core.Nothing;
 import com.github.tonivade.purefun.effect.Task;
 import com.github.tonivade.purefun.effect.URIO;
 import com.github.tonivade.purefun.type.Option;
@@ -24,12 +24,12 @@ public class HttpURIOServiceTest {
   public void ping() {
     HttpURIOService<Nothing> service = new HttpURIOService<Nothing>("test")
         .when(get("/ping")).then(request -> URIO.pure(ok("pong")));
-    
+
     URIO<Nothing, Option<HttpResponse>> execute = service.execute(Requests.get("/ping"));
-    
+
     assertEquals(Option.some(ok("pong")), execute.unsafeRunSync(nothing()));
   }
-  
+
   @Test
   public void echo() {
     HttpURIOService<Nothing> service = new HttpURIOService<Nothing>("test")

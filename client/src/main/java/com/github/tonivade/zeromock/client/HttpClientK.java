@@ -4,8 +4,8 @@
  */
 package com.github.tonivade.zeromock.client;
 
-import static com.github.tonivade.purefun.Precondition.check;
-import static com.github.tonivade.purefun.Precondition.checkNonNull;
+import static com.github.tonivade.purefun.core.Precondition.check;
+import static com.github.tonivade.purefun.core.Precondition.checkNonNull;
 import static com.github.tonivade.zeromock.api.HttpMethod.HEAD;
 import static com.github.tonivade.zeromock.api.HttpMethod.OPTIONS;
 import static com.github.tonivade.zeromock.api.HttpMethod.PATCH;
@@ -51,7 +51,7 @@ public class HttpClientK<F extends Witness> {
   private Kind<F, java.net.http.HttpRequest> createRequest(HttpRequest request) {
     return monad.later(() -> {
         var builder = java.net.http.HttpRequest.newBuilder().uri(URI.create(baseUri.toString() + request.toUrl()));
-        
+
         switch (request.method()) {
         case GET -> builder.GET();
         case DELETE -> builder.DELETE();
@@ -61,11 +61,11 @@ public class HttpClientK<F extends Witness> {
         case HEAD -> builder.method(HEAD.name(), BodyPublishers.noBody());
         case OPTIONS -> builder.method(OPTIONS.name(), BodyPublishers.noBody());
         }
-        
+
         for (var header : request.headers()) {
           builder.header(header.get1(), header.get2());
         }
-        
+
         return builder.build();
       });
   }

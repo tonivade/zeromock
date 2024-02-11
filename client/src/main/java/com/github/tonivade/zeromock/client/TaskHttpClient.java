@@ -10,7 +10,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.reflect.Type;
 
-import com.github.tonivade.purefun.Function1;
+import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.effect.Task;
 import com.github.tonivade.purefun.effect.Task_;
 import com.github.tonivade.purejson.PureJson;
@@ -33,7 +33,7 @@ public class TaskHttpClient implements HttpClientOf<Task_> {
   public Task<HttpResponse> request(HttpRequest request) {
     return client.request(request).fix(toTask());
   }
-  
+
   public static <T> Function1<HttpResponse, Task<T>> parse(Class<T> type) {
     return parse((Type) type);
   }

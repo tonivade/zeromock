@@ -20,8 +20,8 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
-import com.github.tonivade.purefun.Tuple;
-import com.github.tonivade.purefun.Tuple2;
+import com.github.tonivade.purefun.core.Tuple;
+import com.github.tonivade.purefun.core.Tuple2;
 import com.github.tonivade.zeromock.client.AsyncHttpClient;
 import com.github.tonivade.zeromock.client.HttpClient;
 import com.github.tonivade.zeromock.client.HttpClientBuilder;
@@ -40,7 +40,7 @@ public class MockHttpServerExtension
     implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
   private com.sun.net.httpserver.HttpServer server;
-  
+
   private HttpServer serverK;
 
   @Override

@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import com.github.tonivade.purefun.Matcher1;
+import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.zeromock.api.HttpRequest;
 

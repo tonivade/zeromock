@@ -6,8 +6,8 @@ package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.zeromock.api.Bytes.asBytes;
 
-import com.github.tonivade.purefun.Function1;
-import com.github.tonivade.purefun.Producer;
+import com.github.tonivade.purefun.core.Function1;
+import com.github.tonivade.purefun.core.Producer;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.type.Try;
 
@@ -18,11 +18,11 @@ public final class Handlers {
   public static RequestHandler ok() {
     return asFunction(Responses::ok);
   }
-  
+
   public static RequestHandler fromOption(Function1<HttpRequest, Option<Bytes>> handler) {
     return handler.andThen(Responses::fromOption)::apply;
   }
-  
+
   public static RequestHandler fromTry(Function1<HttpRequest, Try<Bytes>> handler) {
     return handler.andThen(Responses::fromTry)::apply;
   }

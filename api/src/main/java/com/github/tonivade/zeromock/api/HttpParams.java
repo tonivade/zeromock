@@ -15,8 +15,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-import com.github.tonivade.purefun.Equal;
-import com.github.tonivade.purefun.Tuple2;
+import com.github.tonivade.purefun.core.Equal;
+import com.github.tonivade.purefun.core.Tuple2;
 import com.github.tonivade.purefun.data.ImmutableMap;
 import com.github.tonivade.purefun.type.Option;
 

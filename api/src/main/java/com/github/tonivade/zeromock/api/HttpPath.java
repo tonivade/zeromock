@@ -11,7 +11,7 @@ import static java.util.stream.Collectors.joining;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import com.github.tonivade.purefun.Equal;
+import com.github.tonivade.purefun.core.Equal;
 import com.github.tonivade.purefun.data.ImmutableList;
 import com.github.tonivade.purefun.type.Option;
 
@@ -94,7 +94,7 @@ public final class HttpPath {
   }
 
   public abstract static class PathElement {
-    
+
     private static final Equal<PathElement> EQUAL = Equal.<PathElement>of()
         .comparing(PathElement::value);
 

@@ -9,7 +9,7 @@ import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static com.github.tonivade.zeromock.server.ResponseInterpreterK.io;
 import static java.util.Objects.requireNonNull;
 
-import com.github.tonivade.purefun.Matcher1;
+import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.purefun.monad.IO_;
@@ -39,7 +39,7 @@ public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO_
   public int getPort() {
     return serverK.getPort();
   }
-  
+
   @Override
   public String getPath() {
     return serverK.getPath();
@@ -99,6 +99,7 @@ public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO_
     return this;
   }
 
+  @Override
   public ThenStepK<IO_, IOMockHttpServer> when(Matcher1<HttpRequest> matcher) {
     return new ThenStepK<>(monad(IO_.class), handler -> addMapping(matcher, handler::apply));
   }

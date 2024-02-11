@@ -10,7 +10,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.reflect.Type;
 
-import com.github.tonivade.purefun.Function1;
+import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purefun.effect.UIO_;
 import com.github.tonivade.purejson.PureJson;
@@ -33,7 +33,7 @@ public class UIOHttpClient implements HttpClientOf<UIO_> {
   public UIO<HttpResponse> request(HttpRequest request) {
     return client.request(request).fix(toUIO());
   }
-  
+
   public static <T> Function1<HttpResponse, UIO<T>> parse(Class<T> type) {
     return parse((Type) type);
   }

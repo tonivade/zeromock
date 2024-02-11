@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import static com.github.tonivade.purefun.Function1.cons;
+import static com.github.tonivade.purefun.core.Function1.cons;
 import static com.github.tonivade.purefun.effect.URIOOf.toURIO;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
@@ -12,7 +12,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.concurrent.Executor;
 
 import com.github.tonivade.purefun.Kind;
-import com.github.tonivade.purefun.Matcher1;
+import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.effect.URIO;
 import com.github.tonivade.purefun.effect.URIO_;

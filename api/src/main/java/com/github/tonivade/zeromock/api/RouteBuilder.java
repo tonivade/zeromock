@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import com.github.tonivade.purefun.Matcher1;
+import com.github.tonivade.purefun.core.Matcher1;
 
 public interface RouteBuilder<T> {
 

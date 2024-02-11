@@ -5,7 +5,7 @@
 package com.github.tonivade.zeromock.junit4;
 
 import org.junit.rules.ExternalResource;
-import com.github.tonivade.purefun.Matcher1;
+import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpRouteBuilder;
 import com.github.tonivade.zeromock.api.HttpService;
@@ -79,6 +79,7 @@ public class MockHttpServerRule extends ExternalResource implements HttpRouteBui
     return this;
   }
 
+  @Override
   public ThenStep<MockHttpServerRule> when(Matcher1<HttpRequest> matcher) {
     return handler -> addMapping(matcher, handler);
   }

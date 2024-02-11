@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.zeromock.junit4;
 
-import static com.github.tonivade.purefun.Nothing.nothing;
+import static com.github.tonivade.purefun.core.Nothing.nothing;
 import static com.github.tonivade.zeromock.api.Bytes.asString;
 import static com.github.tonivade.zeromock.api.Handlers.ok;
 import static com.github.tonivade.zeromock.api.Matchers.get;
@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.github.tonivade.purefun.Nothing;
+import com.github.tonivade.purefun.core.Nothing;
 import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purefun.effect.URIO;
 import com.github.tonivade.purefun.monad.IO;

@@ -4,11 +4,11 @@
  */
 package com.github.tonivade.zeromock.junit4;
 
-import static com.github.tonivade.purefun.Precondition.checkNonNull;
+import static com.github.tonivade.purefun.core.Precondition.checkNonNull;
 
 import org.junit.rules.ExternalResource;
 
-import com.github.tonivade.purefun.Matcher1;
+import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.Witness;
 import com.github.tonivade.purefun.typeclasses.Monad;
 import com.github.tonivade.zeromock.api.HttpRequest;
@@ -57,6 +57,7 @@ public abstract class AbstractMockServerRule<F extends Witness> extends External
     return this;
   }
 
+  @Override
   public ThenStepK<F, AbstractMockServerRule<F>> when(Matcher1<HttpRequest> matcher) {
     return new ThenStepK<>(monad, handler -> addMapping(matcher, handler));
   }
