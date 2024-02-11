@@ -102,7 +102,7 @@ subprojects {
       destinationFile = file("${buildDir}/jacoco/test.exec")
     }
 
-    reports.html.required = false
+    reports.html.required = true
   }
 
   publishing {
