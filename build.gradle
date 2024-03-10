@@ -7,6 +7,7 @@ plugins {
   alias(libs.plugins.sonar)
   alias(libs.plugins.nexus)
   alias(libs.plugins.versions)
+  alias(libs.plugins.errorprone)
 }
 
 apply plugin: 'org.sonarqube'
@@ -44,6 +45,7 @@ allprojects {
   apply plugin: 'jacoco'
   apply plugin: 'maven-publish'
   apply plugin: 'signing'
+  apply plugin: 'net.ltgt.errorprone'
 
   group = 'com.github.tonivade'
 
@@ -104,6 +106,21 @@ subprojects {
 
     reports.html.required = true
   }
+  
+  tasks.withType(JavaCompile) {
+    if (!name.toLowerCase().contains("test")) {
+      options.errorprone {
+        check("NullAway", net.ltgt.gradle.errorprone.CheckSeverity.ERROR)
+        option("NullAway:AnnotatedPackages", "com.github.tonivade.zeromock")
+        option("NullAway:SuggestSuppressions", "true")
+      }
+    } else {
+      options.errorprone {
+        option("NullAway:AnnotatedPackages", "com.github.tonivade.zeromock")
+        option("ExcludedPaths", ".*/src/test/java/.*")
+      }
+    }
+  }
 
   publishing {
     publications {
@@ -152,6 +169,8 @@ subprojects {
   }
 
   dependencies {
+    errorprone libs.nullaway
+    errorprone libs.errorprone
     testImplementation libs.junitJupiter
     testImplementation libs.junitVintage
     testRuntimeOnly libs.junitRunner

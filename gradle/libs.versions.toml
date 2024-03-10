@@ -11,6 +11,9 @@ jsonPathVersion = "2.9.0"
 sonarVersion = "4.4.1.3373"
 versionsVersion = "0.51.0"
 nexusVersion = "1.3.0"
+errorproneVersion = "2.25.0"
+errorpronePluginVersion = "3.1.0"
+nullawayVersion = "0.10.24"
 
 [libraries]
 purefunCore = { group = "com.github.tonivade", name = "purefun-core", version.ref = "purefunVersion" }
@@ -24,11 +27,14 @@ junitJupiter = { group = "org.junit.jupiter", name = "junit-jupiter-engine", ver
 junitVintage = { group = "org.junit.vintage", name = "junit-vintage-engine", version.ref = "junitEngineVersion" }
 junitRunner = { group = "org.junit.platform", name = "junit-platform-runner", version.ref = "junitPlatformVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junitVersion" }
-equalsVerifier= { group = "nl.jqno.equalsverifier", name = "equalsverifier", version.ref = "equalsVerifierVersion" }
-jaxb= { group = "org.glassfish.jaxb", name = "jaxb-runtime", version.ref = "jaxbVersion" }
+equalsVerifier = { group = "nl.jqno.equalsverifier", name = "equalsverifier", version.ref = "equalsVerifierVersion" }
+jaxb = { group = "org.glassfish.jaxb", name = "jaxb-runtime", version.ref = "jaxbVersion" }
 jsonPath= { group = "com.jayway.jsonpath", name = "json-path", version.ref = "jsonPathVersion" }
+nullaway = { group = "com.uber.nullaway", name = "nullaway", version.ref = "nullawayVersion" }
+errorprone = { group = "com.google.errorprone", name = "error_prone_core", version.ref = "errorproneVersion" }
 
 [plugins]
 sonar = { id = "org.sonarqube", version.ref = "sonarVersion" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "versionsVersion" }
 nexus = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "nexusVersion" }
+errorprone = { id = "net.ltgt.errorprone", version.ref = "errorpronePluginVersion"}

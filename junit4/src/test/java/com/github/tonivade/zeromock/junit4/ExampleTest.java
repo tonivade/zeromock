@@ -4,7 +4,6 @@
  */
 package com.github.tonivade.zeromock.junit4;
 
-import static com.github.tonivade.purefun.core.Nothing.nothing;
 import static com.github.tonivade.zeromock.api.Bytes.asString;
 import static com.github.tonivade.zeromock.api.Handlers.ok;
 import static com.github.tonivade.zeromock.api.Matchers.get;
@@ -13,7 +12,6 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.github.tonivade.purefun.core.Nothing;
 import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purefun.effect.URIO;
 import com.github.tonivade.purefun.monad.IO;
@@ -33,7 +31,7 @@ public class ExampleTest {
   @Rule
   public UIOMockHttpServerRule uioServer = new UIOMockHttpServerRule();
   @Rule
-  public URIOMockHttpServerRule<Nothing> urioServer = new URIOMockHttpServerRule<>(nothing());
+  public URIOMockHttpServerRule<Void> urioServer = new URIOMockHttpServerRule<>(null);
 
   @Test
   public void pingSync() {

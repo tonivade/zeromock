@@ -20,6 +20,8 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
+import com.github.tonivade.purefun.Initializer;
+import com.github.tonivade.purefun.Nullable;
 import com.github.tonivade.purefun.core.Tuple;
 import com.github.tonivade.purefun.core.Tuple2;
 import com.github.tonivade.zeromock.client.AsyncHttpClient;
@@ -32,7 +34,7 @@ import com.github.tonivade.zeromock.server.AsyncMockHttpServer;
 import com.github.tonivade.zeromock.server.HttpServer;
 import com.github.tonivade.zeromock.server.IOMockHttpServer;
 import com.github.tonivade.zeromock.server.MockHttpServer;
-import com.github.tonivade.zeromock.server.MockHttpServerK.Builder;
+import com.github.tonivade.zeromock.server.MockHttpServerK;
 import com.github.tonivade.zeromock.server.UIOMockHttpServer;
 import com.github.tonivade.zeromock.server.URIOMockHttpServer;
 
@@ -40,14 +42,15 @@ public class MockHttpServerExtension
     implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
   private com.sun.net.httpserver.HttpServer server;
-
+  @Nullable
   private HttpServer serverK;
 
   @Override
+  @Initializer
   public void beforeAll(ExtensionContext context) {
     Optional<ListenAt> listenAt = listenAt(context);
     int port = listenAt.map(ListenAt::value).orElse(0);
-    this.server = new Builder().port(port).build();
+    this.server = new MockHttpServerK.Builder().port(port).build();
     this.server.start();
   }
 
@@ -64,7 +67,7 @@ public class MockHttpServerExtension
 
   @Override
   public void afterEach(ExtensionContext context) {
-    if (!serverK.getUnmatched().isEmpty()) {
+    if (serverK != null && !serverK.getUnmatched().isEmpty()) {
       context.publishReportEntry("UnmatchedRequests", unmatched());
     }
   }
@@ -157,6 +160,9 @@ public class MockHttpServerExtension
   }
 
   private String unmatched() {
+    if (serverK == null) {
+      return "";
+    }
     return serverK.getUnmatched().join(",", "[", "]");
   }
 

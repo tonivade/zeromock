@@ -8,6 +8,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -74,7 +75,7 @@ public final class HttpPath {
 
   public static HttpPath of(String... path) {
     if (isNull(path)) {
-      throw new IllegalArgumentException("invalid path definition: " + path);
+      throw new IllegalArgumentException("invalid path definition: " + Arrays.toString(path));
     }
     return new HttpPath(ImmutableList.of(path).map(HttpPath::toPathElement));
   }

@@ -4,7 +4,6 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.purefun.core.Nothing.nothing;
 import static com.github.tonivade.purefun.type.Option.some;
 import static com.github.tonivade.purefun.type.Try.success;
 import static com.github.tonivade.zeromock.api.Bytes.asString;
@@ -30,7 +29,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.github.tonivade.purefun.core.Nothing;
 import com.github.tonivade.purefun.data.ImmutableSet;
 import com.github.tonivade.purefun.effect.URIO;
 import com.github.tonivade.purefun.effect.PureIO;
@@ -47,24 +45,24 @@ public class URIOMockHttpServerTest {
 
   private static final String BASE_URL = "http://localhost:%s/path";
 
-  private HttpURIOService<Nothing> service1 = new HttpURIOService<Nothing>("hello")
+  private HttpURIOService<Void> service1 = new HttpURIOService<Void>("hello")
       .when(get().and(path("/hello")).and(param("name")))
-        .then(request -> PureIO.<Nothing, String>task(() -> helloWorld(request)).fold(Responses::error, Responses::ok))
+        .then(request -> PureIO.<Void, String>task(() -> helloWorld(request)).fold(Responses::error, Responses::ok))
       .when(get().and(path("/hello")).and(param("name").negate()))
         .then(request -> URIO.pure(badRequest("missing parameter name")));
 
-  private HttpURIOService<Nothing> service2 = new HttpURIOService<Nothing>("test")
+  private HttpURIOService<Void> service2 = new HttpURIOService<Void>("test")
       .when(get().and(path("/test")).and(acceptsXml()))
-        .then(request -> PureIO.<Nothing, Say>task(this::sayHello).flatMap(objectToXml().andThen(PureIO::fromTry)).fold(Responses::error, Responses::ok).map(contentXml()))
+        .then(request -> PureIO.<Void, Say>task(this::sayHello).flatMap(objectToXml().andThen(PureIO::fromTry)).fold(Responses::error, Responses::ok).map(contentXml()))
       .when(get().and(path("/test")).and(acceptsJson()))
-        .then(request -> PureIO.<Nothing, Say>task(this::sayHello).flatMap(objectToJson(Say.class).andThen(PureIO::fromTry)).fold(Responses::error, Responses::ok).map(contentJson()))
+        .then(request -> PureIO.<Void, Say>task(this::sayHello).flatMap(objectToJson(Say.class).andThen(PureIO::fromTry)).fold(Responses::error, Responses::ok).map(contentJson()))
       .when(get().and(path("/empty")))
         .then(request -> URIO.pure(noContent()));
 
-  private HttpURIOService<Nothing> service3 = new HttpURIOService<Nothing>("other")
+  private HttpURIOService<Void> service3 = new HttpURIOService<Void>("other")
       .when(get("/ping")).then(request -> URIO.pure(ok("pong")));
 
-  private static URIOMockHttpServer<Nothing> server = listenAt(nothing(), 0);
+  private static URIOMockHttpServer<Void> server = listenAt(null, 0);
 
   @Test
   public void hello() {
@@ -129,8 +127,8 @@ public class URIOMockHttpServerTest {
 
   @Test
   public void exec() {
-    URIORequestHandler<Nothing> echo = request -> URIO.pure(ok(request.body()));
-    URIOMockHttpServer<Nothing> server = listenAt(nothing(), 0).exec(echo).start();
+    URIORequestHandler<Void> echo = request -> URIO.pure(ok(request.body()));
+    URIOMockHttpServer<Void> server = listenAt((Void) null, 0).exec(echo).start();
 
     HttpResponse response = connectTo("http://localhost:" + server.getPort()).request(Requests.post("/").withBody("echo"));
 
