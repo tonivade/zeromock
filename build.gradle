@@ -117,7 +117,7 @@ subprojects {
     } else {
       options.errorprone {
         option("NullAway:AnnotatedPackages", "com.github.tonivade.zeromock")
-        option("ExcludedPaths", ".*/src/test/java/.*")
+        excludedPaths = ".*/src/test/java/.*"
       }
     }
   }
