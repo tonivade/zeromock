@@ -20,7 +20,6 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
-import com.github.tonivade.purefun.Initializer;
 import com.github.tonivade.purefun.Nullable;
 import com.github.tonivade.purefun.core.Tuple;
 import com.github.tonivade.purefun.core.Tuple2;
@@ -46,7 +45,6 @@ public class MockHttpServerExtension
   private HttpServer serverK;
 
   @Override
-  @Initializer
   public void beforeAll(ExtensionContext context) {
     Optional<ListenAt> listenAt = listenAt(context);
     int port = listenAt.map(ListenAt::value).orElse(0);

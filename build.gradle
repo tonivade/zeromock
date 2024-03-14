@@ -113,6 +113,7 @@ subprojects {
         check("NullAway", net.ltgt.gradle.errorprone.CheckSeverity.ERROR)
         option("NullAway:AnnotatedPackages", "com.github.tonivade.zeromock")
         option("NullAway:SuggestSuppressions", "true")
+        option("NullAway:KnownInitializers", "org.junit.jupiter.api.extension.BeforeAllCallback.beforeAll")
       }
     } else {
       options.errorprone.enabled = false
