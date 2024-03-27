@@ -4,8 +4,6 @@
  */
 package com.github.tonivade.zeromock.client;
 
-import static com.github.tonivade.zeromock.api.Handlers.ok;
-import static com.github.tonivade.zeromock.api.Matchers.get;
 import static com.github.tonivade.zeromock.client.HttpClientBuilder.asyncClient;
 import static com.github.tonivade.zeromock.client.HttpClientBuilder.client;
 import static com.github.tonivade.zeromock.client.HttpClientBuilder.ioClient;
@@ -31,7 +29,7 @@ import com.github.tonivade.zeromock.server.MockHttpServer;
 
 class HttpClientTest {
 
-  private static final MockHttpServer server = listenAt(0).when(get("/ping")).then(ok("pong"));
+  private static final MockHttpServer server = listenAt(0).get("/ping").ok("pong");
 
   private final HttpRequest ping = Requests.get("/ping");
 
@@ -49,7 +47,7 @@ class HttpClientTest {
 
   @Test
   void async() {
-    Future<HttpResponse> response = asyncClient().connectTo(baseUrl()).request(ping, Future.DEFAULT_EXECUTOR);
+    Future<HttpResponse> response = asyncClient().connectTo(baseUrl()).request(ping);
 
     assertResponse(response.get());
   }

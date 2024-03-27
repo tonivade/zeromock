@@ -5,7 +5,6 @@
 package com.github.tonivade.zeromock.client;
 
 import static com.github.tonivade.purefun.effect.UIOOf.toUIO;
-import static com.github.tonivade.purefun.typeclasses.Instances.async;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.reflect.Type;
@@ -13,6 +12,7 @@ import java.lang.reflect.Type;
 import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purefun.effect.UIO_;
+import com.github.tonivade.purefun.typeclasses.Instances;
 import com.github.tonivade.purejson.PureJson;
 import com.github.tonivade.zeromock.api.Bytes;
 import com.github.tonivade.zeromock.api.HttpRequest;
@@ -27,11 +27,17 @@ public class UIOHttpClient implements HttpClientOf<UIO_> {
   }
 
   public static UIOHttpClient connectTo(String baseUrl) {
-    return new UIOHttpClient(new HttpClientK<>(baseUrl, async(UIO_.class)));
+    return new UIOHttpClient(new HttpClientK<>(baseUrl, Instances.<UIO_>async()));
   }
 
+  @Override
   public UIO<HttpResponse> request(HttpRequest request) {
     return client.request(request).fix(toUIO());
+  }
+
+  @SafeVarargs
+  public static <T> Function1<HttpResponse, UIO<T>> parse(T... reified) {
+    return parse(HttpClientOf.getClassOf(reified));
   }
 
   public static <T> Function1<HttpResponse, UIO<T>> parse(Class<T> type) {

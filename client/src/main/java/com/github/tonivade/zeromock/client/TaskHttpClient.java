@@ -5,7 +5,6 @@
 package com.github.tonivade.zeromock.client;
 
 import static com.github.tonivade.purefun.effect.TaskOf.toTask;
-import static com.github.tonivade.purefun.typeclasses.Instances.async;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.reflect.Type;
@@ -13,6 +12,7 @@ import java.lang.reflect.Type;
 import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.effect.Task;
 import com.github.tonivade.purefun.effect.Task_;
+import com.github.tonivade.purefun.typeclasses.Instances;
 import com.github.tonivade.purejson.PureJson;
 import com.github.tonivade.zeromock.api.Bytes;
 import com.github.tonivade.zeromock.api.HttpRequest;
@@ -27,11 +27,17 @@ public class TaskHttpClient implements HttpClientOf<Task_> {
   }
 
   public static TaskHttpClient connectTo(String baseUrl) {
-    return new TaskHttpClient(new HttpClientK<>(baseUrl, async(Task_.class)));
+    return new TaskHttpClient(new HttpClientK<>(baseUrl, Instances.<Task_>async()));
   }
 
+  @Override
   public Task<HttpResponse> request(HttpRequest request) {
     return client.request(request).fix(toTask());
+  }
+
+  @SafeVarargs
+  public static <T> Function1<HttpResponse, Task<T>> parse(T...reified) {
+    return parse(HttpClientOf.getClassOf(reified));
   }
 
   public static <T> Function1<HttpResponse, Task<T>> parse(Class<T> type) {

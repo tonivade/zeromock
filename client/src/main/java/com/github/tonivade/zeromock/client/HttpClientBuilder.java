@@ -5,10 +5,10 @@
 package com.github.tonivade.zeromock.client;
 
 @FunctionalInterface
-public interface HttpClientBuilder<T extends HttpClientOf<?>> {
+public interface HttpClientBuilder<T> {
 
   T connectTo(String url);
-  
+
   static HttpClientBuilder<HttpClient> client() {
     return HttpClient::connectTo;
   }

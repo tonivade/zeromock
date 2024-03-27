@@ -4,7 +4,6 @@
  */
 package com.github.tonivade.zeromock.client;
 
-import static com.github.tonivade.purefun.typeclasses.Instances.async;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.reflect.Type;
@@ -13,6 +12,7 @@ import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.purefun.monad.IOOf;
 import com.github.tonivade.purefun.monad.IO_;
+import com.github.tonivade.purefun.typeclasses.Instances;
 import com.github.tonivade.purejson.PureJson;
 import com.github.tonivade.zeromock.api.Bytes;
 import com.github.tonivade.zeromock.api.HttpRequest;
@@ -27,11 +27,17 @@ public class IOHttpClient implements HttpClientOf<IO_> {
   }
 
   public static IOHttpClient connectTo(String baseUrl) {
-    return new IOHttpClient(new HttpClientK<>(baseUrl, async(IO_.class)));
+    return new IOHttpClient(new HttpClientK<>(baseUrl, Instances.<IO_>async()));
   }
 
+  @Override
   public IO<HttpResponse> request(HttpRequest request) {
     return client.request(request).fix(IOOf.toIO());
+  }
+
+  @SafeVarargs
+  public static <T> Function1<HttpResponse, IO<T>> parse(T...reified) {
+    return parse(HttpClientOf.getClassOf(reified));
   }
 
   public static <T> Function1<HttpResponse, IO<T>> parse(Class<T> type) {

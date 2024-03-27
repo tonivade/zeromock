@@ -25,12 +25,12 @@ import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpStatus;
 
-public class HttpClientK<F extends Witness> {
+public final class HttpClientK<F extends Witness> implements HttpClientOf<F> {
 
   private final URI baseUri;
   private final Async<F> monad;
 
-  protected HttpClientK(String baseUrl, Async<F> monad) {
+  HttpClientK(String baseUrl, Async<F> monad) {
     this.baseUri = URI.create(baseUrl);
     check(baseUri::isAbsolute);
     this.monad = checkNonNull(monad);
@@ -40,6 +40,7 @@ public class HttpClientK<F extends Witness> {
     return new HttpClientK<>(baseUrl, monad);
   }
 
+  @Override
   public Kind<F, HttpResponse> request(HttpRequest request) {
     return For.with(monad)
         .then(createRequest(request))
