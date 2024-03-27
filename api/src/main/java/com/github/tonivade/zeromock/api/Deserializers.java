@@ -29,20 +29,30 @@ public final class Deserializers {
     return plain().andThen(asJson());
   }
 
+  @SafeVarargs
+  public static <T> Function1<Bytes, Try<T>> xmlToObject(T...reified) {
+    return xmlToObject(getClassOf(reified));
+  }
+
   public static <T> Function1<Bytes, Try<T>> xmlToObject(Class<T> clazz) {
     return bytes -> Try.of(() -> Deserializers.fromXml(bytes, clazz));
   }
 
   public static <T> Function1<Bytes, Try<T>> jsonToObject(Function1<String, T> deserializer) {
-    return _jsonToObject(deserializer.liftTry());
+    return toObject(deserializer.liftTry());
+  }
+
+  @SafeVarargs
+  public static <T> Function1<Bytes, Try<Option<T>>> jsonToObject(T... reified) {
+    return jsonToObject(getClassOf(reified));
   }
 
   public static <T> Function1<Bytes, Try<Option<T>>> jsonToObject(Class<T> clazz) {
-    return _jsonToObject(fromJson(clazz));
+    return toObject(fromJson(clazz));
   }
 
   public static <T> Function1<Bytes, Try<Option<T>>> jsonTo(Type type) {
-    return _jsonToObject(fromJson(type));
+    return toObject(fromJson(type));
   }
 
   public static Function1<Bytes, String> plain() {
@@ -57,7 +67,7 @@ public final class Deserializers {
     return json -> fromJson(json, type);
   }
 
-  public static <T> Function1<Bytes, Try<T>> _jsonToObject(Function1<String, Try<T>> deserializer) {
+  public static <T> Function1<Bytes, Try<T>> toObject(Function1<String, Try<T>> deserializer) {
     return plain().andThen(deserializer);
   }
 
@@ -76,5 +86,13 @@ public final class Deserializers {
 
   private static <T> Try<Option<T>> fromJson(String json, Type type) {
     return new PureJson<T>(type).fromJson(json);
+  }
+
+  @SuppressWarnings("unchecked")
+  private static <T> Class<T> getClassOf(T... reified) {
+    if (reified.length > 0) {
+      throw new IllegalArgumentException("do not pass arguments to this function, it's just a trick to get refied types");
+    }
+    return (Class<T>) reified.getClass().getComponentType();
   }
 }

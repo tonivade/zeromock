@@ -10,7 +10,6 @@ import static com.github.tonivade.zeromock.api.Bytes.asBytes;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.Type;
-
 import org.junit.jupiter.api.Test;
 
 import com.github.tonivade.purefun.core.Tuple;
@@ -26,8 +25,23 @@ import com.github.tonivade.purejson.TypeToken;
 
 class DeserializersTest {
 
-  private final Bytes array = asBytes("[\"a\",\"b\"]");
-  private final Bytes map = asBytes("{\"a\":\"b\"}");
+  private final Bytes array = asBytes("""
+                                      ["a","b"]""");
+  private final Bytes map = asBytes("""
+                                    {"a":"b"}""");
+
+  private final Bytes object = asBytes("""
+    {"key": "a", "value": "b"}""");
+
+  public record TestValue(String key, String value) {}
+
+  @Test
+  void testObject() {
+
+    Try<Option<TestValue>> apply = Deserializers.<TestValue>jsonToObject().apply(object);
+
+    assertEquals(success(some(new TestValue("a", "b"))), apply);
+  }
 
   @Test
   void testList() {

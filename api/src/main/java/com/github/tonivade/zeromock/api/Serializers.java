@@ -24,7 +24,6 @@ import com.github.tonivade.purejson.PureJson;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Marshaller;
 
 public final class Serializers {
 
@@ -35,15 +34,20 @@ public final class Serializers {
   }
 
   public static Function1<Throwable, Try<Bytes>> throwableToJson() {
-    return _objectToJson(Serializers::toJson);
+    return toJson(Serializers::toJson);
+  }
+
+  @SafeVarargs
+  public static <T> Function1<T, Try<Bytes>> objectToJson(T...reified) {
+    return objectToJson(getClassOf(reified));
   }
 
   public static <T> Function1<T, Try<Bytes>> objectToJson(Type type) {
-    return _objectToJson(x -> Serializers.toJson(x, type));
+    return toJson(value -> Serializers.toJson(value, type));
   }
 
   public static <T> Function1<T, Try<Bytes>> objectToJson(Function1<T, String> serializer) {
-    return _objectToJson(serializer.liftTry());
+    return toJson(serializer.liftTry());
   }
 
   public static <T> Function1<T, Try<Bytes>> objectToXml() {
@@ -51,11 +55,11 @@ public final class Serializers {
   }
 
   public static <T> Function1<T, Try<Bytes>> objectToXml(Function1<T, String> serializer) {
-    return _objectToXml(serializer.liftTry());
+    return toXml(serializer.liftTry());
   }
 
   public static <T> Function1<T, Bytes> plain() {
-    return obj -> Bytes.asBytes(obj.toString());
+    return value -> Bytes.asBytes(value.toString());
   }
 
   private static Try<String> toJson(Throwable error) {
@@ -66,19 +70,19 @@ public final class Serializers {
     return new PureJson<>(type).toString(value);
   }
 
-  private static <T> Function1<T, Try<Bytes>> _objectToJson(Function1<T, Try<String>> serializer) {
-    return serializer.andThen(x -> x.map(Bytes::asBytes));
+  private static <T> Function1<T, Try<Bytes>> toJson(Function1<T, Try<String>> serializer) {
+    return serializer.andThen(string -> string.map(Bytes::asBytes));
   }
 
-  private static <T> Function1<T, Try<Bytes>> _objectToXml(Function1<T, Try<String>> serializer) {
-    return serializer.andThen(x -> x.map(Bytes::asBytes));
+  private static <T> Function1<T, Try<Bytes>> toXml(Function1<T, Try<String>> serializer) {
+    return serializer.andThen(string -> string.map(Bytes::asBytes));
   }
 
   private static <T> String toXml(T value) {
     try {
-      JAXBContext context = JAXBContext.newInstance(value.getClass());
-      StringWriter writer = new StringWriter();
-      Marshaller marshaller = context.createMarshaller();
+      var context = JAXBContext.newInstance(value.getClass());
+      var writer = new StringWriter();
+      var marshaller = context.createMarshaller();
       marshaller.marshal(value, writer);
       return writer.toString();
     } catch (JAXBException e) {
@@ -96,5 +100,13 @@ public final class Serializers {
 
   private static JsonNode stacktrace(StackTraceElement[] stackTrace) {
     return array(Stream.of(stackTrace).map(Object::toString).map(JsonDSL::string).toArray(JsonNode[]::new));
+  }
+
+  @SuppressWarnings("unchecked")
+  private static <T> Class<T> getClassOf(T... reified) {
+    if (reified.length > 0) {
+      throw new IllegalArgumentException("do not pass arguments to this function, it's just a trick to get refied types");
+    }
+    return (Class<T>) reified.getClass().getComponentType();
   }
 }
