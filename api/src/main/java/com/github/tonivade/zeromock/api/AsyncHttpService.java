@@ -5,31 +5,31 @@
 package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.purefun.concurrent.FutureOf.toFuture;
-import static com.github.tonivade.purefun.typeclasses.Instances.monad;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.Executor;
 
-import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
-import com.github.tonivade.purefun.concurrent.Future_;
 import com.github.tonivade.purefun.concurrent.Promise;
+import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.type.Option;
+import com.github.tonivade.purefun.typeclasses.Instance;
+import com.github.tonivade.purefun.typeclasses.Instances;
 
-public final class AsyncHttpService implements HttpRouteBuilderK<Future_, AsyncHttpService> {
+public final class AsyncHttpService implements HttpRouteBuilderK<Future<?>, AsyncHttpService> {
 
-  private final HttpServiceK<Future_> serviceK;
+  private final HttpServiceK<Future<?>> serviceK;
 
   public AsyncHttpService(String name) {
     this(name, Future.DEFAULT_EXECUTOR);
   }
 
   public AsyncHttpService(String name, Executor executor) {
-    this(new HttpServiceK<>(name, monad(Future_.class, executor)));
+    this(new HttpServiceK<>(name, new Instance<Future<?>>() {}.monad(executor)));
   }
 
-  private AsyncHttpService(HttpServiceK<Future_> serviceK) {
+  private AsyncHttpService(HttpServiceK<Future<?>> serviceK) {
     this.serviceK = requireNonNull(serviceK);
   }
 
@@ -37,7 +37,7 @@ public final class AsyncHttpService implements HttpRouteBuilderK<Future_, AsyncH
     return serviceK.name();
   }
 
-  public HttpServiceK<Future_> build() {
+  public HttpServiceK<Future<?>> build() {
     return serviceK;
   }
 
@@ -49,8 +49,8 @@ public final class AsyncHttpService implements HttpRouteBuilderK<Future_, AsyncH
     return new AsyncHttpService(serviceK.exec(handler));
   }
 
-  public ThenStepK<Future_, AsyncHttpService> preFilter(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(monad(Future_.class), handler -> addPreFilter(matcher, handler::apply));
+  public ThenStepK<Future<?>, AsyncHttpService> preFilter(Matcher1<HttpRequest> matcher) {
+    return new ThenStepK<>(Instances.<Future<?>>monad(), handler -> addPreFilter(matcher, handler::apply));
   }
 
   public AsyncHttpService preFilter(PreFilter filter) {
@@ -70,8 +70,8 @@ public final class AsyncHttpService implements HttpRouteBuilderK<Future_, AsyncH
   }
 
   @Override
-  public ThenStepK<Future_, AsyncHttpService> when(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(monad(Future_.class), handler -> addMapping(matcher, handler::apply));
+  public ThenStepK<Future<?>, AsyncHttpService> when(Matcher1<HttpRequest> matcher) {
+    return new ThenStepK<>(Instances.<Future<?>>monad(), handler -> addMapping(matcher, handler::apply));
   }
 
   public Promise<Option<HttpResponse>> execute(HttpRequest request) {
@@ -87,7 +87,7 @@ public final class AsyncHttpService implements HttpRouteBuilderK<Future_, AsyncH
   }
 
   private AsyncHttpService addPreFilter(Matcher1<HttpRequest> matcher, AsyncRequestHandler handler) {
-    return preFilter(filter(monad(Future_.class), matcher, handler)::apply);
+    return preFilter(filter(Instances.<Future<?>>monad(), matcher, handler)::apply);
   }
 
   @Override

@@ -8,16 +8,16 @@ import static com.github.tonivade.purefun.core.Producer.cons;
 import static com.github.tonivade.zeromock.server.URIOMockHttpServer.builder;
 
 import com.github.tonivade.purefun.Kind;
-import com.github.tonivade.purefun.effect.URIO_;
+import com.github.tonivade.purefun.effect.URIO;
 import com.github.tonivade.purefun.typeclasses.Instance;
 
-public class URIOMockHttpServerRule<R> extends AbstractMockServerRule<Kind<URIO_, R>> {
+public class URIOMockHttpServerRule<R> extends AbstractMockServerRule<Kind<URIO<?, ?>, R>> {
 
   public URIOMockHttpServerRule(R env) {
      this(env, 0);
   }
 
   public URIOMockHttpServerRule(R env, int port) {
-    super(new Instance<Kind<URIO_, R>>() {}.monad(), builder(cons(env)).port(port).buildK());
+    super(new Instance<Kind<URIO<?, ?>, R>>() {}.monad(), builder(cons(env)).port(port).buildK());
   }
 }

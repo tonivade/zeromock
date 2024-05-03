@@ -8,9 +8,8 @@ import static com.github.tonivade.purefun.effect.URIOOf.toURIO;
 
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.effect.URIO;
-import com.github.tonivade.purefun.effect.URIO_;
 
-public interface URIOPostFilter<R> extends PostFilterK<Kind<URIO_, R>> {
+public interface URIOPostFilter<R> extends PostFilterK<Kind<URIO<?, ?>, R>> {
 
   @Override
   default URIO<R, HttpResponse> apply(HttpResponse value) {

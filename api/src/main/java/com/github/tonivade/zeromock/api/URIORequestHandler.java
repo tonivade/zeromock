@@ -8,10 +8,9 @@ import static com.github.tonivade.purefun.effect.URIOOf.toURIO;
 
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.effect.URIO;
-import com.github.tonivade.purefun.effect.URIO_;
 import com.github.tonivade.purefun.instances.URIOInstances;
 
-public interface URIORequestHandler<R> extends RequestHandlerK<Kind<URIO_, R>> {
+public interface URIORequestHandler<R> extends RequestHandlerK<Kind<URIO<?, ?>, R>> {
 
   @Override
   default URIO<R, HttpResponse> apply(HttpRequest value) {

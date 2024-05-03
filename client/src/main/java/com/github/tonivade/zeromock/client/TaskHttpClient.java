@@ -11,23 +11,22 @@ import java.lang.reflect.Type;
 
 import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.effect.Task;
-import com.github.tonivade.purefun.effect.Task_;
 import com.github.tonivade.purefun.typeclasses.Instances;
 import com.github.tonivade.purejson.PureJson;
 import com.github.tonivade.zeromock.api.Bytes;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 
-public class TaskHttpClient implements HttpClientOf<Task_> {
+public class TaskHttpClient implements HttpClientOf<Task<?>> {
 
-  private final HttpClientK<Task_> client;
+  private final HttpClientK<Task<?>> client;
 
-  private TaskHttpClient(HttpClientK<Task_> client) {
+  private TaskHttpClient(HttpClientK<Task<?>> client) {
     this.client = requireNonNull(client);
   }
 
   public static TaskHttpClient connectTo(String baseUrl) {
-    return new TaskHttpClient(new HttpClientK<>(baseUrl, Instances.<Task_>async()));
+    return new TaskHttpClient(new HttpClientK<>(baseUrl, Instances.async()));
   }
 
   @Override

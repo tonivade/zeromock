@@ -4,15 +4,14 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.purefun.typeclasses.Instances.monad;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static com.github.tonivade.zeromock.server.ResponseInterpreterK.async;
 import static java.util.Objects.requireNonNull;
 
-import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
-import com.github.tonivade.purefun.concurrent.Future_;
+import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.data.Sequence;
+import com.github.tonivade.purefun.typeclasses.Instances;
 import com.github.tonivade.zeromock.api.AsyncHttpService;
 import com.github.tonivade.zeromock.api.AsyncPostFilter;
 import com.github.tonivade.zeromock.api.AsyncPreFilter;
@@ -23,15 +22,15 @@ import com.github.tonivade.zeromock.api.PostFilter;
 import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.server.MockHttpServerK.BuilderK;
 
-public final class AsyncMockHttpServer implements HttpServer, HttpRouteBuilderK<Future_, AsyncMockHttpServer> {
+public final class AsyncMockHttpServer implements HttpServer, HttpRouteBuilderK<Future<?>, AsyncMockHttpServer> {
 
-  private final MockHttpServerK<Future_> serverK;
+  private final MockHttpServerK<Future<?>> serverK;
 
   public AsyncMockHttpServer(com.sun.net.httpserver.HttpServer server) {
-    this(new MockHttpServerK<>(server, monad(Future_.class), async()));
+    this(new MockHttpServerK<>(server, Instances.monad(), async()));
   }
 
-  private AsyncMockHttpServer(MockHttpServerK<Future_> serverK) {
+  private AsyncMockHttpServer(MockHttpServerK<Future<?>> serverK) {
     this.serverK = requireNonNull(serverK);
   }
 
@@ -45,8 +44,8 @@ public final class AsyncMockHttpServer implements HttpServer, HttpRouteBuilderK<
     return serverK.getPath();
   }
 
-  public static BuilderK<Future_, AsyncMockHttpServer> builder() {
-    return new BuilderK<>(monad(Future_.class), async()) {
+  public static BuilderK<Future<?>, AsyncMockHttpServer> builder() {
+    return new BuilderK<>(Instances.monad(), async()) {
       @Override
       public AsyncMockHttpServer build() {
         return new AsyncMockHttpServer(buildK());
@@ -72,8 +71,8 @@ public final class AsyncMockHttpServer implements HttpServer, HttpRouteBuilderK<
     return this;
   }
 
-  public ThenStepK<Future_, AsyncMockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(monad(Future_.class), handler -> addPreFilter(matcher, handler::apply));
+  public ThenStepK<Future<?>, AsyncMockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
+    return new ThenStepK<>(Instances.monad(), handler -> addPreFilter(matcher, handler::apply));
   }
 
   public AsyncMockHttpServer preFilter(PreFilter filter) {
@@ -100,13 +99,13 @@ public final class AsyncMockHttpServer implements HttpServer, HttpRouteBuilderK<
   }
 
   public AsyncMockHttpServer addPreFilter(Matcher1<HttpRequest> matcher, AsyncRequestHandler handler) {
-    serverK.preFilter(filter(monad(Future_.class), matcher, handler));
+    serverK.preFilter(filter(Instances.monad(), matcher, handler));
     return this;
   }
 
   @Override
-  public ThenStepK<Future_, AsyncMockHttpServer> when(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(monad(Future_.class), handler -> addMapping(matcher, handler::apply));
+  public ThenStepK<Future<?>, AsyncMockHttpServer> when(Matcher1<HttpRequest> matcher) {
+    return new ThenStepK<>(Instances.monad(), handler -> addMapping(matcher, handler::apply));
   }
 
   @Override

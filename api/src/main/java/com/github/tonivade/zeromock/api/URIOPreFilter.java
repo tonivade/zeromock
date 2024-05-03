@@ -7,10 +7,9 @@ package com.github.tonivade.zeromock.api;
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.effect.URIO;
 import com.github.tonivade.purefun.effect.URIOOf;
-import com.github.tonivade.purefun.effect.URIO_;
 import com.github.tonivade.purefun.type.Either;
 
-public interface URIOPreFilter<R> extends PreFilterK<Kind<URIO_, R>> {
+public interface URIOPreFilter<R> extends PreFilterK<Kind<URIO<?, ?>, R>> {
 
   @Override
   default URIO<R, Either<HttpResponse, HttpRequest>> apply(HttpRequest value) {

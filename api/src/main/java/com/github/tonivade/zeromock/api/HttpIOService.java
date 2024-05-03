@@ -5,31 +5,23 @@
 package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.purefun.monad.IOOf.toIO;
-import static com.github.tonivade.purefun.typeclasses.Instances.concurrent;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
 
-import java.util.concurrent.Executor;
-
 import com.github.tonivade.purefun.core.Matcher1;
-import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.monad.IO;
-import com.github.tonivade.purefun.monad.IO_;
 import com.github.tonivade.purefun.type.Option;
+import com.github.tonivade.purefun.typeclasses.Instances;
 
-public final class HttpIOService implements HttpRouteBuilderK<IO_, HttpIOService> {
+public final class HttpIOService implements HttpRouteBuilderK<IO<?>, HttpIOService> {
 
-  private final HttpServiceK<IO_> serviceK;
+  private final HttpServiceK<IO<?>> serviceK;
 
   public HttpIOService(String name) {
-    this(name, Future.DEFAULT_EXECUTOR);
+    this(new HttpServiceK<>(name, Instances.monad()));
   }
 
-  public HttpIOService(String name, Executor executor) {
-    this(new HttpServiceK<>(name, concurrent(IO_.class, executor)));
-  }
-
-  private HttpIOService(HttpServiceK<IO_> serviceK) {
+  private HttpIOService(HttpServiceK<IO<?>> serviceK) {
     this.serviceK = requireNonNull(serviceK);
   }
 
@@ -45,7 +37,7 @@ public final class HttpIOService implements HttpRouteBuilderK<IO_, HttpIOService
     return new HttpIOService(serviceK.exec(handler));
   }
 
-  public ThenStepK<IO_, HttpIOService> preFilter(Matcher1<HttpRequest> matcher) {
+  public ThenStepK<IO<?>, HttpIOService> preFilter(Matcher1<HttpRequest> matcher) {
     return new ThenStepK<>(serviceK.monad(), handler -> addPreFilter(matcher, handler::apply));
   }
 
@@ -66,7 +58,7 @@ public final class HttpIOService implements HttpRouteBuilderK<IO_, HttpIOService
   }
 
   @Override
-  public ThenStepK<IO_, HttpIOService> when(Matcher1<HttpRequest> matcher) {
+  public ThenStepK<IO<?>, HttpIOService> when(Matcher1<HttpRequest> matcher) {
     return new ThenStepK<>(serviceK.monad(), handler -> addMapping(matcher, handler::apply));
   }
 
@@ -78,7 +70,7 @@ public final class HttpIOService implements HttpRouteBuilderK<IO_, HttpIOService
     return new HttpIOService(serviceK.combine(other.serviceK));
   }
 
-  public HttpServiceK<IO_> build() {
+  public HttpServiceK<IO<?>> build() {
     return serviceK;
   }
 

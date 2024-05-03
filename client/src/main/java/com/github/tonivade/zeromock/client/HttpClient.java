@@ -6,28 +6,30 @@ package com.github.tonivade.zeromock.client;
 
 import static com.github.tonivade.purefun.monad.IOOf.toIO;
 import static java.util.Objects.requireNonNull;
+
+import java.lang.reflect.Type;
+
 import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.effect.Task;
-import com.github.tonivade.purefun.monad.IO_;
+import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.purefun.type.Try;
 import com.github.tonivade.purefun.typeclasses.Instances;
 import com.github.tonivade.purejson.PureJson;
 import com.github.tonivade.zeromock.api.Bytes;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
-import java.lang.reflect.Type;
 
 public class HttpClient {
 
   // using IO here because there's no instance for MonadDefer for Id
-  private final HttpClientK<IO_> client;
+  private final HttpClientK<IO<?>> client;
 
-  private HttpClient(HttpClientK<IO_> client) {
+  private HttpClient(HttpClientK<IO<?>> client) {
     this.client = requireNonNull(client);
   }
 
   public static HttpClient connectTo(String baseUrl) {
-    return new HttpClient(new HttpClientK<>(baseUrl, Instances.<IO_>async()));
+    return new HttpClient(new HttpClientK<>(baseUrl, Instances.async()));
   }
 
   public HttpResponse request(HttpRequest request) {

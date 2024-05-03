@@ -11,23 +11,22 @@ import java.lang.reflect.Type;
 
 import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.effect.UIO;
-import com.github.tonivade.purefun.effect.UIO_;
 import com.github.tonivade.purefun.typeclasses.Instances;
 import com.github.tonivade.purejson.PureJson;
 import com.github.tonivade.zeromock.api.Bytes;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 
-public class UIOHttpClient implements HttpClientOf<UIO_> {
+public class UIOHttpClient implements HttpClientOf<UIO<?>> {
 
-  private final HttpClientK<UIO_> client;
+  private final HttpClientK<UIO<?>> client;
 
-  private UIOHttpClient(HttpClientK<UIO_> client) {
+  private UIOHttpClient(HttpClientK<UIO<?>> client) {
     this.client = requireNonNull(client);
   }
 
   public static UIOHttpClient connectTo(String baseUrl) {
-    return new UIOHttpClient(new HttpClientK<>(baseUrl, Instances.<UIO_>async()));
+    return new UIOHttpClient(new HttpClientK<>(baseUrl, Instances.async()));
   }
 
   @Override

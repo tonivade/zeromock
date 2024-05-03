@@ -11,14 +11,13 @@ import static com.github.tonivade.purefun.monad.IOOf.toIO;
 import static com.github.tonivade.purefun.type.IdOf.toId;
 
 import com.github.tonivade.purefun.Kind;
-import com.github.tonivade.purefun.core.Producer;
-
-import com.github.tonivade.purefun.concurrent.Future_;
+import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.concurrent.Promise;
-import com.github.tonivade.purefun.effect.UIO_;
-import com.github.tonivade.purefun.effect.URIO_;
-import com.github.tonivade.purefun.monad.IO_;
-import com.github.tonivade.purefun.type.Id_;
+import com.github.tonivade.purefun.core.Producer;
+import com.github.tonivade.purefun.effect.UIO;
+import com.github.tonivade.purefun.effect.URIO;
+import com.github.tonivade.purefun.monad.IO;
+import com.github.tonivade.purefun.type.Id;
 import com.github.tonivade.zeromock.api.HttpResponse;
 
 @FunctionalInterface
@@ -26,23 +25,23 @@ public interface ResponseInterpreterK<F> {
 
   Promise<HttpResponse> run(Kind<F, HttpResponse> response);
 
-  static ResponseInterpreterK<IO_> io() {
+  static ResponseInterpreterK<IO<?>> io() {
     return response -> response.fix(toIO()).runAsync().toPromise();
   }
 
-  static ResponseInterpreterK<UIO_> uio() {
+  static ResponseInterpreterK<UIO<?>> uio() {
     return response -> response.fix(toUIO()).runAsync().toPromise();
   }
 
-  static <R> ResponseInterpreterK<Kind<URIO_, R>> urio(Producer<R> env) {
+  static <R> ResponseInterpreterK<Kind<URIO<?, ?>, R>> urio(Producer<R> env) {
     return response -> response.fix(toURIO()).runAsync(env.get()).toPromise();
   }
 
-  static ResponseInterpreterK<Id_> sync() {
+  static ResponseInterpreterK<Id<?>> sync() {
     return response -> Promise.<HttpResponse>make().succeeded(response.fix(toId()).value());
   }
 
-  static ResponseInterpreterK<Future_> async() {
+  static ResponseInterpreterK<Future<?>> async() {
     return response -> response.fix(toFuture()).toPromise();
   }
 }

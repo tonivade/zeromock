@@ -4,7 +4,6 @@
  */
 package com.github.tonivade.zeromock.server;
 
-import static com.github.tonivade.purefun.typeclasses.Instances.monad;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static com.github.tonivade.zeromock.server.ResponseInterpreterK.io;
 import static java.util.Objects.requireNonNull;
@@ -12,7 +11,7 @@ import static java.util.Objects.requireNonNull;
 import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.monad.IO;
-import com.github.tonivade.purefun.monad.IO_;
+import com.github.tonivade.purefun.typeclasses.Instances;
 import com.github.tonivade.zeromock.api.HttpIOService;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpRouteBuilderK;
@@ -23,15 +22,15 @@ import com.github.tonivade.zeromock.api.PostFilter;
 import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.server.MockHttpServerK.BuilderK;
 
-public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO_, IOMockHttpServer> {
+public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO<?>, IOMockHttpServer> {
 
-  private final MockHttpServerK<IO_> serverK;
+  private final MockHttpServerK<IO<?>> serverK;
 
   public IOMockHttpServer(com.sun.net.httpserver.HttpServer server) {
-    this(new MockHttpServerK<>(server, monad(IO_.class), io()));
+    this(new MockHttpServerK<>(server, Instances.monad(), io()));
   }
 
-  private IOMockHttpServer(MockHttpServerK<IO_> serverK) {
+  private IOMockHttpServer(MockHttpServerK<IO<?>> serverK) {
     this.serverK = requireNonNull(serverK);
   }
 
@@ -45,7 +44,7 @@ public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO_
     return serverK.getPath();
   }
 
-  public static BuilderK<IO_, IOMockHttpServer> builder() {
+  public static BuilderK<IO<?>, IOMockHttpServer> builder() {
     return builder(io());
   }
 
@@ -67,8 +66,8 @@ public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO_
     return this;
   }
 
-  public ThenStepK<IO_, IOMockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(monad(IO_.class), handler -> addPreFilter(matcher, handler::apply));
+  public ThenStepK<IO<?>, IOMockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
+    return new ThenStepK<>(Instances.monad(), handler -> addPreFilter(matcher, handler::apply));
   }
 
   public IOMockHttpServer preFilter(PreFilter filter) {
@@ -95,13 +94,13 @@ public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO_
   }
 
   public IOMockHttpServer addPreFilter(Matcher1<HttpRequest> matcher, IORequestHandler handler) {
-    serverK.preFilter(filter(monad(IO_.class), matcher, handler));
+    serverK.preFilter(filter(Instances.monad(), matcher, handler));
     return this;
   }
 
   @Override
-  public ThenStepK<IO_, IOMockHttpServer> when(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(monad(IO_.class), handler -> addMapping(matcher, handler::apply));
+  public ThenStepK<IO<?>, IOMockHttpServer> when(Matcher1<HttpRequest> matcher) {
+    return new ThenStepK<>(Instances.monad(), handler -> addMapping(matcher, handler::apply));
   }
 
   @Override
@@ -137,8 +136,8 @@ public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO_
     serverK.reset();
   }
 
-  private static BuilderK<IO_, IOMockHttpServer> builder(ResponseInterpreterK<IO_> interpreter) {
-    return new BuilderK<>(monad(IO_.class), interpreter) {
+  private static BuilderK<IO<?>, IOMockHttpServer> builder(ResponseInterpreterK<IO<?>> interpreter) {
+    return new BuilderK<>(Instances.monad(), interpreter) {
       @Override
       public IOMockHttpServer build() {
         return new IOMockHttpServer(buildK());

@@ -9,30 +9,22 @@ import static com.github.tonivade.purefun.effect.URIOOf.toURIO;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
 
-import java.util.concurrent.Executor;
-
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.core.Matcher1;
-import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.effect.URIO;
-import com.github.tonivade.purefun.effect.URIO_;
 import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.typeclasses.Instance;
 
-public final class HttpURIOService<R> implements HttpRouteBuilderK<Kind<URIO_, R>, HttpURIOService<R>> {
+public final class HttpURIOService<R> implements HttpRouteBuilderK<Kind<URIO<?, ?>, R>, HttpURIOService<R>> {
 
-  private final HttpServiceK<Kind<URIO_, R>> serviceK;
+  private final HttpServiceK<Kind<URIO<?, ?>, R>> serviceK;
 
   public HttpURIOService(String name) {
-    this(name, Future.DEFAULT_EXECUTOR);
+    this(new HttpServiceK<>(name, new Instance<Kind<URIO<?, ?>, R>>() {}.monad()));
   }
 
-  public HttpURIOService(String name, Executor executor) {
-    this(new HttpServiceK<>(name, new Instance<Kind<URIO_, R>>() {}.concurrent(executor)));
-  }
-
-  private HttpURIOService(HttpServiceK<Kind<URIO_, R>> serviceK) {
+  private HttpURIOService(HttpServiceK<Kind<URIO<?, ?>, R>> serviceK) {
     this.serviceK = requireNonNull(serviceK);
   }
 
@@ -48,7 +40,7 @@ public final class HttpURIOService<R> implements HttpRouteBuilderK<Kind<URIO_, R
     return new HttpURIOService<>(serviceK.exec(cons(method)::apply));
   }
 
-  public ThenStepK<Kind<URIO_, R>, HttpURIOService<R>> preFilter(Matcher1<HttpRequest> matcher) {
+  public ThenStepK<Kind<URIO<?, ?>, R>, HttpURIOService<R>> preFilter(Matcher1<HttpRequest> matcher) {
     return new ThenStepK<>(serviceK.monad(), handler -> addPreFilter(matcher, handler::apply));
   }
 
@@ -69,7 +61,7 @@ public final class HttpURIOService<R> implements HttpRouteBuilderK<Kind<URIO_, R
   }
 
   @Override
-  public ThenStepK<Kind<URIO_, R>, HttpURIOService<R>> when(Matcher1<HttpRequest> matcher) {
+  public ThenStepK<Kind<URIO<?, ?>, R>, HttpURIOService<R>> when(Matcher1<HttpRequest> matcher) {
     return new ThenStepK<>(serviceK.monad(), handler -> addMapping(matcher, handler::apply));
   }
 
@@ -81,7 +73,7 @@ public final class HttpURIOService<R> implements HttpRouteBuilderK<Kind<URIO_, R
     return new HttpURIOService<>(this.serviceK.combine(other.serviceK));
   }
 
-  public HttpServiceK<Kind<URIO_, R>> build() {
+  public HttpServiceK<Kind<URIO<?, ?>, R>> build() {
     return serviceK;
   }
 

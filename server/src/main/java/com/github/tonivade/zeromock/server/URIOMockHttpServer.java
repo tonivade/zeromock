@@ -14,7 +14,6 @@ import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.core.Producer;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.effect.URIO;
-import com.github.tonivade.purefun.effect.URIO_;
 import com.github.tonivade.purefun.instances.URIOInstances;
 import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.purefun.typeclasses.Instance;
@@ -29,11 +28,11 @@ import com.github.tonivade.zeromock.api.URIOPreFilter;
 import com.github.tonivade.zeromock.api.URIORequestHandler;
 import com.github.tonivade.zeromock.server.MockHttpServerK.BuilderK;
 
-public final class URIOMockHttpServer<R> implements HttpServer, HttpRouteBuilderK<Kind<URIO_, R>, URIOMockHttpServer<R>> {
+public final class URIOMockHttpServer<R> implements HttpServer, HttpRouteBuilderK<Kind<URIO<?, ?>, R>, URIOMockHttpServer<R>> {
 
-  private final MockHttpServerK<Kind<URIO_, R>> serverK;
+  private final MockHttpServerK<Kind<URIO<?, ?>, R>> serverK;
 
-  private URIOMockHttpServer(MockHttpServerK<Kind<URIO_, R>> serverK) {
+  private URIOMockHttpServer(MockHttpServerK<Kind<URIO<?, ?>, R>> serverK) {
     this.serverK = requireNonNull(serverK);
   }
 
@@ -47,7 +46,7 @@ public final class URIOMockHttpServer<R> implements HttpServer, HttpRouteBuilder
     return serverK.getPath();
   }
 
-  public static <R> BuilderK<Kind<URIO_, R>, URIOMockHttpServer<R>> builder(Producer<R> factory) {
+  public static <R> BuilderK<Kind<URIO<?, ?>, R>, URIOMockHttpServer<R>> builder(Producer<R> factory) {
     return builder(urio(factory));
   }
 
@@ -69,8 +68,8 @@ public final class URIOMockHttpServer<R> implements HttpServer, HttpRouteBuilder
     return this;
   }
 
-  public ThenStepK<Kind<URIO_, R>, URIOMockHttpServer<R>> preFilter(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(new Instance<Kind<URIO_, R>>() {}.monad(), handler -> addPreFilter(matcher, handler::apply));
+  public ThenStepK<Kind<URIO<?, ?>, R>, URIOMockHttpServer<R>> preFilter(Matcher1<HttpRequest> matcher) {
+    return new ThenStepK<>(new Instance<Kind<URIO<?, ?>, R>>() {}.monad(), handler -> addPreFilter(matcher, handler::apply));
   }
 
   public URIOMockHttpServer<R> preFilter(PreFilter filter) {
@@ -102,8 +101,8 @@ public final class URIOMockHttpServer<R> implements HttpServer, HttpRouteBuilder
   }
 
   @Override
-  public ThenStepK<Kind<URIO_, R>, URIOMockHttpServer<R>> when(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(new Instance<Kind<URIO_, R>>() {}.monad(), handler -> addMapping(matcher, handler::apply));
+  public ThenStepK<Kind<URIO<?, ?>, R>, URIOMockHttpServer<R>> when(Matcher1<HttpRequest> matcher) {
+    return new ThenStepK<>(new Instance<Kind<URIO<?, ?>, R>>() {}.monad(), handler -> addMapping(matcher, handler::apply));
   }
 
   @Override
@@ -139,8 +138,8 @@ public final class URIOMockHttpServer<R> implements HttpServer, HttpRouteBuilder
     serverK.reset();
   }
 
-  private static <R> BuilderK<Kind<URIO_, R>, URIOMockHttpServer<R>> builder(
-      ResponseInterpreterK<Kind<URIO_, R>> urioAsync) {
+  private static <R> BuilderK<Kind<URIO<?, ?>, R>, URIOMockHttpServer<R>> builder(
+      ResponseInterpreterK<Kind<URIO<?, ?>, R>> urioAsync) {
     return new BuilderK<>(monad(), urioAsync) {
       @Override
       public URIOMockHttpServer<R> build() {

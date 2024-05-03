@@ -11,23 +11,22 @@ import java.lang.reflect.Type;
 import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.purefun.monad.IOOf;
-import com.github.tonivade.purefun.monad.IO_;
 import com.github.tonivade.purefun.typeclasses.Instances;
 import com.github.tonivade.purejson.PureJson;
 import com.github.tonivade.zeromock.api.Bytes;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 
-public class IOHttpClient implements HttpClientOf<IO_> {
+public class IOHttpClient implements HttpClientOf<IO<?>> {
 
-  private final HttpClientK<IO_> client;
+  private final HttpClientK<IO<?>> client;
 
-  private IOHttpClient(HttpClientK<IO_> client) {
+  private IOHttpClient(HttpClientK<IO<?>> client) {
     this.client = requireNonNull(client);
   }
 
   public static IOHttpClient connectTo(String baseUrl) {
-    return new IOHttpClient(new HttpClientK<>(baseUrl, Instances.<IO_>async()));
+    return new IOHttpClient(new HttpClientK<>(baseUrl, Instances.async()));
   }
 
   @Override

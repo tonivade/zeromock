@@ -7,9 +7,8 @@ package com.github.tonivade.zeromock.api;
 import com.github.tonivade.purefun.instances.IOInstances;
 import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.purefun.monad.IOOf;
-import com.github.tonivade.purefun.monad.IO_;
 
-public interface IORequestHandler extends RequestHandlerK<IO_> {
+public interface IORequestHandler extends RequestHandlerK<IO<?>> {
 
   @Override
   default IO<HttpResponse> apply(HttpRequest value) {
