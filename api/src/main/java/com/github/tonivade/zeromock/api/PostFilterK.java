@@ -6,6 +6,6 @@ package com.github.tonivade.zeromock.api;
 
 import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.Kind;
-import com.github.tonivade.purefun.Witness;
 
-public interface PostFilterK<F extends Witness> extends Function1<HttpResponse, Kind<F, HttpResponse>> { }
+
+public interface PostFilterK<F> extends Function1<HttpResponse, Kind<F, HttpResponse>> { }

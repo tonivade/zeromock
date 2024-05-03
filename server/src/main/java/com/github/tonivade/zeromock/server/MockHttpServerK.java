@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Nullable;
 import com.github.tonivade.purefun.core.Matcher1;
-import com.github.tonivade.purefun.Witness;
+
 import com.github.tonivade.purefun.data.ImmutableList;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.type.Option;
@@ -46,7 +46,7 @@ import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
-public class MockHttpServerK<F extends Witness> implements com.github.tonivade.zeromock.server.HttpServer, HttpRouteBuilderK<F, MockHttpServerK<F>> {
+public class MockHttpServerK<F> implements com.github.tonivade.zeromock.server.HttpServer, HttpRouteBuilderK<F, MockHttpServerK<F>> {
 
   private static final Logger LOG = LoggerFactory.getLogger(MockHttpServerK.class);
 
@@ -218,7 +218,7 @@ public class MockHttpServerK<F extends Witness> implements com.github.tonivade.z
     }
   }
 
-  public abstract static class BuilderK<F extends Witness, T extends com.github.tonivade.zeromock.server.HttpServer> {
+  public abstract static class BuilderK<F, T extends com.github.tonivade.zeromock.server.HttpServer> {
 
     private final Monad<F> monad;
     private final ResponseInterpreterK<F> interpreter;

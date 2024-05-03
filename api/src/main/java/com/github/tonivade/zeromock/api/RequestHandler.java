@@ -7,7 +7,7 @@ package com.github.tonivade.zeromock.api;
 import static com.github.tonivade.purefun.core.Function1.identity;
 
 import com.github.tonivade.purefun.core.Function1;
-import com.github.tonivade.purefun.Witness;
+
 import com.github.tonivade.purefun.typeclasses.Monad;
 
 @FunctionalInterface
@@ -21,7 +21,7 @@ public interface RequestHandler extends Function1<HttpRequest, HttpResponse> {
     return andThen(after)::apply;
   }
 
-  default <F extends Witness> RequestHandlerK<F> lift(Monad<F> monad) {
+  default <F> RequestHandlerK<F> lift(Monad<F> monad) {
     return andThen(monad::pure)::apply;
   }
 }

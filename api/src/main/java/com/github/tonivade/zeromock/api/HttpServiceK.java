@@ -16,7 +16,7 @@ import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.core.PartialFunction1;
-import com.github.tonivade.purefun.Witness;
+
 import com.github.tonivade.purefun.instances.OptionInstances;
 import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.purefun.type.Option;
@@ -24,7 +24,7 @@ import com.github.tonivade.purefun.type.OptionOf;
 import com.github.tonivade.purefun.typeclasses.For;
 import com.github.tonivade.purefun.typeclasses.Monad;
 
-public final class HttpServiceK<F extends Witness> implements HttpRouteBuilderK<F, HttpServiceK<F>> {
+public final class HttpServiceK<F> implements HttpRouteBuilderK<F, HttpServiceK<F>> {
 
   private final String name;
   private final Monad<F> monad;

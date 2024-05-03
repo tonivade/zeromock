@@ -1,11 +1,11 @@
 package com.github.tonivade.zeromock.client;
 
 import com.github.tonivade.purefun.Kind;
-import com.github.tonivade.purefun.Witness;
+
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 
-interface HttpClientOf<F extends Witness> {
+interface HttpClientOf<F> {
 
   Kind<F, HttpResponse> request(HttpRequest request);
 

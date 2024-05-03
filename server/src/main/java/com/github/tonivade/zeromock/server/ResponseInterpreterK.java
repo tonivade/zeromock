@@ -12,7 +12,7 @@ import static com.github.tonivade.purefun.type.IdOf.toId;
 
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.core.Producer;
-import com.github.tonivade.purefun.Witness;
+
 import com.github.tonivade.purefun.concurrent.Future_;
 import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.effect.UIO_;
@@ -22,7 +22,7 @@ import com.github.tonivade.purefun.type.Id_;
 import com.github.tonivade.zeromock.api.HttpResponse;
 
 @FunctionalInterface
-public interface ResponseInterpreterK<F extends Witness> {
+public interface ResponseInterpreterK<F> {
 
   Promise<HttpResponse> run(Kind<F, HttpResponse> response);
 

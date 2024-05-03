@@ -15,7 +15,7 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
 
 import com.github.tonivade.purefun.Kind;
-import com.github.tonivade.purefun.Witness;
+
 import com.github.tonivade.purefun.type.Try;
 import com.github.tonivade.purefun.typeclasses.Async;
 import com.github.tonivade.purefun.typeclasses.For;
@@ -25,7 +25,7 @@ import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpStatus;
 
-public final class HttpClientK<F extends Witness> implements HttpClientOf<F> {
+public final class HttpClientK<F> implements HttpClientOf<F> {
 
   private final URI baseUri;
   private final Async<F> monad;
@@ -36,7 +36,7 @@ public final class HttpClientK<F extends Witness> implements HttpClientOf<F> {
     this.monad = checkNonNull(monad);
   }
 
-  public static <F extends Witness> HttpClientK<F> connectTo(String baseUrl, Async<F> monad) {
+  public static <F> HttpClientK<F> connectTo(String baseUrl, Async<F> monad) {
     return new HttpClientK<>(baseUrl, monad);
   }
 

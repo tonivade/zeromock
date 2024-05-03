@@ -9,7 +9,7 @@ import static com.github.tonivade.purefun.core.Precondition.checkNonNull;
 import org.junit.rules.ExternalResource;
 
 import com.github.tonivade.purefun.core.Matcher1;
-import com.github.tonivade.purefun.Witness;
+
 import com.github.tonivade.purefun.typeclasses.Monad;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpRouteBuilderK;
@@ -18,7 +18,7 @@ import com.github.tonivade.zeromock.api.RequestHandlerK;
 import com.github.tonivade.zeromock.client.HttpClient;
 import com.github.tonivade.zeromock.server.MockHttpServerK;
 
-public abstract class AbstractMockServerRule<F extends Witness> extends ExternalResource implements HttpRouteBuilderK<F, AbstractMockServerRule<F>> {
+public abstract class AbstractMockServerRule<F> extends ExternalResource implements HttpRouteBuilderK<F, AbstractMockServerRule<F>> {
 
   private final Monad<F> monad;
   private final MockHttpServerK<F> server;

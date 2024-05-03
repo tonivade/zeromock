@@ -6,11 +6,11 @@ package com.github.tonivade.zeromock.api;
 
 import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.Kind;
-import com.github.tonivade.purefun.Witness;
+
 import com.github.tonivade.purefun.typeclasses.Monad;
 
 @FunctionalInterface
-public interface RequestHandlerK<F extends Witness> extends Function1<HttpRequest, Kind<F, HttpResponse>> {
+public interface RequestHandlerK<F> extends Function1<HttpRequest, Kind<F, HttpResponse>> {
 
   default RequestHandlerK<F> preHandle(Monad<F> monad, PreFilterK<F> before) {
     return request ->
