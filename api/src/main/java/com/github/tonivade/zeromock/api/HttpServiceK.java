@@ -11,17 +11,15 @@ import static com.github.tonivade.zeromock.api.Matchers.all;
 import static com.github.tonivade.zeromock.api.Matchers.startsWith;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static com.github.tonivade.zeromock.api.Responses.notFound;
-
-import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.Kind;
+import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.core.PartialFunction1;
-
-import com.github.tonivade.purefun.instances.OptionInstances;
 import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.type.OptionOf;
 import com.github.tonivade.purefun.typeclasses.For;
+import com.github.tonivade.purefun.typeclasses.Instances;
 import com.github.tonivade.purefun.typeclasses.Monad;
 
 public final class HttpServiceK<F> implements HttpRouteBuilderK<F, HttpServiceK<F>> {
@@ -95,8 +93,8 @@ public final class HttpServiceK<F> implements HttpRouteBuilderK<F, HttpServiceK<
         .then(preFilters.apply(request))
         .flatMap(either -> either.fold(
             res -> monad.pure(Option.some(res)),
-            mappingsWithPostFilters.andThen(option -> OptionInstances.traverse().sequence(monad, option))))
-        .map(OptionOf::narrowK)
+            mappingsWithPostFilters.andThen(option -> Instances.<Option<?>>traverse().sequence(monad, option))))
+        .map(OptionOf::toOption)
         .run();
   }
 

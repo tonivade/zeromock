@@ -4,17 +4,15 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import static com.github.tonivade.purefun.effect.UIOOf.toUIO;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
-
-import java.util.concurrent.Executor;
-
-import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.concurrent.Future;
+import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.effect.UIO;
+import com.github.tonivade.purefun.effect.UIOOf;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.typeclasses.Instances;
+import java.util.concurrent.Executor;
 
 public final class HttpUIOService implements HttpRouteBuilderK<UIO<?>, HttpUIOService> {
 
@@ -70,7 +68,7 @@ public final class HttpUIOService implements HttpRouteBuilderK<UIO<?>, HttpUIOSe
   }
 
   public UIO<Option<HttpResponse>> execute(HttpRequest request) {
-    return serviceK.execute(request).fix(toUIO());
+    return serviceK.execute(request).fix(UIOOf::toUIO);
   }
 
   public HttpUIOService combine(HttpUIOService other) {

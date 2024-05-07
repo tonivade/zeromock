@@ -4,22 +4,22 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import com.github.tonivade.purefun.instances.IOInstances;
 import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.purefun.monad.IOOf;
+import com.github.tonivade.purefun.typeclasses.Instances;
 
 public interface IORequestHandler extends RequestHandlerK<IO<?>> {
 
   @Override
   default IO<HttpResponse> apply(HttpRequest value) {
-    return RequestHandlerK.super.apply(value).fix(IOOf.toIO());
+    return RequestHandlerK.super.apply(value).fix(IOOf::toIO);
   }
 
   default IORequestHandler preHandle(IOPreFilter before) {
-    return RequestHandlerK.super.preHandle(IOInstances.monad(), before)::apply;
+    return RequestHandlerK.super.preHandle(Instances.monad(), before)::apply;
   }
 
   default IORequestHandler postHandle(IOPostFilter after) {
-    return RequestHandlerK.super.postHandle(IOInstances.monad(), after)::apply;
+    return RequestHandlerK.super.postHandle(Instances.monad(), after)::apply;
   }
 }

@@ -4,21 +4,20 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import static com.github.tonivade.purefun.type.IdOf.toId;
 import static com.github.tonivade.zeromock.api.PreFilter.filter;
 import static java.util.Objects.requireNonNull;
-
 import com.github.tonivade.purefun.core.Matcher1;
-import com.github.tonivade.purefun.instances.IdInstances;
 import com.github.tonivade.purefun.type.Id;
+import com.github.tonivade.purefun.type.IdOf;
 import com.github.tonivade.purefun.type.Option;
+import com.github.tonivade.purefun.typeclasses.Instances;
 
 public final class HttpService implements HttpRouteBuilder<HttpService> {
 
   private final HttpServiceK<Id<?>> serviceK;
 
   public HttpService(String name) {
-    this(new HttpServiceK<>(name, IdInstances.monad()));
+    this(new HttpServiceK<>(name, Instances.monad()));
   }
 
   private HttpService(HttpServiceK<Id<?>> serviceK) {
@@ -59,7 +58,7 @@ public final class HttpService implements HttpRouteBuilder<HttpService> {
   }
 
   public Option<HttpResponse> execute(HttpRequest request) {
-    return serviceK.execute(request).fix(toId()).value();
+    return serviceK.execute(request).fix(IdOf::toId).value();
   }
 
   public HttpService combine(HttpService other) {

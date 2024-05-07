@@ -31,7 +31,7 @@ public class IOHttpClient implements HttpClientOf<IO<?>> {
 
   @Override
   public IO<HttpResponse> request(HttpRequest request) {
-    return client.request(request).fix(IOOf.toIO());
+    return client.request(request).fix(IOOf::<HttpResponse>toIO);
   }
 
   @SafeVarargs

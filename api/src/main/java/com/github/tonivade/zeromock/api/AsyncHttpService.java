@@ -4,18 +4,16 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import static com.github.tonivade.purefun.concurrent.FutureOf.toFuture;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
-
-import java.util.concurrent.Executor;
-
 import com.github.tonivade.purefun.concurrent.Future;
+import com.github.tonivade.purefun.concurrent.FutureOf;
 import com.github.tonivade.purefun.concurrent.Promise;
 import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.typeclasses.Instance;
 import com.github.tonivade.purefun.typeclasses.Instances;
+import java.util.concurrent.Executor;
 
 public final class AsyncHttpService implements HttpRouteBuilderK<Future<?>, AsyncHttpService> {
 
@@ -75,7 +73,7 @@ public final class AsyncHttpService implements HttpRouteBuilderK<Future<?>, Asyn
   }
 
   public Promise<Option<HttpResponse>> execute(HttpRequest request) {
-    return serviceK.execute(request).fix(toFuture()).toPromise();
+    return serviceK.execute(request).fix(FutureOf::<Option<HttpResponse>>toFuture).toPromise();
   }
 
   public AsyncHttpService combine(AsyncHttpService other) {

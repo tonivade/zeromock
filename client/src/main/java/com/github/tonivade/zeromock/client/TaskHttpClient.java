@@ -4,18 +4,16 @@
  */
 package com.github.tonivade.zeromock.client;
 
-import static com.github.tonivade.purefun.effect.TaskOf.toTask;
 import static java.util.Objects.requireNonNull;
-
-import java.lang.reflect.Type;
-
 import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.effect.Task;
+import com.github.tonivade.purefun.effect.TaskOf;
 import com.github.tonivade.purefun.typeclasses.Instances;
 import com.github.tonivade.purejson.PureJson;
 import com.github.tonivade.zeromock.api.Bytes;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
+import java.lang.reflect.Type;
 
 public class TaskHttpClient implements HttpClientOf<Task<?>> {
 
@@ -31,7 +29,7 @@ public class TaskHttpClient implements HttpClientOf<Task<?>> {
 
   @Override
   public Task<HttpResponse> request(HttpRequest request) {
-    return client.request(request).fix(toTask());
+    return client.request(request).fix(TaskOf::toTask);
   }
 
   @SafeVarargs

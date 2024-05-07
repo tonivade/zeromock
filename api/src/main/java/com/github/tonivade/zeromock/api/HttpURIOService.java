@@ -5,13 +5,12 @@
 package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.purefun.core.Function1.cons;
-import static com.github.tonivade.purefun.effect.URIOOf.toURIO;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
-
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.effect.URIO;
+import com.github.tonivade.purefun.effect.URIOOf;
 import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.typeclasses.Instance;
@@ -66,7 +65,7 @@ public final class HttpURIOService<R> implements HttpRouteBuilderK<Kind<URIO<?, 
   }
 
   public URIO<R, Option<HttpResponse>> execute(HttpRequest request) {
-    return serviceK.execute(request).fix(toURIO());
+    return serviceK.execute(request).fix(URIOOf::toURIO);
   }
 
   public HttpURIOService<R> combine(HttpURIOService<R> other) {

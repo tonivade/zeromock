@@ -39,7 +39,7 @@ public class AsyncHttpClient implements HttpClientOf<Future<?>> {
   }
 
   public Future<HttpResponse> request(HttpRequest request, Executor executor) {
-    return client.request(request).fix(IOOf.toIO()).runAsync(executor);
+    return client.request(request).fix(IOOf::<HttpResponse>toIO).runAsync(executor);
   }
 
   @SafeVarargs

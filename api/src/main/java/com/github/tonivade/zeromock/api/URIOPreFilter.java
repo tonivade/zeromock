@@ -13,6 +13,6 @@ public interface URIOPreFilter<R> extends PreFilterK<Kind<URIO<?, ?>, R>> {
 
   @Override
   default URIO<R, Either<HttpResponse, HttpRequest>> apply(HttpRequest value) {
-    return PreFilterK.super.apply(value).fix(URIOOf.toURIO());
+    return PreFilterK.super.apply(value).fix(URIOOf::toURIO);
   }
 }

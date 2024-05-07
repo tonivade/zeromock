@@ -4,7 +4,6 @@
  */
 package com.github.tonivade.zeromock.client;
 
-import static com.github.tonivade.purefun.monad.IOOf.toIO;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.reflect.Type;
@@ -12,6 +11,7 @@ import java.lang.reflect.Type;
 import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.effect.Task;
 import com.github.tonivade.purefun.monad.IO;
+import com.github.tonivade.purefun.monad.IOOf;
 import com.github.tonivade.purefun.type.Try;
 import com.github.tonivade.purefun.typeclasses.Instances;
 import com.github.tonivade.purejson.PureJson;
@@ -33,7 +33,7 @@ public class HttpClient {
   }
 
   public HttpResponse request(HttpRequest request) {
-    return client.request(request).fix(toIO()).unsafeRunSync();
+    return client.request(request).fix(IOOf::<HttpResponse>toIO).unsafeRunSync();
   }
 
   @SafeVarargs

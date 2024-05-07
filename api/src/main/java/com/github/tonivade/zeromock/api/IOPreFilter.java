@@ -4,15 +4,14 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import static com.github.tonivade.purefun.monad.IOOf.toIO;
-
 import com.github.tonivade.purefun.monad.IO;
+import com.github.tonivade.purefun.monad.IOOf;
 import com.github.tonivade.purefun.type.Either;
 
 public interface IOPreFilter extends PreFilterK<IO<?>> {
 
   @Override
   default IO<Either<HttpResponse, HttpRequest>> apply(HttpRequest value) {
-    return PreFilterK.super.apply(value).fix(toIO());
+    return PreFilterK.super.apply(value).fix(IOOf::toIO);
   }
 }

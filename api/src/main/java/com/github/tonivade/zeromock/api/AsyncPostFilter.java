@@ -4,14 +4,14 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import static com.github.tonivade.purefun.concurrent.FutureOf.toFuture;
 import com.github.tonivade.purefun.concurrent.Future;
+import com.github.tonivade.purefun.concurrent.FutureOf;
 
 public interface AsyncPostFilter extends PostFilterK<Future<?>> {
 
   @Override
   default Future<HttpResponse> apply(HttpResponse value) {
-    return PostFilterK.super.apply(value).fix(toFuture());
+    return PostFilterK.super.apply(value).fix(FutureOf::toFuture);
   }
 }
 
