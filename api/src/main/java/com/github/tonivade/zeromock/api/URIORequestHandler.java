@@ -4,12 +4,11 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.effect.URIO;
 import com.github.tonivade.purefun.effect.URIOOf;
-import com.github.tonivade.purefun.typeclasses.Instance;
+import com.github.tonivade.purefun.typeclasses.Instances;
 
-public interface URIORequestHandler<R> extends RequestHandlerK<Kind<URIO<?, ?>, R>> {
+public interface URIORequestHandler<R> extends RequestHandlerK<URIO<R, ?>> {
 
   @Override
   default URIO<R, HttpResponse> apply(HttpRequest value) {
@@ -17,10 +16,10 @@ public interface URIORequestHandler<R> extends RequestHandlerK<Kind<URIO<?, ?>, 
   }
 
   default URIORequestHandler<R> preHandle(URIOPreFilter<R> before) {
-    return RequestHandlerK.super.preHandle(new Instance<Kind<URIO<?, ?>, R>>() {}.monad(), before)::apply;
+    return RequestHandlerK.super.preHandle(Instances.<URIO<R, ?>>monad(), before)::apply;
   }
 
   default URIORequestHandler<R> postHandle(URIOPostFilter<R> after) {
-    return RequestHandlerK.super.postHandle(new Instance<Kind<URIO<?, ?>, R>>() {}.monad(), after)::apply;
+    return RequestHandlerK.super.postHandle(Instances.<URIO<R, ?>>monad(), after)::apply;
   }
 }

@@ -32,7 +32,7 @@ public interface ResponseInterpreterK<F> {
     return response -> response.fix(UIOOf::<HttpResponse>toUIO).runAsync().toPromise();
   }
 
-  static <R> ResponseInterpreterK<Kind<URIO<?, ?>, R>> urio(Producer<R> env) {
+  static <R> ResponseInterpreterK<URIO<R, ?>> urio(Producer<R> env) {
     return response -> response.fix(URIOOf::<R, HttpResponse>toURIO).runAsync(env.get()).toPromise();
   }
 
