@@ -24,7 +24,7 @@ public class TaskHttpClient implements HttpClientOf<Task<?>> {
   }
 
   public static TaskHttpClient connectTo(String baseUrl) {
-    return new TaskHttpClient(new HttpClientK<>(baseUrl, Instances.async()));
+    return new TaskHttpClient(new HttpClientK<>(baseUrl, Instances.<Task<?>>async()));
   }
 
   @Override

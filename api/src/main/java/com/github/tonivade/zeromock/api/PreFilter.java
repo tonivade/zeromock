@@ -11,11 +11,17 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Date;
 
+import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.type.Either;
+import com.github.tonivade.purefun.typeclasses.Monad;
 
 public interface PreFilter extends Function1<HttpRequest, Either<HttpResponse, HttpRequest>> {
+
+  default <F extends Kind<F, ?>> PreFilterK<F> lift(Monad<F> monad) {
+    return andThen(monad::pure)::apply;
+  }
 
   static PreFilter filter(Matcher1<HttpRequest> matcher, RequestHandler handler) {
     return request -> matcher.match(request) ?

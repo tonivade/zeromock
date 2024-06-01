@@ -46,7 +46,7 @@ import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
-public class MockHttpServerK<F> implements com.github.tonivade.zeromock.server.HttpServer, HttpRouteBuilderK<F, MockHttpServerK<F>> {
+public class MockHttpServerK<F extends Kind<F, ?>> implements com.github.tonivade.zeromock.server.HttpServer, HttpRouteBuilderK<F, MockHttpServerK<F>> {
 
   private static final Logger LOG = LoggerFactory.getLogger(MockHttpServerK.class);
 
@@ -218,7 +218,7 @@ public class MockHttpServerK<F> implements com.github.tonivade.zeromock.server.H
     }
   }
 
-  public abstract static class BuilderK<F, T extends com.github.tonivade.zeromock.server.HttpServer> {
+  public abstract static class BuilderK<F extends Kind<F, ?>, T extends com.github.tonivade.zeromock.server.HttpServer> {
 
     private final Monad<F> monad;
     private final ResponseInterpreterK<F> interpreter;

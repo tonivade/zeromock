@@ -67,7 +67,7 @@ public final class UIOMockHttpServer implements HttpServer, HttpRouteBuilderK<UI
   }
 
   public ThenStepK<UIO<?>, UIOMockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instances.monad(), handler -> addPreFilter(matcher, handler::apply));
+    return new ThenStepK<>(Instances.<UIO<?>>monad(), handler -> addPreFilter(matcher, handler::apply));
   }
 
   public UIOMockHttpServer preFilter(PreFilter filter) {
@@ -100,7 +100,7 @@ public final class UIOMockHttpServer implements HttpServer, HttpRouteBuilderK<UI
 
   @Override
   public ThenStepK<UIO<?>, UIOMockHttpServer> when(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instances.monad(), handler -> addMapping(matcher, handler::apply));
+    return new ThenStepK<>(Instances.<UIO<?>>monad(), handler -> addMapping(matcher, handler::apply));
   }
 
   @Override

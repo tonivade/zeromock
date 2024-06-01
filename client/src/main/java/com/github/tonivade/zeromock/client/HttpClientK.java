@@ -25,7 +25,7 @@ import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpStatus;
 
-public final class HttpClientK<F> implements HttpClientOf<F> {
+public final class HttpClientK<F extends Kind<F, ?>> implements HttpClientOf<F> {
 
   private final URI baseUri;
   private final Async<F> monad;
@@ -36,7 +36,7 @@ public final class HttpClientK<F> implements HttpClientOf<F> {
     this.monad = checkNonNull(monad);
   }
 
-  public static <F> HttpClientK<F> connectTo(String baseUrl, Async<F> monad) {
+  public static <F extends Kind<F, ?>> HttpClientK<F> connectTo(String baseUrl, Async<F> monad) {
     return new HttpClientK<>(baseUrl, monad);
   }
 

@@ -29,7 +29,7 @@ public class HttpClient {
   }
 
   public static HttpClient connectTo(String baseUrl) {
-    return new HttpClient(new HttpClientK<>(baseUrl, Instances.async()));
+    return new HttpClient(new HttpClientK<>(baseUrl, Instances.<IO<?>>async()));
   }
 
   public HttpResponse request(HttpRequest request) {

@@ -31,9 +31,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.core.Producer;
 import com.github.tonivade.purefun.data.ImmutableSet;
+import com.github.tonivade.purefun.typeclasses.Instances;
+import com.github.tonivade.purefun.typeclasses.Monad;
 import com.github.tonivade.zeromock.api.AsyncHttpService;
 import com.github.tonivade.zeromock.api.Deserializers;
 import com.github.tonivade.zeromock.api.HttpRequest;
@@ -45,21 +48,23 @@ import com.github.tonivade.zeromock.api.Responses;
 
 public class AsyncMockHttpServerTest {
 
+  private static final Monad<Future<?>> MONAD = Instances.<Future<?>>monad();
+
   private static final String BASE_URL = "http://localhost:%s/path";
 
   private final AsyncHttpService service1 = new AsyncHttpService("hello")
-      .when(get().and(path("/hello")).and(param("name"))).then(ok(plain().compose(this::helloWorld)).liftFuture()::apply)
-      .when(get().and(path("/hello")).and(param("name").negate())).then(badRequest("missing parameter name").liftFuture()::apply);
+      .when(get().and(path("/hello")).and(param("name"))).then(ok(plain().compose(this::helloWorld)).lift(MONAD))
+      .when(get().and(path("/hello")).and(param("name").negate())).then(badRequest("missing parameter name").lift(MONAD));
 
   private final AsyncHttpService service2 = new AsyncHttpService("test")
       .when(get().and(path("/test")).and(acceptsXml()))
-            .then(fromTry(adapt(this::sayHello).andThen(objectToXml())).postHandle(contentXml()).liftFuture()::apply)
+            .then(fromTry(adapt(this::sayHello).andThen(objectToXml())).postHandle(contentXml()).lift(MONAD))
       .when(get().and(path("/test")).and(acceptsJson()))
-            .then(fromTry(adapt(this::sayHello).andThen(objectToJson(Say.class))).postHandle(contentJson()).liftFuture()::apply)
+            .then(fromTry(adapt(this::sayHello).andThen(objectToJson(Say.class))).postHandle(contentJson()).lift(MONAD))
       .when(get().and(path("/empty")))
-            .then(noContent().liftFuture()::apply);
+            .then(noContent().lift(MONAD));
 
-  private final AsyncHttpService service3 = new AsyncHttpService("other").when(get("/ping")).then(ok("pong").liftFuture()::apply);
+  private final AsyncHttpService service3 = new AsyncHttpService("other").when(get("/ping")).then(ok("pong").lift(MONAD));
 
   private static AsyncMockHttpServer server = listenAt(0);
 

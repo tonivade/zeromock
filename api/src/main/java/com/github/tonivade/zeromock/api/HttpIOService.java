@@ -17,7 +17,7 @@ public final class HttpIOService implements HttpRouteBuilderK<IO<?>, HttpIOServi
   private final HttpServiceK<IO<?>> serviceK;
 
   public HttpIOService(String name) {
-    this(new HttpServiceK<>(name, Instances.monad()));
+    this(new HttpServiceK<>(name, Instances.<IO<?>>monad()));
   }
 
   private HttpIOService(HttpServiceK<IO<?>> serviceK) {

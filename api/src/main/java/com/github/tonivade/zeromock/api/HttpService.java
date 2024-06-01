@@ -17,7 +17,7 @@ public final class HttpService implements HttpRouteBuilder<HttpService> {
   private final HttpServiceK<Id<?>> serviceK;
 
   public HttpService(String name) {
-    this(new HttpServiceK<>(name, Instances.monad()));
+    this(new HttpServiceK<>(name, Instances.<Id<?>>monad()));
   }
 
   private HttpService(HttpServiceK<Id<?>> serviceK) {
@@ -37,7 +37,7 @@ public final class HttpService implements HttpRouteBuilder<HttpService> {
   }
 
   public HttpService exec(RequestHandler handler) {
-    return new HttpService(serviceK.exec(handler.liftId()::apply));
+    return new HttpService(serviceK.exec(handler.lift(Instances.<Id<?>>monad())));
   }
 
   public ThenStep<HttpService> preFilter(Matcher1<HttpRequest> matcher) {
@@ -45,11 +45,11 @@ public final class HttpService implements HttpRouteBuilder<HttpService> {
   }
 
   public HttpService preFilter(PreFilter filter) {
-    return new HttpService(serviceK.preFilter(filter.liftId()::apply));
+    return new HttpService(serviceK.preFilter(filter.lift(Instances.<Id<?>>monad())));
   }
 
   public HttpService postFilter(PostFilter filter) {
-    return new HttpService(serviceK.postFilter(filter.liftId()::apply));
+    return new HttpService(serviceK.postFilter(filter.lift(Instances.<Id<?>>monad())));
   }
 
   @Override
@@ -66,7 +66,7 @@ public final class HttpService implements HttpRouteBuilder<HttpService> {
   }
 
   private HttpService addMapping(Matcher1<HttpRequest> matcher, RequestHandler handler) {
-    return new HttpService(serviceK.addMapping(matcher, handler.liftId()::apply));
+    return new HttpService(serviceK.addMapping(matcher, handler.lift(Instances.<Id<?>>monad())));
   }
 
   private HttpService addPreFilter(Matcher1<HttpRequest> matcher, RequestHandler handler) {

@@ -11,9 +11,15 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Date;
 
+import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.core.Operator1;
+import com.github.tonivade.purefun.typeclasses.Monad;
 
 public interface PostFilter extends Operator1<HttpResponse> {
+
+  default <F extends Kind<F, ?>> PostFilterK<F> lift(Monad<F> monad) {
+    return andThen(monad::pure)::apply;
+  }
 
   static PostFilter print(PrintStream output) {
     return print(new PrintWriter(new OutputStreamWriter(output, UTF_8), true));

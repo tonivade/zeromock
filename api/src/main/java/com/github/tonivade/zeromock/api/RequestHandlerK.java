@@ -10,7 +10,11 @@ import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.typeclasses.Monad;
 
 @FunctionalInterface
-public interface RequestHandlerK<F> extends Function1<HttpRequest, Kind<F, HttpResponse>> {
+public interface RequestHandlerK<F extends Kind<F, ?>> extends Function1<HttpRequest, Kind<F, HttpResponse>> {
+
+  static <F extends Kind<F, ?>> RequestHandlerK<F> cons(Kind<F, HttpResponse> value) {
+    return request -> value;
+  }
 
   default RequestHandlerK<F> preHandle(Monad<F> monad, PreFilterK<F> before) {
     return request ->

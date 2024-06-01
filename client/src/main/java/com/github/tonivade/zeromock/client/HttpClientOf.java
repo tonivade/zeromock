@@ -5,7 +5,7 @@ import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 
-interface HttpClientOf<F> {
+interface HttpClientOf<F extends Kind<F, ?>> {
 
   Kind<F, HttpResponse> request(HttpRequest request);
 

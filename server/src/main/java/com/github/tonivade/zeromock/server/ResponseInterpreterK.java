@@ -20,7 +20,7 @@ import com.github.tonivade.purefun.type.IdOf;
 import com.github.tonivade.zeromock.api.HttpResponse;
 
 @FunctionalInterface
-public interface ResponseInterpreterK<F> {
+public interface ResponseInterpreterK<F extends Kind<F, ?>> {
 
   Promise<HttpResponse> run(Kind<F, HttpResponse> response);
 

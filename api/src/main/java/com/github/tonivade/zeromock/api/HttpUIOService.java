@@ -23,7 +23,7 @@ public final class HttpUIOService implements HttpRouteBuilderK<UIO<?>, HttpUIOSe
   }
 
   public HttpUIOService(String name, Executor executor) {
-    this(new HttpServiceK<>(name, Instances.monad()));
+    this(new HttpServiceK<>(name, Instances.<UIO<?>>monad()));
   }
 
   private HttpUIOService(HttpServiceK<UIO<?>> serviceK) {

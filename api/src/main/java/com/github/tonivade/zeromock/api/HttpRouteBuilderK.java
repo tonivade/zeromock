@@ -6,17 +6,17 @@ package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.purefun.core.Precondition.checkNonNull;
 
+import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.core.Matcher1;
-
 import com.github.tonivade.purefun.typeclasses.Monad;
 
-public interface HttpRouteBuilderK<F, R extends HttpRouteBuilderK<F, R>> extends RouteBuilder<HttpRouteBuilderK.ThenStepK<F, R>> {
+public interface HttpRouteBuilderK<F extends Kind<F, ?>, R extends HttpRouteBuilderK<F, R>> extends RouteBuilder<HttpRouteBuilderK.ThenStepK<F, R>> {
 
   @Override
   ThenStepK<F, R> when(Matcher1<HttpRequest> matcher);
 
-  class ThenStepK<F, R extends HttpRouteBuilderK<F, R>> {
+  class ThenStepK<F extends Kind<F, ?>, R extends HttpRouteBuilderK<F, R>> {
 
     private final Monad<F> monad;
     private final Function1<RequestHandlerK<F>, R> then;

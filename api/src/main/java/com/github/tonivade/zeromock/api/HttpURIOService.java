@@ -4,22 +4,23 @@
  */
 package com.github.tonivade.zeromock.api;
 
-import static com.github.tonivade.purefun.core.Function1.cons;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
+import static com.github.tonivade.zeromock.api.RequestHandlerK.cons;
 import static java.util.Objects.requireNonNull;
+
 import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.effect.URIO;
 import com.github.tonivade.purefun.effect.URIOOf;
 import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.purefun.type.Option;
-import com.github.tonivade.purefun.typeclasses.Instance;
+import com.github.tonivade.purefun.typeclasses.Instances;
 
 public final class HttpURIOService<R> implements HttpRouteBuilderK<URIO<R, ?>, HttpURIOService<R>> {
 
   private final HttpServiceK<URIO<R, ?>> serviceK;
 
   public HttpURIOService(String name) {
-    this(new HttpServiceK<>(name, new Instance<URIO<R, ?>>() {}.monad()));
+    this(new HttpServiceK<>(name, Instances.<URIO<R, ?>>monad()));
   }
 
   private HttpURIOService(HttpServiceK<URIO<R, ?>> serviceK) {
@@ -35,7 +36,7 @@ public final class HttpURIOService<R> implements HttpRouteBuilderK<URIO<R, ?>, H
   }
 
   public HttpURIOService<R> exec(URIO<R, HttpResponse> method) {
-    return new HttpURIOService<>(serviceK.exec(cons(method)::apply));
+    return new HttpURIOService<>(serviceK.exec(cons(method)));
   }
 
   public ThenStepK<URIO<R, ?>, HttpURIOService<R>> preFilter(Matcher1<HttpRequest> matcher) {

@@ -67,7 +67,7 @@ public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO<
   }
 
   public ThenStepK<IO<?>, IOMockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instances.monad(), handler -> addPreFilter(matcher, handler::apply));
+    return new ThenStepK<>(Instances.<IO<?>>monad(), handler -> addPreFilter(matcher, handler::apply));
   }
 
   public IOMockHttpServer preFilter(PreFilter filter) {
@@ -100,7 +100,7 @@ public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO<
 
   @Override
   public ThenStepK<IO<?>, IOMockHttpServer> when(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instances.monad(), handler -> addMapping(matcher, handler::apply));
+    return new ThenStepK<>(Instances.<IO<?>>monad(), handler -> addMapping(matcher, handler::apply));
   }
 
   @Override

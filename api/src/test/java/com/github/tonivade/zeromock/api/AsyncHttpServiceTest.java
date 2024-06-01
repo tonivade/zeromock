@@ -5,6 +5,8 @@
 package com.github.tonivade.zeromock.api;
 
 import com.github.tonivade.purefun.concurrent.Future;
+import com.github.tonivade.purefun.typeclasses.Instances;
+
 import org.junit.jupiter.api.Test;
 
 import static com.github.tonivade.purefun.type.Option.none;
@@ -22,7 +24,7 @@ public class AsyncHttpServiceTest {
   @Test
   public void initialState() {
     AsyncHttpService service = new AsyncHttpService("service");
-    
+
     assertAll(
         () -> assertEquals("service", service.name()),
         () -> assertEquals(none(), service.execute(Requests.get("/ping")).await().getOrElseThrow())
@@ -32,8 +34,8 @@ public class AsyncHttpServiceTest {
   @Test
   public void whenThen() {
     AsyncHttpService service = new AsyncHttpService("service")
-        .when(get("/ping")).then(ok("pong").andThen(Future::success)::apply);
-    
+        .when(get("/ping")).then(ok("pong").lift(Instances.<Future<?>>monad()));
+
     assertEquals(some(Responses.ok("pong")), service.execute(Requests.get("/ping")).await().getOrElseThrow());
   }
 
@@ -41,17 +43,17 @@ public class AsyncHttpServiceTest {
   public void exec() {
     AsyncHttpService service = new AsyncHttpService("service")
         .exec(ok("pong").andThen(Future::success)::apply);
-    
+
     assertEquals(some(Responses.ok("pong")), service.execute(Requests.get("/ping")).await().getOrElseThrow());
   }
-  
+
   @Test
   public void mount() {
     AsyncHttpService service1 = new AsyncHttpService("service")
-        .when(get("/ping")).then(ok("pong").andThen(Future::success)::apply);
+        .when(get("/ping")).then(ok("pong").lift(Instances.<Future<?>>monad()));
     AsyncHttpService service2 = new AsyncHttpService("service")
         .mount("/path", service1);
-    
+
     assertAll(
         () -> assertEquals(some(Responses.ok("pong")), service2.execute(Requests.get("/path/ping")).await().getOrElseThrow()),
         () -> assertEquals(none(), service2.execute(Requests.get("/path/notfound")).await().getOrElseThrow()),
@@ -62,7 +64,7 @@ public class AsyncHttpServiceTest {
   @Test
   public void combine() {
     AsyncHttpService service1 = new AsyncHttpService("service1")
-        .when(get("/ping")).then(ok("pong").andThen(Future::success)::apply);
+        .when(get("/ping")).then(ok("pong").lift(Instances.<Future<?>>monad()));
     AsyncHttpService service2 = new AsyncHttpService("service2");
 
     assertEquals(some(Responses.ok("pong")), service1.combine(service2).execute(Requests.get("/ping")).await().getOrElseThrow());
@@ -72,7 +74,7 @@ public class AsyncHttpServiceTest {
   public void filters() {
     AsyncHttpService service1 = new AsyncHttpService("service1")
         .preFilter(PreFilter.filter(put(), forbidden()))
-        .when(get("/ping")).then(ok("pong").andThen(Future::success)::apply)
+        .when(get("/ping")).then(ok("pong").lift(Instances.<Future<?>>monad()))
         .postFilter(contentPlain());
 
     assertAll(

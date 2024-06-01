@@ -48,7 +48,7 @@ public final class AsyncHttpService implements HttpRouteBuilderK<Future<?>, Asyn
   }
 
   public ThenStepK<Future<?>, AsyncHttpService> preFilter(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instances.monad(), handler -> addPreFilter(matcher, handler::apply));
+    return new ThenStepK<>(Instances.<Future<?>>monad(), handler -> addPreFilter(matcher, handler::apply));
   }
 
   public AsyncHttpService preFilter(PreFilter filter) {
@@ -69,7 +69,7 @@ public final class AsyncHttpService implements HttpRouteBuilderK<Future<?>, Asyn
 
   @Override
   public ThenStepK<Future<?>, AsyncHttpService> when(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instances.monad(), handler -> addMapping(matcher, handler::apply));
+    return new ThenStepK<>(Instances.<Future<?>>monad(), handler -> addMapping(matcher, handler::apply));
   }
 
   public Promise<Option<HttpResponse>> execute(HttpRequest request) {

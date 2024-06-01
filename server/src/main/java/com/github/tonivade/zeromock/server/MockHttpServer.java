@@ -65,7 +65,7 @@ public final class MockHttpServer implements HttpServer, HttpRouteBuilder<MockHt
   }
 
   public MockHttpServer exec(RequestHandler handler) {
-    serverK.exec(handler.liftId()::apply);
+    serverK.exec(handler.lift(Instances.<Id<?>>monad()));
     return this;
   }
 
@@ -74,22 +74,22 @@ public final class MockHttpServer implements HttpServer, HttpRouteBuilder<MockHt
   }
 
   public MockHttpServer preFilter(PreFilter filter) {
-    serverK.preFilter(filter.liftId()::apply);
+    serverK.preFilter(filter.lift(Instances.<Id<?>>monad()));
     return this;
   }
 
   public MockHttpServer postFilter(PostFilter filter) {
-    serverK.postFilter(filter.liftId()::apply);
+    serverK.postFilter(filter.lift(Instances.<Id<?>>monad()));
     return this;
   }
 
   private MockHttpServer addMapping(Matcher1<HttpRequest> matcher, RequestHandler handler) {
-    serverK.addMapping(matcher, handler.liftId()::apply);
+    serverK.addMapping(matcher, handler.lift(Instances.<Id<?>>monad()));
     return this;
   }
 
   private MockHttpServer addPreFilter(Matcher1<HttpRequest> matcher, RequestHandler handler) {
-    serverK.preFilter(filter(Instances.monad(), matcher, handler.liftId()::apply)::apply);
+    serverK.preFilter(filter(Instances.<Id<?>>monad(), matcher, handler.lift(Instances.<Id<?>>monad())));
     return this;
   }
 

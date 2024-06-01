@@ -24,7 +24,7 @@ public class UIOHttpClient implements HttpClientOf<UIO<?>> {
   }
 
   public static UIOHttpClient connectTo(String baseUrl) {
-    return new UIOHttpClient(new HttpClientK<>(baseUrl, Instances.async()));
+    return new UIOHttpClient(new HttpClientK<>(baseUrl, Instances.<UIO<?>>async()));
   }
 
   @Override

@@ -22,7 +22,7 @@ import com.github.tonivade.purefun.typeclasses.For;
 import com.github.tonivade.purefun.typeclasses.Instances;
 import com.github.tonivade.purefun.typeclasses.Monad;
 
-public final class HttpServiceK<F> implements HttpRouteBuilderK<F, HttpServiceK<F>> {
+public final class HttpServiceK<F extends Kind<F, ?>> implements HttpRouteBuilderK<F, HttpServiceK<F>> {
 
   private final String name;
   private final Monad<F> monad;

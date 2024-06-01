@@ -30,7 +30,7 @@ public class AsyncHttpClient implements HttpClientOf<Future<?>> {
   }
 
   public static AsyncHttpClient connectTo(String baseUrl) {
-    return new AsyncHttpClient(new HttpClientK<>(baseUrl, Instances.async()));
+    return new AsyncHttpClient(new HttpClientK<>(baseUrl, Instances.<IO<?>>async()));
   }
 
   @Override

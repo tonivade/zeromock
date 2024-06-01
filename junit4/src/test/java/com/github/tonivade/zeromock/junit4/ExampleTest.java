@@ -12,9 +12,11 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Rule;
 import org.junit.Test;
 
+import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purefun.effect.URIO;
 import com.github.tonivade.purefun.monad.IO;
+import com.github.tonivade.purefun.typeclasses.Instances;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpStatus;
@@ -44,7 +46,7 @@ public class ExampleTest {
 
   @Test
   public void pingAsync() {
-    asyncServer.when(get("/ping")).then(ok("pong").liftFuture()::apply);
+    asyncServer.when(get("/ping")).then(ok("pong").lift(Instances.<Future<?>>monad()));
 
     HttpResponse response = asyncServer.client().request(ping());
 

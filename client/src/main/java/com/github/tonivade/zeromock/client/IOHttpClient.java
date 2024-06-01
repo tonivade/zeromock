@@ -26,7 +26,7 @@ public class IOHttpClient implements HttpClientOf<IO<?>> {
   }
 
   public static IOHttpClient connectTo(String baseUrl) {
-    return new IOHttpClient(new HttpClientK<>(baseUrl, Instances.async()));
+    return new IOHttpClient(new HttpClientK<>(baseUrl, Instances.<IO<?>>async()));
   }
 
   @Override
