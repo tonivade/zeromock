@@ -6,23 +6,17 @@ package com.github.tonivade.zeromock.api;
 
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static java.util.Objects.requireNonNull;
-import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purefun.effect.UIOOf;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.typeclasses.Instances;
-import java.util.concurrent.Executor;
 
 public final class HttpUIOService implements HttpRouteBuilderK<UIO<?>, HttpUIOService> {
 
   private final HttpServiceK<UIO<?>> serviceK;
 
   public HttpUIOService(String name) {
-    this(name, Future.DEFAULT_EXECUTOR);
-  }
-
-  public HttpUIOService(String name, Executor executor) {
     this(new HttpServiceK<>(name, Instances.<UIO<?>>monad()));
   }
 
