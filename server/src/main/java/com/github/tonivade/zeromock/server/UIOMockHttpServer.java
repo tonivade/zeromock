@@ -67,11 +67,11 @@ public final class UIOMockHttpServer implements HttpServer, HttpRouteBuilderK<UI
   }
 
   public ThenStepK<UIO<?>, UIOMockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instances.<UIO<?>>monad(), handler -> addPreFilter(matcher, handler));
+    return new ThenStepK<>(serverK.monad(), handler -> addPreFilter(matcher, handler));
   }
 
   public UIOMockHttpServer preFilter(PreFilter filter) {
-    return preFilter(filter.lift(Instances.<UIO<?>>monad()));
+    return preFilter(filter.lift(serverK.monad()));
   }
 
   public UIOMockHttpServer preFilter(PreFilterK<UIO<?>> filter) {
@@ -80,7 +80,7 @@ public final class UIOMockHttpServer implements HttpServer, HttpRouteBuilderK<UI
   }
 
   public UIOMockHttpServer postFilter(PostFilter filter) {
-    return postFilter(filter.lift(Instances.<UIO<?>>monad()));
+    return postFilter(filter.lift(serverK.monad()));
   }
 
   public UIOMockHttpServer postFilter(PostFilterK<UIO<?>> filter) {
@@ -94,13 +94,13 @@ public final class UIOMockHttpServer implements HttpServer, HttpRouteBuilderK<UI
   }
 
   public UIOMockHttpServer addPreFilter(Matcher1<HttpRequest> matcher, RequestHandlerK<UIO<?>> handler) {
-    serverK.preFilter(filter(Instances.monad(), matcher, handler));
+    serverK.preFilter(filter(serverK.monad(), matcher, handler));
     return this;
   }
 
   @Override
   public ThenStepK<UIO<?>, UIOMockHttpServer> when(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instances.<UIO<?>>monad(), handler -> addMapping(matcher, handler));
+    return new ThenStepK<>(serverK.monad(), handler -> addMapping(matcher, handler));
   }
 
   @Override

@@ -72,11 +72,11 @@ public final class AsyncMockHttpServer implements HttpServer, HttpRouteBuilderK<
   }
 
   public ThenStepK<Future<?>, AsyncMockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instances.<Future<?>>monad(), handler -> addPreFilter(matcher, handler));
+    return new ThenStepK<>(serverK.monad(), handler -> addPreFilter(matcher, handler));
   }
 
   public AsyncMockHttpServer preFilter(PreFilter filter) {
-    return preFilter(filter.lift(Instances.<Future<?>>monad()));
+    return preFilter(filter.lift(serverK.monad()));
   }
 
   public AsyncMockHttpServer preFilter(PreFilterK<Future<?>> filter) {
@@ -85,7 +85,7 @@ public final class AsyncMockHttpServer implements HttpServer, HttpRouteBuilderK<
   }
 
   public AsyncMockHttpServer postFilter(PostFilter filter) {
-    return postFilter(filter.lift(Instances.<Future<?>>monad()));
+    return postFilter(filter.lift(serverK.monad()));
   }
 
   public AsyncMockHttpServer postFilter(PostFilterK<Future<?>> filter) {
@@ -99,13 +99,13 @@ public final class AsyncMockHttpServer implements HttpServer, HttpRouteBuilderK<
   }
 
   public AsyncMockHttpServer addPreFilter(Matcher1<HttpRequest> matcher, RequestHandlerK<Future<?>> handler) {
-    serverK.preFilter(filter(Instances.monad(), matcher, handler));
+    serverK.preFilter(filter(serverK.monad(), matcher, handler));
     return this;
   }
 
   @Override
   public ThenStepK<Future<?>, AsyncMockHttpServer> when(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instances.<Future<?>>monad(), handler -> addMapping(matcher, handler));
+    return new ThenStepK<>(serverK.monad(), handler -> addMapping(matcher, handler));
   }
 
   @Override

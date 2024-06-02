@@ -67,11 +67,11 @@ public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO<
   }
 
   public ThenStepK<IO<?>, IOMockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instances.<IO<?>>monad(), handler -> addPreFilter(matcher, handler));
+    return new ThenStepK<>(serverK.monad(), handler -> addPreFilter(matcher, handler));
   }
 
   public IOMockHttpServer preFilter(PreFilter filter) {
-    return preFilter(filter.lift(Instances.<IO<?>>monad()));
+    return preFilter(filter.lift(serverK.monad()));
   }
 
   public IOMockHttpServer preFilter(PreFilterK<IO<?>> filter) {
@@ -80,7 +80,7 @@ public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO<
   }
 
   public IOMockHttpServer postFilter(PostFilter filter) {
-    return postFilter(filter.lift(Instances.<IO<?>>monad()));
+    return postFilter(filter.lift(serverK.monad()));
   }
 
   public IOMockHttpServer postFilter(PostFilterK<IO<?>> filter) {
@@ -94,13 +94,13 @@ public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO<
   }
 
   public IOMockHttpServer addPreFilter(Matcher1<HttpRequest> matcher, RequestHandlerK<IO<?>> handler) {
-    serverK.preFilter(filter(Instances.monad(), matcher, handler));
+    serverK.preFilter(filter(serverK.monad(), matcher, handler));
     return this;
   }
 
   @Override
   public ThenStepK<IO<?>, IOMockHttpServer> when(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instances.<IO<?>>monad(), handler -> addMapping(matcher, handler));
+    return new ThenStepK<>(serverK.monad(), handler -> addMapping(matcher, handler));
   }
 
   @Override

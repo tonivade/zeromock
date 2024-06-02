@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Nullable;
 import com.github.tonivade.purefun.core.Matcher1;
-
 import com.github.tonivade.purefun.data.ImmutableList;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.type.Option;
@@ -78,6 +77,10 @@ public class MockHttpServerK<F extends Kind<F, ?>> implements com.github.tonivad
   @Override
   public String getPath() {
     return context.getPath();
+  }
+
+  public Monad<F> monad() {
+    return monad;
   }
 
   public MockHttpServerK<F> mount(String path, HttpServiceK<F> other) {
