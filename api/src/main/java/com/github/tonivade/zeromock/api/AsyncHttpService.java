@@ -43,33 +43,33 @@ public final class AsyncHttpService implements HttpRouteBuilderK<Future<?>, Asyn
     return new AsyncHttpService(serviceK.mount(path, other.serviceK));
   }
 
-  public AsyncHttpService exec(AsyncRequestHandler handler) {
+  public AsyncHttpService exec(RequestHandlerK<Future<?>> handler) {
     return new AsyncHttpService(serviceK.exec(handler));
   }
 
   public ThenStepK<Future<?>, AsyncHttpService> preFilter(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instances.<Future<?>>monad(), handler -> addPreFilter(matcher, handler::apply));
+    return new ThenStepK<>(Instances.<Future<?>>monad(), handler -> addPreFilter(matcher, handler));
   }
 
   public AsyncHttpService preFilter(PreFilter filter) {
-    return preFilter(filter.andThen(Future::success)::apply);
+    return preFilter(filter.lift(serviceK.monad()));
   }
 
-  public AsyncHttpService preFilter(AsyncPreFilter filter) {
+  public AsyncHttpService preFilter(PreFilterK<Future<?>> filter) {
     return new AsyncHttpService(serviceK.preFilter(filter));
   }
 
   public AsyncHttpService postFilter(PostFilter filter) {
-    return postFilter(filter.andThen(Future::success)::apply);
+    return postFilter(filter.lift(serviceK.monad()));
   }
 
-  public AsyncHttpService postFilter(AsyncPostFilter filter) {
+  public AsyncHttpService postFilter(PostFilterK<Future<?>> filter) {
     return new AsyncHttpService(serviceK.postFilter(filter));
   }
 
   @Override
   public ThenStepK<Future<?>, AsyncHttpService> when(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instances.<Future<?>>monad(), handler -> addMapping(matcher, handler::apply));
+    return new ThenStepK<>(Instances.<Future<?>>monad(), handler -> addMapping(matcher, handler));
   }
 
   public Promise<Option<HttpResponse>> execute(HttpRequest request) {
@@ -80,12 +80,12 @@ public final class AsyncHttpService implements HttpRouteBuilderK<Future<?>, Asyn
     return new AsyncHttpService(serviceK.combine(other.serviceK));
   }
 
-  private AsyncHttpService addMapping(Matcher1<HttpRequest> matcher, AsyncRequestHandler handler) {
+  private AsyncHttpService addMapping(Matcher1<HttpRequest> matcher, RequestHandlerK<Future<?>> handler) {
     return new AsyncHttpService(serviceK.addMapping(matcher, handler));
   }
 
-  private AsyncHttpService addPreFilter(Matcher1<HttpRequest> matcher, AsyncRequestHandler handler) {
-    return preFilter(filter(Instances.monad(), matcher, handler)::apply);
+  private AsyncHttpService addPreFilter(Matcher1<HttpRequest> matcher, RequestHandlerK<Future<?>> handler) {
+    return preFilter(filter(serviceK.monad(), matcher, handler));
   }
 
   @Override

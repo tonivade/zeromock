@@ -32,33 +32,33 @@ public final class HttpUIOService implements HttpRouteBuilderK<UIO<?>, HttpUIOSe
     return new HttpUIOService(serviceK.mount(path, other.serviceK));
   }
 
-  public HttpUIOService exec(UIORequestHandler handler) {
+  public HttpUIOService exec(RequestHandlerK<UIO<?>> handler) {
     return new HttpUIOService(serviceK.exec(handler));
   }
 
   public ThenStepK<UIO<?>, HttpUIOService> preFilter(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(serviceK.monad(), handler -> addPreFilter(matcher, handler::apply));
+    return new ThenStepK<>(serviceK.monad(), handler -> addPreFilter(matcher, handler));
   }
 
   public HttpUIOService preFilter(PreFilter filter) {
-    return preFilter(filter.andThen(UIO::pure)::apply);
+    return preFilter(filter.lift(serviceK.monad()));
   }
 
-  public HttpUIOService preFilter(UIOPreFilter filter) {
+  public HttpUIOService preFilter(PreFilterK<UIO<?>> filter) {
     return new HttpUIOService(serviceK.preFilter(filter));
   }
 
   public HttpUIOService postFilter(PostFilter filter) {
-    return postFilter(filter.andThen(UIO::pure)::apply);
+    return postFilter(filter.lift(serviceK.monad()));
   }
 
-  public HttpUIOService postFilter(UIOPostFilter filter) {
+  public HttpUIOService postFilter(PostFilterK<UIO<?>> filter) {
     return new HttpUIOService(serviceK.postFilter(filter));
   }
 
   @Override
   public ThenStepK<UIO<?>, HttpUIOService> when(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(serviceK.monad(), handler -> addMapping(matcher, handler::apply));
+    return new ThenStepK<>(serviceK.monad(), handler -> addMapping(matcher, handler));
   }
 
   public UIO<Option<HttpResponse>> execute(HttpRequest request) {
@@ -73,12 +73,12 @@ public final class HttpUIOService implements HttpRouteBuilderK<UIO<?>, HttpUIOSe
     return serviceK;
   }
 
-  private HttpUIOService addMapping(Matcher1<HttpRequest> matcher, UIORequestHandler handler) {
+  private HttpUIOService addMapping(Matcher1<HttpRequest> matcher, RequestHandlerK<UIO<?>> handler) {
     return new HttpUIOService(serviceK.addMapping(matcher, handler));
   }
 
-  private HttpUIOService addPreFilter(Matcher1<HttpRequest> matcher, UIORequestHandler handler) {
-    return preFilter(filter(serviceK.monad(), matcher, handler)::apply);
+  private HttpUIOService addPreFilter(Matcher1<HttpRequest> matcher, RequestHandlerK<UIO<?>> handler) {
+    return preFilter(filter(serviceK.monad(), matcher, handler));
   }
 
   @Override

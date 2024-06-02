@@ -13,13 +13,13 @@ import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.typeclasses.Instances;
 import com.github.tonivade.zeromock.api.AsyncHttpService;
-import com.github.tonivade.zeromock.api.AsyncPostFilter;
-import com.github.tonivade.zeromock.api.AsyncPreFilter;
-import com.github.tonivade.zeromock.api.AsyncRequestHandler;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpRouteBuilderK;
 import com.github.tonivade.zeromock.api.PostFilter;
+import com.github.tonivade.zeromock.api.PostFilterK;
 import com.github.tonivade.zeromock.api.PreFilter;
+import com.github.tonivade.zeromock.api.PreFilterK;
+import com.github.tonivade.zeromock.api.RequestHandlerK;
 import com.github.tonivade.zeromock.server.MockHttpServerK.BuilderK;
 
 public final class AsyncMockHttpServer implements HttpServer, HttpRouteBuilderK<Future<?>, AsyncMockHttpServer> {
@@ -66,46 +66,46 @@ public final class AsyncMockHttpServer implements HttpServer, HttpRouteBuilderK<
     return this;
   }
 
-  public AsyncMockHttpServer exec(AsyncRequestHandler handler) {
+  public AsyncMockHttpServer exec(RequestHandlerK<Future<?>> handler) {
     serverK.exec(handler);
     return this;
   }
 
   public ThenStepK<Future<?>, AsyncMockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instances.<Future<?>>monad(), handler -> addPreFilter(matcher, handler::apply));
+    return new ThenStepK<>(Instances.<Future<?>>monad(), handler -> addPreFilter(matcher, handler));
   }
 
   public AsyncMockHttpServer preFilter(PreFilter filter) {
-    return preFilter(filter.andThen(Future::success)::apply);
+    return preFilter(filter.lift(Instances.<Future<?>>monad()));
   }
 
-  public AsyncMockHttpServer preFilter(AsyncPreFilter filter) {
+  public AsyncMockHttpServer preFilter(PreFilterK<Future<?>> filter) {
     serverK.preFilter(filter);
     return this;
   }
 
   public AsyncMockHttpServer postFilter(PostFilter filter) {
-    return postFilter(filter.andThen(Future::success)::apply);
+    return postFilter(filter.lift(Instances.<Future<?>>monad()));
   }
 
-  public AsyncMockHttpServer postFilter(AsyncPostFilter filter) {
+  public AsyncMockHttpServer postFilter(PostFilterK<Future<?>> filter) {
     serverK.postFilter(filter);
     return this;
   }
 
-  public AsyncMockHttpServer addMapping(Matcher1<HttpRequest> matcher, AsyncRequestHandler handler) {
+  public AsyncMockHttpServer addMapping(Matcher1<HttpRequest> matcher, RequestHandlerK<Future<?>> handler) {
     serverK.addMapping(matcher, handler);
     return this;
   }
 
-  public AsyncMockHttpServer addPreFilter(Matcher1<HttpRequest> matcher, AsyncRequestHandler handler) {
+  public AsyncMockHttpServer addPreFilter(Matcher1<HttpRequest> matcher, RequestHandlerK<Future<?>> handler) {
     serverK.preFilter(filter(Instances.monad(), matcher, handler));
     return this;
   }
 
   @Override
   public ThenStepK<Future<?>, AsyncMockHttpServer> when(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instances.<Future<?>>monad(), handler -> addMapping(matcher, handler::apply));
+    return new ThenStepK<>(Instances.<Future<?>>monad(), handler -> addMapping(matcher, handler));
   }
 
   @Override

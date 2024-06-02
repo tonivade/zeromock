@@ -36,7 +36,7 @@ import com.github.tonivade.zeromock.api.HttpIOService;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpStatus;
-import com.github.tonivade.zeromock.api.IORequestHandler;
+import com.github.tonivade.zeromock.api.RequestHandlerK;
 import com.github.tonivade.zeromock.api.Requests;
 import com.github.tonivade.zeromock.api.Responses;
 
@@ -125,7 +125,7 @@ public class IOMockHttpServerTest {
 
   @Test
   public void exec() {
-    IORequestHandler echo = request -> IO.pure(ok(request.body()));
+    RequestHandlerK<IO<?>> echo = request -> IO.pure(ok(request.body()));
     IOMockHttpServer server = listenAt(0).exec(echo).start();
 
     HttpResponse response = connectTo("http://localhost:" + server.getPort()).request(Requests.post("/").withBody("echo"));

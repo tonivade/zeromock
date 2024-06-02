@@ -32,33 +32,33 @@ public final class HttpIOService implements HttpRouteBuilderK<IO<?>, HttpIOServi
     return new HttpIOService(serviceK.mount(path, other.serviceK));
   }
 
-  public HttpIOService exec(IORequestHandler handler) {
+  public HttpIOService exec(RequestHandlerK<IO<?>> handler) {
     return new HttpIOService(serviceK.exec(handler));
   }
 
   public ThenStepK<IO<?>, HttpIOService> preFilter(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(serviceK.monad(), handler -> addPreFilter(matcher, handler::apply));
+    return new ThenStepK<>(serviceK.monad(), handler -> addPreFilter(matcher, handler));
   }
 
   public HttpIOService preFilter(PreFilter filter) {
-    return preFilter(filter.andThen(IO::pure)::apply);
+    return preFilter(filter.lift(serviceK.monad()));
   }
 
-  public HttpIOService preFilter(IOPreFilter filter) {
+  public HttpIOService preFilter(PreFilterK<IO<?>> filter) {
     return new HttpIOService(serviceK.preFilter(filter));
   }
 
   public HttpIOService postFilter(PostFilter filter) {
-    return postFilter(filter.andThen(IO::pure)::apply);
+    return postFilter(filter.lift(serviceK.monad()));
   }
 
-  public HttpIOService postFilter(IOPostFilter filter) {
+  public HttpIOService postFilter(PostFilterK<IO<?>> filter) {
     return new HttpIOService(serviceK.postFilter(filter));
   }
 
   @Override
   public ThenStepK<IO<?>, HttpIOService> when(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(serviceK.monad(), handler -> addMapping(matcher, handler::apply));
+    return new ThenStepK<>(serviceK.monad(), handler -> addMapping(matcher, handler));
   }
 
   public IO<Option<HttpResponse>> execute(HttpRequest request) {
@@ -73,12 +73,12 @@ public final class HttpIOService implements HttpRouteBuilderK<IO<?>, HttpIOServi
     return serviceK;
   }
 
-  public HttpIOService addMapping(Matcher1<HttpRequest> matcher, IORequestHandler handler) {
+  public HttpIOService addMapping(Matcher1<HttpRequest> matcher, RequestHandlerK<IO<?>> handler) {
     return new HttpIOService(serviceK.addMapping(matcher, handler));
   }
 
-  private HttpIOService addPreFilter(Matcher1<HttpRequest> matcher, IORequestHandler handler) {
-    return preFilter(filter(serviceK.monad(), matcher, handler)::apply);
+  private HttpIOService addPreFilter(Matcher1<HttpRequest> matcher, RequestHandlerK<IO<?>> handler) {
+    return preFilter(filter(serviceK.monad(), matcher, handler));
   }
 
   @Override

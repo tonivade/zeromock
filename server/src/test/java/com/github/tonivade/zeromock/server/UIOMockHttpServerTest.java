@@ -37,9 +37,9 @@ import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpStatus;
 import com.github.tonivade.zeromock.api.HttpUIOService;
+import com.github.tonivade.zeromock.api.RequestHandlerK;
 import com.github.tonivade.zeromock.api.Requests;
 import com.github.tonivade.zeromock.api.Responses;
-import com.github.tonivade.zeromock.api.UIORequestHandler;
 
 public class UIOMockHttpServerTest {
 
@@ -137,7 +137,7 @@ public class UIOMockHttpServerTest {
 
   @Test
   public void exec() {
-    UIORequestHandler echo = request -> UIO.pure(ok(request.body()));
+    RequestHandlerK<UIO<?>> echo = request -> UIO.pure(ok(request.body()));
     UIOMockHttpServer server = listenAt(0).exec(echo).start();
 
     HttpResponse response = connectTo("http://localhost:" + server.getPort()).request(Requests.post("/").withBody("echo"));

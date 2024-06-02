@@ -15,11 +15,11 @@ import com.github.tonivade.purefun.typeclasses.Instances;
 import com.github.tonivade.zeromock.api.HttpIOService;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpRouteBuilderK;
-import com.github.tonivade.zeromock.api.IOPostFilter;
-import com.github.tonivade.zeromock.api.IOPreFilter;
-import com.github.tonivade.zeromock.api.IORequestHandler;
 import com.github.tonivade.zeromock.api.PostFilter;
+import com.github.tonivade.zeromock.api.PostFilterK;
 import com.github.tonivade.zeromock.api.PreFilter;
+import com.github.tonivade.zeromock.api.PreFilterK;
+import com.github.tonivade.zeromock.api.RequestHandlerK;
 import com.github.tonivade.zeromock.server.MockHttpServerK.BuilderK;
 
 public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO<?>, IOMockHttpServer> {
@@ -61,46 +61,46 @@ public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO<
     return this;
   }
 
-  public IOMockHttpServer exec(IORequestHandler handler) {
+  public IOMockHttpServer exec(RequestHandlerK<IO<?>> handler) {
     serverK.exec(handler);
     return this;
   }
 
   public ThenStepK<IO<?>, IOMockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instances.<IO<?>>monad(), handler -> addPreFilter(matcher, handler::apply));
+    return new ThenStepK<>(Instances.<IO<?>>monad(), handler -> addPreFilter(matcher, handler));
   }
 
   public IOMockHttpServer preFilter(PreFilter filter) {
-    return preFilter(filter.andThen(IO::pure)::apply);
+    return preFilter(filter.lift(Instances.<IO<?>>monad()));
   }
 
-  public IOMockHttpServer preFilter(IOPreFilter filter) {
+  public IOMockHttpServer preFilter(PreFilterK<IO<?>> filter) {
     serverK.preFilter(filter);
     return this;
   }
 
   public IOMockHttpServer postFilter(PostFilter filter) {
-    return postFilter(filter.andThen(IO::pure)::apply);
+    return postFilter(filter.lift(Instances.<IO<?>>monad()));
   }
 
-  public IOMockHttpServer postFilter(IOPostFilter filter) {
+  public IOMockHttpServer postFilter(PostFilterK<IO<?>> filter) {
     serverK.postFilter(filter);
     return this;
   }
 
-  public IOMockHttpServer addMapping(Matcher1<HttpRequest> matcher, IORequestHandler handler) {
+  public IOMockHttpServer addMapping(Matcher1<HttpRequest> matcher, RequestHandlerK<IO<?>> handler) {
     serverK.addMapping(matcher, handler);
     return this;
   }
 
-  public IOMockHttpServer addPreFilter(Matcher1<HttpRequest> matcher, IORequestHandler handler) {
+  public IOMockHttpServer addPreFilter(Matcher1<HttpRequest> matcher, RequestHandlerK<IO<?>> handler) {
     serverK.preFilter(filter(Instances.monad(), matcher, handler));
     return this;
   }
 
   @Override
   public ThenStepK<IO<?>, IOMockHttpServer> when(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instances.<IO<?>>monad(), handler -> addMapping(matcher, handler::apply));
+    return new ThenStepK<>(Instances.<IO<?>>monad(), handler -> addMapping(matcher, handler));
   }
 
   @Override

@@ -16,10 +16,10 @@ import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpRouteBuilderK;
 import com.github.tonivade.zeromock.api.HttpUIOService;
 import com.github.tonivade.zeromock.api.PostFilter;
+import com.github.tonivade.zeromock.api.PostFilterK;
 import com.github.tonivade.zeromock.api.PreFilter;
-import com.github.tonivade.zeromock.api.UIOPostFilter;
-import com.github.tonivade.zeromock.api.UIOPreFilter;
-import com.github.tonivade.zeromock.api.UIORequestHandler;
+import com.github.tonivade.zeromock.api.PreFilterK;
+import com.github.tonivade.zeromock.api.RequestHandlerK;
 import com.github.tonivade.zeromock.server.MockHttpServerK.BuilderK;
 
 public final class UIOMockHttpServer implements HttpServer, HttpRouteBuilderK<UIO<?>, UIOMockHttpServer> {
@@ -61,46 +61,46 @@ public final class UIOMockHttpServer implements HttpServer, HttpRouteBuilderK<UI
     return this;
   }
 
-  public UIOMockHttpServer exec(UIORequestHandler handler) {
+  public UIOMockHttpServer exec(RequestHandlerK<UIO<?>> handler) {
     serverK.exec(handler);
     return this;
   }
 
   public ThenStepK<UIO<?>, UIOMockHttpServer> preFilter(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instances.<UIO<?>>monad(), handler -> addPreFilter(matcher, handler::apply));
+    return new ThenStepK<>(Instances.<UIO<?>>monad(), handler -> addPreFilter(matcher, handler));
   }
 
   public UIOMockHttpServer preFilter(PreFilter filter) {
-    return preFilter(filter.andThen(UIO::pure)::apply);
+    return preFilter(filter.lift(Instances.<UIO<?>>monad()));
   }
 
-  public UIOMockHttpServer preFilter(UIOPreFilter filter) {
+  public UIOMockHttpServer preFilter(PreFilterK<UIO<?>> filter) {
     serverK.preFilter(filter);
     return this;
   }
 
   public UIOMockHttpServer postFilter(PostFilter filter) {
-    return postFilter(filter.andThen(UIO::pure)::apply);
+    return postFilter(filter.lift(Instances.<UIO<?>>monad()));
   }
 
-  public UIOMockHttpServer postFilter(UIOPostFilter filter) {
+  public UIOMockHttpServer postFilter(PostFilterK<UIO<?>> filter) {
     serverK.postFilter(filter);
     return this;
   }
 
-  public UIOMockHttpServer addMapping(Matcher1<HttpRequest> matcher, UIORequestHandler handler) {
+  public UIOMockHttpServer addMapping(Matcher1<HttpRequest> matcher, RequestHandlerK<UIO<?>> handler) {
     serverK.addMapping(matcher, handler);
     return this;
   }
 
-  public UIOMockHttpServer addPreFilter(Matcher1<HttpRequest> matcher, UIORequestHandler handler) {
+  public UIOMockHttpServer addPreFilter(Matcher1<HttpRequest> matcher, RequestHandlerK<UIO<?>> handler) {
     serverK.preFilter(filter(Instances.monad(), matcher, handler));
     return this;
   }
 
   @Override
   public ThenStepK<UIO<?>, UIOMockHttpServer> when(Matcher1<HttpRequest> matcher) {
-    return new ThenStepK<>(Instances.<UIO<?>>monad(), handler -> addMapping(matcher, handler::apply));
+    return new ThenStepK<>(Instances.<UIO<?>>monad(), handler -> addMapping(matcher, handler));
   }
 
   @Override

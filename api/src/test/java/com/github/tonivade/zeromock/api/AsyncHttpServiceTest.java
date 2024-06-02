@@ -6,6 +6,7 @@ package com.github.tonivade.zeromock.api;
 
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.typeclasses.Instances;
+import com.github.tonivade.purefun.typeclasses.Monad;
 
 import org.junit.jupiter.api.Test;
 
@@ -21,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AsyncHttpServiceTest {
 
+  private static final Monad<Future<?>> MONAD = Instances.<Future<?>>monad();
+
   @Test
   public void initialState() {
     AsyncHttpService service = new AsyncHttpService("service");
@@ -34,7 +37,7 @@ public class AsyncHttpServiceTest {
   @Test
   public void whenThen() {
     AsyncHttpService service = new AsyncHttpService("service")
-        .when(get("/ping")).then(ok("pong").lift(Instances.<Future<?>>monad()));
+        .when(get("/ping")).then(ok("pong").lift(MONAD));
 
     assertEquals(some(Responses.ok("pong")), service.execute(Requests.get("/ping")).await().getOrElseThrow());
   }
@@ -42,7 +45,7 @@ public class AsyncHttpServiceTest {
   @Test
   public void exec() {
     AsyncHttpService service = new AsyncHttpService("service")
-        .exec(ok("pong").andThen(Future::success)::apply);
+        .exec(ok("pong").lift(MONAD));
 
     assertEquals(some(Responses.ok("pong")), service.execute(Requests.get("/ping")).await().getOrElseThrow());
   }
@@ -50,7 +53,7 @@ public class AsyncHttpServiceTest {
   @Test
   public void mount() {
     AsyncHttpService service1 = new AsyncHttpService("service")
-        .when(get("/ping")).then(ok("pong").lift(Instances.<Future<?>>monad()));
+        .when(get("/ping")).then(ok("pong").lift(MONAD));
     AsyncHttpService service2 = new AsyncHttpService("service")
         .mount("/path", service1);
 
@@ -64,7 +67,7 @@ public class AsyncHttpServiceTest {
   @Test
   public void combine() {
     AsyncHttpService service1 = new AsyncHttpService("service1")
-        .when(get("/ping")).then(ok("pong").lift(Instances.<Future<?>>monad()));
+        .when(get("/ping")).then(ok("pong").lift(MONAD));
     AsyncHttpService service2 = new AsyncHttpService("service2");
 
     assertEquals(some(Responses.ok("pong")), service1.combine(service2).execute(Requests.get("/ping")).await().getOrElseThrow());
@@ -74,7 +77,7 @@ public class AsyncHttpServiceTest {
   public void filters() {
     AsyncHttpService service1 = new AsyncHttpService("service1")
         .preFilter(PreFilter.filter(put(), forbidden()))
-        .when(get("/ping")).then(ok("pong").lift(Instances.<Future<?>>monad()))
+        .when(get("/ping")).then(ok("pong").lift(MONAD))
         .postFilter(contentPlain());
 
     assertAll(

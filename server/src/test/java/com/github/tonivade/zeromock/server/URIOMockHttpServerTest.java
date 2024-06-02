@@ -37,9 +37,9 @@ import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpStatus;
 import com.github.tonivade.zeromock.api.HttpURIOService;
+import com.github.tonivade.zeromock.api.RequestHandlerK;
 import com.github.tonivade.zeromock.api.Requests;
 import com.github.tonivade.zeromock.api.Responses;
-import com.github.tonivade.zeromock.api.URIORequestHandler;
 
 public class URIOMockHttpServerTest {
 
@@ -127,7 +127,7 @@ public class URIOMockHttpServerTest {
 
   @Test
   public void exec() {
-    URIORequestHandler<Void> echo = request -> URIO.pure(ok(request.body()));
+    RequestHandlerK<URIO<Void, ?>> echo = request -> URIO.pure(ok(request.body()));
     URIOMockHttpServer<Void> server = listenAt((Void) null, 0).exec(echo).start();
 
     HttpResponse response = connectTo("http://localhost:" + server.getPort()).request(Requests.post("/").withBody("echo"));
