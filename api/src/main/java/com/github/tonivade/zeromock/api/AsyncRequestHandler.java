@@ -8,7 +8,6 @@ import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.concurrent.FutureOf;
 import com.github.tonivade.purefun.typeclasses.Instances;
 
-@FunctionalInterface
 public interface AsyncRequestHandler extends RequestHandlerK<Future<?>> {
 
   @Override
