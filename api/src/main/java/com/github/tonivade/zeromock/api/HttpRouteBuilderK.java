@@ -35,43 +35,43 @@ public interface HttpRouteBuilderK<F extends Kind<F, ?>, R extends HttpRouteBuil
     }
 
     public R ok(String body) {
-      return then(Handlers.ok(body).lift(monad()));
+      return then(Handlers.ok(body).lift(monad));
     }
 
     public R created(String body) {
-      return then(Handlers.created(body).lift(monad()));
+      return then(Handlers.created(body).lift(monad));
     }
 
     public R error(String body) {
-      return then(Handlers.error(body).lift(monad()));
+      return then(Handlers.error(body).lift(monad));
     }
 
     public R noContent() {
-      return then(Handlers.noContent().lift(monad()));
+      return then(Handlers.noContent().lift(monad));
     }
 
     public R notFound() {
-      return then(Handlers.notFound().lift(monad()));
+      return then(Handlers.notFound().lift(monad));
     }
 
     public R forbidden() {
-      return then(Handlers.forbidden().lift(monad()));
+      return then(Handlers.forbidden().lift(monad));
     }
 
     public R badRequest() {
-      return then(Handlers.badRequest().lift(monad()));
+      return then(Handlers.badRequest().lift(monad));
     }
 
     public R unauthorized() {
-      return then(Handlers.unauthorized().lift(monad()));
+      return then(Handlers.unauthorized().lift(monad));
     }
 
     public R unavailable() {
-      return then(Handlers.unavailable().lift(monad()));
+      return then(Handlers.unavailable().lift(monad));
     }
 
     public R error() {
-      return then(Handlers.error().lift(monad()));
+      return then(Handlers.error().lift(monad));
     }
   }
 }
