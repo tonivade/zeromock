@@ -172,9 +172,10 @@ subprojects {
   dependencies {
     errorprone libs.nullaway
     errorprone libs.errorprone
+    testImplementation platform(libs.junitBom)
     testImplementation libs.junitJupiter
     testImplementation libs.junitVintage
-    testRuntimeOnly libs.junitRunner
+    testRuntimeOnly libs.junitLauncher
   }
 }
 

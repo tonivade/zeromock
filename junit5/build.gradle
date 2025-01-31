@@ -1,7 +1,7 @@
 dependencies {
+  implementation platform(libs.junitBom)
   api projects.zeromockServer
   api libs.junitJupiter
-  api libs.junitRunner
   implementation projects.zeromockClient
   implementation libs.purefunMonad
   implementation libs.purefunEffect

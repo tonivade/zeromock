@@ -1,8 +1,7 @@
 [versions]
 slf4jVersion = "2.0.16"
 junitVersion = "4.13.2"
-junitEngineVersion = "5.11.4"
-junitPlatformVersion = "1.11.4"
+junitBomVersion = "5.11.4"
 equalsVerifierVersion = "3.18.2"
 purefunVersion = "5.0"
 purejsonVersion = "1.0"
@@ -23,9 +22,10 @@ purefunTypeclasses = { group = "com.github.tonivade", name = "purefun-typeclasse
 purefunInstances = { group = "com.github.tonivade", name = "purefun-instances", version.ref = "purefunVersion" }
 purejson = { group = "com.github.tonivade", name = "purejson", version.ref = "purejsonVersion" }
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4jVersion" }
-junitJupiter = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junitEngineVersion" }
-junitVintage = { group = "org.junit.vintage", name = "junit-vintage-engine", version.ref = "junitEngineVersion" }
-junitRunner = { group = "org.junit.platform", name = "junit-platform-runner", version.ref = "junitPlatformVersion" }
+junitBom = { group = "org.junit", name = "junit-bom", version.ref = "junitBomVersion" }
+junitJupiter = { module = "org.junit.jupiter:junit-jupiter-engine"}
+junitVintage = { module = "org.junit.vintage:junit-vintage-engine"}
+junitLauncher = { module = "org.junit.platform:junit-platform-launcher" }
 junit = { group = "junit", name = "junit", version.ref = "junitVersion" }
 equalsVerifier = { group = "nl.jqno.equalsverifier", name = "equalsverifier", version.ref = "equalsVerifierVersion" }
 jaxb = { group = "org.glassfish.jaxb", name = "jaxb-runtime", version.ref = "jaxbVersion" }
