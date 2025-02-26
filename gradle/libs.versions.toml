@@ -1,5 +1,5 @@
 [versions]
-slf4jVersion = "2.0.16"
+slf4jVersion = "2.0.17"
 junitVersion = "4.13.2"
 junitBomVersion = "5.12.0"
 equalsVerifierVersion = "3.19.1"
