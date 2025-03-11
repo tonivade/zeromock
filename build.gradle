@@ -13,24 +13,19 @@ plugins {
 apply plugin: 'org.sonarqube'
 
 dependencies {
-  jacocoAggregation projects.zeromockServer
-  jacocoAggregation projects.zeromockClient
-  jacocoAggregation projects.zeromockJunit4
-  jacocoAggregation projects.zeromockJunit5
-
-  testReportAggregation projects.zeromockServer
-  testReportAggregation projects.zeromockClient
-  testReportAggregation projects.zeromockJunit4
-  testReportAggregation projects.zeromockJunit5
+  subprojects.forEach {
+    jacocoAggregation it
+    testReportAggregation it
+  }
 }
 
 reporting {
   reports {
     testCodeCoverageReport(JacocoCoverageReport) {
-      testType = TestSuiteType.UNIT_TEST
+      testSuiteName = "test"
     }
     testAggregateTestReport(AggregateTestReport) {
-      testType = TestSuiteType.UNIT_TEST
+      testSuiteName = "test"
     }
   }
 }
