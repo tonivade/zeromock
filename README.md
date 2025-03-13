@@ -158,7 +158,7 @@ and with scala-cli:
 ```scala
 #!/usr/bin/env -S scala-cli shebang
 
-//> using lib "com.github.tonivade:zeromock-server:0.18.0"
+//> using dep "com.github.tonivade:zeromock-server:0.18.0"
 
 import com.github.tonivade.zeromock.server.MockHttpServer.listenAt
 
