@@ -5,19 +5,25 @@
 package com.github.tonivade.zeromock.api;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-
-import java.io.OutputStreamWriter;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.util.Date;
-
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.type.Either;
 import com.github.tonivade.purefun.typeclasses.Monad;
+import java.io.OutputStreamWriter;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.time.Duration;
+import java.util.Date;
 
 public interface PreFilter extends Function1<HttpRequest, Either<HttpResponse, HttpRequest>> {
+
+  static PreFilter delay(Duration duration) {
+    return request -> {
+      Thread.sleep(duration);
+      return Either.right(request);
+    };
+  }
 
   default <F extends Kind<F, ?>> PreFilterK<F> lift(Monad<F> monad) {
     return andThen(monad::pure)::apply;

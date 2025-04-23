@@ -4,6 +4,8 @@
  */
 package com.github.tonivade.zeromock.api;
 
+import static org.junit.jupiter.api.Assertions.*;
+import java.time.Duration;
 import org.junit.jupiter.api.Test;
 
 import static com.github.tonivade.purefun.type.Option.none;
@@ -13,15 +15,13 @@ import static com.github.tonivade.zeromock.api.Handlers.ok;
 import static com.github.tonivade.zeromock.api.Headers.contentPlain;
 import static com.github.tonivade.zeromock.api.Matchers.get;
 import static com.github.tonivade.zeromock.api.Matchers.put;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HttpServiceTest {
 
   @Test
   public void initialState() {
     HttpService service = new HttpService("service");
-    
+
     assertAll(
         () -> assertEquals("service", service.name()),
         () -> assertEquals(none(), service.execute(Requests.get("/ping")))
@@ -32,7 +32,7 @@ public class HttpServiceTest {
   public void whenThen() {
     HttpService service = new HttpService("service")
         .when(get("/ping")).then(ok("pong"));
-    
+
     assertEquals(some(Responses.ok("pong")), service.execute(Requests.get("/ping")));
   }
 
@@ -40,17 +40,17 @@ public class HttpServiceTest {
   public void exec() {
     HttpService service = new HttpService("service")
         .exec(ok("pong"));
-    
+
     assertEquals(some(Responses.ok("pong")), service.execute(Requests.get("/ping")));
   }
-  
+
   @Test
   public void mount() {
     HttpService service1 = new HttpService("service1")
         .when(get("/ping")).then(ok("pong"));
     HttpService service2 = new HttpService("service2")
         .mount("/path", service1);
-    
+
     assertAll(
         () -> assertEquals(some(Responses.ok("pong")), service2.execute(Requests.get("/path/ping"))),
         () -> assertEquals(none(), service2.execute(Requests.get("/path/notfound"))),
@@ -79,5 +79,19 @@ public class HttpServiceTest {
             some(Responses.ok("pong").withHeader("Content-type", "text/plain")),
             service1.execute(Requests.get("/ping")))
     );
+  }
+
+  @Test
+  public void withDelay() {
+    var delay = Duration.ofSeconds(5);
+    HttpService service = new HttpService("service")
+        .when(get("/ping")).then(ok("pong").withDelay(delay));
+
+    var start = System.nanoTime();
+    var response = service.execute(Requests.get("/ping"));
+    var duration = Duration.ofNanos(System.nanoTime() - start);
+
+    assertEquals(some(Responses.ok("pong")), response);
+    assertTrue(duration.compareTo(delay) > 0);
   }
 }

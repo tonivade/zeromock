@@ -9,9 +9,14 @@ import static com.github.tonivade.purefun.core.Function1.identity;
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.typeclasses.Monad;
+import java.time.Duration;
 
 @FunctionalInterface
 public interface RequestHandler extends Function1<HttpRequest, HttpResponse> {
+
+  default RequestHandler withDelay(Duration duration) {
+    return preHandle(PreFilter.delay(duration));
+  }
 
   default RequestHandler preHandle(PreFilter before) {
     return request -> before.apply(request).fold(identity(), this::apply);
