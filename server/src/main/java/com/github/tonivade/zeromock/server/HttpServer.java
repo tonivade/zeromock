@@ -19,6 +19,7 @@ public interface HttpServer {
   String getPath();
 
   HttpServer verify(Matcher1<HttpRequest> matcher);
+  HttpServer verify(Matcher1<HttpRequest> matcher, int times);
   HttpServer verifyNot(Matcher1<HttpRequest> matcher);
 
   Sequence<HttpRequest> getUnmatched();

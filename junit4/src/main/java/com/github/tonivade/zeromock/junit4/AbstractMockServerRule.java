@@ -47,6 +47,11 @@ public abstract class AbstractMockServerRule<F extends Kind<F, ?>> extends Exter
     return this;
   }
 
+  public AbstractMockServerRule<F> verify(Matcher1<HttpRequest> matcher, int times) {
+    server.verify(matcher, times);
+    return this;
+  }
+
   public AbstractMockServerRule<F> verifyNot(Matcher1<HttpRequest> matcher) {
     server.verifyNot(matcher);
     return this;

@@ -23,7 +23,7 @@ import static com.github.tonivade.zeromock.client.HttpClient.connectTo;
 import static com.github.tonivade.zeromock.server.MockHttpServer.listenAt;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,6 +69,8 @@ public class MockHttpServerTest {
         () -> assertEquals(HttpStatus.OK, response.status()),
         () -> assertEquals("Hello World!", asString(response.body())),
         () -> server.verify(get("/path/hello").and(param("name", "World"))),
+        () -> server.verify(get("/path/hello").and(param("name", "World")), 1),
+        () -> assertThrows(AssertionError.class, () -> server.verify(get("/path/hello").and(param("name", "World")), 10)),
         () -> server.verifyNot(get("/path/hello").and(param("name", "everyone")))
     );
   }

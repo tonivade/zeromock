@@ -122,6 +122,12 @@ public final class URIOMockHttpServer<R> implements HttpServer, HttpRouteBuilder
   }
 
   @Override
+  public URIOMockHttpServer<R> verify(Matcher1<HttpRequest> matcher, int times) {
+    serverK.verify(matcher, times);
+    return this;
+  }
+
+  @Override
   public URIOMockHttpServer<R> verifyNot(Matcher1<HttpRequest> matcher) {
     serverK.verifyNot(matcher);
     return this;

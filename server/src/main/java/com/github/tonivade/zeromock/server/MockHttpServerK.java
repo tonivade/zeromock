@@ -134,6 +134,15 @@ public class MockHttpServerK<F extends Kind<F, ?>> implements com.github.tonivad
   }
 
   @Override
+  public MockHttpServerK<F> verify(Matcher1<HttpRequest> matcher, int times) {
+    var count = count(matcher);
+    if (count != times) {
+      throw new AssertionError("expected to match for " + times + " times, but was called " + count + " times");
+    }
+    return this;
+  }
+
+  @Override
   public MockHttpServerK<F> verifyNot(Matcher1<HttpRequest> matcher) {
     if (matches(matcher)) {
       throw new AssertionError("request not found");
@@ -193,6 +202,10 @@ public class MockHttpServerK<F extends Kind<F, ?>> implements com.github.tonivad
 
   private boolean matches(Matcher1<HttpRequest> matcher) {
     return matched.values().stream().anyMatch(matcher::match);
+  }
+
+  private int count(Matcher1<HttpRequest> matcher) {
+    return (int) matched.values().stream().filter(matcher::match).count();
   }
 
   private Kind<F, Option<HttpResponse>> execute(HttpRequest request) {

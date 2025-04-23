@@ -121,6 +121,12 @@ public final class UIOMockHttpServer implements HttpServer, HttpRouteBuilderK<UI
   }
 
   @Override
+  public UIOMockHttpServer verify(Matcher1<HttpRequest> matcher, int times) {
+    serverK.verify(matcher, times);
+    return this;
+  }
+
+  @Override
   public UIOMockHttpServer verifyNot(Matcher1<HttpRequest> matcher) {
     serverK.verifyNot(matcher);
     return this;

@@ -116,6 +116,12 @@ public final class MockHttpServer implements HttpServer, HttpRouteBuilder<MockHt
   }
 
   @Override
+  public MockHttpServer verify(Matcher1<HttpRequest> matcher, int times) {
+    serverK.verify(matcher, times);
+    return this;
+  }
+
+  @Override
   public MockHttpServer verifyNot(Matcher1<HttpRequest> matcher) {
     serverK.verifyNot(matcher);
     return this;

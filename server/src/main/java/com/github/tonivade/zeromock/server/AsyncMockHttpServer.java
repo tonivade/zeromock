@@ -126,6 +126,12 @@ public final class AsyncMockHttpServer implements HttpServer, HttpRouteBuilderK<
   }
 
   @Override
+  public AsyncMockHttpServer verify(Matcher1<HttpRequest> matcher, int times) {
+    serverK.verify(matcher, times);
+    return this;
+  }
+
+  @Override
   public AsyncMockHttpServer verifyNot(Matcher1<HttpRequest> matcher) {
     serverK.verifyNot(matcher);
     return this;

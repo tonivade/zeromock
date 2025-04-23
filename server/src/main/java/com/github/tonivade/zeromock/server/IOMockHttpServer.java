@@ -121,6 +121,12 @@ public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO<
   }
 
   @Override
+  public IOMockHttpServer verify(Matcher1<HttpRequest> matcher, int times) {
+    serverK.verify(matcher, times);
+    return this;
+  }
+
+  @Override
   public IOMockHttpServer verifyNot(Matcher1<HttpRequest> matcher) {
     serverK.verifyNot(matcher);
     return this;
