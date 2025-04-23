@@ -15,12 +15,22 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.time.Duration;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public interface PreFilter extends Function1<HttpRequest, Either<HttpResponse, HttpRequest>> {
 
   static PreFilter delay(Duration duration) {
     return request -> {
       Thread.sleep(duration);
+      return Either.right(request);
+    };
+  }
+
+  static PreFilter fail(AtomicInteger times) {
+    return request -> {
+      if (times.decrementAndGet() >= 0) {
+        return Either.left(Responses.error());
+      }
       return Either.right(request);
     };
   }

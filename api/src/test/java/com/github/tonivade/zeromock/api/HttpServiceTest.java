@@ -94,4 +94,16 @@ public class HttpServiceTest {
     assertEquals(some(Responses.ok("pong")), response);
     assertTrue(duration.compareTo(delay) > 0);
   }
+
+  @Test
+  public void failFor() {
+    HttpService service = new HttpService("service")
+        .when(get("/ping")).then(ok("pong").failFor(1));
+
+    var responseFail = service.execute(Requests.get("/ping"));
+    var responseOk = service.execute(Requests.get("/ping"));
+
+    assertEquals(some(Responses.error()), responseFail);
+    assertEquals(some(Responses.ok("pong")), responseOk);
+  }
 }
