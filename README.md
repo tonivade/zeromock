@@ -149,7 +149,7 @@ and with scala-cli:
 import com.github.tonivade.zeromock.server.MockHttpServer.listenAt
 
 @main def server() =
-  listenAt(8101)
+  listenAt(8080)
     .get("/ping").ok("pong")
     .start()
 ```
