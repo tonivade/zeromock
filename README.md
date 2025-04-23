@@ -139,20 +139,6 @@ public class OneLineApplication {
 }
 ```
 
-and with kscript:
-
-```kotlin
-#!/usr/bin/env kscript
-
-//DEPS com.github.tonivade:zeromock-server:1.0
-
-import com.github.tonivade.zeromock.server.MockHttpServer.listenAt
-
-listenAt(8101)
-  .get("/ping").ok("pong")
-  .start()
-```
-
 and with scala-cli:
 
 ```scala
