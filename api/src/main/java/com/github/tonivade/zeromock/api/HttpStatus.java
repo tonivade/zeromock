@@ -24,7 +24,12 @@ public enum HttpStatus {
 
   MULTIPLE_CHOICES(300),
   MOVED_PERMANENTLY(301),
+  /**
+   * Use {@link HttpStatus#FOUND}
+   */
+  @Deprecated
   MOVED_TEMPORARILY(302),
+  FOUND(302),
   SEE_OTHER(303),
   NOT_MODIFIED(304),
   USE_PROXY(305),
