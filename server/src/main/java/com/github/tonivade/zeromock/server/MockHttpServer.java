@@ -51,6 +51,10 @@ public final class MockHttpServer implements HttpServer, HttpRouteBuilder<MockHt
     };
   }
 
+  public static MockHttpServer listenAtRandomPort() {
+    return listenAt(0);
+  }
+
   public static MockHttpServer listenAt(int port) {
     return builder().port(port).build();
   }
