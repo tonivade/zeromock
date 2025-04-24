@@ -155,8 +155,10 @@ subprojects {
 
   signing {
     def signingKey = project.findProperty("signingKey")
-    if (signingKey != null) {
-      useInMemoryPgpKeys(file(signingKey).text, "")
+    def signingPassword = project.findProperty("signingPassword")
+    if (signingKey != null && signingPassword != null) {
+      println(signingPassword)
+      useInMemoryPgpKeys(file(signingKey).text, signingPassword)
       sign publishing.publications.mavenJava
     }
   }
