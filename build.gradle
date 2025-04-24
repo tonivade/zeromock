@@ -154,7 +154,7 @@ subprojects {
   }
 
   signing {
-    def signingKey = project.findProperty("signingKey")
+    def signingKey = file(project.findProperty("signingKey")).text
     def signingPassword = project.findProperty("signingPassword")
     println(signingKey)
     useInMemoryPgpKeys(signingKey, signingPassword)
