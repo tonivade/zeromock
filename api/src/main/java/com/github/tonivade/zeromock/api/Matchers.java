@@ -15,6 +15,8 @@ import static com.github.tonivade.zeromock.api.HttpMethod.PUT;
 
 import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.data.ImmutableSet;
+import com.github.tonivade.purejson.JsonNode;
+import com.github.tonivade.purejson.PureJson;
 
 public final class Matchers {
 
@@ -94,6 +96,18 @@ public final class Matchers {
 
   public static Matcher1<HttpRequest> body(String body) {
     return request -> asString(request.body()).equals(body);
+  }
+
+  public static Matcher1<HttpRequest> json(String body) {
+    return request -> {
+      var expected = PureJson.parse(body).getOrElseThrow();
+      return toJson(request.body()).equals(expected);
+    };
+  }
+
+  private static JsonNode toJson(Bytes bytes) {
+    var content = asString(bytes);
+    return PureJson.parse(content).getOrElseThrow();
   }
 
   public static Matcher1<HttpRequest> accept(String contentType) {

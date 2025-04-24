@@ -9,6 +9,7 @@ import static com.github.tonivade.zeromock.api.Matchers.body;
 import static com.github.tonivade.zeromock.api.Matchers.delete;
 import static com.github.tonivade.zeromock.api.Matchers.get;
 import static com.github.tonivade.zeromock.api.Matchers.header;
+import static com.github.tonivade.zeromock.api.Matchers.json;
 import static com.github.tonivade.zeromock.api.Matchers.options;
 import static com.github.tonivade.zeromock.api.Matchers.param;
 import static com.github.tonivade.zeromock.api.Matchers.patch;
@@ -44,6 +45,36 @@ public class MatchersTest {
         () -> assertTrue(get("/test/:id").match(Requests.get("/test/1"))),
         () -> assertTrue(body("asdfg").match(Requests.get("/test").withBody("asdfg"))),
         () -> assertTrue(header("header", "value").match(Requests.get("/test").withHeader("header", "value")))
+    );
+  }
+
+  @Test
+  public void bodies() {
+    String someJsonObject = """
+      {
+        "a": 1,
+        "b": 2
+      }
+      """;
+    String someJsonArray = """
+      [ "a", "b" ]
+      """;
+    String sameJsonObjectButWithDifferentOrder = """
+      {
+        "b": 2,
+        "a": 1
+      }
+      """;
+    String otherJsonArray = """
+      [ "b", "a" ]
+      """;
+    assertAll(
+        () -> assertFalse(json(someJsonArray).match(Requests.get("/test").withBody(otherJsonArray))),
+        () -> assertTrue(json(someJsonArray).match(Requests.get("/test").withBody(someJsonArray))),
+        () -> assertTrue(json(someJsonObject).match(Requests.get("/test").withBody(sameJsonObjectButWithDifferentOrder))),
+        () -> assertTrue(json(someJsonObject).match(Requests.get("/test").withBody(someJsonObject))),
+        () -> assertFalse(body(someJsonObject).match(Requests.get("/test").withBody(sameJsonObjectButWithDifferentOrder))),
+        () -> assertTrue(body(someJsonObject).match(Requests.get("/test").withBody(someJsonObject)))
     );
   }
 
