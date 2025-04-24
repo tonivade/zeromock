@@ -53,6 +53,10 @@ public final class AsyncMockHttpServer implements HttpServer, HttpRouteBuilderK<
     };
   }
 
+  public static AsyncMockHttpServer listenAtRandomPort() {
+    return listenAt(0);
+  }
+
   public static AsyncMockHttpServer listenAt(int port) {
     return builder().port(port).build();
   }

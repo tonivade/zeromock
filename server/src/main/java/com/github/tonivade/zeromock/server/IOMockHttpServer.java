@@ -48,6 +48,10 @@ public final class IOMockHttpServer implements HttpServer, HttpRouteBuilderK<IO<
     return builder(io());
   }
 
+  public static IOMockHttpServer listenAtRandomPort() {
+    return listenAt(0);
+  }
+
   public static IOMockHttpServer listenAt(int port) {
     return builder().port(port).build();
   }
