@@ -125,7 +125,8 @@ It's pretty simple, using jbang
 ```java
 //usr/bin/env jbang "$0" "$@" ; exit $?
 
-//DEPS com.github.tonivade:zeromock-server:1.0
+//DEPS com.github.tonivade:zeromock-server:1.2
+//DEPS ch.qos.logback:logback-classic:1.5.18
 
 import static com.github.tonivade.zeromock.server.MockHttpServer.listenAt;
 
@@ -144,7 +145,8 @@ and with scala-cli:
 ```scala
 #!/usr/bin/env -S scala-cli shebang
 
-//> using dep "com.github.tonivade:zeromock-server:1.0"
+//> using dep com.github.tonivade:zeromock-server:1.2
+//> using dep ch.qos.logback:logback-classic:1.5.18
 
 import com.github.tonivade.zeromock.server.MockHttpServer.listenAt
 
