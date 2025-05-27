@@ -16,11 +16,12 @@ import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
+import org.junit.jupiter.api.extension.ExtensionContext.Store;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
-import com.github.tonivade.purefun.Nullable;
 import com.github.tonivade.purefun.core.Tuple;
 import com.github.tonivade.purefun.core.Tuple2;
 import com.github.tonivade.zeromock.client.AsyncHttpClient;
@@ -40,39 +41,45 @@ import com.github.tonivade.zeromock.server.URIOMockHttpServer;
 public class MockHttpServerExtension
     implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
-  private com.sun.net.httpserver.HttpServer server;
-  @Nullable
-  private HttpServer serverK;
+  private static final String SERVER = "server";
+  private static final String SERVER_K = "serverK";
 
   @Override
   public void beforeAll(ExtensionContext context) {
     Optional<ListenAt> listenAt = listenAt(context);
     int port = listenAt.map(ListenAt::value).orElse(0);
-    this.server = new MockHttpServerK.Builder().port(port).build();
-    this.server.start();
+    var server = new MockHttpServerK.Builder().port(port).build();
+    server.start();
+
+    getStoreForClass(context).put(SERVER, server);
   }
 
   @Override
   public void beforeEach(ExtensionContext context) {
     try {
+      var server = getServer(context);
       server.removeContext("/");
     } catch (IllegalArgumentException e) {
       // not important
-    } finally {
-      serverK = null;
     }
   }
 
   @Override
   public void afterEach(ExtensionContext context) {
+    var serverK = removeServerK(context);
     if (serverK != null && !serverK.getUnmatched().isEmpty()) {
-      context.publishReportEntry("UnmatchedRequests", unmatched());
+      context.publishReportEntry("UnmatchedRequests", unmatched(serverK));
     }
   }
 
   @Override
   public void afterAll(ExtensionContext context) {
-    server.stop(0);
+    try {
+      var server = getServer(context);
+      server.stop(0);
+    } finally {
+      getStoreForClass(context).remove(SERVER);
+    }
   }
 
   @Override
@@ -84,11 +91,13 @@ public class MockHttpServerExtension
   @Override
   public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
     Class<?> type = parameterContext.getParameter().getType();
+    var server = getServer(extensionContext);
     if (serverInstance(type)) {
       var services = findServices(extensionContext);
-      HttpServer server = buildServer(type);
-      mount(extensionContext, server, services);
-      return server;
+      HttpServer serverK = buildServer(server, type);
+      mount(extensionContext, serverK, services);
+      getStoreForMethod(extensionContext).put(SERVER_K, serverK);
+      return serverK;
     }
     if (clientInstance(type)) {
       String baseUrl = "http://localhost:" + server.getAddress().getPort();
@@ -122,22 +131,20 @@ public class MockHttpServerExtension
       .toList();
   }
 
-  private HttpServer buildServer(Class<?> type) {
+  private HttpServer buildServer(com.sun.net.httpserver.HttpServer server, Class<?> type) {
     // TODO: please remove all this if-else-if chain
     if (type.isAssignableFrom(MockHttpServer.class)) {
-      this.serverK = new MockHttpServer(server);
+      return new MockHttpServer(server);
     } else if (type.isAssignableFrom(AsyncMockHttpServer.class)) {
-      this.serverK = new AsyncMockHttpServer(server);
+      return new AsyncMockHttpServer(server);
     } else if (type.isAssignableFrom(IOMockHttpServer.class)) {
-      this.serverK = new IOMockHttpServer(server);
+      return new IOMockHttpServer(server);
     } else if (type.isAssignableFrom(UIOMockHttpServer.class)) {
-      this.serverK = new UIOMockHttpServer(server);
+      return new UIOMockHttpServer(server);
     } else if (type.isAssignableFrom(URIOMockHttpServer.class)) {
       throw new UnsupportedOperationException("urio is not supported yet!");
-    } else {
-      throw new ParameterResolutionException("invalid server param");
     }
-    return serverK;
+    throw new ParameterResolutionException("invalid server param");
   }
 
   private HttpClientBuilder<?> buildClient(Class<?> type) {
@@ -152,12 +159,11 @@ public class MockHttpServerExtension
       return HttpClientBuilder.uioClient();
     } else if (type.isAssignableFrom(TaskHttpClient.class)) {
       return HttpClientBuilder.taskClient();
-    } else {
-      throw new ParameterResolutionException("invalid client param");
     }
+    throw new ParameterResolutionException("invalid client param");
   }
 
-  private String unmatched() {
+  private String unmatched(HttpServer serverK) {
     if (serverK == null) {
       return "";
     }
@@ -183,5 +189,21 @@ public class MockHttpServerExtension
         || type.equals(IOHttpClient.class)
         || type.equals(UIOHttpClient.class)
         || type.equals(TaskHttpClient.class);
+  }
+
+  private Store getStoreForClass(ExtensionContext context) {
+    return context.getStore(Namespace.create(context.getRequiredTestClass()));
+  }
+
+  private Store getStoreForMethod(ExtensionContext context) {
+    return context.getStore(Namespace.create(context.getRequiredTestMethod()));
+  }
+
+  private com.sun.net.httpserver.HttpServer getServer(ExtensionContext context) {
+    return getStoreForClass(context).get(SERVER, com.sun.net.httpserver.HttpServer.class);
+  }
+
+  private HttpServer removeServerK(ExtensionContext context) {
+    return getStoreForMethod(context).remove(SERVER_K, HttpServer.class);
   }
 }
