@@ -17,11 +17,9 @@ import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
-import org.junit.jupiter.api.extension.ExtensionContext.Store;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
-
 import com.github.tonivade.purefun.core.Tuple;
 import com.github.tonivade.purefun.core.Tuple2;
 import com.github.tonivade.zeromock.client.AsyncHttpClient;
@@ -34,7 +32,6 @@ import com.github.tonivade.zeromock.server.AsyncMockHttpServer;
 import com.github.tonivade.zeromock.server.HttpServer;
 import com.github.tonivade.zeromock.server.IOMockHttpServer;
 import com.github.tonivade.zeromock.server.MockHttpServer;
-import com.github.tonivade.zeromock.server.MockHttpServerK;
 import com.github.tonivade.zeromock.server.UIOMockHttpServer;
 import com.github.tonivade.zeromock.server.URIOMockHttpServer;
 
@@ -42,44 +39,28 @@ public class MockHttpServerExtension
     implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
   private static final String SERVER = "server";
-  private static final String SERVER_K = "serverK";
 
   @Override
   public void beforeAll(ExtensionContext context) {
-    Optional<ListenAt> listenAt = listenAt(context);
-    int port = listenAt.map(ListenAt::value).orElse(0);
-    var server = new MockHttpServerK.Builder().port(port).build();
-    server.start();
-
-    getStoreForClass(context).put(SERVER, server);
+    getMockServer(context).start();
   }
 
   @Override
   public void beforeEach(ExtensionContext context) {
-    try {
-      var server = getServer(context);
-      server.removeContext("/");
-    } catch (IllegalArgumentException e) {
-      // not important
-    }
+    getMockServer(context).reset();
   }
 
   @Override
   public void afterEach(ExtensionContext context) {
-    var serverK = removeServerK(context);
-    if (serverK != null && !serverK.getUnmatched().isEmpty()) {
-      context.publishReportEntry("UnmatchedRequests", unmatched(serverK));
+    var mockServer = getMockServer(context);
+    if (!mockServer.getUnmatched().isEmpty()) {
+      context.publishReportEntry("UnmatchedRequests", unmatched(mockServer));
     }
   }
 
   @Override
   public void afterAll(ExtensionContext context) {
-    try {
-      var server = getServer(context);
-      server.stop(0);
-    } finally {
-      getStoreForClass(context).remove(SERVER);
-    }
+    getMockServer(context).stop();
   }
 
   @Override
@@ -90,18 +71,16 @@ public class MockHttpServerExtension
 
   @Override
   public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
+    var server = getMockServer(extensionContext);
     Class<?> type = parameterContext.getParameter().getType();
-    var server = getServer(extensionContext);
     if (serverInstance(type)) {
       var services = findServices(extensionContext);
-      HttpServer serverK = buildServer(server, type);
-      mount(extensionContext, serverK, services);
-      getStoreForMethod(extensionContext).put(SERVER_K, serverK);
-      return serverK;
+      mount(extensionContext, server, services);
+      return server;
     }
     if (clientInstance(type)) {
-      String baseUrl = "http://localhost:" + server.getAddress().getPort();
-      return buildClient(type).connectTo(baseUrl);
+      String baseUrl = "http://localhost:" + server.getPort();
+      return buildHttpClient(type).connectTo(baseUrl);
     }
     throw new ParameterResolutionException("invalid param");
   }
@@ -111,14 +90,17 @@ public class MockHttpServerExtension
     services.forEach(t ->
       mountMethod.ifPresent(m -> {
         Field field = t.get1();
-        field.trySetAccessible();
-        Mount mount = t.get2();
-        try {
-          m.invoke(server, mount.value(), field.get(context.getRequiredTestInstance()));
-        } catch (IllegalAccessException | IllegalArgumentException e) {
+        if (field.trySetAccessible()) {
+          Mount mount = t.get2();
+          try {
+            m.invoke(server, mount.value(), field.get(context.getRequiredTestInstance()));
+          } catch (IllegalAccessException | IllegalArgumentException e) {
+            throw new ParameterResolutionException("cannot access field " + field.getName());
+          } catch (InvocationTargetException e) {
+            throw new ParameterResolutionException("cannot execute method " + m.getName());
+          }
+        } else {
           throw new ParameterResolutionException("cannot access field " + field.getName());
-        } catch (InvocationTargetException e) {
-          throw new ParameterResolutionException("cannot execute method " + m.getName());
         }
       })
     );
@@ -131,23 +113,35 @@ public class MockHttpServerExtension
       .toList();
   }
 
-  private HttpServer buildServer(com.sun.net.httpserver.HttpServer server, Class<?> type) {
+  private HttpServer getMockServer(ExtensionContext context) {
+    return context.getStore(Namespace.create(context.getRequiredTestClass()))
+      .getOrComputeIfAbsent(SERVER, key -> createMockServer(context), HttpServer.class);
+  }
+
+  private HttpServer createMockServer(ExtensionContext context) {
+    var listenAt = listenAt(context);
+    int port = listenAt.map(ListenAt::value).orElse(0);
+    var type = listenAt.<Class<? extends HttpServer>>map(ListenAt::type).orElse(MockHttpServer.class);
+    return buildMockServer(port, type);
+  }
+
+  private HttpServer buildMockServer(int port, Class<?> type) {
     // TODO: please remove all this if-else-if chain
     if (type.isAssignableFrom(MockHttpServer.class)) {
-      return new MockHttpServer(server);
+      return MockHttpServer.builder().port(port).build();
     } else if (type.isAssignableFrom(AsyncMockHttpServer.class)) {
-      return new AsyncMockHttpServer(server);
+      return AsyncMockHttpServer.builder().port(port).build();
     } else if (type.isAssignableFrom(IOMockHttpServer.class)) {
-      return new IOMockHttpServer(server);
+      return IOMockHttpServer.builder().port(port).build();
     } else if (type.isAssignableFrom(UIOMockHttpServer.class)) {
-      return new UIOMockHttpServer(server);
+      return UIOMockHttpServer.builder().port(port).build();
     } else if (type.isAssignableFrom(URIOMockHttpServer.class)) {
       throw new UnsupportedOperationException("urio is not supported yet!");
     }
     throw new ParameterResolutionException("invalid server param");
   }
 
-  private HttpClientBuilder<?> buildClient(Class<?> type) {
+  private HttpClientBuilder<?> buildHttpClient(Class<?> type) {
     // TODO: please remove all this if-else-if chain
     if (type.isAssignableFrom(HttpClient.class)) {
       return HttpClientBuilder.client();
@@ -163,11 +157,8 @@ public class MockHttpServerExtension
     throw new ParameterResolutionException("invalid client param");
   }
 
-  private String unmatched(HttpServer serverK) {
-    if (serverK == null) {
-      return "";
-    }
-    return serverK.getUnmatched().join(",", "[", "]");
+  private String unmatched(HttpServer mockServer) {
+    return mockServer.getUnmatched().join(",", "[", "]");
   }
 
   private static Optional<ListenAt> listenAt(ExtensionContext context) {
@@ -189,21 +180,5 @@ public class MockHttpServerExtension
         || type.equals(IOHttpClient.class)
         || type.equals(UIOHttpClient.class)
         || type.equals(TaskHttpClient.class);
-  }
-
-  private Store getStoreForClass(ExtensionContext context) {
-    return context.getStore(Namespace.create(context.getRequiredTestClass()));
-  }
-
-  private Store getStoreForMethod(ExtensionContext context) {
-    return context.getStore(Namespace.create(context.getRequiredTestMethod()));
-  }
-
-  private com.sun.net.httpserver.HttpServer getServer(ExtensionContext context) {
-    return getStoreForClass(context).get(SERVER, com.sun.net.httpserver.HttpServer.class);
-  }
-
-  private HttpServer removeServerK(ExtensionContext context) {
-    return getStoreForMethod(context).remove(SERVER_K, HttpServer.class);
   }
 }

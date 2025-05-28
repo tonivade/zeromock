@@ -13,6 +13,7 @@ nexusVersion = "2.0.0"
 errorproneVersion = "2.38.0"
 errorpronePluginVersion = "4.2.0"
 nullawayVersion = "0.12.7"
+logbackVersion = "1.5.18"
 
 [libraries]
 purefunCore = { group = "com.github.tonivade", name = "purefun-core", version.ref = "purefunVersion" }
@@ -32,6 +33,7 @@ jaxb = { group = "org.glassfish.jaxb", name = "jaxb-runtime", version.ref = "jax
 jsonPath= { group = "com.jayway.jsonpath", name = "json-path", version.ref = "jsonPathVersion" }
 nullaway = { group = "com.uber.nullaway", name = "nullaway", version.ref = "nullawayVersion" }
 errorprone = { group = "com.google.errorprone", name = "error_prone_core", version.ref = "errorproneVersion" }
+logbackClassic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logbackVersion" } 
 
 [plugins]
 sonar = { id = "org.sonarqube", version.ref = "sonarVersion" }

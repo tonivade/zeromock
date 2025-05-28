@@ -173,6 +173,7 @@ subprojects {
     testImplementation libs.junitJupiter
     testImplementation libs.junitVintage
     testRuntimeOnly libs.junitLauncher
+    testRuntimeOnly libs.logbackClassic
   }
 }
 
