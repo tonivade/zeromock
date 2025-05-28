@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
+import org.junit.jupiter.api.extension.ExtensionContext.Store;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
@@ -42,7 +43,7 @@ public class MockHttpServerExtension
 
   @Override
   public void beforeAll(ExtensionContext context) {
-    getMockServer(context).start();
+    createMockServer(context).start();
   }
 
   @Override
@@ -60,7 +61,7 @@ public class MockHttpServerExtension
 
   @Override
   public void afterAll(ExtensionContext context) {
-    getMockServer(context).stop();
+    removeMockServer(context).stop();
   }
 
   @Override
@@ -113,19 +114,30 @@ public class MockHttpServerExtension
       .toList();
   }
 
-  private HttpServer getMockServer(ExtensionContext context) {
-    return context.getStore(Namespace.create(context.getRequiredTestClass()))
-      .getOrComputeIfAbsent(SERVER, key -> createMockServer(context), HttpServer.class);
+  private HttpServer createMockServer(ExtensionContext context) {
+    return getStore(context).getOrComputeIfAbsent(SERVER, key -> buildMockServer(context), HttpServer.class);
   }
 
-  private HttpServer createMockServer(ExtensionContext context) {
+  private HttpServer getMockServer(ExtensionContext context) {
+    return getStore(context).get(SERVER, HttpServer.class);
+  }
+
+  private HttpServer removeMockServer(ExtensionContext context) {
+    return getStore(context).remove(SERVER, HttpServer.class);
+  }
+
+  private Store getStore(ExtensionContext context) {
+    return context.getStore(Namespace.create(context.getRequiredTestClass()));
+  }
+
+  private HttpServer buildMockServer(ExtensionContext context) {
     var listenAt = listenAt(context);
     int port = listenAt.map(ListenAt::value).orElse(0);
     var type = listenAt.<Class<? extends HttpServer>>map(ListenAt::type).orElse(MockHttpServer.class);
-    return buildMockServer(port, type);
+    return newMockServer(port, type);
   }
 
-  private HttpServer buildMockServer(int port, Class<?> type) {
+  private HttpServer newMockServer(int port, Class<?> type) {
     // TODO: please remove all this if-else-if chain
     if (type.isAssignableFrom(MockHttpServer.class)) {
       return MockHttpServer.builder().port(port).build();
