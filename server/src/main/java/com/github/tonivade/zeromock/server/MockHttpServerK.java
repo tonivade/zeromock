@@ -273,7 +273,7 @@ public class MockHttpServerK<F extends Kind<F, ?>> implements com.github.tonivad
     public abstract T build();
   }
 
-  public static final class Builder {
+  private static final class Builder {
 
     private String host = "localhost";
     private int port = 8080;
