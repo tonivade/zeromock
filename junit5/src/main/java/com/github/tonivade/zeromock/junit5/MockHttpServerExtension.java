@@ -4,6 +4,7 @@
  */
 package com.github.tonivade.zeromock.junit5;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -131,9 +132,10 @@ public class MockHttpServerExtension
   }
 
   private HttpServer buildMockServer(ExtensionContext context) {
-    var listenAt = listenAt(context);
-    int port = listenAt.map(ListenAt::value).orElse(0);
-    var type = listenAt.<Class<? extends HttpServer>>map(ListenAt::type).orElse(MockHttpServer.class);
+    var listenAt = findAnnotation(context, ListenAt.class);
+    var zeromock = findAnnotation(context, Zeromock.class);
+    int port = listenAt.map(ListenAt::value).or(() -> zeromock.map(Zeromock::port)).orElse(0);
+    var type = zeromock.<Class<? extends HttpServer>>map(Zeromock::type).orElse(MockHttpServer.class);
     return newMockServer(port, type);
   }
 
@@ -173,9 +175,9 @@ public class MockHttpServerExtension
     return mockServer.getUnmatched().join(",", "[", "]");
   }
 
-  private static Optional<ListenAt> listenAt(ExtensionContext context) {
+  private static <T extends Annotation> Optional<T> findAnnotation(ExtensionContext context, Class<T> annotation) {
     return context.getTestClass()
-        .map(clazz -> clazz.getDeclaredAnnotation(ListenAt.class));
+        .map(clazz -> clazz.getDeclaredAnnotation(annotation));
   }
 
   private static boolean serverInstance(Class<?> type) {
