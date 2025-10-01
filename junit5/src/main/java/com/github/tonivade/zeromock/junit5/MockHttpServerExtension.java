@@ -116,15 +116,23 @@ public class MockHttpServerExtension
   }
 
   private HttpServer createMockServer(ExtensionContext context) {
-    return getStore(context).getOrComputeIfAbsent(SERVER, key -> buildMockServer(context), HttpServer.class);
+    return getStore(context).computeIfAbsent(SERVER, key -> buildMockServer(context), HttpServer.class);
   }
 
   private HttpServer getMockServer(ExtensionContext context) {
-    return getStore(context).get(SERVER, HttpServer.class);
+    var httpServer = getStore(context).get(SERVER, HttpServer.class);
+    if (httpServer == null) {
+      throw new IllegalStateException();
+    }
+    return httpServer;
   }
 
   private HttpServer removeMockServer(ExtensionContext context) {
-    return getStore(context).remove(SERVER, HttpServer.class);
+    var httpServer = getStore(context).remove(SERVER, HttpServer.class);
+    if (httpServer == null) {
+      throw new IllegalStateException();
+    }
+    return httpServer;
   }
 
   private Store getStore(ExtensionContext context) {
