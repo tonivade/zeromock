@@ -12,7 +12,7 @@ versionsVersion = "0.53.0"
 nexusVersion = "2.0.0"
 errorproneVersion = "2.45.0"
 errorpronePluginVersion = "4.3.0"
-nullawayVersion = "0.12.14"
+nullawayVersion = "0.12.15"
 logbackVersion = "1.5.22"
 
 [libraries]
