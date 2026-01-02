@@ -2,7 +2,7 @@
 slf4jVersion = "2.0.17"
 junitVersion = "4.13.2"
 junitBomVersion = "5.14.1"
-equalsVerifierVersion = "4.2.6"
+equalsVerifierVersion = "4.3"
 purefunVersion = "5.1"
 purejsonVersion = "1.1"
 jaxbVersion = "4.0.6"
