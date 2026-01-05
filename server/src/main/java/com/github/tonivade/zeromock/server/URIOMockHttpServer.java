@@ -5,7 +5,7 @@
 package com.github.tonivade.zeromock.server;
 
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
-import static com.github.tonivade.zeromock.server.ResponseInterpreterK.*;
+import static com.github.tonivade.zeromock.server.ResponseInterpreterK.urio;
 import static java.util.Objects.requireNonNull;
 
 import com.github.tonivade.purefun.core.Matcher1;
