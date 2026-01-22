@@ -5,6 +5,7 @@
 package com.github.tonivade.zeromock.api;
 
 import com.github.tonivade.purefun.core.Matcher1;
+import com.github.tonivade.purefun.core.Producer;
 
 public interface HttpRouteBuilder<T extends HttpRouteBuilder<T>> extends RouteBuilder<HttpRouteBuilder.ThenStep<T>> {
 
@@ -15,6 +16,10 @@ public interface HttpRouteBuilder<T extends HttpRouteBuilder<T>> extends RouteBu
   interface ThenStep<T> {
 
     T then(RequestHandler handler);
+
+    default T then(Producer<HttpResponse> producer) {
+      return then(ignore -> producer.get());
+    }
 
     default T ok(String body) {
       return then(Handlers.ok(body));

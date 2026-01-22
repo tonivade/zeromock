@@ -34,44 +34,56 @@ public interface HttpRouteBuilderK<F extends Kind<F, ?>, R extends HttpRouteBuil
       return then.apply(handler);
     }
 
+    public R then(Kind<F, HttpResponse> response) {
+      return then(RequestHandlerK.cons(response));
+    }
+
+    public R lift(HttpResponse response) {
+      return then(monad.pure(response));
+    }
+
+    public R lift(RequestHandler handler) {
+      return then(handler.lift(monad));
+    }
+
     public R ok(String body) {
-      return then(Handlers.ok(body).lift(monad));
+      return lift(Handlers.ok(body));
     }
 
     public R created(String body) {
-      return then(Handlers.created(body).lift(monad));
+      return lift(Handlers.created(body));
     }
 
     public R error(String body) {
-      return then(Handlers.error(body).lift(monad));
+      return lift(Handlers.error(body));
     }
 
     public R noContent() {
-      return then(Handlers.noContent().lift(monad));
+      return lift(Handlers.noContent());
     }
 
     public R notFound() {
-      return then(Handlers.notFound().lift(monad));
+      return lift(Handlers.notFound());
     }
 
     public R forbidden() {
-      return then(Handlers.forbidden().lift(monad));
+      return lift(Handlers.forbidden());
     }
 
     public R badRequest() {
-      return then(Handlers.badRequest().lift(monad));
+      return lift(Handlers.badRequest());
     }
 
     public R unauthorized() {
-      return then(Handlers.unauthorized().lift(monad));
+      return lift(Handlers.unauthorized());
     }
 
     public R unavailable() {
-      return then(Handlers.unavailable().lift(monad));
+      return lift(Handlers.unavailable());
     }
 
     public R error() {
-      return then(Handlers.error().lift(monad));
+      return lift(Handlers.error());
     }
   }
 }
