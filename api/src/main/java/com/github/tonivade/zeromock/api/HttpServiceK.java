@@ -108,7 +108,7 @@ public final class HttpServiceK<F extends Kind<F, ?>> implements HttpRouteBuilde
             value -> monad.flatMap(value,
                 either -> either.fold(
                     response -> monad.pure(Either.left(response)), other.preFilters))),
-        this.postFilters.andThen(value -> monad.flatMap(value, other.postFilters))::apply
+        this.postFilters.andThen(value -> monad.flatMap(value, other.postFilters))
     );
   }
 
@@ -118,7 +118,7 @@ public final class HttpServiceK<F extends Kind<F, ?>> implements HttpRouteBuilde
     return new HttpServiceK<>(
         this.name,
         this.monad,
-        this.mappings.orElse(PartialFunction1.of(matcher, handler::apply)),
+        this.mappings.orElse(PartialFunction1.of(matcher, handler)),
         this.preFilters,
         this.postFilters
     );
@@ -149,7 +149,7 @@ public final class HttpServiceK<F extends Kind<F, ?>> implements HttpRouteBuilde
         this.monad,
         this.mappings,
         this.preFilters,
-        this.postFilters.andThen(value -> monad.flatMap(value, filter))::apply
+        this.postFilters.andThen(value -> monad.flatMap(value, filter))
     );
   }
 }

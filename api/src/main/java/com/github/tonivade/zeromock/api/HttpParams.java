@@ -13,8 +13,6 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
-
 import com.github.tonivade.purefun.core.Equal;
 import com.github.tonivade.purefun.core.Tuple2;
 import com.github.tonivade.purefun.data.ImmutableMap;
@@ -96,11 +94,11 @@ public final class HttpParams {
 
   private String paramsToString() {
     return BEGIN + params.entries().stream()
-        .map(entryToString()).collect(joining(SEPARATOR));
+        .map(this::entryToString).collect(joining(SEPARATOR));
   }
 
-  private Function<Tuple2<String, String>, String> entryToString() {
-    return entry -> entry.get1() + EQUALS + urlEncode(entry.get2());
+  private String entryToString(Tuple2<String, String> entry) {
+    return entry.get1() + EQUALS + urlEncode(entry.get2());
   }
 
   private static String urlEncode(String value) {

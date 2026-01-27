@@ -24,7 +24,7 @@ public interface RequestHandler extends Function1<HttpRequest, HttpResponse> {
   }
 
   default RequestHandler preHandle(PreFilter before) {
-    return request -> before.apply(request).fold(identity(), this::apply);
+    return request -> before.apply(request).fold(identity(), this);
   }
 
   default RequestHandler postHandle(PostFilter after) {

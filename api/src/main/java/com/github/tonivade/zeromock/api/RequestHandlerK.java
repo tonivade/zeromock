@@ -18,7 +18,7 @@ public interface RequestHandlerK<F extends Kind<F, ?>> extends Function1<HttpReq
 
   default RequestHandlerK<F> preHandle(Monad<F> monad, PreFilterK<F> before) {
     return request ->
-        monad.flatMap(before.apply(request), either -> either.fold(monad::<HttpResponse>pure, this::apply));
+        monad.flatMap(before.apply(request), either -> either.fold(monad::<HttpResponse>pure, this));
   }
 
   default RequestHandlerK<F> postHandle(Monad<F> monad, PostFilterK<F> after) {
