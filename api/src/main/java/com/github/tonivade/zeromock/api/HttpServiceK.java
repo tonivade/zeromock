@@ -11,6 +11,7 @@ import static com.github.tonivade.zeromock.api.Matchers.all;
 import static com.github.tonivade.zeromock.api.Matchers.startsWith;
 import static com.github.tonivade.zeromock.api.PreFilterK.filter;
 import static com.github.tonivade.zeromock.api.Responses.notFound;
+
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.core.Matcher1;
@@ -52,7 +53,7 @@ public final class HttpServiceK<F extends Kind<F, ?>> implements HttpRouteBuilde
     return name;
   }
 
-  Monad<F> monad() {
+  public Monad<F> monad() {
     return monad;
   }
 
