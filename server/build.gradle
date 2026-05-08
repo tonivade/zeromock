@@ -1,6 +1,7 @@
 dependencies {
   api projects.zeromockApi
   api libs.slf4j
+  compileOnly libs.jspecify
   implementation libs.purefunMonad
   implementation libs.purefunEffect
   implementation libs.purefunInstances

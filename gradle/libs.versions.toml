@@ -3,8 +3,8 @@ slf4jVersion = "2.0.17"
 junitVersion = "4.13.2"
 junitBomVersion = "5.14.2"
 equalsVerifierVersion = "4.5"
-purefunVersion = "5.2"
-purejsonVersion = "1.2"
+purefunVersion = "6.0-SNAPSHOT"
+purejsonVersion = "1.3-SNAPSHOT"
 jaxbVersion = "4.0.8"
 jsonPathVersion = "3.0.0"
 sonarVersion = "7.3.0.8198"
@@ -14,6 +14,7 @@ errorproneVersion = "2.49.0"
 errorpronePluginVersion = "5.1.0"
 nullawayVersion = "0.13.4"
 logbackVersion = "1.5.32"
+jspecifyVersion = "1.0.0"
 
 [libraries]
 purefunCore = { group = "com.github.tonivade", name = "purefun-core", version.ref = "purefunVersion" }
@@ -34,6 +35,7 @@ jsonPath= { group = "com.jayway.jsonpath", name = "json-path", version.ref = "js
 nullaway = { group = "com.uber.nullaway", name = "nullaway", version.ref = "nullawayVersion" }
 errorprone = { group = "com.google.errorprone", name = "error_prone_core", version.ref = "errorproneVersion" }
 logbackClassic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logbackVersion" } 
+jspecify = { group = "org.jspecify", name = "jspecify", version.ref = "jspecifyVersion" }
 
 [plugins]
 sonar = { id = "org.sonarqube", version.ref = "sonarVersion" }

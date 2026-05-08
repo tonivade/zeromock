@@ -19,11 +19,11 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.tonivade.purefun.Kind;
-import com.github.tonivade.purefun.Nullable;
 import com.github.tonivade.purefun.core.Matcher1;
 import com.github.tonivade.purefun.data.ImmutableList;
 import com.github.tonivade.purefun.data.Sequence;
