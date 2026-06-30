@@ -162,12 +162,12 @@ public class MockHttpServerK<F extends Kind<F, ?>> implements com.github.tonivad
     unmatched.clear();
   }
 
-  protected MockHttpServerK<F> addMapping(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
+  public MockHttpServerK<F> addMapping(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
     service = service.addMapping(matcher, handler);
     return this;
   }
 
-  protected MockHttpServerK<F> addPreFilter(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
+  public MockHttpServerK<F> addPreFilter(Matcher1<HttpRequest> matcher, RequestHandlerK<F> handler) {
     service = service.addPreFilter(matcher, handler);
     return this;
   }
