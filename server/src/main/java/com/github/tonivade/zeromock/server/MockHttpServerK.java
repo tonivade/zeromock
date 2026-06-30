@@ -61,7 +61,7 @@ public class MockHttpServerK<F extends Kind<F, ?>> implements com.github.tonivad
 
   private HttpServiceK<F> service;
 
-  protected MockHttpServerK(HttpServer server, Monad<F> monad, ResponseInterpreterK<F> interpreter) {
+  public MockHttpServerK(HttpServer server, Monad<F> monad, ResponseInterpreterK<F> interpreter) {
     this.server = requireNonNull(server);
     this.monad = requireNonNull(monad);
     this.interpreter = requireNonNull(interpreter);
