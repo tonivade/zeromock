@@ -14,7 +14,7 @@ errorproneVersion = "2.50.0"
 errorpronePluginVersion = "5.1.0"
 nullawayVersion = "0.13.8"
 logbackVersion = "1.6.1"
-jspecifyVersion = "1.0.0"
+jspecifyVersion = "1.0.1"
 
 [libraries]
 purefunCore = { group = "com.github.tonivade", name = "purefun-core", version.ref = "purefunVersion" }
