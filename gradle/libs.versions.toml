@@ -12,7 +12,7 @@ versionsVersion = "0.64.0"
 nexusVersion = "2.0.0"
 errorproneVersion = "2.50.0"
 errorpronePluginVersion = "5.1.1"
-nullawayVersion = "0.14.1"
+nullawayVersion = "0.14.2"
 logbackVersion = "1.6.4"
 jspecifyVersion = "1.0.1"
 
