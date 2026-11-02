@@ -11,7 +11,6 @@ import java.util.concurrent.Executor;
 
 import com.github.tonivade.purefun.concurrent.Future;
 import com.github.tonivade.purefun.core.Function1;
-import com.github.tonivade.purefun.effect.Task;
 import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.purefun.monad.IOOf;
 import com.github.tonivade.purefun.typeclasses.Instances;
@@ -52,7 +51,7 @@ public class AsyncHttpClient implements HttpClientOf<Future<?>> {
   }
 
   public static <T> Function1<HttpResponse, Future<T>> parse(Type type) {
-    return response -> Task.fromTry(new PureJson<T>(type).fromJson(Bytes.asString(response.body())))
-        .flatMap(Task::fromOption).runAsync();
+    return response -> IO.fromTry(new PureJson<T>(type).fromJson(Bytes.asString(response.body())))
+        .flatMap(IO::fromOption).runAsync();
   }
 }

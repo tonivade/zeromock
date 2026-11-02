@@ -13,8 +13,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import com.github.tonivade.purefun.concurrent.Future;
-import com.github.tonivade.purefun.effect.UIO;
-import com.github.tonivade.purefun.effect.URIO;
 import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.purefun.typeclasses.Instances;
 import com.github.tonivade.zeromock.api.HttpRequest;
@@ -30,10 +28,6 @@ public class ExampleTest {
   public AsyncMockHttpServerRule asyncServer = new AsyncMockHttpServerRule();
   @Rule
   public IOMockHttpServerRule ioServer = new IOMockHttpServerRule();
-  @Rule
-  public UIOMockHttpServerRule uioServer = new UIOMockHttpServerRule();
-  @Rule
-  public URIOMockHttpServerRule<Void> urioServer = new URIOMockHttpServerRule<>(null);
 
   @Test
   public void pingSync() {
@@ -58,24 +52,6 @@ public class ExampleTest {
     ioServer.when(get("/ping")).then(request -> IO.pure(pong()));
 
     HttpResponse response = ioServer.client().request(ping());
-
-    assertPong(response);
-  }
-
-  @Test
-  public void pingUIO() {
-    uioServer.when(get("/ping")).then(request -> UIO.pure(pong()));
-
-    HttpResponse response = uioServer.client().request(ping());
-
-    assertPong(response);
-  }
-
-  @Test
-  public void pingURIO() {
-    urioServer.when(get("/ping")).then(request -> URIO.pure(pong()));
-
-    HttpResponse response = urioServer.client().request(ping());
 
     assertPong(response);
   }

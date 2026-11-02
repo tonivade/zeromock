@@ -20,12 +20,4 @@ public interface HttpClientBuilder<T> {
   static HttpClientBuilder<IOHttpClient> ioClient() {
     return IOHttpClient::connectTo;
   }
-
-  static HttpClientBuilder<UIOHttpClient> uioClient() {
-    return UIOHttpClient::connectTo;
-  }
-
-  static HttpClientBuilder<TaskHttpClient> taskClient() {
-    return TaskHttpClient::connectTo;
-  }
 }
