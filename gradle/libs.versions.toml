@@ -3,8 +3,8 @@ slf4jVersion = "2.0.20"
 junitVersion = "4.13.2"
 junitBomVersion = "5.14.2"
 equalsVerifierVersion = "4.5.2"
-purefunVersion = "5.3"
-purejsonVersion = "1.3"
+purefunVersion = "6.0-SNAPSHOT"
+purejsonVersion = "2.0-SNAPSHOT"
 jaxbVersion = "4.0.9"
 jsonPathVersion = "3.0.0"
 sonarVersion = "7.5.0.8588"
@@ -19,7 +19,6 @@ jspecifyVersion = "1.0.1"
 [libraries]
 purefunCore = { group = "com.github.tonivade", name = "purefun-core", version.ref = "purefunVersion" }
 purefunMonad = { group = "com.github.tonivade", name = "purefun-monad", version.ref = "purefunVersion" }
-purefunEffect = { group = "com.github.tonivade", name = "purefun-effect", version.ref = "purefunVersion" }
 purefunTypeclasses = { group = "com.github.tonivade", name = "purefun-typeclasses", version.ref = "purefunVersion" }
 purefunInstances = { group = "com.github.tonivade", name = "purefun-instances", version.ref = "purefunVersion" }
 purejson = { group = "com.github.tonivade", name = "purejson", version.ref = "purejsonVersion" }

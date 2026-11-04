@@ -4,6 +4,5 @@ dependencies {
   api libs.junitJupiter
   implementation projects.zeromockClient
   implementation libs.purefunMonad
-  implementation libs.purefunEffect
   testImplementation libs.purejson
 }

@@ -4,7 +4,6 @@ dependencies {
   api libs.jaxb
   implementation libs.purefunTypeclasses
   implementation libs.purefunMonad
-  implementation libs.purefunEffect
   runtimeOnly libs.purefunInstances
   implementation libs.purejson
   implementation libs.jsonPath

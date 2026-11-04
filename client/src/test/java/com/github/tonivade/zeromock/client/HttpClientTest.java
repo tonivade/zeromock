@@ -7,8 +7,6 @@ package com.github.tonivade.zeromock.client;
 import static com.github.tonivade.zeromock.client.HttpClientBuilder.asyncClient;
 import static com.github.tonivade.zeromock.client.HttpClientBuilder.client;
 import static com.github.tonivade.zeromock.client.HttpClientBuilder.ioClient;
-import static com.github.tonivade.zeromock.client.HttpClientBuilder.taskClient;
-import static com.github.tonivade.zeromock.client.HttpClientBuilder.uioClient;
 import static com.github.tonivade.zeromock.server.MockHttpServer.listenAt;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -17,8 +15,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.github.tonivade.purefun.concurrent.Future;
-import com.github.tonivade.purefun.effect.Task;
-import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.zeromock.api.Bytes;
 import com.github.tonivade.zeromock.api.HttpRequest;
@@ -57,20 +53,6 @@ class HttpClientTest {
     IO<HttpResponse> response = ioClient().connectTo(baseUrl()).request(ping);
 
     assertResponse(response.unsafeRunSync());
-  }
-
-  @Test
-  void uio() {
-    UIO<HttpResponse> response = uioClient().connectTo(baseUrl()).request(ping);
-
-    assertResponse(response.unsafeRunSync());
-  }
-
-  @Test
-  void task() {
-    Task<HttpResponse> response = taskClient().connectTo(baseUrl()).request(ping);
-
-    assertResponse(response.safeRunSync().getOrElseThrow());
   }
 
   @AfterAll

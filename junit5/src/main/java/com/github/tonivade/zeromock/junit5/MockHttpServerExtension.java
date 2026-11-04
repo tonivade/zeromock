@@ -22,20 +22,17 @@ import org.junit.jupiter.api.extension.ExtensionContext.Store;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
+
 import com.github.tonivade.purefun.core.Tuple;
 import com.github.tonivade.purefun.core.Tuple2;
 import com.github.tonivade.zeromock.client.AsyncHttpClient;
 import com.github.tonivade.zeromock.client.HttpClient;
 import com.github.tonivade.zeromock.client.HttpClientBuilder;
 import com.github.tonivade.zeromock.client.IOHttpClient;
-import com.github.tonivade.zeromock.client.TaskHttpClient;
-import com.github.tonivade.zeromock.client.UIOHttpClient;
 import com.github.tonivade.zeromock.server.AsyncMockHttpServer;
 import com.github.tonivade.zeromock.server.HttpServer;
 import com.github.tonivade.zeromock.server.IOMockHttpServer;
 import com.github.tonivade.zeromock.server.MockHttpServer;
-import com.github.tonivade.zeromock.server.UIOMockHttpServer;
-import com.github.tonivade.zeromock.server.URIOMockHttpServer;
 
 public class MockHttpServerExtension
     implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback, ParameterResolver {
@@ -147,10 +144,6 @@ public class MockHttpServerExtension
       return AsyncMockHttpServer.builder().port(port).build();
     } else if (type.isAssignableFrom(IOMockHttpServer.class)) {
       return IOMockHttpServer.builder().port(port).build();
-    } else if (type.isAssignableFrom(UIOMockHttpServer.class)) {
-      return UIOMockHttpServer.builder().port(port).build();
-    } else if (type.isAssignableFrom(URIOMockHttpServer.class)) {
-      throw new UnsupportedOperationException("urio is not supported yet!");
     }
     throw new ParameterResolutionException("invalid server param");
   }
@@ -163,10 +156,6 @@ public class MockHttpServerExtension
       return HttpClientBuilder.asyncClient();
     } else if (type.isAssignableFrom(IOHttpClient.class)) {
       return HttpClientBuilder.ioClient();
-    } else if (type.isAssignableFrom(UIOHttpClient.class)) {
-      return HttpClientBuilder.uioClient();
-    } else if (type.isAssignableFrom(TaskHttpClient.class)) {
-      return HttpClientBuilder.taskClient();
     }
     throw new ParameterResolutionException("invalid client param");
   }
@@ -183,16 +172,12 @@ public class MockHttpServerExtension
   private static boolean serverInstance(Class<?> type) {
     return type.equals(MockHttpServer.class)
         || type.equals(AsyncMockHttpServer.class)
-        || type.equals(IOMockHttpServer.class)
-        || type.equals(UIOMockHttpServer.class)
-        || type.equals(URIOMockHttpServer.class);
+        || type.equals(IOMockHttpServer.class);
   }
 
   private static boolean clientInstance(Class<?> type) {
     return type.equals(HttpClient.class)
         || type.equals(AsyncHttpClient.class)
-        || type.equals(IOHttpClient.class)
-        || type.equals(UIOHttpClient.class)
-        || type.equals(TaskHttpClient.class);
+        || type.equals(IOHttpClient.class);
   }
 }

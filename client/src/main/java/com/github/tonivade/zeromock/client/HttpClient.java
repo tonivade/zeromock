@@ -9,7 +9,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.reflect.Type;
 
 import com.github.tonivade.purefun.core.Function1;
-import com.github.tonivade.purefun.effect.Task;
 import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.purefun.monad.IOOf;
 import com.github.tonivade.purefun.type.Try;
@@ -46,7 +45,7 @@ public class HttpClient {
   }
 
   public static <T> Function1<HttpResponse, Try<T>> parse(Type type) {
-    return response -> Task.fromTry(new PureJson<T>(type).fromJson(Bytes.asString(response.body())))
-        .flatMap(Task::fromOption).safeRunSync();
+    return response -> IO.fromTry(new PureJson<T>(type).fromJson(Bytes.asString(response.body())))
+        .flatMap(IO::fromOption).safeRunSync();
   }
 }
