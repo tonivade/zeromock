@@ -13,7 +13,7 @@ nexusVersion = "2.0.0"
 errorproneVersion = "2.52.0"
 errorpronePluginVersion = "5.2.0"
 nullawayVersion = "0.14.4"
-logbackVersion = "1.6.7"
+logbackVersion = "1.6.8"
 jspecifyVersion = "1.0.1"
 
 [libraries]
